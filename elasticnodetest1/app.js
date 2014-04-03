@@ -36,109 +36,87 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.get('/', routes.index);
-app.get('/helloworld', routes.helloworld);
-app.get('/users', user.list);
 
+//Just checking to see if the DB is up
 app.get('/ping', function(req, res){
-//	res.send(client.info());
-	 if (client.ping()) {
-	 	var clusterdetails = client.info(true,true);
-	 	var clusterdetailsjson = JSON.stringify(clusterdetails);
-//	 	console.log(clusterdetails);
-	 	console.log(clusterdetailsjson);
-	 	// I do not understand why the above printout a string and the one bellow does not.
-	 	res.send(clusterdetailsjson);
-	 	
-	 } else{
-	 	res.send('ElasticSearch Cluster is not alive');
-	 };
-	 
-	// res.send();
-// This should be an elasticsearch search ;-)	 
-/*  post.find({}, function(err, post){
-    if(post){
-      res.send(post);
-    }else{
-      res.send('No posts in database');
-    }
-  })*/
+ 		client.info("",function(err,resp){
+ 			if (err){
+ 				console.log(err);
+ 				res.send('No connection to ElasticSearch Cluster');
+ 			} else {
+ 				console.log(resp);
+ 				res.send(resp);
+ 			}
+ 		}); 		
 });
 
-function json2array(json){
-    var result = [];
-    var keys = Object.keys(json);
-    keys.forEach(function(key){
-        result.push(json[key]);
-    });
-    return result;
-}
+//Searching for the list of all benchmarks
+app.get('/executions', function(req, res){
+	  client.search({index:'executions'},  function(err, result)
+ 		{
+ 			if (result.hit != undefined){
+	  			var only_results = result.hits.hits;
+	  			var es_result = [];
+	  			var keys = Object.keys(only_results);
 
-app.get('/benchmark', function(req, res){
-	  client.search({index:'testindex'},  function(err, result){
-	  	//console.log(result.hits);
-	  	var only_results = result.hits.hits;
-	  	var result = [];
-	  	var keys = Object.keys(only_results);
-	  	keys.forEach(function(key){
-        	result.push(only_results[key]._source);
-        	console.log("Adding "+key+" number to result ");
-        	console.log(JSON.stringify(result[key]));
-    	});
-	//  	console.log("Printing only_results :"+only_results);
-	  	res.send(result);
-	  });
-
-	 
-	 //res.send("testing"+result.hits);
-// This should be an elasticsearch search ;-)	 
-/*  post.find({}, function(err, post){
-    if(post){
-      res.send(post);
-    }else{
-      res.send('No posts in database');
-    }
-  })*/
+	  			keys.forEach(
+	  				function(key)
+	  					{
+        				result.push(only_results[key]._source);
+        				console.log("Adding "+key+" number to result ");
+        				console.log(JSON.stringify(es_result[key]));
+        			});
+	  			res.send(es_result);		
+	  		} else {
+	  			res.send('No data in the DB');
+	  		}
+	  
+	  })
 });
 
-app.post('/benchmark', function(req, res){
-  var id = req.body.id;
-  var content = req.body.content;
+//Searching for the values of a specific benchmark //NOT WORKING
+app.get('/execution/$ID', function(req, res){
+	  client.search({index:'$ID'},  function(err, result)
+ 		{
+ 			if (result.hit != undefined){
+	  			var only_results = result.hits.hits;
+	  			var es_result = [];
+	  			var keys = Object.keys(only_results);
+
+	  			keys.forEach(
+	  				function(key)
+	  					{
+        				result.push(only_results[key]._source);
+        				console.log("Adding "+key+" number to result ");
+        				console.log(JSON.stringify(es_result[key]));
+        			});
+	  			res.send(es_result);		
+	  		} else {
+	  			res.send('No data in the DB');
+	  		}
+	  
+	  })
+});
+
+//Adding a new execution and respond the provided ID
+app.post('/executions', function(req, res){
   var the_json = req.body;
-
-  console.log(req.body);
-  console.log(req.query);
-  console.log(the_json);
-  var es_reply = client.index({index:'testindex',type: 'testtype',body:the_json});
-  console.log(es_reply);
-  res.send('Contents : '+JSON.stringify(the_json));
-//  res.send('ids');
-  // MongoDB related Part
- /* var newPost = post({
-    title: title,
-    content: content
-  });
-
-  newPost.save();*/
-//  res.send('Post created');
+	client.index({index:'executions',type: 'TBD',body:the_json},function(err,es_reply)
+  	{
+  		  console.log(es_reply);
+  		  res.send(es_reply);
+  	});
 });
 
-// Not Working (YET)
-app.put('/benchmark', function(req, res){
-  var content = req.body.content;
-  var id = req.query.title;
-  res.send('Content : '+content);
-  res.send('id :'+id);
-/* MongoDB related Part
-  post.findOne({title: title}, function(err, post){
-    if (post){
-      post.content = content;
-      post.save();
-      res.send('Post edited');
-    }else{
-      res.send('Post doesnt exist');
-    }
-  })*/
-})
+//Adding a new time to an existing execution and respond the provided ID //NOT WORKING
+app.post('/execution/$ID', function(req, res){
+  var the_json = req.body;
+	client.index({index:'$ID',type: 'TBD',body:the_json},function(err,es_reply)
+  	{
+  		  console.log(es_reply);
+  		  res.send(es_reply);
+  	});
+});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
