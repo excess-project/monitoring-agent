@@ -1,6 +1,7 @@
 
 /**
  * Module dependencies.
+ //curl -i -X POST -H 'Content-Type: application/json' -d '{"Name": "MyFisrtexecution", "Description": "Testing ","other":"values","onemore":"please"}' http://localhost:3000/executions
  */
 
 var express = require('express');
@@ -54,7 +55,7 @@ app.get('/ping', function(req, res){
 app.get('/executions', function(req, res){
 	  client.search({index:'executions'},  function(err, result)
  		{
- 			if (result.hit != undefined){
+ 			if (result.hits != undefined){
 	  			var only_results = result.hits.hits;
 	  			var es_result = [];
 	  			var keys = Object.keys(only_results);
@@ -62,7 +63,7 @@ app.get('/executions', function(req, res){
 	  			keys.forEach(
 	  				function(key)
 	  					{
-        				result.push(only_results[key]._source);
+        				es_result.push(only_results[key]._source);
         				console.log("Adding "+key+" number to result ");
         				console.log(JSON.stringify(es_result[key]));
         			});
@@ -78,7 +79,7 @@ app.get('/executions', function(req, res){
 app.get('/execution/$ID', function(req, res){
 	  client.search({index:'$ID'},  function(err, result)
  		{
- 			if (result.hit != undefined){
+ 			if (result.hits != undefined){
 	  			var only_results = result.hits.hits;
 	  			var es_result = [];
 	  			var keys = Object.keys(only_results);
