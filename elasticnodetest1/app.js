@@ -75,9 +75,15 @@ app.get('/executions', function(req, res){
 	  })
 });
 
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":"20140403","id": "S-jdFB06SMi03uj_YCsK-Q","metric_1":"value"}' http://localhost:3000/S-jdFB06SMi03uj_YCsK-Q
+
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":"20140403","id": "S-jdFB06SMi03uj_YCsK-Q","metric_1":"value"}' http://localhost:3000/executions
+
+
 //Searching for the values of a specific benchmark //NOT WORKING
-app.get('/execution/$ID', function(req, res){
-	  client.search({index:'$ID'},  function(err, result)
+app.get('/execution/:ID', function(req, res){
+	  client.search({index:req.params.ID},  function(err, result)
+	  //client.search({index:'executions', query: req.params.ID},  function(err, result) //Not Working
  		{
  			if (result.hits != undefined){
 	  			var only_results = result.hits.hits;
@@ -87,7 +93,7 @@ app.get('/execution/$ID', function(req, res){
 	  			keys.forEach(
 	  				function(key)
 	  					{
-        				result.push(only_results[key]._source);
+        				es_result.push(only_results[key]._source);
         				console.log("Adding "+key+" number to result ");
         				console.log(JSON.stringify(es_result[key]));
         			});
@@ -105,14 +111,14 @@ app.post('/executions', function(req, res){
 	client.index({index:'executions',type: 'TBD',body:the_json},function(err,es_reply)
   	{
   		  console.log(es_reply);
-  		  res.send(es_reply);
+  		  res.send(es_reply._id);
   	});
 });
 
 //Adding a new time to an existing execution and respond the provided ID //NOT WORKING
-app.post('/execution/$ID', function(req, res){
+app.post('/execution/:ID', function(req, res){
   var the_json = req.body;
-	client.index({index:'$ID',type: 'TBD',body:the_json},function(err,es_reply)
+	client.index({index:req.params.ID,type: 'TBD',body:the_json},function(err,es_reply)
   	{
   		  console.log(es_reply);
   		  res.send(es_reply);
