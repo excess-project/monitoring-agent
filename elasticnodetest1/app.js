@@ -2,6 +2,7 @@
 /**
  * Module dependencies.
  //curl -i -X POST -H 'Content-Type: application/json' -d '{"Name": "MyFisrtexecution", "Description": "Testing ","other":"values","onemore":"please"}' http://localhost:3000/executions
+ //curl -i -X POST -H 'Content-Type: application/json' -d '{"Name": "MyFisrtexecution", "Description": "Testing ","other":"values","onemore":"please"}' http://localhost:3000/execution/ID
  */
 
 var express = require('express');
@@ -82,7 +83,7 @@ app.get('/executions', function(req, res){
 
 //Searching for the values of a specific benchmark //NOT WORKING
 app.get('/execution/:ID', function(req, res){
-	  client.search({index:req.params.ID},  function(err, result)
+	  client.search({index:req.params.ID.toLowerCase()},  function(err, result)
 	  //client.search({index:'executions', query: req.params.ID},  function(err, result) //Not Working
  		{
  			if (result.hits != undefined){
@@ -118,7 +119,7 @@ app.post('/executions', function(req, res){
 //Adding a new time to an existing execution and respond the provided ID //NOT WORKING
 app.post('/execution/:ID', function(req, res){
   var the_json = req.body;
-	client.index({index:req.params.ID,type: 'TBD',body:the_json},function(err,es_reply)
+	client.index({index:req.params.ID.toLowerCase(),type: 'TBD',body:the_json},function(err,es_reply)
   	{
   		  console.log(es_reply);
   		  res.send(es_reply);
