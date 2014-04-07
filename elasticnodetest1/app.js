@@ -76,15 +76,46 @@ app.get('/executions', function(req, res){
 	  })
 });
 
-//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":"20140403","id": "S-jdFB06SMi03uj_YCsK-Q","metric_1":"value"}' http://localhost:3000/S-jdFB06SMi03uj_YCsK-Q
-
-//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":"20140403","id": "S-jdFB06SMi03uj_YCsK-Q","metric_1":"value"}' http://localhost:3000/executions
 
 
-//Searching for the values of a specific benchmark //NOT WORKING
-app.get('/execution/:ID', function(req, res){
-	  client.search({index:req.params.ID.toLowerCase()},  function(err, result)
-	  //client.search({index:'executions', query: req.params.ID},  function(err, result) //Not Working
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Name":"Execution2","Description": "Testin filter timestamp","nodes":["node1","node2","node3"]}' http://localhost:3000/executions
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":"1396622230","metric_1":"value1","metric_2":"value2","metric_3":"value3","metric_4":"value4"}' http://localhost:3000/execution/o0Wuji4QRCaKVwDmbVzeNQ
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":"1396622231","metric_1":"value2","metric_2":"value2","metric_3":"value3","metric_4":"value5"}' http://localhost:3000/execution/o0Wuji4QRCaKVwDmbVzeNQ
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":"1396622232","metric_1":"value4","metric_2":"value24","metric_3":"value34","metric_44":"value54"}' http://localhost:3000/execution/o0Wuji4QRCaKVwDmbVzeNQ
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":"1396622233","metric_1":"value27","metric_2":"value27","metric_3":"value36","metric_4":"value56"}' http://localhost:3000/execution/o0Wuji4QRCaKVwDmbVzeNQ
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":"1396622234","metric_1":"value2","metric_2":"value2","metric_3":"value3","metric_4":"value5"}' http://localhost:3000/execution/o0Wuji4QRCaKVwDmbVzeNQ
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":"1396622240","metric_1":"value2","metric_2":"value2","metric_3":"value3","metric_4":"value5"}' http://localhost:3000/execution/o0Wuji4QRCaKVwDmbVzeNQ
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":"13966222405","metric_1":"value2","metric_2":"value2","metric_3":"value3","metric_4":"value5"}' http://localhost:3000/execution/o0Wuji4QRCaKVwDmbVzeNQ
+
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Name":"Execution3","Description": "Testing filter timestamp","nodes":["node1","node2","node3"]}' http://localhost:3000/executions
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":1396873680,"metric_1":"value1","metric_2":"value2","metric_3":"value3","metric_4":"value4"}' http://localhost:3000/execution/B5fe7pnYQzqSItnqXB3N1A
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":1396873690,"metric_1":"value1","metric_2":"value2","metric_3":"value3","metric_4":"value4"}' http://localhost:3000/execution/B5fe7pnYQzqSItnqXB3N1A
+//curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp":13968736905,"metric_1":"value1","metric_2":"value2","metric_3":"value3","metric_4":"value4"}' http://localhost:3000/execution/B5fe7pnYQzqSItnqXB3N1A
+//Search DB:
+//curl -XGET 'http://localhost:9200/b5fe7pnyqzqsitnqxb3n1a/_search?pretty=true'
+//curl -XGET 'http://localhost:9200/o0wuji4qrcakvwdmbvzenq/_search?pretty=true'
+//Browser
+//http://localhost:3000/execution/o0Wuji4QRCaKVwDmbVzeNQ/1396622231/1396622234
+
+//Searching for the values of a specific benchmark 
+app.get('/execution/:ID/:from/:to', function(req, res){
+	  var from_time = req.params.from;
+	  var to_time = req.params.to;
+
+          client.search({
+            index:req.params.ID.toLowerCase(), 
+            body: {
+              query: {
+                constant_score: {
+                  filter: {
+	            range: {
+	              "Timestamp" : { "from" : from_time, "to" : to_time } 
+	            }
+	          }
+                }
+              }
+            }},   
+          function(err, result)
  		{
  			if (result.hits != undefined){
 	  			var only_results = result.hits.hits;
