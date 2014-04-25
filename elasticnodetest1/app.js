@@ -143,6 +143,7 @@ app.post('/executions', function(req, res){
   var the_json = req.body;
 	client.index({index:'executions',type: 'TBD',body:the_json},function(err,es_reply)
   	{
+  		  console.log("NODE.js Output starts here .................");
   		  console.log(es_reply);
   		  res.send(es_reply._id);
   	});
