@@ -141,6 +141,8 @@ app.get('/executions/:ID/:from/:to', function(req, res){
 //Adding a new execution and respond the provided ID
 app.post('/executions', function(req, res){
   var the_json = req.body;
+  console.log("The request body is: ");
+  console.log(the_json);
 	client.index({index:'executions',type: 'TBD',body:the_json},function(err,es_reply)
   	{
   		  console.log("NODE.js Output starts here .................");
