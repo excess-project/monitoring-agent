@@ -94,11 +94,12 @@ app.get('/executions', function(req, res){
 //Search DB:
 //curl -XGET 'http://localhost:9200/b5fe7pnyqzqsitnqxb3n1a/_search?pretty=true'
 //curl -XGET 'http://localhost:9200/o0wuji4qrcakvwdmbvzenq/_search?pretty=true'
+//curl -i -X POST -H 'Content-Type: application/json' -d '{'Timestamp':1,'metric_1':'value1'}' http://localhost:3000/executions/geFQ3bahSE-QTHblpFJayQ
 //Browser
 //http://localhost:3000/execution/o0Wuji4QRCaKVwDmbVzeNQ/1396622231/1396622234
 
 //Searching for the values of a specific benchmark 
-app.get('/execution/:ID/:from/:to', function(req, res){
+app.get('/executions/:ID/:from/:to', function(req, res){
 	  var from_time = req.params.from;
 	  var to_time = req.params.to;
 
@@ -148,7 +149,7 @@ app.post('/executions', function(req, res){
 });
 
 //Adding a new time to an existing execution and respond the provided ID //NOT WORKING
-app.post('/execution/:ID', function(req, res){
+app.post('/executions/:ID', function(req, res){
   var the_json = req.body;
 	client.index({index:req.params.ID.toLowerCase(),type: 'TBD',body:the_json},function(err,es_reply)
   	{
