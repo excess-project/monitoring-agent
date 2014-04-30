@@ -24,6 +24,20 @@ int send_monitoring_data(char *URL, char *data)
     CURLcode res;
     int result = SEND_SUCCESS;
 
+    /* perform some error checking */
+    if (URL == NULL || strlen(URL) == 0) 
+    {
+        fprintf(stderr, "send_monitoring_data(): Error - the given url is empty.");
+        return SEND_FAILED;
+    }
+
+    if (data == NULL || strlen(data) == 0) 
+    {
+        fprintf(stderr, "send_monitoring_data(): Error - the monitoring data is empty.");
+        return SEND_FAILED;
+    }
+
+    /* init libcurl if not already done */
     if (curl_ == NULL) {
         init_curl();
     }
@@ -50,7 +64,7 @@ int send_monitoring_data(char *URL, char *data)
     if (res != CURLE_OK) 
     {
         result = SEND_FAILED;
-        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        fprintf(stderr, "send_monitoring_data() failed: %s\n", curl_easy_strerror(res));
     }
 
     /* in a loop, do a reset instead */
@@ -62,8 +76,12 @@ int send_monitoring_data(char *URL, char *data)
 void delay_time(time_t delay)
 {
     time_t timer0, timer1;
-    time( &timer0 );
+    
+    if (delay <= 0) {
+        return;
+    }
 
+    time( &timer0 );
     do {
         time( &timer1 );
     }
@@ -95,7 +113,20 @@ char* get_execution_id(char *URL, char *msg)
 {
     CURLcode res;
 
-    if (strlen(execID_) > 0) {
+    /* perform some error checking */
+    if (URL == NULL || strlen(URL) == 0) 
+    {
+        fprintf(stderr, "get_execution_id(): Error - the given url is empty.");
+        return NULL;
+    }
+
+    if (msg == NULL || strlen(msg) == 0) 
+    {
+        fprintf(stderr, "get_execution_id(): Error - empty message is going to be sent.");
+        return NULL;
+    }
+
+    if (execID_ != NULL && strlen(execID_) > 0) {
         return execID_;
     }
 
@@ -118,8 +149,10 @@ char* get_execution_id(char *URL, char *msg)
     res = curl_easy_perform(curl_);
     printf("\n-- Execution ID: %s -- len: %d\n", execID_, (int) strlen(execID_));
 
-    if (res != CURLE_OK) {
-        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+    if (res != CURLE_OK) 
+    {
+        fprintf(stderr, "get_execution_id() failed: %s\n", curl_easy_strerror(res));
+        return NULL;
     }
 
     curl_easy_reset(curl_);
