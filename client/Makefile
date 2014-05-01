@@ -8,7 +8,7 @@ CFLAGS = -ansi -pedantic -Wall -Wwrite-strings -Wpointer-arith -Wcast-align -O3
 LFLAGS = -lcurl -lm
 
 ## List of source files
-FILES = http-post.c
+FILES = http-post.c 
 #FILES  = $(shell find . -name "*.c")
 HEADER  = $(shell find . -name "*.h")
 

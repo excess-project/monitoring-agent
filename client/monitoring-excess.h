@@ -144,7 +144,12 @@ int excess_sensor( sensor_msg_t * info);
 
 int excess_client_part ( void * info);
 
-
+/* TODO: New functions added for sending the sensor data to the MI server */
+/* The temporary implementation of these functions are in http-post.c */
+#define DATA_EMPTY 1
+#define DATA_AVAILABLE  0
+int is_empty(void);
+sensor_msg_t dequeue(void);
 
 #endif /* _MONITORING_EXCESS_H */
 
