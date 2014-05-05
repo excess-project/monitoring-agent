@@ -1,6 +1,6 @@
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+var margin = {top: 20, right: 20, bottom: 70, left: 40},
+    width = 1024 - margin.left - margin.right,
+    height = 768 - margin.top - margin.bottom;
 
 var x = d3.scale.ordinal()
     .rangeRoundBands([0, width], .1);
@@ -28,10 +28,10 @@ d3.tsv("data.tsv", type, function(error, data) {
   y.domain([0, d3.max(data, function(d) { console.log(d.frequency);return d.frequency; })]);
 */
 //This is the part i added that grabs the data from a json file
-d3.json("http://localhost:3000/executions/kdolkas7",function(error,jsondata) {
+d3.json("http://localhost:3000/executions/kdolkas8",function(error,jsondata) {
   if (error) return console.warn(error);
   data = jsondata;
-  metric = "Memory";
+  metric = "Sys_CPU";
   
    
   console.log(JSON.stringify(data));
@@ -45,7 +45,14 @@ d3.json("http://localhost:3000/executions/kdolkas7",function(error,jsondata) {
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+      .call(xAxis)
+      .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", function(d) {
+                return "rotate(-65)" 
+              });
 
   svg.append("g")
       .attr("class", "y axis")
@@ -56,6 +63,13 @@ d3.json("http://localhost:3000/executions/kdolkas7",function(error,jsondata) {
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text(metric);
+            
+//  x.selectAll("text")
+//      .attr({
+//          transform: function (d) {
+//            return "rotate(-60, 0, 0)";
+//            }
+//        });
 
   svg.selectAll(".bar")
       .data(data)
@@ -69,6 +83,6 @@ d3.json("http://localhost:3000/executions/kdolkas7",function(error,jsondata) {
 });
 
 function type(d) {
-  d.User_CPU = +d.User_CPU;
+  d[metric] = +d[metric];
   return d;
 }

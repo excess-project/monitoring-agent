@@ -143,6 +143,8 @@ app.get('/executions/:ID', function(req, res){
 
           client.search({
             index:req.params.ID.toLowerCase(), 
+            size:10000,
+            sort:"Timestamp",
           },   
           function(err, result)
     {
