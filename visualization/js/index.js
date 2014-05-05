@@ -15,7 +15,7 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
-    .ticks(10, "%");
+    .ticks(10, "");
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -28,16 +28,17 @@ d3.tsv("data.tsv", type, function(error, data) {
   y.domain([0, d3.max(data, function(d) { console.log(d.frequency);return d.frequency; })]);
 */
 //This is the part i added that grabs the data from a json file
-d3.json("data.json",function(error,jsondata) {
+d3.json("http://localhost:3000/executions/kdolkas7",function(error,jsondata) {
   if (error) return console.warn(error);
-  data = jsondata.values;
-
+  data = jsondata;
+  metric = "Memory";
+  
+   
   console.log(JSON.stringify(data));
 
-  x.domain(data.map(function(d) { console.log(d.letter);return d.letter; }));
+  x.domain(data.map(function(d) { console.log(d.Timestamp);return d.Timestamp;  }));
  // y.domain(jsondata.frequency.map(function(d) { return d.frequency; }));
-
-  y.domain([0, d3.max(data, function(d) { console.log(d.frequency); return d.frequency; })]);
+  y.domain([0, d3.max(data, function(d) { console.log(d[metric]); return d[metric]; })]);
 
 //Completion of my part, now let d3 do its magic 
 
@@ -54,20 +55,20 @@ d3.json("data.json",function(error,jsondata) {
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Frequency");
+      .text(metric);
 
   svg.selectAll(".bar")
       .data(data)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", function(d) { return x(d.letter); })
+      .attr("x", function(d) { return x(d.Timestamp); })
       .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.frequency); })
-      .attr("height", function(d) { return height - y(d.frequency); });
+      .attr("y", function(d) { return y(d[metric]); })
+      .attr("height", function(d) { return height - y(d[metric]); });
 
 });
 
 function type(d) {
-  d.frequency = +d.frequency;
+  d.User_CPU = +d.User_CPU;
   return d;
 }
