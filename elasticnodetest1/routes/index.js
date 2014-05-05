@@ -4,7 +4,7 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'EXCESS Monitoring Framework' });
 };
 
 exports.helloworld = function(req, res){

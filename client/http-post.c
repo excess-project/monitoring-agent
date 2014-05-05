@@ -24,6 +24,25 @@ int send_monitoring_data(char *URL, char *data)
     CURLcode res;
     int result = SEND_SUCCESS;
 
+<<<<<<< HEAD
+=======
+    /* perform some error checking */
+    if (URL == NULL || strlen(URL) == 0) 
+    {
+        fprintf(stderr, "send_monitoring_data(): Error - the given url is empty.\n");
+        return SEND_FAILED;
+    }
+
+    /*****  // Not working well for query the results
+    if (data == NULL || strlen(data) == 0) 
+    {
+        fprintf(stderr, "send_monitoring_data(): Error - the monitoring data is empty.\n");
+        return SEND_FAILED;
+    }
+    ******/
+
+    /* init libcurl if not already done */
+>>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
     if (curl_ == NULL) {
         init_curl();
     }
@@ -50,7 +69,11 @@ int send_monitoring_data(char *URL, char *data)
     if (res != CURLE_OK) 
     {
         result = SEND_FAILED;
+<<<<<<< HEAD
         fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+=======
+        fprintf(stderr, "send_monitoring_data() failed: %s\n", curl_easy_strerror(res));
+>>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
     }
 
     /* in a loop, do a reset instead */
@@ -62,8 +85,17 @@ int send_monitoring_data(char *URL, char *data)
 void delay_time(time_t delay)
 {
     time_t timer0, timer1;
+<<<<<<< HEAD
     time( &timer0 );
 
+=======
+    
+    if (delay <= 0) {
+        return;
+    }
+
+    time( &timer0 );
+>>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
     do {
         time( &timer1 );
     }
@@ -95,7 +127,24 @@ char* get_execution_id(char *URL, char *msg)
 {
     CURLcode res;
 
+<<<<<<< HEAD
     if (strlen(execID_) > 0) {
+=======
+    /* perform some error checking */
+    if (URL == NULL || strlen(URL) == 0) 
+    {
+        fprintf(stderr, "get_execution_id(): Error - the given url is empty.\n");
+        return NULL;
+    }
+
+    if (msg == NULL || strlen(msg) == 0) 
+    {
+        fprintf(stderr, "get_execution_id(): Error - empty message is going to be sent.\n");
+        return NULL;
+    }
+
+    if (execID_ != NULL && strlen(execID_) > 0) {
+>>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
         return execID_;
     }
 
@@ -118,14 +167,84 @@ char* get_execution_id(char *URL, char *msg)
     res = curl_easy_perform(curl_);
     printf("\n-- Execution ID: %s -- len: %d\n", execID_, (int) strlen(execID_));
 
+<<<<<<< HEAD
     if (res != CURLE_OK) {
         fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+=======
+    if (res != CURLE_OK) 
+    {
+        fprintf(stderr, "get_execution_id() failed: %s\n", curl_easy_strerror(res));
+        return NULL;
+>>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
     }
 
     curl_easy_reset(curl_);
     return execID_;
 }
 
+<<<<<<< HEAD
+=======
+/*********************************************************************/
+/* these functions should be integrated into monitoring-excess.c */
+
+int is_empty(void)
+{
+    int result = DATA_AVAILABLE;
+
+    /* could also be END_INDEX ?? */
+    if (BEGIN_INDEX == CURRENT_INDEX) {
+        result = DATA_EMPTY;
+    }
+    return result; 
+}
+
+/* dummy or redundant function */
+void print_sensor_data(sensor_msg_t data)
+{
+    printf("{\"t_mem\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}\n", 
+           data.mem_time.tv_sec, data.ram_used, data.ram_avail);
+
+    printf("{\"t_cpu\":\"%lu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}\n", 
+           data.cpu_time.tv_sec, data.cpu_used, data.cpu_avail, data.cpu_wa_io);
+}
+
+sensor_msg_t dequeue(void)
+{
+    int i = 0;
+    sensor_msg_t data;
+
+    printf("\n\ndequeue(): queue empty = %d, where 0 means not empty\n", is_empty());
+
+    if (is_empty() != DATA_EMPTY)
+    {
+        data = to_send_msg[BEGIN_INDEX];
+
+        printf("--- Current data ....\n");
+        print_sensor_data(data);
+
+        i = BEGIN_INDEX;
+        to_send_msg[i].mem_time.tv_sec = 0;
+        to_send_msg[i].ram_used = 0;
+        to_send_msg[i].ram_avail = 0;
+        to_send_msg[i].cpu_time.tv_sec = 0;
+        to_send_msg[i].cpu_used = 0;
+        to_send_msg[i].cpu_avail = 0;
+        to_send_msg[i].cpu_wa_io = 0;
+
+        printf("--- After data is deleted ....\n");
+        print_sensor_data(to_send_msg[BEGIN_INDEX]);
+
+        BEGIN_INDEX++;
+
+        /* need to wrap this begin index */
+        if (BEGIN_INDEX >= BUFFER_SIZE) {
+            BEGIN_INDEX = 0;
+        }
+    }
+
+    return data;
+}
+>>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
 
 /*********************************************************************/
 /* From below onwards are dummy functions to test libcurl */
@@ -173,6 +292,10 @@ void init_monitoring_data(void)
         *****/
         wall_time++;
         END_INDEX++;
+<<<<<<< HEAD
+=======
+        CURRENT_INDEX++;
+>>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
     }
 
     /*print_monitoring_data();*/
@@ -182,10 +305,15 @@ void send_dummy_data(char *URL)
 {
     char msg[500] = "";
     int i = 0;
+<<<<<<< HEAD
+=======
+    sensor_msg_t data;
+>>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
 
     printf("\n");
     for (i = 0; i < END_INDEX; i++)
     {
+<<<<<<< HEAD
         /* send memory info */
         sprintf(msg, "{\"t_mem\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}", 
                 to_send_msg[i].mem_time.tv_sec, to_send_msg[i].ram_used,
@@ -194,12 +322,34 @@ void send_dummy_data(char *URL)
         printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
         send_monitoring_data(URL, msg);
         /*memset(msg, 0, sizeof(msg));*/
+=======
+        data = dequeue();
+
+        /* send memory info */
+        sprintf(msg, "{\"t_mem\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}", 
+                data.mem_time.tv_sec, data.ram_used, data.ram_avail);
+                /***
+                to_send_msg[i].mem_time.tv_sec, to_send_msg[i].ram_used,
+                to_send_msg[i].ram_avail);
+                ****/
+
+        printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
+        send_monitoring_data(URL, msg);
+>>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
 
         /* send CPU info */
         sprintf(msg,
                 "{\"t_cpu\":\"%lu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}", 
+<<<<<<< HEAD
                 to_send_msg[i].cpu_time.tv_sec, to_send_msg[i].cpu_used,
                 to_send_msg[i].cpu_avail, to_send_msg[i].cpu_wa_io);
+=======
+                data.cpu_time.tv_sec, data.cpu_used, data.cpu_avail, data.cpu_wa_io);
+                /****
+                to_send_msg[i].cpu_time.tv_sec, to_send_msg[i].cpu_used,
+                to_send_msg[i].cpu_avail, to_send_msg[i].cpu_wa_io);
+                *****/
+>>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
 
         printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
         send_monitoring_data(URL, msg);
