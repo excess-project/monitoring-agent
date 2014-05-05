@@ -13,23 +13,10 @@ $.ajax({
   }
 });
 
-// Populate the table with benchmarks info
-$.ajax({
-  url: '/executions/4BRb8WyWQqCdEFVdH46vgQ',
-  success: function(data){
-    $('#executions-detail').dynatable({
-      dataset: {
-        records: data
-      }
-    });
-  }
-});
-
 
 });
 
 // Functions =============================================================
-
 
 
 

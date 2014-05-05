@@ -57,7 +57,7 @@ app.get('/ping', function(req, res){
 
 //Searching for the list of all benchmarks
 app.get('/executions', function(req, res){
-	  client.search({index:'executions'},  function(err, result)
+	  client.search({index:'executions',size:10000},  function(err, result)
  		{
  			if (result.hits != undefined){
 	  			var only_results = result.hits.hits;

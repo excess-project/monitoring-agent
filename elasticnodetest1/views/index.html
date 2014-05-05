@@ -1,7 +1,6 @@
  <head>   
 
     <!-- CSS -->
-    <link href="/stylesheets/style.css" rel="stylesheet"/>
     <link href="/stylesheets/jquery.dynatable.css" rel="stylesheet"/>
 
     <script type="text/javascript" src='http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js'></script>
@@ -11,28 +10,16 @@
   
 <h1>Welcome to <%= title %>!</h1>
 
-<table id="executions">
+<table id="executions" class="dynatable">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Description</th>
-      <th>Nodes</th>
+      <th data-dynatable-column="Name">Name of the execution</th>
+      <th data-dynatable-column="Description">Description</th>
+      <th data-dynatable-column="Nodes">Nodes</th>
     </tr>
   </thead>
   <tbody> 
  </tbody>
 </table>
 
-<br>
-<br>
-<table id="executions-detail">
-  <thead>
-    <tr>
-      <th>timestamp</th>
-      <th>cpu_load</th>
-      <th>time_cpu_waiting_io</th>
-    </tr>
-  </thead>
-  <tbody> 
- </tbody>
-</table>
+
