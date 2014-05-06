@@ -170,6 +170,7 @@ app.get('/executions/:ID/:from/:to', function(req, res){
 	  
 	  })
 });
+//Searching for the values of a specific benchmark
 app.get('/executions/:ID', function(req, res){
     var from_time = req.params.from;
     var to_time = req.params.to;
@@ -201,35 +202,7 @@ app.get('/executions/:ID', function(req, res){
     })
 });
 
-//Searching for the values of a specific benchmark 
-app.get('/executions/:ID', function(req, res){
-	  var from_time = req.params.from;
-	  var to_time = req.params.to;
 
-          client.search({
-            index:req.params.ID.toLowerCase(), 
-          },   
-          function(err, result)
- 		{
- 			if (result.hits != undefined){
-	  			var only_results = result.hits.hits;
-	  			var es_result = [];
-	  			var keys = Object.keys(only_results);
-
-	  			keys.forEach(
-	  				function(key)
-	  					{
-        				es_result.push(only_results[key]._source);
-        				console.log("Adding "+key+" number to result ");
-        				console.log(JSON.stringify(es_result[key]));
-        			});
-	  			res.send(es_result);		
-	  		} else {
-	  			res.send('No data in the DB');
-	  		}
-	  
-	  })
-});
 //Adding a new execution and respond the provided ID
 app.post('/executions', function(req, res){
   var the_json = req.body;
