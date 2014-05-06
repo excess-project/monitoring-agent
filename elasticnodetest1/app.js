@@ -71,8 +71,8 @@ app.get('/executions', function(req, res){
 	  			keys.forEach(
 	  				function(key)
 	  					{
-        				es_result.push(only_results[key]._id);
-                es_result.push(only_results[key]._source);
+        				es_result.push(only_results[key]);
+               // es_result.push(only_results[key]._source);
                 console.log('{id:'+only_results[key]._id+",details:"+only_results[key]._source+"}");
         				console.log("Adding "+key+" number to result ");
         				console.log(JSON.stringify(es_result[key]));
