@@ -71,9 +71,10 @@ app.get('/executions', function(req, res){
 	  			keys.forEach(
 	  				function(key)
 	  					{
-        				es_result.push(only_results[key]._id);
-                es_result.push(only_results[key]._source);
-                console.log('{id:'+only_results[key]._id+",details:"+only_results[key]._source+"}");
+                temporary = {"id":only_results[key]._id,"Name":only_results[key]._source.Name,"Description":only_results[key]._source.Description};
+        				es_result.push(temporary);
+                //es_result.push(only_results[key]);
+                console.log(temporary);
         				console.log("Adding "+key+" number to result ");
         				console.log(JSON.stringify(es_result[key]));
                 console.log("The ID for this one is "+only_results[key]._id+" \n")
@@ -84,6 +85,26 @@ app.get('/executions', function(req, res){
 	  		}
 	  
 	  })
+});
+
+
+app.get('/executions/details/:ID', function(req, res){
+      client.get({
+            index:'executions',
+             type: 'TBD', 
+              id: req.params.ID
+              },   
+            function(err, result)
+
+    {
+      console.log(result);
+      if (result.found != false){          
+          res.send(result._source);    
+        } else {
+          res.send('Requested resource was Not found');
+        }
+    
+    })
 });
 
 
