@@ -5,8 +5,9 @@ else
 	Number_of_itterations=$1
 fi
 if [ -z $2 ]; then 
-	ID=`curl -i  -X POST -H 'Content-Type: application/json' -d '{"Name": "MyFisrtexecution", "Description": "Testing ","other":"values","onemore":"please"}' http://localhost:3000/executions | grep -v : 2>/dev/null`
+	ID=`curl -i  -s -X POST -H 'Content-Type: application/json' -d '{"Name": "MyFisrtexecution", "Description": "Testing ","other":"values","onemore":"please"}' http://localhost:3000/executions | tail -1 2>/dev/null`
 	echo "New ID has been created " $ID
+	echo $ID
 else
 	ID=$2
 fi
@@ -21,4 +22,6 @@ do
 	User_CPU=${User_CPU%"%"}
 	Memory=${Memory%"M"}
 	curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp": '$TimeStamp', "User_CPU": '$User_CPU',"Sys_CPU": '$Sys_CPU',"Memory": '$Memory'}' http://localhost:3000/executions/$ID
+	echo "curl -i -X POST -H 'Content-Type: application/json' -d '{"Timestamp": '$TimeStamp', "User_CPU": '$User_CPU',"Sys_CPU": '$Sys_CPU',"Memory": '$Memory'}' http://localhost:3000/executions/$ID"
+	echo "ThisismyID$ID"
 done
