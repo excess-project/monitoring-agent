@@ -22,18 +22,33 @@ var svg = d3.select("body").append("svg")
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+var index=getParameterByName('index');
+var metric=getParameterByName('metric');
+var from=getParameterByName('from');
+var to=getParameterByName('to');
+console.log(index);
+//var xyz = jQuery.url.param("xyz");
 /*//This is the original part that was getting the info from a tsv
 d3.tsv("data.tsv", type, function(error, data) {
   x.domain(data.map(function(d) {  console.log(d.letter); return d.letter; }));
   y.domain([0, d3.max(data, function(d) { console.log(d.frequency);return d.frequency; })]);
 */
 //This is the part i added that grabs the data from a json file
-d3.json("http://localhost:3000/executions/kdolkas8",function(error,jsondata) {
+d3.json('http://localhost:3000/executions/'+index,function(error,jsondata) {
   if (error) return console.warn(error);
   data = jsondata;
-  metric = "Sys_CPU";
+  //metric = "Sys_CPU";
   
-   
+  //console.log(xyz);
+ 
   console.log(JSON.stringify(data));
 
   x.domain(data.map(function(d) { console.log(d.Timestamp);return d.Timestamp;  }));
