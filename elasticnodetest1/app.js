@@ -60,16 +60,23 @@ app.get('/executions', function(req, res){
 	  client.search({index:'executions',size:10000},  function(err, result)
  		{
  			if (result.hits != undefined){
+          
 	  			var only_results = result.hits.hits;
+        //  var all_hits = result.hits;
+        //  var execution_ID = result.hits._id;
+        //  console.log(execution_ID);
 	  			var es_result = [];
 	  			var keys = Object.keys(only_results);
 
 	  			keys.forEach(
 	  				function(key)
 	  					{
-        				es_result.push(only_results[key]._source);
+        				es_result.push(only_results[key]._id);
+                es_result.push(only_results[key]._source);
+                console.log('{id:'+only_results[key]._id+",details:"+only_results[key]._source+"}");
         				console.log("Adding "+key+" number to result ");
         				console.log(JSON.stringify(es_result[key]));
+                console.log("The ID for this one is "+only_results[key]._id+" \n")
         			});
 	  			res.send(es_result);		
 	  		} else {
