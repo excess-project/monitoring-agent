@@ -72,7 +72,7 @@ app.get('/executions', function(req, res){
 	  				function(key)
 	  					{
 
-                temporary = {"id":only_results[key]._id,"Name":only_results[key]._source.Name,"Description":only_results[key]._source.Description};
+                temporary = {"id":only_results[key]._id,"Name":"<a href='/visualization'>"+only_results[key]._source.Name+"</a>","Description":only_results[key]._source.Description,"Detail":"<a href='#'>see more</a>"};
         				es_result.push(temporary);
                 //es_result.push(only_results[key]);
                 console.log(temporary);
