@@ -71,8 +71,7 @@ app.get('/executions', function(req, res){
 	  			keys.forEach(
 	  				function(key)
 	  					{
-
-                temporary = {"id":only_results[key]._id,"Name":"<a href='/visualization'>"+only_results[key]._source.Name+"</a>","Description":only_results[key]._source.Description,"Detail":"<a href='#'>see more</a>"};
+                temporary = {"id":only_results[key]._id,"Name":"<a href='/visualization/?index="+only_results[key]._id+"&metric=Sys_CPU'>"+only_results[key]._source.Name+"</a>","Description":only_results[key]._source.Description,"Detail":"<a href='/executions/details/"+only_results[key]._id+"'>see more</a>"};
         				es_result.push(temporary);
                 //es_result.push(only_results[key]);
                 console.log(temporary);
