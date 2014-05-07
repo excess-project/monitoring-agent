@@ -104,6 +104,71 @@ app.get('/executions/details/:ID', function(req, res){
     })
 });
 
+//Searching metrics of a specific benchmark //not working
+/*
+app.get('/executions/metrics/:ID', function(req, res){
+	    client.indices.getMapping({
+            index:req.params.ID.toLowerCase(), 
+          },   
+          function(err, result)
+    {
+
+      if (result.found != false){
+	  console.log("Keys_name "+result);
+          res.send(result);          
+       } else {
+          res.send('No data in the DB');
+        }
+    })
+});
+*/
+
+//Searching metrics of a specific benchmark //not working
+app.get('/executions/metrics/:ID', function(req, res){
+          client.search({
+            index:req.params.ID.toLowerCase(), 
+            size:10000,
+            //size:1,
+            //sort:"Timestamp",
+          },   
+          function(err, result)
+    {
+
+
+      if (result.hits != undefined){
+          var only_results = result.hits.hits;
+          var es_result = [];
+          var keys = Object.keys(only_results);
+	  var keys_name = [];
+
+          keys.forEach(
+            function(key)
+              {
+                es_result.push(only_results[key]._source);
+                console.log("Key "+JSON.stringify(es_result[key]));
+
+		for (var key_name in es_result[key]) {
+                  //if (es_result[key].hasOwnProperty(key_name)) {
+		    if (keys_name[key_name]==undefined){			
+			console.log("Key3 "+key_name);
+                       keys_name.push(key_name);
+ 	            }	
+		   var res = keys_name[key] ;
+		   console.log("has key "+res);
+                  //}
+                }
+              });
+             console.log("Keys_name "+JSON.stringify(keys_name));
+
+          res.send(es_result);    
+        } else {
+          res.send('No data in the DB');
+        }
+    
+    })
+
+});
+
 //Searching for the values of a specific benchmark 
 app.get('/executions/:ID/:from/:to', function(req, res){
 	  var from_time = req.params.from;
