@@ -123,7 +123,7 @@ app.get('/executions/metrics/:ID', function(req, res){
 });
 */
 
-//Searching metrics of a specific benchmark //not working
+//Searching metrics of a specific benchmark 
 app.get('/executions/metrics/:ID', function(req, res){
           client.search({
             index:req.params.ID.toLowerCase(), 
@@ -134,33 +134,31 @@ app.get('/executions/metrics/:ID', function(req, res){
           function(err, result)
     {
 
-
       if (result.hits != undefined){
           var only_results = result.hits.hits;
           var es_result = [];
           var keys = Object.keys(only_results);
 	  var keys_name = [];
 
+Array.prototype.unique=function(a){
+  return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
+});
           keys.forEach(
             function(key)
               {
                 es_result.push(only_results[key]._source);
                 console.log("Key "+JSON.stringify(es_result[key]));
-
-		for (var key_name in es_result[key]) {
-                  //if (es_result[key].hasOwnProperty(key_name)) {
-		    if (keys_name[key_name]==undefined){			
-			console.log("Key3 "+key_name);
+		for (var key_name in es_result[key]) {                  
+		    if (key_name != "Timestamp"){						
                        keys_name.push(key_name);
  	            }	
-		   var res = keys_name[key] ;
-		   console.log("has key "+res);
-                  //}
-                }
+		   keys_name = keys_name.unique() ;		   
+                 }
               });
              console.log("Keys_name "+JSON.stringify(keys_name));
 
-          res.send(es_result);    
+          //res.send(es_result);
+            res.send(keys_name);        
         } else {
           res.send('No data in the DB');
         }
