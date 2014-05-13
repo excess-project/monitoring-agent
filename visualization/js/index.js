@@ -1,5 +1,5 @@
-var margin = {top: 20, right: 40, bottom: 70, left: 40},
-    width = 1024 - margin.left - margin.right,
+var margin = {top: 20, right: 240, bottom: 90, left: 40},
+    width = 1224 - margin.left - margin.right,
     height = 768 - margin.top - margin.bottom;
 
 //var x = d3.scale.ordinal()
@@ -29,7 +29,8 @@ var m3 = d3.scale.linear()
 var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom")
-    .ticks(14, "");
+    .ticks(14, "")
+    .tickFormat(d3.format('0f'));
 
 var m1Axis = d3.svg.axis()
     .scale(m1)
@@ -84,6 +85,8 @@ d3.json('/executions/'+index,function(error,jsondata) {
                                           //console.log(d[metric2]); 
                                           return d[metric3]; })]);
 //Completion of my part, now let d3 do its magic 
+var zero = d3.format("04d");
+
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
@@ -96,12 +99,20 @@ d3.json('/executions/'+index,function(error,jsondata) {
                 return "rotate(-65)" 
               });
 
+  svg.append("text")
+      .attr("y", height+70)
+      .attr("x", width/2)
+      .attr("dy", ".71em")
+      .attr("class","axis")
+      .style("text-anchor", "end")
+      .text("Timestamp");
+
   svg.append("g")
       .attr("class", "m1 axis")
       .call(m1Axis)
     .append("text")
       .attr("transform", "rotate(-90)")
-      .attr("y", -15)
+      .attr("y", -35)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text(metric);
@@ -110,8 +121,9 @@ d3.json('/executions/'+index,function(error,jsondata) {
       .attr("class", "m2 axis")
       .call(m2Axis)
     .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
+     // .attr("transform", "rotate(-90)")
+      .attr("y", -15)
+      .attr("x", 60)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text(metric2);
@@ -121,9 +133,40 @@ d3.json('/executions/'+index,function(error,jsondata) {
       .attr("transform", "translate("+ width +",0)")
       .call(m3Axis)
     .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 0)
+     // .attr("transform", "rotate(-90)")
+      .attr("y", -10)
+      .attr("x", 50)
       .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text(metric3);
+
+  svg.append("text")
+    //  .attr("transform", "rotate(-90)")
+      .attr("y", 10)
+      .attr("x", width+150)
+      .attr("dy", "-1em")
+      .attr("stroke", "blue")
+      .attr("class","label")
+      .style("text-anchor", "end")
+      .text(metric);
+
+  svg.append("text")
+    //  .attr("transform", "rotate(-90)")
+      .attr("y", 30)
+      .attr("x", width+150)
+      .attr("dy", "-1em")
+      .attr("stroke", "red")
+      .attr("class","label")
+      .style("text-anchor", "end")
+      .text(metric2);
+
+  svg.append("text")
+    //  .attr("transform", "rotate(-90)")
+      .attr("y", 50)
+      .attr("x", width+150)
+      .attr("dy", "-1em")
+      .attr("stroke", "green")
+      .attr("class","label")
       .style("text-anchor", "end")
       .text(metric3);
 /*
