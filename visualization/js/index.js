@@ -139,7 +139,7 @@ var zero = d3.format("04d");
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text(metric3);
-
+/*
   svg.append("text")
     //  .attr("transform", "rotate(-90)")
       .attr("y", 10)
@@ -169,6 +169,37 @@ var zero = d3.format("04d");
       .attr("class","label")
       .style("text-anchor", "end")
       .text(metric3);
+
+
+  svg.append("text")
+    //  .attr("transform", "rotate(-90)")
+      .attr("y", 10)
+      .attr("x", width+150)
+      .attr("dy", "-1em")
+      .attr("stroke", "blue")
+      .attr("class","label")
+      .style("text-anchor", "end")
+      .text(metric);
+
+  svg.append("text")
+    //  .attr("transform", "rotate(-90)")
+      .attr("y", 30)
+      .attr("x", width+150)
+      .attr("dy", "-1em")
+      .attr("stroke", "red")
+      .attr("class","label")
+      .style("text-anchor", "end")
+      .text(metric2);
+
+
+
+
+*/
+
+
+
+
+
 /*
   svg.selectAll(".bar")
       .data(data)
@@ -205,9 +236,9 @@ var circleAttributes = circles
 
 
 //createLineGraph("User_CPU","red");
-createLineGraph(metric,"red",m1);
-createLineGraph(metric2,"blue",m2);
-createLineGraph(metric3,"green",m3);
+createLineGraph(metric,"red",m1,20);
+createLineGraph(metric2,"blue",m2,35);
+createLineGraph(metric3,"green",m3,50);
 
 });
 
@@ -223,7 +254,7 @@ function getParameterByName(name) {
     return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-function createLineGraph(variable,color,m){
+function createLineGraph(variable,color,m,position){
 var lineFunction = d3.svg.line()
                          .x(function(d) {  return x(d.Timestamp); })
                           .y(function(d) {  return m(d[variable]); })
@@ -234,6 +265,28 @@ var lineGraph = svg.append("path")
                             .attr("stroke", color)
                             .attr("stroke-width", 2)
                             .attr("fill", "none");
+ createLegend(variable,color,position);                           
+}
+
+function createLegend(variable,color,position){
+svg.append("line")
+      .attr("x1", width + 70)
+      .attr("y1", position - 15)
+      .attr("x2", width + 88)
+      .attr("y2", position - 15)
+      .attr("stroke-width", 2)
+      .attr("stroke", color);
+
+  svg.append("text")
+    //  .attr("transform", "rotate(-90)")
+      .attr("y", position)
+      .attr("x", width + 150)
+      .attr("dy", "-1em")
+  //    .attr("stroke", color)
+      .attr("class","label")
+      .style("text-anchor", "end")
+      .text(variable);
+
 }
 /*
 function type(d) {
