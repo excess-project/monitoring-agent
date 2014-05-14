@@ -1,28 +1,34 @@
 <!DOCTYPE html>
 <html>
+<meta charset="utf-8">
+<!-- <meta http-equiv="refresh" content="10" > -->
  <head>   
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/stylesheets/jquery.dynatable.css"/>
+    <!-- JAVASCRIPT -->
     <script type='text/javascript' src="/javascripts/jquery.js"></script>
     <script type='text/javascript' src="/javascripts/jquery.dynatable.js"></script>
     <script type="text/javascript" src='/javascripts/global.js'></script>
-
  </head>
   
 <h1>Welcome to <%= title %>!</h1>
 
-<table id="executions" class="table table-bordered">
+<body>
+
+<table id="executions" class="table table-bordered table-striped">
   <thead>
     <tr>
       <th style="display: none">id</th>
       <th data-dynatable-column="Name">Name of the execution</th>
       <th data-dynatable-column="Description">Description</th>
-      <th data-dynatable-column="Detail">Detail</th>
+      <th data-dynatable-column="Metrics">Metrics(*)</th>
     </tr>
   </thead>
   <tbody> 
  </tbody>
 </table>
 
-
+(*) Maximum 3 metrics for the prototype
+</body>
+</html>
