@@ -5,7 +5,10 @@ else
 	Number_of_itterations=$1
 fi
 if [ -z $2 ]; then 
-	ID=`curl -i  -s -X POST -H 'Content-Type: application/json' -d '{"Name": "MyFisrtexecution", "Description": "Testing ","other":"values","onemore":"please"}' http://localhost:3000/executions | tail -1 2>/dev/null`
+	When=`date '+%d/%m/%y-%H:%M'`
+#	When="testing"
+	echo $When
+	ID=`curl -i  -s -X POST -H 'Content-Type: application/json' -d '{"Name": "Execution-'$When'", "Description": "Excess Review Execution","other":"Other needed info","Nodes":"My own Laptop"}' http://localhost:3000/executions | tail -1 2>/dev/null`
 	echo "New ID has been created " $ID
 	echo $ID
 else
