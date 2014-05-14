@@ -14,6 +14,9 @@ var client = new elasticsearch.Client({
   log: 'trace'
 });
 
+//to call funtions here
+var tools = require('./routes/tools');
+
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
@@ -67,7 +70,16 @@ app.get('/executions', function(req, res){
 	  			keys.forEach(
 	  				function(key)
 	  					{
-                temporary = {"id":only_results[key]._id,"Name":"<a href='/visualization/?index="+only_results[key]._id+"&metric=Sys_CPU'>"+only_results[key]._source.Name+"</a>","Description":only_results[key]._source.Description,"Detail":"<a href='/executions/details/"+only_results[key]._id+"'>see more</a>"};
+//tools.metrics = (client);
+//var msg = "hola testing";
+//var metrics = app.get = ('/metrics/'+msg,tools.metrics(client));
+//var metrics = this.get = ('/executions/metrics/'+only_results[key]._id).res.get();
+//var metrics = res.get = ('/executions/metrics/'+only_results[key]._id);
+//console.log("Metrics call "+metrics);
+
+
+                //temporary = {"id":only_results[key]._id,"Name":"<a href='/executions/details/"+only_results[key]._id+"'>"+only_results[key]._source.Name+"</a>","Description":only_results[key]._source.Description,"Metrics":"<a href='/executions/metrics/"+only_results[key]._id+"'>see metrics</a>"};
+temporary = {"id":only_results[key]._id,"Name":"<a href='/executions/details/"+only_results[key]._id+"'>"+only_results[key]._source.Name+"</a>","Description":only_results[key]._source.Description,"Metrics":"<a href='/visualization/?index="+only_results[key]._id+"&metric=User_CPU&metric2=Sys_CPU&metric3=Memory'>see metrics</a>"};
         				es_result.push(temporary);
                 //es_result.push(only_results[key]);
                 console.log(temporary);
@@ -104,8 +116,8 @@ app.get('/executions/details/:ID', function(req, res){
     })
 });
 
-//Searching metrics of a specific benchmark //not working
 /*
+//Searching metrics of a specific benchmark //not working
 app.get('/executions/metrics/:ID', function(req, res){
 	    client.indices.getMapping({
             index:req.params.ID.toLowerCase(), 
@@ -114,7 +126,8 @@ app.get('/executions/metrics/:ID', function(req, res){
     {
 
       if (result.found != false){
-	  console.log("Keys_name "+result);
+	  //var only_results = result.mappings;
+	  console.log("Result "+only_results);
           res.send(result);          
        } else {
           res.send('No data in the DB');
@@ -128,42 +141,36 @@ app.get('/executions/metrics/:ID', function(req, res){
           client.search({
             index:req.params.ID.toLowerCase(), 
             size:10000,
-            //size:1,
-            //sort:"Timestamp",
+            sort:"Timestamp",
           },   
-          function(err, result)
-    {
+          function(err, result){
 
-      if (result.hits != undefined){
-          var only_results = result.hits.hits;
-          var es_result = [];
-          var keys = Object.keys(only_results);
-	  var keys_name = [];
+	     if (result.hits != undefined){
+	        var only_results = result.hits.hits;
+                var es_result = [];
+                var keys = Object.keys(only_results);
+	        var keys_name = [];
 
-Array.prototype.unique=function(a){
-  return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
-});
-          keys.forEach(
-            function(key)
-              {
-                es_result.push(only_results[key]._source);
-                console.log("Key "+JSON.stringify(es_result[key]));
-		for (var key_name in es_result[key]) {                  
-		    if (key_name != "Timestamp"){						
-                       keys_name.push(key_name);
- 	            }	
-		   keys_name = keys_name.unique() ;		   
-                 }
-              });
-             console.log("Keys_name "+JSON.stringify(keys_name));
-
-          //res.send(es_result);
-            res.send(keys_name);        
-        } else {
-          res.send('No data in the DB');
-        }
+                keys.forEach(
+                function(key){
+                   es_result.push(only_results[key]._source);
+                   //console.log("Key "+JSON.stringify(es_result[key]));
+		   for (var key_name in es_result[key]) {                  
+		      if (key_name != "Timestamp"){						
+                         keys_name.push(key_name);
+ 	              }	
+                   }
+ 	           keys_name = keys_name.unique();		   
+                });
+                //console.log("Keys_name "+JSON.stringify(keys_name));
+		//metrics = {"Metrics":keys_name};
+		//res.send (metrics);
+                res.send(keys_name);        
+             } else {
+                res.send('No data in the DB');
+             }
     
-    })
+          })
 
 });
 
@@ -247,8 +254,8 @@ app.post('/executions', function(req, res){
   console.log(the_json);
 	client.index({index:'executions',type: 'TBD',body:the_json},function(err,es_reply)
   	{
-  		  console.log("NODE.js Output starts here .................");
-  		  console.log(es_reply);
+  		  //console.log("NODE.js Output starts here .................");
+  		  //console.log(es_reply);
   		  res.send(es_reply._id);
   	});
 });
@@ -266,3 +273,9 @@ app.post('/executions/:ID', function(req, res){
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+//Function to delete duplicate elements in an array
+Array.prototype.unique=function(a){
+  return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
+});
+

@@ -11,13 +11,17 @@ $.ajax({
       }
     });
   }
-});
+});//$.ajax
+
+});//$(document)
 
 
 
-});
 
 // Functions =============================================================
+
+
+
 
 function myRowWriter(rowIndex, record, columns, cellWriter) {
     var tr = '';
