@@ -24,8 +24,7 @@ int send_monitoring_data(char *URL, char *data)
     CURLcode res;
     int result = SEND_SUCCESS;
 
-<<<<<<< HEAD
-=======
+
     /* perform some error checking */
     if (URL == NULL || strlen(URL) == 0) 
     {
@@ -42,7 +41,7 @@ int send_monitoring_data(char *URL, char *data)
     ******/
 
     /* init libcurl if not already done */
->>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
+
     if (curl_ == NULL) {
         init_curl();
     }
@@ -69,11 +68,8 @@ int send_monitoring_data(char *URL, char *data)
     if (res != CURLE_OK) 
     {
         result = SEND_FAILED;
-<<<<<<< HEAD
-        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-=======
         fprintf(stderr, "send_monitoring_data() failed: %s\n", curl_easy_strerror(res));
->>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
+
     }
 
     /* in a loop, do a reset instead */
@@ -85,17 +81,13 @@ int send_monitoring_data(char *URL, char *data)
 void delay_time(time_t delay)
 {
     time_t timer0, timer1;
-<<<<<<< HEAD
-    time( &timer0 );
-
-=======
     
     if (delay <= 0) {
         return;
     }
 
     time( &timer0 );
->>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
+
     do {
         time( &timer1 );
     }
@@ -127,9 +119,6 @@ char* get_execution_id(char *URL, char *msg)
 {
     CURLcode res;
 
-<<<<<<< HEAD
-    if (strlen(execID_) > 0) {
-=======
     /* perform some error checking */
     if (URL == NULL || strlen(URL) == 0) 
     {
@@ -144,7 +133,7 @@ char* get_execution_id(char *URL, char *msg)
     }
 
     if (execID_ != NULL && strlen(execID_) > 0) {
->>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
+
         return execID_;
     }
 
@@ -167,23 +156,17 @@ char* get_execution_id(char *URL, char *msg)
     res = curl_easy_perform(curl_);
     printf("\n-- Execution ID: %s -- len: %d\n", execID_, (int) strlen(execID_));
 
-<<<<<<< HEAD
-    if (res != CURLE_OK) {
-        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-=======
     if (res != CURLE_OK) 
     {
         fprintf(stderr, "get_execution_id() failed: %s\n", curl_easy_strerror(res));
         return NULL;
->>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
+
     }
 
     curl_easy_reset(curl_);
     return execID_;
 }
 
-<<<<<<< HEAD
-=======
 /*********************************************************************/
 /* these functions should be integrated into monitoring-excess.c */
 
@@ -244,7 +227,7 @@ sensor_msg_t dequeue(void)
 
     return data;
 }
->>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
+
 
 /*********************************************************************/
 /* From below onwards are dummy functions to test libcurl */
@@ -292,10 +275,8 @@ void init_monitoring_data(void)
         *****/
         wall_time++;
         END_INDEX++;
-<<<<<<< HEAD
-=======
         CURRENT_INDEX++;
->>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
+
     }
 
     /*print_monitoring_data();*/
@@ -305,24 +286,12 @@ void send_dummy_data(char *URL)
 {
     char msg[500] = "";
     int i = 0;
-<<<<<<< HEAD
-=======
     sensor_msg_t data;
->>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
+
 
     printf("\n");
     for (i = 0; i < END_INDEX; i++)
     {
-<<<<<<< HEAD
-        /* send memory info */
-        sprintf(msg, "{\"t_mem\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}", 
-                to_send_msg[i].mem_time.tv_sec, to_send_msg[i].ram_used,
-                to_send_msg[i].ram_avail);
-
-        printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
-        send_monitoring_data(URL, msg);
-        /*memset(msg, 0, sizeof(msg));*/
-=======
         data = dequeue();
 
         /* send memory info */
@@ -335,21 +304,17 @@ void send_dummy_data(char *URL)
 
         printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
         send_monitoring_data(URL, msg);
->>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
+
 
         /* send CPU info */
         sprintf(msg,
                 "{\"t_cpu\":\"%lu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}", 
-<<<<<<< HEAD
-                to_send_msg[i].cpu_time.tv_sec, to_send_msg[i].cpu_used,
-                to_send_msg[i].cpu_avail, to_send_msg[i].cpu_wa_io);
-=======
                 data.cpu_time.tv_sec, data.cpu_used, data.cpu_avail, data.cpu_wa_io);
                 /****
                 to_send_msg[i].cpu_time.tv_sec, to_send_msg[i].cpu_used,
                 to_send_msg[i].cpu_avail, to_send_msg[i].cpu_wa_io);
                 *****/
->>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
+
 
         printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
         send_monitoring_data(URL, msg);
@@ -358,8 +323,8 @@ void send_dummy_data(char *URL)
 
 int main(void)
 {
-    char addr[100] = "http://141.58.5.220:3000/executions/";
-    char addr2[100] = "http://141.58.5.220:9200/";
+    char addr[100] = "http://141.58.5.230:3000/executions/";
+    char addr2[100] = "http://141.58.5.230:9200/";
     char str[1000] = "";   /* storing the execution ID -- UUID is 36 chars */
     char msg[1000] = "{\"Name\":\"Execution1\",\"Description\":\"Test\",\"nodes\":[\"node1\",\"node2\",\"node3\"]}";
     int i = 0;

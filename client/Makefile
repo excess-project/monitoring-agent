@@ -8,13 +8,9 @@ CFLAGS = -ansi -pedantic -Wall -Wwrite-strings -Wpointer-arith -Wcast-align -O3
 LFLAGS = -lcurl -lm
 
 ## List of source files
-<<<<<<< HEAD
-#FILES = http-post.c
-FILES  = $(shell find . -name "*.c")
-=======
 FILES = http-post.c 
 #FILES  = $(shell find . -name "*.c")
->>>>>>> 7781a42c0e157266ff083285fb43d2391539bedc
+
 HEADER  = $(shell find . -name "*.h")
 
 ## NOTE: below is used to include boost libraries
