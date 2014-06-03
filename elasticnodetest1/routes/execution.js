@@ -80,61 +80,28 @@ exports.details = function(client){
 	} 
 };
 
-
 /*
  * Searching metrics of a specific benchmark.
  */
 exports.metrics = function (client){
 	return function(req, res){
-  	client.search({
-    	index:req.params.ID.toLowerCase(), 
-      size:10000,
-      sort:"Timestamp",
-      },   
-      function(err, result){
-	    	if (result.hits != undefined){
-	      	var only_results = result.hits.hits;
-          var es_result = [];
-          var keys = Object.keys(only_results);
-	        var keys_name = [];
-
-          keys.forEach(
-          function(key){
-          	es_result.push(only_results[key]._source);
-            //console.log("Key "+JSON.stringify(es_result[key]));
-		   			for (var key_name in es_result[key]) {                  
-		      		if (key_name != "Timestamp"){						
-              	keys_name.push(key_name);
- 	            }	
-            }
- 	          keys_name = keys_name.unique();		   
-          });
-          //console.log("Keys_name "+JSON.stringify(keys_name));
-					//metrics = {"Metrics":keys_name};
-					//res.send (metrics);
-          res.send(keys_name);        
-        } else {
-        	res.send('No data in the DB');
-        }    
-      })
-	}
-};
-
-/*
- * Searching metrics of a specific benchmark. not working yet
- */
-/*
-exports.metrics = function (client){
-	return function(req, res){
+		var id = req.params.ID.toLowerCase();
 		client.indices.getMapping({
     	index:req.params.ID.toLowerCase(), 
     },   
     function(err, result)
     {
-			if (result.found != false){
-	  		var only_results = result.mappings;
-	  		console.log("Result "+only_results);
-      	res.send(result);          
+			if (result.found != false){				
+				var metrics = result[id].mappings.TBD.properties
+				var names = [];
+				var metric_name = Object.keys(metrics);
+				metric_name.forEach(function(metric) {
+					if (metric != "Timestamp"){						
+						names.push(metric);
+					}	  
+				});
+      	//res.send(result);
+				res.send(names);                    
        } else {
         res.send('No data in the DB');
        }
@@ -142,7 +109,7 @@ exports.metrics = function (client){
 	}
 };
 
-*/
+
 
 /*
  * Searching for the values of a specific benchmark.
@@ -253,7 +220,4 @@ exports.add = function (client){
 	}
 };
 
-//Function to delete duplicate elements in an array
-Array.prototype.unique=function(a){
-  return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
-});
+
