@@ -11,6 +11,17 @@
     <script type='text/javascript' src="/javascripts/jquery.dynatable.js"></script>
     <script type="text/javascript" src='/javascripts/global.js'></script>
  </head>
+
+<script type='text/javascript'>
+window.onload=function(){
+$.ajax({
+        url: "detail.html",
+        success: function(datos){
+            alert(datos);
+        }
+});
+});
+</script>
   
 <h1>Welcome to <%= title %>!</h1>
 

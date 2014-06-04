@@ -33,14 +33,12 @@ exports.executions = function (client){
 	  		keys.forEach(
 	  			function(key)
 	  			{
-//tools.metrics = (client);
-//var msg = "hola testing";
-//var metrics = app.get = ('/metrics/'+msg,tools.metrics(client));
-//var metrics = this.get = ('/executions/metrics/'+only_results[key]._id).res.get();
-//var metrics = res.get = ('/executions/metrics/'+only_results[key]._id);
-//console.log("Metrics call "+metrics);
 
-//temporary = {"id":only_results[key]._id,"Name":"<a href='/executions/details/"+only_results[key]._id+"'>"+only_results[key]._source.Name+"</a>","Description":only_results[key]._source.Description,"Metrics":"<a href='/executions/metrics/"+only_results[key]._id+"'>see metrics</a>"};
+
+//var metrics_name = this.metrics ('/executions/'+only_results[key]._id, client);
+//console.log("METRICS NAME::::::::::::::::: "+metrics_name);
+
+
 						temporary = {"id":only_results[key]._id,"Name":"<a href='/executions/details/"+only_results[key]._id+"'>"+only_results[key]._source.Name+"</a>","Description":only_results[key]._source.Description,"Metrics":"<a href='/visualization/?index="+only_results[key]._id+"&metric=User_CPU&metric2=Sys_CPU&metric3=Memory'>see metrics</a>"};
 						es_result.push(temporary);
             //es_result.push(only_results[key]);
@@ -81,7 +79,7 @@ exports.details = function(client){
 };
 
 /*
- * Searching metrics of a specific benchmark.
+ * Searching metrics of a specific execution.
  */
 exports.metrics = function (client){
 	return function(req, res){
