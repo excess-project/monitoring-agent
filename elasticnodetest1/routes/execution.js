@@ -39,7 +39,7 @@ exports.executions = function (client){
 //console.log("METRICS NAME::::::::::::::::: "+metrics_name);
 
 
-						temporary = {"id":only_results[key]._id,"Name":"<a href='/executions/details/"+only_results[key]._id+"'>"+only_results[key]._source.Name+"</a>","Description":only_results[key]._source.Description,"Metrics":"<a href='/visualization/?index="+only_results[key]._id+"&metric=User_CPU&metric2=Sys_CPU&metric3=Memory'>see metrics</a>"};
+						temporary = {"id":only_results[key]._id,"Name":"<a href='/executions/details/"+only_results[key]._id+"'>"+only_results[key]._source.Name+"</a>","Description":only_results[key]._source.Description,"Metrics":"<a href='#' onClick='openWin()'>Choose metrics</a>"};
 						es_result.push(temporary);
             //es_result.push(only_results[key]);
             console.log(temporary);
