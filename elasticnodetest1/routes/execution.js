@@ -34,19 +34,17 @@ exports.executions = function (client){
 	  			function(key)
 	  			{
 
-
-//var metrics_name = this.metrics ('/executions/'+only_results[key]._id, client);
-//console.log("METRICS NAME::::::::::::::::: "+metrics_name);
+var execution_ID = only_results[key]._id;
 
 
-						temporary = {"id":only_results[key]._id,"Name":"<a href='/executions/details/"+only_results[key]._id+"'>"+only_results[key]._source.Name+"</a>","Description":only_results[key]._source.Description,"Metrics":"<a href='#' onClick='openWin()'>Choose metrics</a>"};
+						temporary = {"id":execution_ID,"Name":"<a href='/executions/details/"+execution_ID + "'>"+only_results[key]._source.Name + "</a>","Description":only_results[key]._source.Description,"Metrics":"<a href='#' class = 'linkmetrics' rel = '" + execution_ID + "'>Choose metrics</a>"};
 						es_result.push(temporary);
             //es_result.push(only_results[key]);
-            console.log(temporary);
+           // console.log(temporary);
 
-     				console.log("Adding "+key+" number to result ");
-     				console.log(JSON.stringify(es_result[key]));
-            console.log("The ID for this one is "+only_results[key]._id+" \n")
+     			//	console.log("Adding "+key+" number to result ");
+     			//	console.log(JSON.stringify(es_result[key]));
+          //  console.log("The ID for this one is "+only_results[key]._id+" \n")
      			});
 	  			res.send(es_result);		
 	  			} else {

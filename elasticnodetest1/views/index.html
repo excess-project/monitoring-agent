@@ -10,37 +10,7 @@
     <script type='text/javascript' src="/javascripts/jquery.js"></script>
     <script type='text/javascript' src="/javascripts/jquery.dynatable.js"></script>
     <script type="text/javascript" src='/javascripts/global.js'></script>
-
-
 </head>
-
-
-<script language="JavaScript" type="text/javascript">
-
-
-function openWin() {
-
-metricWindow = window.open( '',
-'metricWindow', 'menubar=no,location=no,status=no,directories=no,toolbar=no,scrollbars=yes,top=400,left=400,height=200,width=200'
-);
-
-message="<font face='verdana, arial, helvetica, san-serif' size='2'>";
-message+="<form name='MetricPopup' action='/visualization' method='GET' target='_blank'>";
-message+="<input type='hidden' name='index' value='T08trkUaSrCiukSm7pUamw'> <br>";
-message+="<input type='checkbox' name='metric' value='User_CPU'> Metric 1 <br>";
-message+="<input type='checkbox' name='metric2' value='Sys_CPU'> Metric 2 <br>";
-message+="<input type='checkbox' name='metric3' value='Memory'> Metric 3 <br>";
-message+="<p><input type='submit' value='Visualization' onBlur='window.close();'> </p>";
-message+="</form>";
-message+="</font>";
-
-metricWindow.document.write(message);
-
-return metric;
-}
-
-
-</script>
   
 <h1>Welcome to <%= title %>!</h1>
 
@@ -60,12 +30,6 @@ return metric;
 </table>
 
 (*) Maximum 3 metrics for the prototype
-
-
-
-
-
-
 
 
 </body>
