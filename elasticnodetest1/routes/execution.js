@@ -30,14 +30,16 @@ exports.executions = function (client){
 	  		var es_result = [];
 	  		var keys = Object.keys(only_results);
 
+var 	i = 0;
 	  		keys.forEach(
 	  			function(key)
 	  			{
+i++;
+var exeID = only_results[key]._id;
+temporary = {"id":exeID,"Name":only_results[key]._source.Name ,"Description":only_results[key]._source.Description,"Metrics":"<a href='#' onclick=searchMetrics('" + exeID + "') >Choose metrics </a> "};
 
-var execution_ID = only_results[key]._id;
+						//temporary = {"id":exeID,"Name":"<a href='/executions/details/"+exeID + "'>"+only_results[key]._source.Name + "</a>","Description":only_results[key]._source.Description,"Metrics":"<a href='#' class = 'linkmetrics' rel = '" + exeID + "'>Choose metrics</a>"};
 
-
-						temporary = {"id":execution_ID,"Name":"<a href='/executions/details/"+execution_ID + "'>"+only_results[key]._source.Name + "</a>","Description":only_results[key]._source.Description,"Metrics":"<a href='#' class = 'linkmetrics' rel = '" + execution_ID + "'>Choose metrics</a>"};
 						es_result.push(temporary);
             //es_result.push(only_results[key]);
            // console.log(temporary);

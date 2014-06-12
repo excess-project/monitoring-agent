@@ -54,12 +54,12 @@ var svg = d3.select("body").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 var index=getParameterByName('index');
-var metric = getParameterByName('metric');
+var metric1 = getParameterByName('metric1');
 var metric2=getParameterByName('metric2');
 var metric3=getParameterByName('metric3');
 var from=getParameterByName('from');
 var to=getParameterByName('to');
-console.log(metric);
+console.log(metric1);
 //var xyz = jQuery.url.param("xyz");
 /*//This is the original part that was getting the info from a tsv
 d3.tsv("data.tsv", type, function(error, data) {
@@ -76,8 +76,8 @@ d3.json('/executions/'+index,function(error,jsondata) {
 
 
   m1.domain([0, d3.max(data, function(d) { 
-                                          //console.log(d[metric]); 
-                                          return d[metric]; })]);
+                                          //console.log(d[metric1]); 
+                                          return d[metric1]; })]);
   m2.domain([0, d3.max(data, function(d) { 
                                           //console.log(d[metric2]); 
                                           return d[metric2]; })]);
@@ -115,7 +115,7 @@ var zero = d3.format("04d");
       .attr("y", -35)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text(metric);
+      .text(metric1);
             
    svg.append("g")
       .attr("class", "m2 axis")
@@ -148,7 +148,7 @@ var zero = d3.format("04d");
       .attr("stroke", "blue")
       .attr("class","label")
       .style("text-anchor", "end")
-      .text(metric);
+      .text(metric1);
 
   svg.append("text")
     //  .attr("transform", "rotate(-90)")
@@ -179,7 +179,7 @@ var zero = d3.format("04d");
       .attr("stroke", "blue")
       .attr("class","label")
       .style("text-anchor", "end")
-      .text(metric);
+      .text(metric1);
 
   svg.append("text")
     //  .attr("transform", "rotate(-90)")
@@ -207,8 +207,8 @@ var zero = d3.format("04d");
       .attr("class", "bar")
       .attr("x", function(d) { return x(d.Timestamp); })
       .attr("width", x.rangeBand())
-      .attr("y", function(d) { return m1(d[metric]); })
-      .attr("height", function(d) { return height - m1(d[metric]); });
+      .attr("y", function(d) { return m1(d[metric1]); })
+      .attr("height", function(d) { return height - m1(d[metric1]); });
 
 /*  svg.selectAll(".line")
       .data(data)
@@ -236,7 +236,7 @@ var circleAttributes = circles
 
 
 //createLineGraph("User_CPU","red");
-createLineGraph(metric,"red",m1,20);
+createLineGraph(metric1,"red",m1,20);
 createLineGraph(metric2,"blue",m2,35);
 createLineGraph(metric3,"green",m3,50);
 
