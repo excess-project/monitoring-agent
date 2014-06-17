@@ -36,7 +36,7 @@ var 	i = 0;
 	  			{
 i++;
 var exeID = only_results[key]._id;
-temporary = {"id":exeID,"Name":only_results[key]._source.Name ,"Description":only_results[key]._source.Description,"Metrics":"<a href='#' onclick=searchMetrics('" + exeID + "') >Choose metrics </a> "};
+temporary = {"id":exeID,"Name":only_results[key]._source.Name ,"Description":only_results[key]._source.Description,"Metrics":"<a href='#' onclick=searchMetrics('" + exeID + "') >Choose </a> |<a href='#' onclick=exportMetrics('" + exeID + "') > Export</a> "};
 
 						//temporary = {"id":exeID,"Name":"<a href='/executions/details/"+exeID + "'>"+only_results[key]._source.Name + "</a>","Description":only_results[key]._source.Description,"Metrics":"<a href='#' class = 'linkmetrics' rel = '" + exeID + "'>Choose metrics</a>"};
 
