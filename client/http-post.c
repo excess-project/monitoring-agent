@@ -288,7 +288,7 @@ void start_gathering(void) {
 	apr_initialize();
 	apr_pool_create(&data_pool, NULL);
 
-	apr_queue_create(&data_queue, 100, data_pool);
+	apr_queue_create(&data_queue, 100000, data_pool);
 //	int i = 0;
 //	int num = 0;
 //	double dnum = 0;

@@ -1,8 +1,10 @@
 ## Copyright 2014 University of Stuttgart
-## Author: Anthony Sulistio
+## Author: Anthony Sulistio edited by Nico Eichhorn
 ## Date: April 2013
 
-CC = /usr/bin/gcc
+CC = /usr/bin/gcc 
+## gcc-Version 4.4.7 20120313 (Red Hat 4.4.7-4) (GCC)
+
 OUTPUT = main
 CFLAGS = -std=gnu99 -pedantic -ggdb -Wall -Wwrite-strings -Wpointer-arith -Wcast-align 
 LFLAGS = -lcurl -lm -lpthread -laprutil-1 -lapr-1

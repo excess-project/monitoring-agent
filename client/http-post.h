@@ -25,6 +25,8 @@
 
 #define NUM_THREADS 3
 
+#define QUEUE
+#define QUEUE_SEND_SIZE 100000
 
 
 /* function prototypes for public use */
