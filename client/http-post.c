@@ -335,14 +335,14 @@ void *gather(void *arg) {
 	void prepSend(sensor_msg_t *data) {
 		char msg[500] = "";
 		sprintf(msg,
-				"{\"t_mem\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
+				"{\"Timestamp\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
 				data->mem_time.tv_sec, data->ram_used, data->ram_avail);
 
 		printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
 		send_monitoring_data(addr, msg);
 
 		sprintf(msg,
-				"{\"t_cpu\":\"%lu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
+				"{\"Timestamp\":\"%lu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
 				data->cpu_time.tv_sec, data->cpu_used, data->cpu_avail,
 				data->cpu_wa_io);
 		send_monitoring_data(addr, msg);
