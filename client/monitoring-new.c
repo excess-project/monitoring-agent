@@ -8,7 +8,7 @@
 #include "http-post.h"
 #include "monitoring-new.h"
 
-static unsigned sleep_time = 1000;
+static unsigned sleep_time = 100;
 
 double get_cpu_usage(void) {
 	unsigned int tog = 0;
@@ -48,11 +48,18 @@ double get_cpu_usage(void) {
 		debt = (int) didl;
 		didl = 0;
 	}
+#if 0
+		jidd userusage = ((100 * (jidd) duse + (jidd) divo2) / (jidd) Div);
+//		jidd systemusage = ((100 * (jidd) dsys + (jidd) divo2) / (jidd) Div);
 
-	jidd userusage = ((100 * (jidd) duse + (jidd) divo2) / (jidd) Div);
-//	jidd systemusage = ((100 * (jidd) dsys + (jidd) divo2) / (jidd) Div);
+		return (double) userusage;
 
-	return (double) userusage;
+#else
+//	jidd userusage = ((100 * (jidd) duse + (jidd) divo2) / (jidd) Div);
+	jidd systemusage = ((100 * (jidd) dsys + (jidd) divo2) / (jidd) Div);
+
+	return (double) systemusage;
+#endif
 }
 
 void getprocstat(jiff *restrict cuse, jiff *restrict cice, jiff *restrict csys,

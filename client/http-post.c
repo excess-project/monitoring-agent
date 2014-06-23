@@ -21,6 +21,9 @@ apr_status_t status = APR_SUCCESS;
 
 char addr[100] = "http://localhost:3000/executions/";
 
+int number_to_send = 1000;
+int t; // switch for running the individual gathering routines
+
 /* ptr - curl output
  stream - data or string to be received */
 size_t get_stream_data(void *ptr, size_t size, size_t count, void *stream) {
@@ -295,16 +298,17 @@ void start_gathering(void) {
 	time_t wall_time = time(NULL );
 	srand(wall_time); /* initialize random seed: */
 
-	for (int t = 0; t < NUM_THREADS; t++) {
+	for (t = 0; t < NUM_THREADS; t++) {
 		iret[t] = pthread_create(&threads[t], NULL, &gather, &t);
 		if (iret[t]) {
 			printf("ERROR; return code from pthread_create() is %d\n", iret[t]);
 			exit(-1);
 		}
 	}
-	for (int t = 0; t < NUM_THREADS; t++) {
+	for (t = 0; t < NUM_THREADS; t++) {
 		pthread_join(threads[t], NULL );
 	}
+
 //	for (i = 0; i < 10; i++) {
 //		num = get_mem_usage();
 //		to_send_msg[i].ram_used = num;
@@ -360,7 +364,7 @@ void *gather(void *arg) {
 
 		while (1) {
 
-			if (apr_queue_size(data_queue) > 10) {
+			if (apr_queue_size(data_queue) > number_to_send) {
 				void *ptr;
 				status = apr_queue_pop(data_queue, &ptr);
 				sensor_msg_t *dPtr = ptr;
@@ -416,7 +420,8 @@ void *gather(void *arg) {
 		}
 //		}
 		printf("gather_cpu ended");
-		return 1;
+		exit(EXIT_FAILURE);
+		return 0;
 	}
 	int gather_mem() {
 		sensor_msg_t *curPtr;
@@ -486,8 +491,8 @@ void *gather(void *arg) {
 
 	int main(void) {
 
-		printf("%lf \n", get_cpu_usage());
-		printf("%d \n", get_mem_usage());
+		printf("%lf %% \n", get_cpu_usage());
+		printf("%d %%\n", get_mem_usage());
 
 //		char *timeArr = (char*) malloc(sizeof(char) * 25);
 //		time_t curTime = time(NULL );
