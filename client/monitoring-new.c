@@ -8,7 +8,7 @@
 #include "http-post.h"
 #include "monitoring-new.h"
 
-static unsigned sleep_time = 100;
+static unsigned sleep_time = 10000;
 
 double get_cpu_usage(void) {
 	unsigned int tog = 0;
@@ -40,6 +40,9 @@ double get_cpu_usage(void) {
 	diow = cpu_iow[tog] - cpu_iow[!tog];
 	dstl = cpu_zzz[tog] - cpu_zzz[!tog];
 
+	Div = duse + dsys + didl + diow + dstl;
+	divo2 = Div / 2UL;
+
 	if (debt) {
 		didl = (int) didl + debt;
 		debt = 0;
@@ -48,15 +51,13 @@ double get_cpu_usage(void) {
 		debt = (int) didl;
 		didl = 0;
 	}
-#if 0
-		jidd userusage = ((100 * (jidd) duse + (jidd) divo2) / (jidd) Div);
-//		jidd systemusage = ((100 * (jidd) dsys + (jidd) divo2) / (jidd) Div);
 
-		return (double) userusage;
+	jidd userusage = ((100 * (jidd) duse + (jidd) divo2) / (jidd) Div);
+	jidd systemusage = ((100 * (jidd) dsys + (jidd) divo2) / (jidd) Div);
+#if 1
+	return (double) userusage;
 
 #else
-//	jidd userusage = ((100 * (jidd) duse + (jidd) divo2) / (jidd) Div);
-	jidd systemusage = ((100 * (jidd) dsys + (jidd) divo2) / (jidd) Div);
 
 	return (double) systemusage;
 #endif
