@@ -111,4 +111,5 @@ void getprocmeminfo(unsigned long *restrict mfre, unsigned long *restrict mtot) 
 	b = strstr(buff, "MemTotal: ");
 	if (b)
 		sscanf(b, "MemTotal: %lu kB", mtot);
+	usleep(sleep_time);
 }

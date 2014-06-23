@@ -334,18 +334,26 @@ void *gather(void *arg) {
 
 	void prepSend(sensor_msg_t *data) {
 		char msg[500] = "";
-		sprintf(msg,
-				"{\"Timestamp\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
-				data->mem_time.tv_sec, data->ram_used, data->ram_avail);
+		switch (data->type) {
+		case MEM_USAGE:
+			sprintf(msg,
+					"{\"Timestamp\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
+					data->mem_time.tv_sec, data->ram_used, data->ram_avail);
 
-		printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
-		send_monitoring_data(addr, msg);
-
-		sprintf(msg,
-				"{\"Timestamp\":\"%lu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
-				data->cpu_time.tv_sec, data->cpu_used, data->cpu_avail,
-				data->cpu_wa_io);
-		send_monitoring_data(addr, msg);
+			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
+			send_monitoring_data(addr, msg);
+			break;
+		case CPU_USAGE:
+			sprintf(msg,
+					"{\"Timestamp\":\"%lu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
+					data->cpu_time.tv_sec, data->cpu_used, data->cpu_avail,
+					data->cpu_wa_io);
+			send_monitoring_data(addr, msg);
+			break;
+		default:
+			printf("Message to send neither cpu nor mem related!");
+			break;
+		}
 	}
 
 	int send_data() {
@@ -379,6 +387,7 @@ void *gather(void *arg) {
 			curPtr->cpu_avail = 100.0 - usage;
 			curPtr->cpu_time.tv_sec = time(NULL );
 			curPtr->cpu_wa_io = usage / 100.0;
+			curPtr->type = CPU_USAGE;
 
 //		for (int a = 0; a < 2; a++) {
 			status = apr_queue_push(data_queue, curPtr);
@@ -419,6 +428,7 @@ void *gather(void *arg) {
 			curPtr->mem_time.tv_sec = time(NULL );
 			curPtr->ram_used = usage;
 			curPtr->ram_avail = 100 - usage;
+			curPtr->type = MEM_USAGE;
 
 			status = apr_queue_push(data_queue, curPtr);
 

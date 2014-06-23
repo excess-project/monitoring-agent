@@ -27,6 +27,10 @@
 #define BUFFER_SIZE 1000
 #define DATA_AVAILABLE 0 
 
+enum msg_Type {
+	CPU_USAGE = 0, MEM_USAGE = 1
+};
+
 int BEGIN_INDEX;
 int CURRENT_INDEX;
 int END_INDEX;
@@ -80,6 +84,8 @@ typedef struct sensor_msg {
 
 	int time_to_get_cpu_info;
 	int time_to_get_mem_info;
+
+	enum msg_Type type;
 
 } sensor_msg_t;
 
