@@ -12,7 +12,7 @@ struct timespec tim, tim2;
 
 //static unsigned sleep_time = 10000;
 time_t sec_to_sleep = 0;
-long nanos_to_sleep = 999999999; //must be less than 10e8 !!!
+long nanos_to_sleep = 10e7; //must be less than 10e8 !!!
 
 double get_cpu_usage(void) {
 
