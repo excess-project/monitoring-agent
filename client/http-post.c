@@ -21,7 +21,7 @@ apr_status_t status = APR_SUCCESS;
 
 char addr[100] = "http://localhost:3000/executions/";
 
-int number_to_send = 1000;
+int number_to_send = 100;
 int t; // switch for running the individual gathering routines
 
 /* ptr - curl output
@@ -286,6 +286,7 @@ void init_monitoring_data(void) {
 }
 
 void start_gathering(void) {
+	printf("Entering start_gathering");
 	pthread_t threads[NUM_THREADS];
 	int iret[NUM_THREADS];
 	apr_initialize();
@@ -299,7 +300,7 @@ void start_gathering(void) {
 	srand(wall_time); /* initialize random seed: */
 
 	for (t = 0; t < NUM_THREADS; t++) {
-		iret[t] = pthread_create(&threads[t], NULL, &gather, &t);
+		iret[t] = pthread_create(&threads[t], NULL, gather, &t);
 		if (iret[t]) {
 			printf("ERROR; return code from pthread_create() is %d\n", iret[t]);
 			exit(-1);
@@ -333,7 +334,7 @@ void *gather(void *arg) {
 				printf("Thread created!");
 			}
 		}
-		return NULL ;
+		pthread_exit(NULL );
 	}
 
 	void prepSend(sensor_msg_t *data) {

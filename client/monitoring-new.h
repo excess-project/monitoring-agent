@@ -14,6 +14,8 @@
 
 #define READBUFFER_SIZE 64*1000
 
+
+
 typedef unsigned long long jiff;
 typedef long double jidd;
 
