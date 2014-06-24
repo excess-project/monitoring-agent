@@ -11,8 +11,8 @@
 struct timespec tim, tim2;
 
 //static unsigned sleep_time = 10000;
-time_t sec_to_sleep = 1;
-long nanos_to_sleep = 0L; //must be less than 10e8 !!!
+time_t sec_to_sleep = 0;
+long nanos_to_sleep = 999999999; //must be less than 10e8 !!!
 
 double get_cpu_usage(void) {
 
@@ -116,8 +116,8 @@ int get_mem_usage(void) {
 void getprocmeminfo(unsigned long *restrict mfre, unsigned long *restrict mtot) {
 
 	static char buff[READBUFFER_SIZE + 1];
-	tim.tv_sec = 0;
-	tim.tv_nsec = 100000L;
+	tim.tv_sec = sec_to_sleep;
+	tim.tv_nsec = nanos_to_sleep;
 
 	static int fd;
 	const char* b;

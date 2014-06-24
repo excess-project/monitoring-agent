@@ -21,7 +21,7 @@ apr_status_t status = APR_SUCCESS;
 
 char addr[100] = "http://localhost:3000/executions/";
 
-int number_to_send = 100;
+int number_to_send = 2;
 int t; // switch for running the individual gathering routines
 
 /* ptr - curl output
@@ -492,6 +492,7 @@ void *gather(void *arg) {
 
 	int main(void) {
 
+//		printf("%ld\n",sysconf(_SC_CLK_TCK));
 		printf("%lf %% \n", get_cpu_usage());
 		printf("%d %%\n", get_mem_usage());
 
