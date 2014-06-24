@@ -11,8 +11,8 @@
 struct timespec tim, tim2;
 
 //static unsigned sleep_time = 10000;
-time_t sec_to_sleep = 0;
-long nanos_to_sleep = 10e6L;
+time_t sec_to_sleep = 1;
+long nanos_to_sleep = 0L; //must be less than 10e8 !!!
 
 double get_cpu_usage(void) {
 
@@ -37,7 +37,8 @@ double get_cpu_usage(void) {
 	tog = !tog;
 
 //	usleep(sleep_time);
-	nanosleep(&tim, &tim2);
+	if(nanosleep(&tim, &tim2))
+		printf("error in nanosleep!");
 
 	getprocstat(cpu_use + tog, cpu_nic + tog, cpu_sys + tog, cpu_idl + tog,
 			cpu_iow + tog, cpu_xxx + tog, cpu_yyy + tog, cpu_zzz + tog);
