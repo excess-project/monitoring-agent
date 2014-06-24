@@ -51,8 +51,8 @@ double get_cpu_usage(void) {
 
 	Div = duse + dsys + didl + diow + dstl;
 	divo2 = Div / 2UL;
-	printf("duse: %lld dsys: %lld didl: %lld diow: %lld dstl: %lld \n", duse,
-			dsys, didl, diow, dstl);
+//	printf("duse: %lld dsys: %lld didl: %lld diow: %lld dstl: %lld \n", duse,
+//			dsys, didl, diow, dstl);
 
 	if (debt) {
 		didl = (int) didl + debt;
@@ -68,7 +68,7 @@ double get_cpu_usage(void) {
 	// usage for systemspace applications
 //
 #if 1
-	printf("(100 * %llu + %llu) / %llu \n", duse, divo2, Div);
+//	printf("(100 * %llu + %llu) / %llu \n", duse, divo2, Div);
 	jidd userusage = ((100 * (jidd) duse + (jidd) divo2) / (jidd) Div);
 	return (double) userusage;
 
