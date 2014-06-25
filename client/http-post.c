@@ -21,7 +21,7 @@ apr_status_t status = APR_SUCCESS;
 
 char addr[100] = "http://localhost:3000/executions/";
 
-int number_to_send = 100;
+int number_to_send = 10;
 int t; // switch for running the individual gathering routines
 
 /* ptr - curl output
@@ -293,11 +293,7 @@ void start_gathering(void) {
 	apr_pool_create(&data_pool, NULL);
 
 	apr_queue_create(&data_queue, 100000, data_pool);
-//	int i = 0;
-//	int num = 0;
-//	double dnum = 0;
-	time_t wall_time = time(NULL );
-	srand(wall_time); /* initialize random seed: */
+
 
 	for (t = 0; t < NUM_THREADS; t++) {
 		iret[t] = pthread_create(&threads[t], NULL, gather, &t);
@@ -498,7 +494,7 @@ void *gather(void *arg) {
 		char str[1000] = ""; /* storing the execution ID -- UUID is 36 chars */
 		char msg[1000] =
 				"{\"Name\":\"Execution1 - wkd mon dy hh:mm:ss year\",\"Description\":\"Testing C gatherer\",\"Other\":\"values\",\"Onemore\":\"please\"}";
-		for (int it = 0; it < two; it++) {
+		for (int it = 0; it < two-1; it++) {
 			msg[it + 22] = timeArr[it];
 		}
 //		memmove(msg + make_room_at + room_to_make, msg + make_room_at,
