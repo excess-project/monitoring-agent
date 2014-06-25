@@ -21,7 +21,7 @@ apr_status_t status = APR_SUCCESS;
 
 char addr[100] = "http://localhost:3000/executions/";
 
-int number_to_send = 2;
+int number_to_send = 100;
 int t; // switch for running the individual gathering routines
 
 /* ptr - curl output
@@ -443,13 +443,6 @@ void *gather(void *arg) {
 //			apr_queue_trypush(data_queue, ptr2);
 		}
 
-		/*
-		 *  send to queue
-		 */
-//		num = get_mem_usage();
-//		to_send_msg[i].ram_used = num;
-//		to_send_msg[i].ram_avail = 100 - num;
-//		to_send_msg[i].mem_time.tv_sec = wall_time;
 		printf("gather_mem ended");
 		return 0;
 	}
@@ -496,59 +489,27 @@ void *gather(void *arg) {
 		printf("%lf %% \n", get_cpu_usage());
 		printf("%d %%\n", get_mem_usage());
 
-//		char *timeArr = (char*) malloc(sizeof(char) * 25);
-//		time_t curTime = time(NULL );
-//		sprintf(timeArr, "%s", asctime(localtime(&curTime)));
-//
-//		size_t two = strlen(timeArr);
-//
-//		int make_room_at = 20;
-//		int room_to_make = two;
+		char *timeArr = (char*) malloc(sizeof(char) * 25);
+		time_t curTime = time(NULL );
+		sprintf(timeArr, "%s", asctime(localtime(&curTime)));
 
-//		char addr[100] = "http://localhost:3000/executions/";
-//		char addr2[100] = "http://localhost:9200/";
+		size_t two = strlen(timeArr);
+
 		char str[1000] = ""; /* storing the execution ID -- UUID is 36 chars */
 		char msg[1000] =
-				"{\"Name\":\"Execution1 -\",\"Description\":\"Testing C gatherer\",\"Other\":\"values\",\"Onemore\":\"please\"}";
-
+				"{\"Name\":\"Execution1 - wkd mon dy hh:mm:ss year\",\"Description\":\"Testing C gatherer\",\"Other\":\"values\",\"Onemore\":\"please\"}";
+		for (int it = 0; it < two; it++) {
+			msg[it + 22] = timeArr[it];
+		}
 //		memmove(msg + make_room_at + room_to_make, msg + make_room_at,
 //				1000 - (make_room_at + room_to_make));
+
 		/* init curl libs */
 		init_curl();
 		strcpy(str, get_execution_id(addr, msg)); /* get the execution ID */
 		strcat(addr, str); /* append the ID to the end of the URL or IP address */
 
-		/* generate dummy data and send them */
-
 		start_gathering();
-//		init_monitoring_data();
-//		send_dummy_data(addr);
-
-		/**************************
-		 memset(msg, 0, sizeof(msg));
-		 strcpy(msg, "{\"Timestamp\":\"1398169317\",\"cpu\":\"0.55\",\"ram\":\"125\"}");
-		 printf("\n-- New msg: [%s] -- len: %d\n", msg, (int) strlen(msg));
-		 send_monitoring_data(addr, msg);
-
-		 **************************/
-		/* http://141.58.5.220:9200/b5fe7pnyqzqsitnqxb3n1a/_search?pretty=true -- lower case for ID */
-
-		/* change to lower case */
-
-//		i = 0;
-//		while (str[i]) {
-//			str[i] = tolower(str[i]);
-//			i++;
-//		}
-//		sleep(2); /* in second */
-//		strcat(addr2, str);
-//		strcat(addr2, "/_search?pretty=true");
-//		printf("\n\n---------------------------\nCheck the data for ID: %s\n",
-//				str);
-//		memset(msg, 0, sizeof(msg));
-//		send_monitoring_data(addr2, msg);
-//
-		/* don't forget to clean up the curl libs */
 		cleanup_curl();
 		return 0;
 	}

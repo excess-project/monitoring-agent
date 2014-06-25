@@ -10,7 +10,7 @@
 
 struct timespec tim, tim2;
 
-//static unsigned sleep_time = 10000;
+
 time_t sec_to_sleep = 0;
 long nanos_to_sleep = 10e7; //must be less than 10e8 !!!
 
@@ -26,13 +26,6 @@ double get_cpu_usage(void) {
 
 	getprocstat(cpu_use, cpu_nic, cpu_sys, cpu_idl, cpu_iow, cpu_xxx, cpu_yyy,
 			cpu_zzz);
-//	duse = *cpu_use + *cpu_nic;
-//	dsys = *cpu_sys + *cpu_xxx + *cpu_yyy;
-//	didl = *cpu_idl;
-//	diow = *cpu_iow;
-//	dstl = *cpu_zzz;
-//	Div = duse + dsys + didl + diow + dstl;
-//	divo2 = Div / 2UL;
 
 	tog = !tog;
 
