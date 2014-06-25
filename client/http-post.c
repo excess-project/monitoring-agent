@@ -306,19 +306,7 @@ void start_gathering(void) {
 		pthread_join(threads[t], NULL );
 	}
 
-//	for (i = 0; i < 10; i++) {
-//		num = get_mem_usage();
-//		to_send_msg[i].ram_used = num;
-//		to_send_msg[i].ram_avail = 100 - num;
-//		to_send_msg[i].mem_time.tv_sec = wall_time;
-//
-//		dnum = get_cpu_usage();
-//		to_send_msg[i].cpu_used = dnum;
-//		to_send_msg[i].cpu_avail = 100 - dnum;
-//		to_send_msg[i].cpu_wa_io = (dnum / 100);
-//		to_send_msg[i].cpu_time.tv_sec = wall_time;
-//
-//	}
+
 
 }
 
