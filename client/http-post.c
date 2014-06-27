@@ -386,6 +386,30 @@ void *gather(void *arg) {
 //		}
 //	}
 
+	int getFQDN(char *fqdn) {
+		struct addrinfo hints, *info, *p;
+
+		int gai_result;
+
+		char *hostname = (char*) malloc(sizeof(char) * 80);
+		gethostname(hostname, sizeof hostname);
+
+		memset(&hints, 0, sizeof hints);
+		hints.ai_family = AF_INET;
+		hints.ai_socktype = SOCK_STREAM;
+		hints.ai_flags = AI_CANONNAME;
+
+		if ((gai_result = getaddrinfo(hostname, "http", &hints, &info)) != 0) {
+			fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(gai_result));
+			exit(1);
+		}
+		for (p = info; p != NULL ; p = p->ai_next) {
+			sprintf(fqdn, "hostname: %s\n", p->ai_canonname);
+		}
+		freeaddrinfo(info);
+		return 1;
+	}
+
 	int main(int argc, const char *argv[]) {
 
 		if (!getconf(argv)) {
@@ -396,20 +420,24 @@ void *gather(void *arg) {
 		printf("%lf %% \n", get_cpu_usage());
 		printf("%d %%\n", get_mem_usage());
 
-		char *timeArr = (char*) malloc(sizeof(char) * 25);
+		char *timeArr = (char*) malloc(sizeof(char) * 80);
 		time_t curTime = time(NULL );
 		sprintf(timeArr, "%s", asctime(localtime(&curTime)));
 
 		size_t two = strlen(timeArr);
+		timeArr[two - 1] = '\0';
 
 		char str[1000] = ""; /* storing the execution ID -- UUID is 36 chars */
-		char msg[1000] =
-				"{\"Name\":\"Execution1 - wkd mon dy hh:mm:ss year\",\"Description\":\"Testing C gatherer\",\"Other\":\"values\",\"Onemore\":\"please\"}";
-		for (int it = 0; it < two - 1; it++) {
-			msg[it + 22] = timeArr[it];
-		}
-//		memmove(msg + make_room_at + room_to_make, msg + make_room_at,
-//				1000 - (make_room_at + room_to_make));
+		char msg[1000] = "";
+
+		char *hostname = (char*) malloc(sizeof(char) * 80);
+
+//		gethostname(hostname, sizeof(hostname));
+		getFQDN(hostname);
+		hostname[strlen(hostname) - 1] = '\0';
+		sprintf(msg,
+				"{\"Name\":\"Execution on node %s - %s\",\"Description\":\"Testing C gatherer\",\"Other\":\"values\",\"Onemore\":\"please\"}",
+				hostname + strlen("hostname: "), timeArr);
 
 		/* init curl libs */
 		init_curl();

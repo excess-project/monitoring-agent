@@ -18,6 +18,7 @@
 #include <curl/curl.h>
 
 #include <pthread.h>
+#include <netdb.h>
 
 #define SEND_SUCCESS 1
 #define SEND_FAILED  0
@@ -28,7 +29,6 @@
 //#define QUEUE
 //#define QUEUE_SEND_SIZE 100000
 
-
 /* function prototypes for public use */
 void init_curl();
 void cleanup_curl();
@@ -37,13 +37,13 @@ int send_monitoring_data(char *URL, char *data);
 void delay_time(time_t second); /* sleep in second */
 
 int getconf(const char *argv[]);
+int getFQDN(char *fqdn);
 void *gather(void *arg);
 
 int gather_cpu();
 int gather_mem();
 
 int send_data();
-
 
 /* function prototypes for private use 
  size_t get_stream_data(void *ptr, size_t size, size_t count, void *stream);
