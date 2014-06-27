@@ -210,7 +210,7 @@ void start_gathering(void) {
 //	int t;
 
 	apr_queue_create(&data_queue, 100000, data_pool);
-	int nums[NUM_THREADS];
+	int nums[NUM_THREADS]; // each thread needs its own element of the array
 	for (t = 0; t < NUM_THREADS; t++) {
 		nums[t] = t;
 		iret[t] = pthread_create(&threads[t], NULL, gather, &nums[t]);
@@ -265,12 +265,10 @@ void *gather(void *arg) {
 	}
 
 	int send_data() {
-
+		void *ptr;
 		while (1) {
-
-			if (apr_queue_size(data_queue) > number_to_send) {
-				void *ptr;
-				status = apr_queue_pop(data_queue, &ptr);
+			status = apr_queue_pop(data_queue, &ptr);
+			if (status == APR_SUCCESS) {
 				sensor_msg_t *dPtr = ptr;
 				prepSend(dPtr);
 			}
