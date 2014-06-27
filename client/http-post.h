@@ -23,7 +23,7 @@
 #define SEND_FAILED  0
 #define ID_SIZE 50
 
-#define NUM_THREADS 3
+#define NUM_THREADS 2
 
 //#define QUEUE
 //#define QUEUE_SEND_SIZE 100000
@@ -36,6 +36,7 @@ char* get_execution_id(char *URL, char *message);
 int send_monitoring_data(char *URL, char *data);
 void delay_time(time_t second); /* sleep in second */
 
+int getconf(const char *argv[]);
 void *gather(void *arg);
 
 int gather_cpu();

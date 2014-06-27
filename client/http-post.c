@@ -21,7 +21,7 @@ apr_status_t status = APR_SUCCESS;
 
 char addr[100] = "http://localhost:3000/executions/";
 
-int number_to_send = 10;
+int number_to_send = 5;
 int t; // switch for running the individual gathering routines
 
 /* ptr - curl output
@@ -32,6 +32,31 @@ size_t get_stream_data(void *ptr, size_t size, size_t count, void *stream) {
 	printf("\n--> Sent Output: %s -- len = %d", (char*) ptr, (int) total);
 	memcpy(stream, ptr, total);
 	return total;
+}
+
+int getconf(const char *argv[]) {
+	const char *filename[] = { "conf" };
+	char *filepath = strdup(*argv);
+
+	FILE *fp;
+	char line[200];
+
+	int length = strlen(filepath);
+	memcpy(filepath + (length - 4), *filename, sizeof(filename));
+	fp = fopen(filepath, "r");
+	if (!fp) {
+		printf("File not found!\n");
+		return 0;
+	}
+	while (fgets(line, 200, fp) != NULL ) {
+		char* pos;
+		if ((pos = strstr(line, "host: ")))
+//			printf("host:\n%s\n", pos + strlen("host: "));
+			sprintf(addr, "%s", pos + strlen("host: "));
+	}
+	addr[strlen(addr) - 1] = '\0'; //remove newline character !!
+	fclose(fp);
+	return 1;
 }
 
 int send_monitoring_data(char *URL, char *data) {
@@ -90,20 +115,20 @@ int send_monitoring_data(char *URL, char *data) {
 	return result;
 }
 
-/* sleep in second */
-void delay_time(time_t delay) {
-	time_t timer0, timer1;
-
-	if (delay <= 0) {
-		return;
-	}
-
-	time(&timer0);
-
-	do {
-		time(&timer1);
-	} while ((timer1 - timer0) < delay);
-}
+///* sleep in second */
+//void delay_time(time_t delay) {
+//	time_t timer0, timer1;
+//
+//	if (delay <= 0) {
+//		return;
+//	}
+//
+//	time(&timer0);
+//
+//	do {
+//		time(&timer1);
+//	} while ((timer1 - timer0) < delay);
+//}
 
 void init_curl() {
 	if (curl_ != NULL ) {
@@ -176,142 +201,36 @@ char* get_execution_id(char *URL, char *msg) {
 	return execID_;
 }
 
-/*********************************************************************/
-/* these functions should be integrated into monitoring-excess.c */
-
-int is_empty(void) {
-	int result = DATA_AVAILABLE;
-
-	/* could also be END_INDEX ?? */
-	if (BEGIN_INDEX == CURRENT_INDEX) {
-		result = DATA_EMPTY;
-	}
-	return result;
-}
-
-/* dummy or redundant function */
-void print_sensor_data(sensor_msg_t data) {
-	printf("{\"t_mem\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}\n",
-			data.mem_time.tv_sec, data.ram_used, data.ram_avail);
-
-	printf(
-			"{\"t_cpu\":\"%lu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}\n",
-			data.cpu_time.tv_sec, data.cpu_used, data.cpu_avail,
-			data.cpu_wa_io);
-}
-
-sensor_msg_t dequeue(void) {
-	int i = 0;
-	sensor_msg_t data;
-
-	printf("\n\ndequeue(): queue empty = %d, where 0 means not empty\n",
-			is_empty());
-
-	if (is_empty() != DATA_EMPTY) {
-		data = to_send_msg[BEGIN_INDEX];
-
-		printf("--- Current data ....\n");
-		print_sensor_data(data);
-
-		i = BEGIN_INDEX;
-		to_send_msg[i].mem_time.tv_sec = 0;
-		to_send_msg[i].ram_used = 0;
-		to_send_msg[i].ram_avail = 0;
-		to_send_msg[i].cpu_time.tv_sec = 0;
-		to_send_msg[i].cpu_used = 0;
-		to_send_msg[i].cpu_avail = 0;
-		to_send_msg[i].cpu_wa_io = 0;
-
-		printf("--- After data is deleted ....\n");
-		print_sensor_data(to_send_msg[BEGIN_INDEX]);
-
-		BEGIN_INDEX++;
-
-		/* need to wrap this begin index */
-		if (BEGIN_INDEX >= BUFFER_SIZE) {
-			BEGIN_INDEX = 0;
-		}
-	}
-
-	return data;
-}
-
-/*********************************************************************/
-/* From below onwards are dummy functions to test libcurl */
-
-void print_monitoring_data(void) {
-	int i = 0;
-	for (i = 0; i < END_INDEX; i++) {
-		printf("i = %d, t_mem = %lu, mem_used = %d, mem_avail = %d\n", i,
-				to_send_msg[i].mem_time.tv_sec, to_send_msg[i].ram_used,
-				to_send_msg[i].ram_avail);
-	}
-
-}
-
-void init_monitoring_data(void) {
-	int i = 0;
-	int num = 0;
-	double dnum = 0;
-	time_t wall_time = time(NULL );
-	srand(wall_time); /* initialize random seed: */
-
-	BEGIN_INDEX = 0;
-	END_INDEX = 0;
-	CURRENT_INDEX = 0;
-
-	for (i = 0; i < 10; i++) {
-		num = get_mem_usage();
-		to_send_msg[i].ram_used = num;
-		to_send_msg[i].ram_avail = 100 - num;
-		to_send_msg[i].mem_time.tv_sec = wall_time;
-
-		dnum = get_cpu_usage();
-		to_send_msg[i].cpu_used = dnum;
-		to_send_msg[i].cpu_avail = 100 - dnum;
-		to_send_msg[i].cpu_wa_io = (dnum / 100);
-		to_send_msg[i].cpu_time.tv_sec = wall_time;
-
-		/*******
-		 to_send_msg[i]. = ;
-		 to_send_msg[i]. = ;
-		 *****/
-		wall_time++;
-		END_INDEX++;
-		CURRENT_INDEX++;
-
-	}
-
-	/*print_monitoring_data();*/
-}
-
 void start_gathering(void) {
-	printf("Entering start_gathering");
+	printf("Entering start_gathering\n");
 	pthread_t threads[NUM_THREADS];
 	int iret[NUM_THREADS];
 	apr_initialize();
 	apr_pool_create(&data_pool, NULL);
+//	int t;
 
 	apr_queue_create(&data_queue, 100000, data_pool);
-
-
+	int nums[NUM_THREADS];
 	for (t = 0; t < NUM_THREADS; t++) {
-		iret[t] = pthread_create(&threads[t], NULL, gather, &t);
+		nums[t] = t;
+		iret[t] = pthread_create(&threads[t], NULL, gather, &nums[t]);
 		if (iret[t]) {
 			printf("ERROR; return code from pthread_create() is %d\n", iret[t]);
 			exit(-1);
 		}
 	}
+	send_data();
+//	while (1)
+//		;
+//	sleep(10e8);
 	for (t = 0; t < NUM_THREADS; t++) {
 		pthread_join(threads[t], NULL );
 	}
 
-
-
 }
 
 void *gather(void *arg) {
-	int (*p[NUM_THREADS])() = {gather_cpu, gather_mem, send_data };
+	int (*p[NUM_THREADS])() = {gather_cpu, gather_mem };
 		int *typeT = (int*) arg;
 		if (*typeT < NUM_THREADS) {
 			if ((*p[*typeT])()) {
@@ -361,6 +280,7 @@ void *gather(void *arg) {
 	}
 
 	int gather_cpu() {
+		fprintf(stderr, "start gather_cpu()\n");
 		sensor_msg_t *curPtr; // pointer to message above
 		double usage; // value of cpu usage
 
@@ -404,11 +324,12 @@ void *gather(void *arg) {
 
 		}
 //		}
-		printf("gather_cpu ended");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "gather_cpu ended");
+//		exit(EXIT_FAILURE);
 		return 0;
 	}
 	int gather_mem() {
+		fprintf(stderr, "start gather_mem()\n");
 		sensor_msg_t *curPtr;
 		int usage;
 		while (1) {
@@ -431,44 +352,48 @@ void *gather(void *arg) {
 		return 0;
 	}
 
-	void send_dummy_data(char *URL) {
-		char msg[500] = "";
-		int i = 0;
-		sensor_msg_t data;
+//	void send_dummy_data(char *URL) {
+//		char msg[500] = "";
+//		int i = 0;
+//		sensor_msg_t data;
+//
+//		printf("\n");
+//		for (i = 0; i < END_INDEX; i++) {
+//			data = dequeue();
+//
+//			/* send memory info */
+//			sprintf(msg,
+//					"{\"Timestamp\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
+//					data.mem_time.tv_sec, data.ram_used, data.ram_avail);
+//			/***
+//			 to_send_msg[i].mem_time.tv_sec, to_send_msg[i].ram_used,
+//			 to_send_msg[i].ram_avail);
+//			 ****/
+//
+//			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
+//			send_monitoring_data(URL, msg);
+//
+//			/* send CPU info */
+//			sprintf(msg,
+//					"{\"Timestamp\":\"%lu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
+//					data.cpu_time.tv_sec, data.cpu_used, data.cpu_avail,
+//					data.cpu_wa_io);
+//			/****
+//			 to_send_msg[i].cpu_time.tv_sec, to_send_msg[i].cpu_used,
+//			 to_send_msg[i].cpu_avail, to_send_msg[i].cpu_wa_io);
+//			 *****/
+//
+//			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
+//			send_monitoring_data(URL, msg);
+//		}
+//	}
 
-		printf("\n");
-		for (i = 0; i < END_INDEX; i++) {
-			data = dequeue();
+	int main(int argc, const char *argv[]) {
 
-			/* send memory info */
-			sprintf(msg,
-					"{\"Timestamp\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
-					data.mem_time.tv_sec, data.ram_used, data.ram_avail);
-			/***
-			 to_send_msg[i].mem_time.tv_sec, to_send_msg[i].ram_used,
-			 to_send_msg[i].ram_avail);
-			 ****/
-
-			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
-			send_monitoring_data(URL, msg);
-
-			/* send CPU info */
-			sprintf(msg,
-					"{\"Timestamp\":\"%lu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
-					data.cpu_time.tv_sec, data.cpu_used, data.cpu_avail,
-					data.cpu_wa_io);
-			/****
-			 to_send_msg[i].cpu_time.tv_sec, to_send_msg[i].cpu_used,
-			 to_send_msg[i].cpu_avail, to_send_msg[i].cpu_wa_io);
-			 *****/
-
-			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
-			send_monitoring_data(URL, msg);
+		if (!getconf(argv)) {
+			printf("error reading config file!\n");
+			exit(-1);
 		}
-	}
-
-	int main(void) {
-
 //		printf("%ld\n",sysconf(_SC_CLK_TCK));
 		printf("%lf %% \n", get_cpu_usage());
 		printf("%d %%\n", get_mem_usage());
@@ -482,7 +407,7 @@ void *gather(void *arg) {
 		char str[1000] = ""; /* storing the execution ID -- UUID is 36 chars */
 		char msg[1000] =
 				"{\"Name\":\"Execution1 - wkd mon dy hh:mm:ss year\",\"Description\":\"Testing C gatherer\",\"Other\":\"values\",\"Onemore\":\"please\"}";
-		for (int it = 0; it < two-1; it++) {
+		for (int it = 0; it < two - 1; it++) {
 			msg[it + 22] = timeArr[it];
 		}
 //		memmove(msg + make_room_at + room_to_make, msg + make_room_at,

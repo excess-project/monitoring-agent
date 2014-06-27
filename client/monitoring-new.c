@@ -10,9 +10,8 @@
 
 struct timespec tim, tim2;
 
-
 time_t sec_to_sleep = 0;
-long nanos_to_sleep = -1+10e8; //must be less than 10e8 !!!
+long nanos_to_sleep = 999999999; //must be less than 10e8 !!!
 
 double get_cpu_usage(void) {
 
@@ -30,8 +29,9 @@ double get_cpu_usage(void) {
 	tog = !tog;
 
 //	usleep(sleep_time);
-	if(nanosleep(&tim, &tim2))
-		printf("error in nanosleep!");
+//	if (nanosleep(&tim, &tim2))
+//		printf("error in nanosleep!");
+	sleep(1);
 
 	getprocstat(cpu_use + tog, cpu_nic + tog, cpu_sys + tog, cpu_idl + tog,
 			cpu_iow + tog, cpu_xxx + tog, cpu_yyy + tog, cpu_zzz + tog);
@@ -131,5 +131,6 @@ void getprocmeminfo(unsigned long *restrict mfre, unsigned long *restrict mtot) 
 	if (b)
 		sscanf(b, "MemTotal: %lu kB", mtot);
 //	usleep(sleep_time);
-	nanosleep(&tim, &tim2);
+//	nanosleep(&tim, &tim2);
+	sleep(1);
 }
