@@ -245,7 +245,7 @@ void *gather(void *arg) {
 		switch (data->type) {
 		case MEM_USAGE:
 			sprintf(msg,
-					"{\"Timestamp\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
+					"{\"Timestamp\":\"%lu\",\"type:\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
 					data->mem_time.tv_sec, data->ram_used, data->ram_avail);
 
 			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
@@ -253,7 +253,7 @@ void *gather(void *arg) {
 			break;
 		case CPU_USAGE:
 			sprintf(msg,
-					"{\"Timestamp\":\"%lu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
+					"{\"Timestamp\":\"%lu\",\"type:\":\"cpu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
 					data->cpu_time.tv_sec, data->cpu_used, data->cpu_avail,
 					data->cpu_wa_io);
 			send_monitoring_data(addr, msg);
