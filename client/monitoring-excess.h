@@ -74,13 +74,13 @@ typedef struct sensor_msg {
 	/** memory state  */
 	uint32_t ram_used;
 	uint32_t ram_avail;
-	struct timeval mem_time;
+	struct timespec mem_time;
 
 	/** cpu state  */
 	double cpu_avail;
 	double cpu_used;
 	double cpu_wa_io;
-	struct timeval cpu_time;
+	struct timespec cpu_time;
 
 	int time_to_get_cpu_info;
 	int time_to_get_mem_info;

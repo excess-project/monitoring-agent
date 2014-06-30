@@ -245,17 +245,18 @@ void *gather(void *arg) {
 		switch (data->type) {
 		case MEM_USAGE:
 			sprintf(msg,
-					"{\"Timestamp\":\"%lu\",\"type:\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
-					data->mem_time.tv_sec, data->ram_used, data->ram_avail);
+					"{\"Timestamp\":\"%lu.%lu\",\"type:\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
+					data->mem_time.tv_sec, data->mem_time.tv_nsec,
+					data->ram_used, data->ram_avail);
 
 			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
 			send_monitoring_data(addr, msg);
 			break;
 		case CPU_USAGE:
 			sprintf(msg,
-					"{\"Timestamp\":\"%lu\",\"type:\":\"cpu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
-					data->cpu_time.tv_sec, data->cpu_used, data->cpu_avail,
-					data->cpu_wa_io);
+					"{\"Timestamp\":\"%lu.%lu\",\"type:\":\"cpu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
+					data->cpu_time.tv_sec, data->cpu_time.tv_nsec,
+					data->cpu_used, data->cpu_avail, data->cpu_wa_io);
 			send_monitoring_data(addr, msg);
 			break;
 		default:
@@ -281,6 +282,7 @@ void *gather(void *arg) {
 		fprintf(stderr, "start gather_cpu()\n");
 		sensor_msg_t *curPtr; // pointer to message above
 		double usage; // value of cpu usage
+		int clk_id = CLOCK_REALTIME;
 
 		while (1) {
 
@@ -292,7 +294,7 @@ void *gather(void *arg) {
 
 			curPtr->cpu_used = usage;
 			curPtr->cpu_avail = 100.0 - usage;
-			curPtr->cpu_time.tv_sec = time(NULL );
+			clock_gettime(clk_id, &curPtr->cpu_time);
 			curPtr->cpu_wa_io = usage / 100.0;
 			curPtr->type = CPU_USAGE;
 
@@ -330,11 +332,12 @@ void *gather(void *arg) {
 		fprintf(stderr, "start gather_mem()\n");
 		sensor_msg_t *curPtr;
 		int usage;
+		int clk_id = CLOCK_REALTIME;
 		while (1) {
 			curPtr = apr_palloc(data_pool, sizeof(sensor_msg_t));
 			usage = get_mem_usage();
 
-			curPtr->mem_time.tv_sec = time(NULL );
+			clock_gettime(clk_id, &curPtr->mem_time);
 			curPtr->ram_used = usage;
 			curPtr->ram_avail = 100 - usage;
 			curPtr->type = MEM_USAGE;
