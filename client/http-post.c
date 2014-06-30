@@ -416,8 +416,12 @@ void *gather(void *arg) {
 		for (p = info; p != NULL ; p = p->ai_next) {
 			sprintf(fqdn, "hostname: %s\n", p->ai_canonname);
 		}
+<<<<<<< HEAD
 		if (info->ai_canonname)
 			freeaddrinfo(info);
+=======
+//		freeaddrinfo(info);
+>>>>>>> bb66a90cc240c7cf9a911960dff1f751a87336a4
 
 		return 1;
 	}
