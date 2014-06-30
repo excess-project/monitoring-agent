@@ -408,10 +408,19 @@ void *gather(void *arg) {
 		hints.ai_socktype = SOCK_STREAM;
 		hints.ai_flags = AI_CANONNAME;
 
-		if ((gai_result = getaddrinfo(hostname, "http", &hints, &info)) != 0) {
+		if ((gai_result = getaddrinfo(hostname, "http", &hints, &info)) != 1) {
 			fprintf(stderr, "getaddrinfo: %s,\n using regular hostname",
 					gai_strerror(gai_result));
-			sprintf(fqdn, "hostname: %s\n", hostname);
+			FILE *tmp = NULL;
+			if ((tmp = popen("hostname", "r")) == NULL ) {
+				perror("popen");
+				return -1;
+			}
+			char line[200];
+			while (fgets(line, 200, tmp) != NULL )
+
+				sprintf(fqdn, "hostname: %s", line);
+			return 1;
 		}
 		for (p = info; p != NULL ; p = p->ai_next) {
 			sprintf(fqdn, "hostname: %s\n", p->ai_canonname);
