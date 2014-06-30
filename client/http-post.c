@@ -51,8 +51,14 @@ int getconf(const char *argv[]) {
 	while (fgets(line, 200, fp) != NULL ) {
 		char* pos;
 		if ((pos = strstr(line, "host: ")))
-//			printf("host:\n%s\n", pos + strlen("host: "));
 			sprintf(addr, "%s", pos + strlen("host: "));
+//		if ((pos == strstr(line, "timing_"))) {
+//			int numTim = (int) pos + strlen("timing_");
+////			sprintf(numTim, "%d", pos + strlen("timing_"));
+//			switch (numTim) {
+//
+//			}
+//		}
 	}
 	addr[strlen(addr) - 1] = '\0'; //remove newline character !!
 	fclose(fp);
@@ -403,8 +409,9 @@ void *gather(void *arg) {
 		hints.ai_flags = AI_CANONNAME;
 
 		if ((gai_result = getaddrinfo(hostname, "http", &hints, &info)) != 0) {
-			fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(gai_result));
-			exit(1);
+			fprintf(stderr, "getaddrinfo: %s,\n using regular hostname",
+					gai_strerror(gai_result));
+			fqdn = hostname;
 		}
 		for (p = info; p != NULL ; p = p->ai_next) {
 			sprintf(fqdn, "hostname: %s\n", p->ai_canonname);
