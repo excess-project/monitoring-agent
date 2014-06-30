@@ -416,7 +416,8 @@ void *gather(void *arg) {
 		for (p = info; p != NULL ; p = p->ai_next) {
 			sprintf(fqdn, "hostname: %s\n", p->ai_canonname);
 		}
-		freeaddrinfo(info);
+//		freeaddrinfo(info);
+
 		return 1;
 	}
 
