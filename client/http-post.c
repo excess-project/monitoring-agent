@@ -411,7 +411,7 @@ void *gather(void *arg) {
 		if ((gai_result = getaddrinfo(hostname, "http", &hints, &info)) != 0) {
 			fprintf(stderr, "getaddrinfo: %s,\n using regular hostname",
 					gai_strerror(gai_result));
-			fqdn = hostname;
+			sprintf(fqdn, "hostname: %s\n", hostname);
 		}
 		for (p = info; p != NULL ; p = p->ai_next) {
 			sprintf(fqdn, "hostname: %s\n", p->ai_canonname);
