@@ -26,6 +26,9 @@
 
 #define NUM_THREADS 2
 
+long timings[NUM_THREADS]; // 1 s = 1,000 ms= 1,000,000 µs = 1,000,000,000 ns
+int timingSend; // for now in seconds
+
 //#define QUEUE
 //#define QUEUE_SEND_SIZE 100000
 

@@ -31,7 +31,10 @@ double get_cpu_usage(void) {
 //	usleep(sleep_time);
 //	if (nanosleep(&tim, &tim2))
 //		printf("error in nanosleep!");
-	sleep(1);
+	if (timings[0] >= 10e8)
+		sleep(1);
+	else
+		usleep(timings[0]);
 
 	getprocstat(cpu_use + tog, cpu_nic + tog, cpu_sys + tog, cpu_idl + tog,
 			cpu_iow + tog, cpu_xxx + tog, cpu_yyy + tog, cpu_zzz + tog);
@@ -132,5 +135,8 @@ void getprocmeminfo(unsigned long *restrict mfre, unsigned long *restrict mtot) 
 		sscanf(b, "MemTotal: %lu kB", mtot);
 //	usleep(sleep_time);
 //	nanosleep(&tim, &tim2);
-	sleep(1);
+	if (timings[1] >= 10e8)
+			sleep(1);
+		else
+			usleep(timings[1]);
 }

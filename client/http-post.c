@@ -37,6 +37,7 @@ size_t get_stream_data(void *ptr, size_t size, size_t count, void *stream) {
 int getconf(const char *argv[]) {
 	const char *filename[] = { "conf" };
 	char *filepath = strdup(*argv);
+	int tempTim = 0;
 
 	FILE *fp;
 	char line[200];
@@ -50,15 +51,16 @@ int getconf(const char *argv[]) {
 	}
 	while (fgets(line, 200, fp) != NULL ) {
 		char* pos;
+//		printf("%s", line);
 		if ((pos = strstr(line, "host: ")))
 			sprintf(addr, "%s", pos + strlen("host: "));
-//		if ((pos == strstr(line, "timing_"))) {
-//			int numTim = (int) pos + strlen("timing_");
-////			sprintf(numTim, "%d", pos + strlen("timing_"));
-//			switch (numTim) {
-//
-//			}
-//		}
+		if ((pos = strstr(line, "timing_"))) {
+			int numTim = atoi(pos + strlen("timing_"));
+			tempTim = atoi(pos + strlen("timing_") + 2);
+			timings[numTim] = tempTim;
+		}
+		if ((pos = strstr(line, "timingSend")))
+			timingSend = atoi(pos + strlen("timingSend") + 1);
 	}
 	addr[strlen(addr) - 1] = '\0'; //remove newline character !!
 	fclose(fp);
@@ -272,8 +274,10 @@ void *gather(void *arg) {
 	}
 
 	int send_data() {
+
 		void *ptr;
 		while (1) {
+			sleep(timingSend);
 			status = apr_queue_pop(data_queue, &ptr);
 			if (status == APR_SUCCESS) {
 				sensor_msg_t *dPtr = ptr;
