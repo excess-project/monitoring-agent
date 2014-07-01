@@ -238,7 +238,7 @@ void start_gathering(void) {
 }
 
 void *gather(void *arg) {
-	int (*p[NUM_THREADS])() = {gather_cpu, gather_mem };
+	int (*p[])() = {gather_cpu, gather_mem };
 		int *typeT = (int*) arg;
 		if (*typeT < NUM_THREADS) {
 			if ((*p[*typeT])()) {
