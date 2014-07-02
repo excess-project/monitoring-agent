@@ -21,7 +21,6 @@ apr_status_t status = APR_SUCCESS;
 
 char addr[100] = "http://localhost:3000/executions/";
 
-int number_to_send = 5;
 int t; // switch for running the individual gathering routines
 
 /* ptr - curl output
@@ -228,9 +227,7 @@ void start_gathering(void) {
 		}
 	}
 	send_data();
-//	while (1)
-//		;
-//	sleep(10e8);
+
 	for (t = 0; t < NUM_THREADS; t++) {
 		pthread_join(threads[t], NULL );
 	}
@@ -250,21 +247,31 @@ void *gather(void *arg) {
 
 	void prepSend(sensor_msg_t *data) {
 		char msg[500] = "";
+
+		jidd timeStamp;
 		switch (data->type) {
 		case MEM_USAGE:
+//			sprintf(msg,
+//					"{\"Timestamp\":\"%lu.%lu\",\"type:\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
+//					data->mem_time.tv_sec, data->mem_time.tv_nsec,
+//					data->ram_used, data->ram_avail);
+			timeStamp = data->mem_time.tv_sec
+					+ (jidd) (data->mem_time.tv_nsec / 10e8);
 			sprintf(msg,
-					"{\"Timestamp\":\"%lu.%lu\",\"type:\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
-					data->mem_time.tv_sec, data->mem_time.tv_nsec,
-					data->ram_used, data->ram_avail);
+					"{\"Timestamp\":\"%.9Lf\",\"type:\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
+					timeStamp, data->ram_used, data->ram_avail);
 
 			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
 			send_monitoring_data(addr, msg);
 			break;
 		case CPU_USAGE:
+			timeStamp = data->cpu_time.tv_sec
+								+ (jidd) (data->cpu_time.tv_nsec / 10e8);
 			sprintf(msg,
-					"{\"Timestamp\":\"%lu.%lu\",\"type:\":\"cpu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
-					data->cpu_time.tv_sec, data->cpu_time.tv_nsec,
+					"{\"Timestamp\":\"%.9LF\",\"type:\":\"cpu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
+					timeStamp,
 					data->cpu_used, data->cpu_avail, data->cpu_wa_io);
+			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
 			send_monitoring_data(addr, msg);
 			break;
 		default:
