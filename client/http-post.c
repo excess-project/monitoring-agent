@@ -285,7 +285,7 @@ void *gather(void *arg) {
 			timeStamp = data->mem_time.tv_sec
 					+ (jidd) (data->mem_time.tv_nsec / 10e8);
 			sprintf(msg,
-					"{\"Timestamp\":\"%.9Lf\",\"type:\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
+					"{\"Timestamp\":\"%.9Lf\",\"type\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
 					timeStamp, data->ram_used, data->ram_avail);
 
 			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
@@ -295,7 +295,7 @@ void *gather(void *arg) {
 			timeStamp = data->cpu_time.tv_sec
 					+ (jidd) (data->cpu_time.tv_nsec / 10e8);
 			sprintf(msg,
-					"{\"Timestamp\":\"%.9LF\",\"type:\":\"cpu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
+					"{\"Timestamp\":\"%.9LF\",\"type\":\"cpu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
 					timeStamp, data->cpu_used, data->cpu_avail,
 					data->cpu_wa_io);
 			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
