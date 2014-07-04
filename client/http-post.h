@@ -49,6 +49,8 @@ int gather_mem();
 
 int send_data();
 
+void plausable();
+
 /* function prototypes for private use 
  size_t get_stream_data(void *ptr, size_t size, size_t count, void *stream);
  */

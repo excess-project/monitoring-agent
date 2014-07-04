@@ -222,7 +222,7 @@ int readConf(char *confFile) {
 	stat(confFile, &st);
 	if (st.st_ctim.tv_sec > timeStampFile.tv_sec) {
 		if (timeStampFile.tv_sec > 0)
-			printf("Conf file changed, read again!\n");
+			printf("\nConf file changed, read again!\n");
 
 		FILE *fp;
 		char line[200];
@@ -239,7 +239,6 @@ int readConf(char *confFile) {
 				sprintf(helpAddr, "%s", pos + strlen("host: "));
 				strncpy(addr, helpAddr, strlen(helpAddr) - 1);
 			}
-
 			if ((pos = strstr(line, "timing_"))) {
 				int numTim = atoi(pos + strlen("timing_"));
 				tempTim = atoi(pos + strlen("timing_") + 2);
@@ -252,7 +251,7 @@ int readConf(char *confFile) {
 		}
 
 		fclose(fp);
-
+		plausable(NULL );
 	}
 	return 1;
 }
@@ -470,12 +469,26 @@ void *gather(void *arg) {
 		return 1;
 	}
 
+	void plausable() {
+		int bound = 10e5;
+		for (int iter = 0; iter < NUM_THREADS; iter++) {
+			if (timings[iter] != 0 && timings[iter] < bound) {
+				printf(
+						"/n >>>> wrong value for timing, results become unprecise for values less than %.2e <<<</n",
+						(float) bound);
+				exit(1);
+			}
+		}
+
+	}
+
 	int main(int argc, const char *argv[]) {
 		getconf(argv);
 		if (!readConf(confFile)) {
 			printf("error reading config file!\n");
 			exit(-1);
 		}
+
 //		printf("%ld\n",sysconf(_SC_CLK_TCK));
 		printf("%lf %% \n", get_cpu_usage());
 		printf("%d %%\n", get_mem_usage());
