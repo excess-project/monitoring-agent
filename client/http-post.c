@@ -5,6 +5,7 @@
  Copyright 2014 University of Stuttgart
  */
 #include <apr-1/apr_queue.h>
+#include <sys/stat.h>
 
 #include "http-post.h"
 #include "monitoring-excess.h"
@@ -20,6 +21,8 @@ apr_pool_t *data_pool;
 apr_status_t status = APR_SUCCESS;
 
 char addr[100] = "http://localhost:3000/executions/";
+char *confFile;
+struct timespec timeStampFile = { 0, 0 };
 
 int t; // switch for running the individual gathering routines
 
@@ -36,33 +39,10 @@ size_t get_stream_data(void *ptr, size_t size, size_t count, void *stream) {
 int getconf(const char *argv[]) {
 	const char *filename[] = { "conf" };
 	char *filepath = strdup(*argv);
-	int tempTim = 0;
-
-	FILE *fp;
-	char line[200];
 
 	int length = strlen(filepath);
 	memcpy(filepath + (length - 4), *filename, sizeof(filename));
-	fp = fopen(filepath, "r");
-	if (!fp) {
-		printf("File not found!\n");
-		return 0;
-	}
-	while (fgets(line, 200, fp) != NULL ) {
-		char* pos;
-//		printf("%s", line);
-		if ((pos = strstr(line, "host: ")))
-			sprintf(addr, "%s", pos + strlen("host: "));
-		if ((pos = strstr(line, "timing_"))) {
-			int numTim = atoi(pos + strlen("timing_"));
-			tempTim = atoi(pos + strlen("timing_") + 2);
-			timings[numTim] = tempTim;
-		}
-		if ((pos = strstr(line, "timingSend")))
-			timingSend = atoi(pos + strlen("timingSend") + 1);
-	}
-	addr[strlen(addr) - 1] = '\0'; //remove newline character !!
-	fclose(fp);
+	confFile = strdup(filepath);
 	return 1;
 }
 
@@ -234,8 +214,59 @@ void start_gathering(void) {
 
 }
 
+int readConf(char *confFile) {
+	int tempTim = 0;
+	struct stat st;
+	char helpAddr[300] = { "" };
+
+	stat(confFile, &st);
+	if (st.st_ctim.tv_sec > timeStampFile.tv_sec) {
+		if (timeStampFile.tv_sec > 0)
+			printf("Conf file changed, read again!\n");
+
+		FILE *fp;
+		char line[200];
+		fp = fopen(confFile, "r");
+		timeStampFile = st.st_ctim;
+		if (!fp) {
+			printf("File not found!\n");
+			return 0;
+		}
+		while (fgets(line, 200, fp) != NULL ) {
+			char* pos;
+			//		printf("%s", line);
+			if ((pos = strstr(line, "host: "))) {
+				sprintf(helpAddr, "%s", pos + strlen("host: "));
+				strncpy(addr, helpAddr, strlen(helpAddr) - 1);
+			}
+
+			if ((pos = strstr(line, "timing_"))) {
+				int numTim = atoi(pos + strlen("timing_"));
+				tempTim = atoi(pos + strlen("timing_") + 2);
+				timings[numTim] = tempTim;
+			}
+			if ((pos = strstr(line, "timingSend")))
+				timingSend = atoi(pos + strlen("timingSend") + 1);
+			if ((pos = strstr(line, "timingCheck")))
+				timingCheck = atoi(pos + strlen("timingCheck") + 1);
+		}
+
+		fclose(fp);
+
+	}
+	return 1;
+}
+
+int checkConf() {
+	while (1) {
+		readConf(confFile);
+		sleep(timingCheck);
+	}
+	return 1;
+}
+
 void *gather(void *arg) {
-	int (*p[])() = {gather_cpu, gather_mem };
+	int (*p[])() = {gather_cpu, gather_mem, checkConf };
 		int *typeT = (int*) arg;
 		if (*typeT < NUM_THREADS) {
 			if ((*p[*typeT])()) {
@@ -251,10 +282,6 @@ void *gather(void *arg) {
 		jidd timeStamp;
 		switch (data->type) {
 		case MEM_USAGE:
-//			sprintf(msg,
-//					"{\"Timestamp\":\"%lu.%lu\",\"type:\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
-//					data->mem_time.tv_sec, data->mem_time.tv_nsec,
-//					data->ram_used, data->ram_avail);
 			timeStamp = data->mem_time.tv_sec
 					+ (jidd) (data->mem_time.tv_nsec / 10e8);
 			sprintf(msg,
@@ -266,11 +293,11 @@ void *gather(void *arg) {
 			break;
 		case CPU_USAGE:
 			timeStamp = data->cpu_time.tv_sec
-								+ (jidd) (data->cpu_time.tv_nsec / 10e8);
+					+ (jidd) (data->cpu_time.tv_nsec / 10e8);
 			sprintf(msg,
 					"{\"Timestamp\":\"%.9LF\",\"type:\":\"cpu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
-					timeStamp,
-					data->cpu_used, data->cpu_avail, data->cpu_wa_io);
+					timeStamp, data->cpu_used, data->cpu_avail,
+					data->cpu_wa_io);
 			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
 			send_monitoring_data(addr, msg);
 			break;
@@ -444,8 +471,8 @@ void *gather(void *arg) {
 	}
 
 	int main(int argc, const char *argv[]) {
-
-		if (!getconf(argv)) {
+		getconf(argv);
+		if (!readConf(confFile)) {
 			printf("error reading config file!\n");
 			exit(-1);
 		}
