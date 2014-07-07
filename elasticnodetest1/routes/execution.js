@@ -68,7 +68,7 @@ exports.details = function(client){
     },   
     function(err, result)
     {
-      console.log(result);
+      //console.log(result);
       if (result.found != false){          
       	res.send(result._source);    
       } else {
@@ -121,6 +121,7 @@ exports.values = function (client){
     	index:req.params.ID.toLowerCase(), 
       size:10000,
       sort:"Timestamp",
+			//sort:"type",
       },   
       function(err, result)
     	{
@@ -133,8 +134,8 @@ exports.values = function (client){
             function(key)
               {
                 es_result.push(only_results[key]._source);
-                console.log("Adding "+key+" number to result ");
-                console.log(JSON.stringify(es_result[key]));
+                //console.log("Adding "+key+" number to result ");
+                //console.log(JSON.stringify(es_result[key]));
               });
           res.send(es_result);    
         } else {
@@ -176,8 +177,8 @@ exports.range = function (client){
 	  				function(key)
 	  				{
         			es_result.push(only_results[key]._source);
-        			console.log("Adding "+key+" number to result ");
-        			console.log(JSON.stringify(es_result[key]));
+        			//console.log("Adding "+key+" number to result ");
+        			//console.log(JSON.stringify(es_result[key]));
         		});
 	  			res.send(es_result);		
 	  		} else {
@@ -193,8 +194,8 @@ exports.range = function (client){
 exports.insert = function (client){
 	return function(req, res){
   	var the_json = req.body;
-  	console.log("The request body is: ");
-  	console.log(the_json);
+  	//console.log("The request body is: ");
+  	//console.log(the_json);
 		client.index({index:'executions',type: 'TBD',body:the_json},function(err,es_reply)
   	{
   		//console.log("NODE.js Output starts here .................");
@@ -212,7 +213,7 @@ exports.add = function (client){
   	var the_json = req.body;
 		client.index({index:req.params.ID.toLowerCase(),type: 'TBD',body:the_json},function(err,es_reply)
   	{
-  		console.log(es_reply);
+  		//console.log(es_reply);
   	  res.send(es_reply);
   	});
 	}
