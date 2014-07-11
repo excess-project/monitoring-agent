@@ -120,8 +120,7 @@ exports.values = function (client){
 		client.search({
     	index:req.params.ID.toLowerCase(), 
       size:10000,
-      sort:"Timestamp",
-			//sort:"type",
+			sort:["type", "Timestamp"],
       },   
       function(err, result)
     	{
@@ -198,7 +197,6 @@ exports.insert = function (client){
   	//console.log(the_json);
 		client.index({index:'executions',type: 'TBD',body:the_json},function(err,es_reply)
   	{
-  		//console.log("NODE.js Output starts here .................");
   		//console.log(es_reply);
   		res.send(es_reply._id);
   	});

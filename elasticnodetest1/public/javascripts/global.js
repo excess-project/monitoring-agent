@@ -67,7 +67,7 @@ function exportMetrics(idExe) {
 		// Stick our metric data array into a metricsData variable in the global object
     executionsData = data;
 		message+="<textarea id='txt'cols=80 rows=10>"+JSON.stringify(executionsData)+"</textarea> <br>";		
-		message+="<input type='button' value='Download CSV' onclick='JSON2CSV("+JSON.stringify(executionsData)+");' onBlur='window.close();' />";
+		message+="<input type='button' value='Download CSV' onclick='JSON2CSV("+JSON.stringify(executionsData)+");' onBlur='window.close();' />";    
 		message+="<input type='button' value='Download JSON' onclick='saveJSON("+JSON.stringify(executionsData)+");' onBlur='window.close();' /><br>";
 	  message+="</form>";
 		message+="</font>";
@@ -79,22 +79,26 @@ function JSON2CSV(objArray) {
     var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
     var str = '';
     var line = '';
-		var head = array[0];
-    
-		//Include the field name on the exported data
-    for (var index in array[0]) {
-    	line += index + ',';
-    }    
-		line = line.slice(0, -1);
-    str += line + '\r\n';    
+    var metric_type = '';  
 
     for (var i = 0; i < array.length; i++) {
-			var line = '';
-				for (var index in array[i]) {
-					line += array[i][index] + ',';
-				}
+			line = '';
+      //include the header of each metric type
+			if (metric_type != array[i]['type']){
+				metric_type = array[i]['type']
+		    for (var index in array[i]) {
+	    		line += index + ',';
+	    	}    
+				line = line.slice(0, -1);
+	    	str += line + '\r\n';   
+			}
+			line = '';
+
+			for (var index in array[i]) {
+				line += array[i][index] + ',';
+			}
 			line = line.slice(0, -1);
-        str += line + '\r\n';
+      str += line + '\r\n';
     }
     window.open("data:text/csv;charset=utf-8," + escape(str))
     return str;

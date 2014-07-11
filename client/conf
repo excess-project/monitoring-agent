@@ -1,6 +1,6 @@
-host: http://141.58.8.36:3000/executions/
-timing_0: 1000000ns
-timing_1: 1000000ns
+host: http://localhost:3000/executions/
+timing_0: 1000000000ns
+timing_1: 1000000000ns
 timingSend: 0s
 timingCheck: 30s
 papis: PAPI_FP_INS,PAPI_FP_OPS,PAPI_TOT_INS
