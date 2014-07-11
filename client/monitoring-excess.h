@@ -21,11 +21,15 @@
 #include <sys/time.h>			
 #include <math.h>
 
+#include <papi.h>
+
 #define TIME_OUT  1000000   //microseconde  
 #define INPUT_SIZE 200			
 #define PATH_MAX_SIZE 200
 #define BUFFER_SIZE 1000
 #define DATA_AVAILABLE 0 
+
+#define MAX_PAPI 256
 
 enum msg_Type {
 	CPU_USAGE = 0, MEM_USAGE = 1
@@ -88,6 +92,12 @@ typedef struct sensor_msg {
 	enum msg_Type type;
 
 } sensor_msg_t;
+
+typedef struct metric {
+	struct timespec timestamp;
+
+	char *msg;
+} metric_t;
 
 /*** the reserved information between sensor and client part  ****/
 

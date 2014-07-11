@@ -6,8 +6,8 @@ CC = /usr/bin/gcc
 ## gcc-Version 4.4.7 20120313 (Red Hat 4.4.7-4) (GCC)
 
 OUTPUT = main
-CFLAGS = -std=gnu99 -pedantic -ggdb -Wall -Wwrite-strings -Wpointer-arith -Wcast-align 
-LFLAGS = -lcurl -lm -lpthread -laprutil-1 -lapr-1
+CFLAGS = -I/mnt/raid/home/hpcneich/papi/include -std=gnu99 -pedantic -ggdb -Wall -Wwrite-strings -Wpointer-arith -Wcast-align 
+LFLAGS = /mnt/raid/home/hpcneich/papi/lib/libpapi.a -lcurl -lm -lpthread -laprutil-1 -lapr-1
 
 ## List of source files
 FILES = http-post.c monitoring-new.c

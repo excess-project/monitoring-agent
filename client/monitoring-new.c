@@ -8,10 +8,15 @@
 #include "http-post.h"
 #include "monitoring-new.h"
 
-struct timespec tim, tim2;
+struct timespec tim, tim2, tim3;
 
 time_t sec_to_sleep = 0;
 long nanos_to_sleep = 999999999; //must be less than 10e8 !!!
+
+//int EventSet = PAPI_NULL;
+
+int i;
+int retval;
 
 double get_cpu_usage(void) {
 
@@ -136,7 +141,51 @@ void getprocmeminfo(unsigned long *restrict mfre, unsigned long *restrict mtot) 
 //	usleep(sleep_time);
 //	nanosleep(&tim, &tim2);
 	if (timings[1] >= 10e8)
+		sleep(1);
+	else
+		usleep(timings[1]);
+}
+
+char* toPapiData(long_long *val) {
+	char *returnMsg = malloc(500 * sizeof(char));
+	char *msgPart = malloc(200 * sizeof(char));
+
+	for (int i = 0; i < papiNumbers; i++) {
+		sprintf(msgPart, ",\"%s\":\"%lld\"", papiEvents[i], val[i]);
+
+		strcat(returnMsg, msgPart);
+	}
+
+	return returnMsg;
+}
+
+int gatherPapiData(int *EventSet, long_long (*val)[MAX_PAPI]) {
+	metric_t *resMetric = malloc(sizeof(metric_t));
+	resMetric->msg = malloc(sizeof(char) * 500);
+//	struct timespec *timeStamp = { 0 };
+
+	int clk_id = CLOCK_REALTIME;
+	while (1) {
+
+		retval = PAPI_read(*EventSet, *val);
+		char *result = toPapiData(*val);
+
+		clock_gettime(clk_id, &resMetric->timestamp);
+//		resMetric->timestamp = *timeStamp;
+
+		strcpy(resMetric->msg, result);
+		apr_queue_push(data_queue, resMetric);
+		if (timings[1] >= 10e8)
 			sleep(1);
 		else
 			usleep(timings[1]);
+	}
+	PAPI_stop(*EventSet, *val);
+	return 1;
+}
+
+void handle_error(int err) {
+	fprintf(stderr, "papi-pcm.c: Failure with PAPI error '%s'.\n",
+			PAPI_strerror(err));
+	exit(1);
 }

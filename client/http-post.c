@@ -4,7 +4,7 @@
  \date April 2013
  Copyright 2014 University of Stuttgart
  */
-#include <apr-1/apr_queue.h>
+
 #include <sys/stat.h>
 
 #include "http-post.h"
@@ -16,8 +16,8 @@ char execID_[ID_SIZE] = ""; /* storing the execution ID -- UUID is 36 chars */
 struct curl_slist *headers_ = NULL;
 CURL *curl_ = NULL;
 
-apr_queue_t *data_queue;
-apr_pool_t *data_pool;
+//apr_queue_t *data_queue;
+//apr_pool_t *data_pool;
 apr_status_t status = APR_SUCCESS;
 
 char addr[100] = "http://localhost:3000/executions/";
@@ -216,6 +216,7 @@ void start_gathering(void) {
 
 int readConf(char *confFile) {
 	int tempTim = 0;
+//	int iter;
 	struct stat st;
 	char helpAddr[300] = { "" };
 
@@ -248,6 +249,28 @@ int readConf(char *confFile) {
 				timingSend = atoi(pos + strlen("timingSend") + 1);
 			if ((pos = strstr(line, "timingCheck")))
 				timingCheck = atoi(pos + strlen("timingCheck") + 1);
+			if ((pos = strstr(line, "papis"))) {
+				int where = 0;
+				char *p = NULL;
+				p = strtok(pos + strlen("papis") + 2, ",");
+				while (p) {
+
+					strcpy(papiEvents[where], p);
+					// we don't want a end of line character
+					if (papiEvents[where][strlen(papiEvents[where]) - 1]
+							== '\n')
+						papiEvents[where][strlen(papiEvents[where]) - 1] = '\0';
+					p = strtok(NULL, ",");
+					where++;
+				}
+				papiNumbers = where;
+				//TODO dynamic array for papinames
+//				papiNames = malloc(where * sizeof(char*));
+
+			}
+			if ((pos = strstr(line, "papiTiming"))) {
+				timings[NUM_THREADS - 1] = atoi(pos + strlen("papiTiming") + 1);
+			}
 		}
 
 		fclose(fp);
@@ -265,7 +288,7 @@ int checkConf() {
 }
 
 void *gather(void *arg) {
-	int (*p[])() = {gather_cpu, gather_mem, checkConf };
+	int (*p[])() = {gather_cpu, gather_mem, checkConf, gather_papi };
 		int *typeT = (int*) arg;
 		if (*typeT < NUM_THREADS) {
 			if ((*p[*typeT])()) {
@@ -275,35 +298,40 @@ void *gather(void *arg) {
 		pthread_exit(NULL );
 	}
 
-	void prepSend(sensor_msg_t *data) {
+	void prepSend(metric_t *data) {
 		char msg[500] = "";
+		jidd timeStamp = data->timestamp.tv_sec
+				+ (jidd) (data->timestamp.tv_nsec / 10e8);
 
-		jidd timeStamp;
-		switch (data->type) {
-		case MEM_USAGE:
-			timeStamp = data->mem_time.tv_sec
-					+ (jidd) (data->mem_time.tv_nsec / 10e8);
-			sprintf(msg,
-					"{\"Timestamp\":\"%.9Lf\",\"type\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
-					timeStamp, data->ram_used, data->ram_avail);
+		sprintf(msg, "{\"Timestamp\":\"%.9Lf\"%s}", timeStamp, data->msg);
+		send_monitoring_data(addr, msg);
 
-			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
-			send_monitoring_data(addr, msg);
-			break;
-		case CPU_USAGE:
-			timeStamp = data->cpu_time.tv_sec
-					+ (jidd) (data->cpu_time.tv_nsec / 10e8);
-			sprintf(msg,
-					"{\"Timestamp\":\"%.9LF\",\"type\":\"cpu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
-					timeStamp, data->cpu_used, data->cpu_avail,
-					data->cpu_wa_io);
-			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
-			send_monitoring_data(addr, msg);
-			break;
-		default:
-			printf("Message to send neither cpu nor mem related!");
-			break;
-		}
+//		jidd timeStamp;
+//		switch (data->type) {
+//		case MEM_USAGE:
+//			timeStamp = data->mem_time.tv_sec
+//					+ (jidd) (data->mem_time.tv_nsec / 10e8);
+//			sprintf(msg,
+//					"{\"Timestamp\":\"%.9Lf\",\"type\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
+//					timeStamp, data->ram_used, data->ram_avail);
+//
+//			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
+//			send_monitoring_data(addr, msg);
+//			break;
+//		case CPU_USAGE:
+//			timeStamp = data->cpu_time.tv_sec
+//					+ (jidd) (data->cpu_time.tv_nsec / 10e8);
+//			sprintf(msg,
+//					"{\"Timestamp\":\"%.9LF\",\"type\":\"cpu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
+//					timeStamp, data->cpu_used, data->cpu_avail,
+//					data->cpu_wa_io);
+//			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
+//			send_monitoring_data(addr, msg);
+//			break;
+//		default:
+//			printf("Message to send neither cpu nor mem related!");
+//			break;
+//		}
 	}
 
 	int send_data() {
@@ -311,19 +339,35 @@ void *gather(void *arg) {
 		void *ptr;
 		while (1) {
 			sleep(timingSend);
+
 			status = apr_queue_pop(data_queue, &ptr);
 			if (status == APR_SUCCESS) {
-				sensor_msg_t *dPtr = ptr;
-				prepSend(dPtr);
+				metric_t *mPtr = ptr;
+				prepSend(mPtr);
+//				sensor_msg_t *dPtr = ptr;
+//				prepSend(dPtr);
 			}
 		}
 
 		return 1;
 	}
+	char* toCpuData(sensor_msg_t *ptr) {
+		char* returnMsg = malloc(500 * sizeof(char));
+
+		sprintf(returnMsg,
+				",\"cpu_used\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"",
+				ptr->cpu_used, ptr->cpu_avail, ptr->cpu_wa_io);
+
+		return returnMsg;
+	}
 
 	int gather_cpu() {
 		fprintf(stderr, "start gather_cpu()\n");
 		sensor_msg_t *curPtr; // pointer to message above
+
+		metric_t *resMetric = malloc(sizeof(metric_t));
+		resMetric->msg = malloc(sizeof(char) * 500);
+
 		double usage; // value of cpu usage
 		int clk_id = CLOCK_REALTIME;
 
@@ -333,37 +377,21 @@ void *gather(void *arg) {
 			if (curPtr == 0) {
 				printf("Failed palloc/n");
 			}
+			clock_gettime(clk_id, &resMetric->timestamp);
 			usage = get_cpu_usage();
 
 			curPtr->cpu_used = usage;
 			curPtr->cpu_avail = 100.0 - usage;
-			clock_gettime(clk_id, &curPtr->cpu_time);
+
 			curPtr->cpu_wa_io = usage / 100.0;
 			curPtr->type = CPU_USAGE;
 
-//		for (int a = 0; a < 2; a++) {
-			status = apr_queue_push(data_queue, curPtr);
+			strcpy(resMetric->msg, toCpuData(curPtr));
+
+			status = apr_queue_push(data_queue, resMetric);
 			if (status != APR_SUCCESS) {
 				printf("Failed queue push!");
 			}
-//		}
-
-//		if (apr_queue_size(data_queue) > 0) {
-//			for (int n = 0; n < apr_queue_size(data_queue); n++) {
-//				void *ptr2;
-//
-//				status = apr_queue_pop(data_queue, &ptr2);
-//				if (status != APR_SUCCESS) {
-//					printf("Failed queue push!");
-//				}
-//				sensor_msg_t *dPtr = ptr2;
-//
-//				printf("Value: %f", dPtr->cpu_used);
-//
-////					double *usageOut = (double *) ptrO;
-////					printf("%f", *usageOut);
-//
-//			}
 
 		}
 //		}
@@ -371,21 +399,40 @@ void *gather(void *arg) {
 //		exit(EXIT_FAILURE);
 		return 0;
 	}
+
+	char* toMemData(sensor_msg_t *ptr) {
+		char *returnMsg = malloc(500 * sizeof(char));
+
+		sprintf(returnMsg, ",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"",
+				ptr->ram_used, ptr->ram_avail);
+
+		return returnMsg;
+	}
 	int gather_mem() {
 		fprintf(stderr, "start gather_mem()\n");
 		sensor_msg_t *curPtr;
+		metric_t *resMetric = malloc(sizeof(metric_t));
+		resMetric->msg = malloc(sizeof(char) * 500);
+
 		int usage;
 		int clk_id = CLOCK_REALTIME;
 		while (1) {
 			curPtr = apr_palloc(data_pool, sizeof(sensor_msg_t));
 			usage = get_mem_usage();
 
-			clock_gettime(clk_id, &curPtr->mem_time);
+			clock_gettime(clk_id, &resMetric->timestamp);
 			curPtr->ram_used = usage;
 			curPtr->ram_avail = 100 - usage;
 			curPtr->type = MEM_USAGE;
 
-			status = apr_queue_push(data_queue, curPtr);
+//			resMetric->msg = toMemData(curPtr);
+			strcpy(resMetric->msg, toMemData(curPtr));
+
+			status = apr_queue_push(data_queue, resMetric);
+			if (status != APR_SUCCESS) {
+				printf("Failed queue push!");
+			}
+//			status = apr_queue_push(data_queue, curPtr);
 
 //			void *ptr = &usage;
 //			void **ptr2 = &ptr;
@@ -395,42 +442,53 @@ void *gather(void *arg) {
 		printf("gather_mem ended");
 		return 0;
 	}
+	int gather_papi() {
+		int retval;
+		int i;
+		int EventSet = PAPI_NULL;
 
-//	void send_dummy_data(char *URL) {
-//		char msg[500] = "";
-//		int i = 0;
-//		sensor_msg_t data;
-//
-//		printf("\n");
-//		for (i = 0; i < END_INDEX; i++) {
-//			data = dequeue();
-//
-//			/* send memory info */
-//			sprintf(msg,
-//					"{\"Timestamp\":\"%lu\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
-//					data.mem_time.tv_sec, data.ram_used, data.ram_avail);
-//			/***
-//			 to_send_msg[i].mem_time.tv_sec, to_send_msg[i].ram_used,
-//			 to_send_msg[i].ram_avail);
-//			 ****/
-//
-//			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
-//			send_monitoring_data(URL, msg);
-//
-//			/* send CPU info */
-//			sprintf(msg,
-//					"{\"Timestamp\":\"%lu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
-//					data.cpu_time.tv_sec, data.cpu_used, data.cpu_avail,
-//					data.cpu_wa_io);
-//			/****
-//			 to_send_msg[i].cpu_time.tv_sec, to_send_msg[i].cpu_used,
-//			 to_send_msg[i].cpu_avail, to_send_msg[i].cpu_wa_io);
-//			 *****/
-//
-//			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
-//			send_monitoring_data(URL, msg);
+		retval = PAPI_library_init(PAPI_VER_CURRENT);
+		if (retval != PAPI_VER_CURRENT && retval > 0) {
+			fprintf(stderr, "getPapiValues: PAPI library version mismatch!\n");
+			exit(1);
+		}
+
+		retval = PAPI_create_eventset(&EventSet);
+		if (retval != PAPI_OK) {
+			handle_error(retval);
+		}
+
+		if (retval < 0) {
+			fprintf(stderr, "getPapiValues: Initialization error!\n");
+			exit(1);
+		}
+
+		for (i = 0; i < MAX_PAPI; i++) {
+			if (papiEvents[i][0] == '\0')
+				break;
+			retval = PAPI_add_named_event(EventSet,
+					(char*) (intptr_t) papiEvents[i]);
+			if (retval != PAPI_OK) {
+				fprintf(stderr,
+						"getPapiValues: Failure to add PAPI event '%s'.\n",
+						(char*) (intptr_t) papiEvents[i]);
+				handle_error(retval);
+			}
+		}
+
+		retval = PAPI_start(EventSet);
+		if (retval != PAPI_OK) {
+			handle_error(retval);
+		}
+
+		long_long values[MAX_PAPI];
+//		long_long *p = values;
+//		while (1) {
+		gatherPapiData(&EventSet, &values);
 //		}
-//	}
+
+		return 1;
+	}
 
 	int getFQDN(char *fqdn) {
 		struct addrinfo hints, *info, *p;
@@ -474,7 +532,7 @@ void *gather(void *arg) {
 		for (int iter = 0; iter < NUM_THREADS; iter++) {
 			if (timings[iter] != 0 && timings[iter] < bound) {
 				printf(
-						"/n >>>> wrong value for timing, results become unprecise for values less than %.2e <<<</n",
+						"\n >>>> wrong value for timing, results become unprecise for values less than %.2e <<<<\n",
 						(float) bound);
 				exit(1);
 			}

@@ -20,13 +20,25 @@
 #include <pthread.h>
 #include <netdb.h>
 
+#include <apr-1/apr_queue.h>
+
 #define SEND_SUCCESS 1
 #define SEND_FAILED  0
 #define ID_SIZE 50
 
-#define NUM_THREADS 3
+#define NUM_THREADS 4
+//#define MAX_PAPI 256
 
 long timings[NUM_THREADS]; // 1 s = 1,000 ms= 1,000,000 µs = 1,000,000,000 ns
+char papiEvents[256][20];
+
+int papiNumbers;
+
+struct apr_queue_t *data_queue;
+struct apr_pool_t *data_pool;
+//struct apr_status_t status = APR_SUCCESS;
+
+//char **papiNames;
 
 int timingSend, timingCheck; // for now in seconds
 
@@ -46,6 +58,7 @@ void *gather(void *arg);
 
 int gather_cpu();
 int gather_mem();
+int gather_papi();
 
 int send_data();
 
