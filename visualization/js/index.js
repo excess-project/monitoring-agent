@@ -1,4 +1,5 @@
-var margin = {top: 20, right: 240, bottom: 90, left: 40},
+//var margin = {top: 20, right: 240, bottom: 90, left: 40},
+var margin = {top: 20, right: 240, bottom: 170, left: 40},
     width = 1224 - margin.left - margin.right,
     height = 768 - margin.top - margin.bottom;
 
@@ -28,10 +29,12 @@ var m3 = d3.scale.linear()
 
 var xAxis = d3.svg.axis()
     .scale(x)
-    .orient("bottom")
-    .ticks(14, "")
-    .tickFormat(d3.format('0f'));
-
+    .orient("bottom")    
+    //.ticks(14, "")    
+    //.tickFormat(d3.format('0f'));        
+    .ticks(20, "")    
+    .tickFormat(d3.format(".9f"));        
+    
 var m1Axis = d3.svg.axis()
     .scale(m1)
     .orient("left")
@@ -59,7 +62,7 @@ var metric2=getParameterByName('metric2');
 var metric3=getParameterByName('metric3');
 var from=getParameterByName('from');
 var to=getParameterByName('to');
-console.log(metric1);
+//console.log(metric1);
 //var xyz = jQuery.url.param("xyz");
 /*//This is the original part that was getting the info from a tsv
 d3.tsv("data.tsv", type, function(error, data) {
@@ -92,17 +95,19 @@ var zero = d3.format("04d");
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
       .selectAll("text")  
-            .style("text-anchor", "end")
+            .style("text-anchor", "end")            
             .attr("dx", "-.8em")
             .attr("dy", ".15em")
             .attr("transform", function(d) {
-                return "rotate(-65)" 
+                //return "rotate(-65)" 
+                return "rotate(-90)" 
               });
 
   svg.append("text")
-      .attr("y", height+70)
-      .attr("x", width/2)
-      .attr("dy", ".71em")
+      //.attr("y", height+70)
+      .attr("y", height+150)
+      .attr("x", width/2)      
+      .attr("dy", ".71em")      
       .attr("class","axis")
       .style("text-anchor", "end")
       .text("Timestamp");
@@ -170,7 +175,6 @@ var zero = d3.format("04d");
       .style("text-anchor", "end")
       .text(metric3);
 
-
   svg.append("text")
     //  .attr("transform", "rotate(-90)")
       .attr("y", 10)
@@ -190,17 +194,7 @@ var zero = d3.format("04d");
       .attr("class","label")
       .style("text-anchor", "end")
       .text(metric2);
-
-
-
-
-*/
-
-
-
-
-
-/*
+    
   svg.selectAll(".bar")
       .data(data)
     .enter().append("rect")
@@ -243,7 +237,7 @@ createLineGraph(metric3,"green",m3,50);
 });
 
 
-function getDate(d) {
+function getDate(d) {    
     return new Date(d.Timestamp);
 }
 
