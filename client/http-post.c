@@ -24,6 +24,8 @@ char addr[100] = "http://localhost:3000/executions/";
 char *confFile;
 struct timespec timeStampFile = { 0, 0 };
 
+pthread_t threads[256];
+
 int t; // switch for running the individual gathering routines
 
 /* ptr - curl output
@@ -190,12 +192,15 @@ char* get_execution_id(char *URL, char *msg) {
 
 void start_gathering(void) {
 	printf("Entering start_gathering\n");
-	pthread_t threads[NUM_THREADS];
+
 	int iret[NUM_THREADS];
 	apr_initialize();
 	apr_pool_create(&data_pool, NULL);
 //	int t;
 
+	if (NUM_THREADS <= 2) {
+		fprintf(stderr, "Number of threads to small!");
+	}
 	apr_queue_create(&data_queue, 100000, data_pool);
 	int nums[NUM_THREADS]; // each thread needs its own element of the array
 	for (t = 0; t < NUM_THREADS; t++) {
@@ -206,7 +211,14 @@ void start_gathering(void) {
 			exit(-1);
 		}
 	}
-	send_data();
+
+	struct sigaction sig;
+	sig.sa_handler = catcher;
+	sig.sa_flags = SA_RESTART;
+	sigemptyset(&sig.sa_mask);
+	sigaction(SIGTERM, &sig, NULL );
+	while (1)
+		;
 
 	for (t = 0; t < NUM_THREADS; t++) {
 		pthread_join(threads[t], NULL );
@@ -244,6 +256,8 @@ int readConf(char *confFile) {
 				int numTim = atoi(pos + strlen("timing_"));
 				tempTim = atoi(pos + strlen("timing_") + 2);
 				timings[numTim] = tempTim;
+				fprintf(stderr, "timing no %d is: %ld \n", numTim,
+						timings[numTim]);
 			}
 			if ((pos = strstr(line, "timingSend")))
 				timingSend = atoi(pos + strlen("timingSend") + 1);
@@ -271,6 +285,11 @@ int readConf(char *confFile) {
 			if ((pos = strstr(line, "papiTiming"))) {
 				timings[NUM_THREADS - 1] = atoi(pos + strlen("papiTiming") + 1);
 			}
+			if ((pos = strstr(line, "noOfThreads"))) {
+				NUM_THREADS = atoi(pos + strlen("noOfThreads") + 1);
+//				timings = realloc(timings, sizeof(long) * NUM_THREADS);
+//				threads = realloc(threads, sizeof(pthread_t) * NUM_THREADS);
+			}
 		}
 
 		fclose(fp);
@@ -280,7 +299,7 @@ int readConf(char *confFile) {
 }
 
 int checkConf() {
-	while (1) {
+	while (running) {
 		readConf(confFile);
 		sleep(timingCheck);
 	}
@@ -288,7 +307,7 @@ int checkConf() {
 }
 
 void *gather(void *arg) {
-	int (*p[])() = {gather_cpu, gather_mem, checkConf, gather_papi };
+	int (*p[])() = {gather_cpu, gather_mem, checkConf, send_data, gather_papi };
 		int *typeT = (int*) arg;
 		if (*typeT < NUM_THREADS) {
 			if ((*p[*typeT])()) {
@@ -306,38 +325,12 @@ void *gather(void *arg) {
 		sprintf(msg, "{\"Timestamp\":\"%.9Lf\"%s}", timeStamp, data->msg);
 		send_monitoring_data(addr, msg);
 
-//		jidd timeStamp;
-//		switch (data->type) {
-//		case MEM_USAGE:
-//			timeStamp = data->mem_time.tv_sec
-//					+ (jidd) (data->mem_time.tv_nsec / 10e8);
-//			sprintf(msg,
-//					"{\"Timestamp\":\"%.9Lf\",\"type\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"}",
-//					timeStamp, data->ram_used, data->ram_avail);
-//
-//			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
-//			send_monitoring_data(addr, msg);
-//			break;
-//		case CPU_USAGE:
-//			timeStamp = data->cpu_time.tv_sec
-//					+ (jidd) (data->cpu_time.tv_nsec / 10e8);
-//			sprintf(msg,
-//					"{\"Timestamp\":\"%.9LF\",\"type\":\"cpu\",\"cpu_load\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"}",
-//					timeStamp, data->cpu_used, data->cpu_avail,
-//					data->cpu_wa_io);
-//			printf("\n\n-> Sending: %s -- len: %d\n", msg, (int) strlen(msg));
-//			send_monitoring_data(addr, msg);
-//			break;
-//		default:
-//			printf("Message to send neither cpu nor mem related!");
-//			break;
-//		}
 	}
 
 	int send_data() {
 
 		void *ptr;
-		while (1) {
+		while (running) {
 			sleep(timingSend);
 
 			status = apr_queue_pop(data_queue, &ptr);
@@ -371,7 +364,7 @@ void *gather(void *arg) {
 		double usage; // value of cpu usage
 		int clk_id = CLOCK_REALTIME;
 
-		while (1) {
+		while (running) {
 
 			curPtr = apr_palloc(data_pool, sizeof(sensor_msg_t));
 			if (curPtr == 0) {
@@ -416,7 +409,7 @@ void *gather(void *arg) {
 
 		int usage;
 		int clk_id = CLOCK_REALTIME;
-		while (1) {
+		while (running) {
 			curPtr = apr_palloc(data_pool, sizeof(sensor_msg_t));
 			usage = get_mem_usage();
 
@@ -432,11 +425,7 @@ void *gather(void *arg) {
 			if (status != APR_SUCCESS) {
 				printf("Failed queue push!");
 			}
-//			status = apr_queue_push(data_queue, curPtr);
 
-//			void *ptr = &usage;
-//			void **ptr2 = &ptr;
-//			apr_queue_trypush(data_queue, ptr2);
 		}
 
 		printf("gather_mem ended");
@@ -482,10 +471,8 @@ void *gather(void *arg) {
 		}
 
 		long_long values[MAX_PAPI];
-//		long_long *p = values;
-//		while (1) {
+
 		gatherPapiData(&EventSet, &values);
-//		}
 
 		return 1;
 	}
@@ -530,7 +517,8 @@ void *gather(void *arg) {
 	void plausable() {
 		int bound = 10e5;
 		for (int iter = 0; iter < NUM_THREADS; iter++) {
-			if (timings[iter] != 0 && timings[iter] < bound) {
+			if ((timings[iter] > 0 && timings[iter] != 0)
+					&& timings[iter] < bound) {
 				printf(
 						"\n >>>> wrong value for timing, results become unprecise for values less than %.2e <<<<\n",
 						(float) bound);
@@ -540,7 +528,14 @@ void *gather(void *arg) {
 
 	}
 
+	void catcher(int signo) {
+		running = 0;
+		printf("Signal %d catched\n", signo);
+		exit(0);
+	}
+
 	int main(int argc, const char *argv[]) {
+		running = 1;
 		getconf(argv);
 		if (!readConf(confFile)) {
 			printf("error reading config file!\n");
@@ -576,6 +571,7 @@ void *gather(void *arg) {
 		strcat(addr, str); /* append the ID to the end of the URL or IP address */
 
 		start_gathering();
+
 		cleanup_curl();
 		return 0;
 	}

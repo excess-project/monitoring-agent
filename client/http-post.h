@@ -19,6 +19,7 @@
 
 #include <pthread.h>
 #include <netdb.h>
+#include <signal.h>
 
 #include <apr-1/apr_queue.h>
 
@@ -26,10 +27,10 @@
 #define SEND_FAILED  0
 #define ID_SIZE 50
 
-#define NUM_THREADS 4
+//#define NUM_THREADS 5 // number of threads, minimum is 2,
 //#define MAX_PAPI 256
-
-long timings[NUM_THREADS]; // 1 s = 1,000 ms= 1,000,000 µs = 1,000,000,000 ns
+int NUM_THREADS;
+long timings[256]; // 1 s = 1,000 ms= 1,000,000 µs = 1,000,000,000 ns
 char papiEvents[256][20];
 
 int papiNumbers;
@@ -41,6 +42,8 @@ struct apr_pool_t *data_pool;
 //char **papiNames;
 
 int timingSend, timingCheck; // for now in seconds
+
+int running; // value is 1 so program is running
 
 //#define QUEUE
 //#define QUEUE_SEND_SIZE 100000
@@ -63,6 +66,8 @@ int gather_papi();
 int send_data();
 
 void plausable();
+
+void catcher(int signo);
 
 /* function prototypes for private use 
  size_t get_stream_data(void *ptr, size_t size, size_t count, void *stream);

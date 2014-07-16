@@ -1,7 +1,9 @@
+noOfThreads: 5
 host: http://localhost:3000/executions/
 timing_0: 1000000000ns
-timing_1: 1000000000ns
+timing_1: 100000000ns
 timingSend: 0s
 timingCheck: 30s
 papis: PAPI_FP_INS,PAPI_FP_OPS,PAPI_TOT_INS
 papiTiming: 1000000ns
+

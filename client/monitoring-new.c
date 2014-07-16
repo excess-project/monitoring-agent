@@ -8,8 +8,6 @@
 #include "http-post.h"
 #include "monitoring-new.h"
 
-struct timespec tim, tim2, tim3;
-
 time_t sec_to_sleep = 0;
 long nanos_to_sleep = 999999999; //must be less than 10e8 !!!
 
@@ -19,9 +17,9 @@ int i;
 int retval;
 
 double get_cpu_usage(void) {
+	struct timespec tim = { 0, 0 };
+	struct timespec tim2;
 
-	tim.tv_sec = sec_to_sleep;
-	tim.tv_nsec = nanos_to_sleep;
 	unsigned int tog = 0;
 	jiff cpu_use[2], cpu_nic[2], cpu_sys[2], cpu_idl[2], cpu_iow[2], cpu_xxx[2],
 			cpu_yyy[2], cpu_zzz[2];
@@ -33,13 +31,15 @@ double get_cpu_usage(void) {
 
 	tog = !tog;
 
-//	usleep(sleep_time);
-//	if (nanosleep(&tim, &tim2))
-//		printf("error in nanosleep!");
-	if (timings[0] >= 10e8)
-		sleep(1);
-	else
-		usleep(timings[0]);
+	if (timings[0] >= 10e8) {
+		tim.tv_sec = timings[0] / 10e8;
+		tim.tv_nsec = timings[0] % (long) 10e8;
+		nanosleep(&tim, &tim);
+	} else {
+		tim.tv_sec = 0;
+		tim.tv_nsec = timings[0];
+		nanosleep(&tim, &tim2);
+	}
 
 	getprocstat(cpu_use + tog, cpu_nic + tog, cpu_sys + tog, cpu_idl + tog,
 			cpu_iow + tog, cpu_xxx + tog, cpu_yyy + tog, cpu_zzz + tog);
@@ -116,9 +116,9 @@ int get_mem_usage(void) {
 
 void getprocmeminfo(unsigned long *restrict mfre, unsigned long *restrict mtot) {
 
+	struct timespec tim = { 0, 0 };
+	struct timespec tim2;
 	static char buff[READBUFFER_SIZE + 1];
-	tim.tv_sec = sec_to_sleep;
-	tim.tv_nsec = nanos_to_sleep;
 
 	static int fd;
 	const char* b;
@@ -138,12 +138,16 @@ void getprocmeminfo(unsigned long *restrict mfre, unsigned long *restrict mtot) 
 	b = strstr(buff, "MemTotal: ");
 	if (b)
 		sscanf(b, "MemTotal: %lu kB", mtot);
-//	usleep(sleep_time);
-//	nanosleep(&tim, &tim2);
-	if (timings[1] >= 10e8)
-		sleep(1);
-	else
-		usleep(timings[1]);
+
+	if (timings[1] >= 10e8) {
+		tim.tv_sec = timings[1] / 10e8;
+		tim.tv_nsec = timings[1] % (long) 10e8;
+		nanosleep(&tim, &tim);
+	} else {
+		tim.tv_sec = 0;
+		tim.tv_nsec = timings[1];
+		nanosleep(&tim, &tim2);
+	}
 }
 
 char* toPapiData(long_long *val) {
@@ -165,7 +169,7 @@ int gatherPapiData(int *EventSet, long_long (*val)[MAX_PAPI]) {
 //	struct timespec *timeStamp = { 0 };
 
 	int clk_id = CLOCK_REALTIME;
-	while (1) {
+	while (running) {
 
 		retval = PAPI_read(*EventSet, *val);
 		char *result = toPapiData(*val);
@@ -175,10 +179,10 @@ int gatherPapiData(int *EventSet, long_long (*val)[MAX_PAPI]) {
 
 		strcpy(resMetric->msg, result);
 		apr_queue_push(data_queue, resMetric);
-		if (timings[1] >= 10e8)
+		if (timings[NUM_THREADS - 1] >= 10e8)
 			sleep(1);
 		else
-			usleep(timings[1]);
+			usleep(timings[NUM_THREADS - 1]);
 	}
 	PAPI_stop(*EventSet, *val);
 	return 1;
