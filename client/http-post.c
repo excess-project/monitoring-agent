@@ -16,8 +16,6 @@ char execID_[ID_SIZE] = ""; /* storing the execution ID -- UUID is 36 chars */
 struct curl_slist *headers_ = NULL;
 CURL *curl_ = NULL;
 
-//apr_queue_t *data_queue;
-//apr_pool_t *data_pool;
 apr_status_t status = APR_SUCCESS;
 
 char addr[100] = "http://localhost:3000/executions/";
@@ -290,6 +288,9 @@ int readConf(char *confFile) {
 //				timings = realloc(timings, sizeof(long) * NUM_THREADS);
 //				threads = realloc(threads, sizeof(pthread_t) * NUM_THREADS);
 			}
+			if ((pos = strstr(line, "#papiTiming"))) {
+				WITHPAPI = 0;
+			}
 		}
 
 		fclose(fp);
@@ -348,7 +349,7 @@ void *gather(void *arg) {
 		char* returnMsg = malloc(500 * sizeof(char));
 
 		sprintf(returnMsg,
-				",\"cpu_used\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"",
+				"\"type\":\"cpu\",\"cpu_used\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"",
 				ptr->cpu_used, ptr->cpu_avail, ptr->cpu_wa_io);
 
 		return returnMsg;
@@ -396,7 +397,8 @@ void *gather(void *arg) {
 	char* toMemData(sensor_msg_t *ptr) {
 		char *returnMsg = malloc(500 * sizeof(char));
 
-		sprintf(returnMsg, ",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"",
+		sprintf(returnMsg,
+				"\"type\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"",
 				ptr->ram_used, ptr->ram_avail);
 
 		return returnMsg;
@@ -535,6 +537,7 @@ void *gather(void *arg) {
 	}
 
 	int main(int argc, const char *argv[]) {
+		WITHPAPI = 1;
 		running = 1;
 		getconf(argv);
 		if (!readConf(confFile)) {
@@ -542,7 +545,6 @@ void *gather(void *arg) {
 			exit(-1);
 		}
 
-//		printf("%ld\n",sysconf(_SC_CLK_TCK));
 		printf("%lf %% \n", get_cpu_usage());
 		printf("%d %%\n", get_mem_usage());
 
@@ -558,7 +560,6 @@ void *gather(void *arg) {
 
 		char *hostname = (char*) malloc(sizeof(char) * 80);
 
-//		gethostname(hostname, sizeof(hostname));
 		getFQDN(hostname);
 		hostname[strlen(hostname) - 1] = '\0';
 		sprintf(msg,

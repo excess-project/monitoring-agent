@@ -27,11 +27,11 @@
 #define SEND_FAILED  0
 #define ID_SIZE 50
 
-//#define NUM_THREADS 5 // number of threads, minimum is 2,
-//#define MAX_PAPI 256
 int NUM_THREADS;
 long timings[256]; // 1 s = 1,000 ms= 1,000,000 µs = 1,000,000,000 ns
 char papiEvents[256][20];
+
+int WITHPAPI;
 
 int papiNumbers;
 
