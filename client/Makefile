@@ -3,7 +3,7 @@
 ## Date: April 2013
 
 CC = gcc
-OUTPUT = ../../binaries/mf_client
+OUTPUT = ../binaries/mf_client
 CFLAGS = -ansi -pedantic -Wall -Wwrite-strings -Wpointer-arith -Wcast-align -O3 -I../../binaries/curl/include/ -I../../binaries/papi/include/ 
 LFLAGS =  -lm -lcurl
 
