@@ -4,7 +4,7 @@
 
 CC = gcc
 OUTPUT = ../binaries/mf_client
-CFLAGS = -ansi -pedantic -Wall -Wwrite-strings -Wpointer-arith -Wcast-align -O3 -I../../binaries/curl/include/ -I../../binaries/papi/include/ 
+CFLAGS = -ansi -pedantic -Wall -Wwrite-strings -Wpointer-arith -Wcast-align -O3 -I../binaries/curl/include/ -I../binaries/papi/include/ 
 LFLAGS =  -lm -lcurl
 
 ## List of source files
@@ -13,8 +13,8 @@ FILES  = $(shell find . -name "*.c")
 HEADER  = $(shell find . -name "*.h")
 
 ## NOTE: below is used to include boost libraries
-CURL = -L../../binaries/curl/lib/
-PAPI = -L../../binaries/papi/lib/
+CURL = -L../binaries/curl/lib/
+PAPI = -L../binaries/papi/lib/
 
 ## to use, type: make or make all
 all : $(FILES)
