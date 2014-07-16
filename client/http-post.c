@@ -349,7 +349,7 @@ void *gather(void *arg) {
 		char* returnMsg = malloc(500 * sizeof(char));
 
 		sprintf(returnMsg,
-				"\"type\":\"cpu\",\"cpu_used\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"",
+				",\"type\":\"cpu\",\"cpu_used\":\"%f\",\"cpu_avail\":\"%f\",\"t_cpu_waiting_io\":\"%f\"",
 				ptr->cpu_used, ptr->cpu_avail, ptr->cpu_wa_io);
 
 		return returnMsg;
@@ -398,7 +398,7 @@ void *gather(void *arg) {
 		char *returnMsg = malloc(500 * sizeof(char));
 
 		sprintf(returnMsg,
-				"\"type\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"",
+				",\"type\":\"mem\",\"mem_used\":\"%d\",\"mem_avail\":\"%d\"",
 				ptr->ram_used, ptr->ram_avail);
 
 		return returnMsg;
