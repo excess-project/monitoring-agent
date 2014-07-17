@@ -30,5 +30,5 @@ make install all
 cd $Default_path
 
 # Finally building the client
-cd client/
-make
+#cd client/
+#make
