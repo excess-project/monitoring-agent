@@ -10,7 +10,7 @@ COPT_SO = $(CFLAGS) -fpic
 PLUGIN_DIR = plugins
 CC = gcc
 OUTPUT = ../binaries/mf_client
-CFLAGS = -ansi -pedantic -Wall -Wwrite-strings -Wpointer-arith -Wcast-align -O3 -I../binaries/curl/include/ -I../binaries/papi/include/ 
+CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith -Wcast-align -ggdb -I../binaries/curl/include/ -I../binaries/papi/include/ 
 LFLAGS =  -lm -lcurl
 
 ## List of source files
