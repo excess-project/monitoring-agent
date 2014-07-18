@@ -10,7 +10,7 @@ COPT_SO = $(CFLAGS) -fpic
 PLUGIN_DIR = plugins
 CC = gcc
 OUTPUT = ../binaries/mf_client
-CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith -Wcast-align -ggdb -I../binaries/curl/include/ -I../binaries/papi/include/ 
+CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith -Wcast-align -ggdb -I../binaries/curl/include/ -I../binaries/papi/include/ -I../binaries/apr/include 
 LFLAGS =  -lm -lcurl
 
 ## List of source files
@@ -22,6 +22,8 @@ HEADER  = $(shell find . -name "*.h")
 ## NOTE: below is used to include boost libraries
 CURL = -L../binaries/curl/lib/
 PAPI = -L../binaries/papi/lib/
+
+APR = -L../binaries/apr/lib
 
 #PLUGIN_FILES = $(shell find ../plugin_management -name "*.c")
 #PLUGIN_H = $(shell find ../plugin_management -name "*.h")
