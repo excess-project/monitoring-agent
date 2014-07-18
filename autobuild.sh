@@ -37,7 +37,7 @@ cd apr-util-1.5.3
 make
 make install
 make install all
-cd &Default_path
+cd $Default_path
 
 # Finally building the client
 #cd client/
