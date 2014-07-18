@@ -5,12 +5,13 @@
 CC = /usr/bin/gcc 
 ## gcc-Version 4.4.7 20120313 (Red Hat 4.4.7-4) (GCC)
 
-OUTPUT = main
-CFLAGS = -I/mnt/raid/home/hpcneich/papi/include -std=gnu99 -pedantic -ggdb -Wall -Wwrite-strings -Wpointer-arith -Wcast-align 
-LFLAGS = /mnt/raid/home/hpcneich/papi/lib/libpapi.a -lcurl -lm -lpthread -laprutil-1 -lapr-1
 COPT_SO = $(CFLAGS) -fpic
 
 PLUGIN_DIR = plugins
+CC = gcc
+OUTPUT = ../binaries/mf_client
+CFLAGS = -ansi -pedantic -Wall -Wwrite-strings -Wpointer-arith -Wcast-align -O3 -I../binaries/curl/include/ -I../binaries/papi/include/ 
+LFLAGS =  -lm -lcurl
 
 ## List of source files
 
@@ -19,7 +20,8 @@ FILES  = $(shell find . -name "*.c")
 HEADER  = $(shell find . -name "*.h")
 
 ## NOTE: below is used to include boost libraries
-CURL = -L/usr/lib/x86_64-linux-gnu	
+CURL = -L../binaries/curl/lib/
+PAPI = -L../binaries/papi/lib/
 
 #PLUGIN_FILES = $(shell find ../plugin_management -name "*.c")
 #PLUGIN_H = $(shell find ../plugin_management -name "*.h")
