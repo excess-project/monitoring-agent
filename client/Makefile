@@ -11,7 +11,7 @@ PLUGIN_DIR = plugins
 CC = gcc
 OUTPUT = ../binaries/mf_client
 CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith -Wcast-align -ggdb -I../binaries/curl/include/ -I../binaries/papi/include/ -I../binaries/apr/include 
-LFLAGS =  -lm -lcurl
+LFLAGS =  -lm $(CURL) $(PAPI) $(APR)
 
 ## List of source files
 
