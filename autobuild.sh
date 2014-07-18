@@ -29,6 +29,16 @@ make install
 make install all  
 cd $Default_path
 
+#Downloading and building apr-util
+wget http://mirror.23media.de/apache//apr/apr-util-1.5.3.tar.gz
+tar zxvf apr-util-1.5.3.tar.gz
+cd apr-util-1.5.3
+./configure --prefix=`pwd`/../binaries/apr --with-apr=`pwd`/../binaries/apr
+make
+make install
+make install all
+cd &Default_path
+
 # Finally building the client
 #cd client/
 #make
