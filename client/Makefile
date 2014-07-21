@@ -38,7 +38,7 @@ all: excess_main $(PLUGIN_DIR)/mem_info.so
 ## main part
 excess_main : excess_main.o thread_handler.o util.o plugin_discover.o \
 		plugin_manager.o
-		$(CC) -o $@ $^ -ldl -Wl,--export-dynamic
+		$(CC) -o $(OUTPUT) $^ -ldl -Wl,--export-dynamic
 
 
 #
@@ -54,7 +54,7 @@ $(PLUGIN_DIR)/mem_info.o: $(PLUGIN_DIR)/mem_info.c $(HEADER)
 
 
 clean:
-	rm -rf core *.o *.a excess_main plugins/*.o plugins/*.so
+	rm -rf core *.o *.a $(OUTPUT) plugins/*.o plugins/*.so
 
 ## to generate the javadoc files
 ## to use, type: make doc
