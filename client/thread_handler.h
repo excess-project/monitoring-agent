@@ -8,7 +8,7 @@
 #ifndef THREAD_HANDLER_H_
 #define THREAD_HANDLER_H_
 
-#include <apr-1/apr_queue.h>
+#include <apr_queue.h>
 #include <curl/curl.h>
 
 #include "util.h"
