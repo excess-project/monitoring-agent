@@ -10,7 +10,9 @@
 
 #include "plugin_manager.h"
 
-int discover_plugins(const char *dirname, PluginManager *pm);
+extern int pluginCount;
+
+void* discover_plugins(const char *dirname, PluginManager *pm);
 
 char* get_plugin_name(char filename[256]);
 

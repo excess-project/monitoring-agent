@@ -12,10 +12,12 @@
 
 int NUM_THREADS;
 
-long timings[256];
+extern long timings[256];
+extern char addr[100];
+
+extern char *confFile;
 
 int timingSend, timingCheck;
-
 
 int readConf(char *confFile);
 

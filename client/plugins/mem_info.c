@@ -46,21 +46,8 @@ double get_mem_usage() {
 
 	double frac = (double) mfre / (double) mtot;
 
-	return frac * 100.0;
+	return 100.0-frac * 100.0;
 }
-
-static metric_t mem_info_hook() {
-	double usage;
-	metric_t *resMetric = malloc(sizeof(metric_t));
-
-	int clk_id = CLOCK_REALTIME;
-	clock_gettime(clk_id, &resMetric->timestamp);
-
-	usage = get_mem_usage();
-
-	return *resMetric;
-}
-
 char* toMemData(double usage) {
 	char *returnMsg = malloc(100 * sizeof(char));
 
@@ -74,8 +61,24 @@ char* toMemData(double usage) {
 	return returnMsg;
 }
 
-int init_mem_info(PluginManager *pm) {
+static metric mem_info_hook() {
+	double usage;
+	metric resMetric = malloc(sizeof(metric));
+	resMetric->msg = malloc(sizeof(char));
+
+	int clk_id = CLOCK_REALTIME;
+	clock_gettime(clk_id, &resMetric->timestamp);
+
+	usage = get_mem_usage();
+
+	strcpy(resMetric->msg, toMemData(usage));
+
+	return resMetric;
+}
+
+extern int init_mem_info(PluginManager *pm) {
 
 	PluginManager_register_hook(pm, mem_info_hook);
 	return 1;
 }
+

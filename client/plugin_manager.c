@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include "plugin_manager.h"
+#include "plugin_discover.h"
 
 typedef struct PluginHookList_t {
 	PluginHook hook;
@@ -41,18 +42,26 @@ void PluginManager_register_hook(PluginManager *pm, PluginHook hook) {
 	node->hook = hook;
 	node->next = pm->hook_list;
 	pm->hook_list = node;
+	pluginCount++;
 }
-
-metric_t PluginManager_apply_hooks(PluginManager *pm) {
-	metric_t retMetric;
+// Don't actually need this funtion use
+metric PluginManager_apply_hook(PluginManager *pm) {
+	metric retMetric = malloc(sizeof(retMetric));
 
 	PluginHookList *plugin = pm->hook_list;
 	if (!plugin)
-		return retMetric;
+		return NULL;
 	while (plugin) {
 		retMetric = plugin->hook();
+
+		plugin = plugin->next;
 	}
-	plugin = plugin->next;
 
 	return retMetric;
+}
+
+PluginHook PluginManager_get_hook(PluginManager *pm) {
+	PluginHook funcPtr = pm->hook_list->hook;
+	pm->hook_list = pm->hook_list->next;
+	return funcPtr;
 }

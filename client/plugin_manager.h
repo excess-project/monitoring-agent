@@ -10,7 +10,7 @@
 
 #include "util.h"
 
-typedef metric_t (*PluginHook)();
+typedef metric (*PluginHook)();
 
 typedef struct PluginManager_t PluginManager;
 
@@ -20,6 +20,8 @@ void PluginManager_free(PluginManager *pm);
 
 void PluginManager_register_hook(PluginManager *pm, PluginHook hook);
 
-metric_t PluginManager_apply_hook(PluginManager *pm);
+metric PluginManager_apply_hook(PluginManager *pm);
+
+PluginHook PluginManager_get_hook(PluginManager *pm);
 
 #endif /* PLUGIN_MANAGER_H_ */

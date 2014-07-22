@@ -10,7 +10,9 @@ COPT_SO = $(CFLAGS) -fpic
 PLUGIN_DIR = plugins
 CC = gcc
 OUTPUT = ../binaries/mf_client
-CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith -Wcast-align -ggdb -I../binaries/curl/include/ -I../binaries/papi/include/ -I../binaries/apr/include 
+CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
+-Wcast-align -O0 -ggdb -pthread $(PAPI_INC) $(APR_INC) $(CURL_INC)
+ 
 LFLAGS =  -lm $(CURL) $(PAPI) $(APR)
 
 ## List of source files
@@ -20,25 +22,29 @@ FILES  = $(shell find . -name "*.c")
 HEADER  = $(shell find . -name "*.h")
 
 ## NOTE: below is used to include boost libraries
-CURL = -L../binaries/curl/lib/
+CURL = -L../binaries/curl/lib/ -lcurl
+CURL_INC = -I../binaries/curl/include/
+
 PAPI = -L../binaries/papi/lib/
+PAPI_INC =  -I../binaries/papi/include/
 
-APR = -L../binaries/apr/lib
+APR_CONFIG = ../binaries/apr/bin/apr-1-config
+APU_CONFIG = ../binaries/apr/bin/apu-1-config
+APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
+APR_INC = $(shell $(APR_CONFIG --includes))
 
-#PLUGIN_FILES = $(shell find ../plugin_management -name "*.c")
-#PLUGIN_H = $(shell find ../plugin_management -name "*.h")
 
 ## to use, type: make or make all
 all: excess_main $(PLUGIN_DIR)/mem_info.so
 
 %.o: %.c $(HEADER)
-		$(CC) -c $< $(CFLAGS) $(LFLAGS)
+		$(CC) -c $< $(CFLAGS) 
 
 
 ## main part
 excess_main : excess_main.o thread_handler.o util.o plugin_discover.o \
 		plugin_manager.o
-		$(CC) -o $(OUTPUT) $^ -ldl -Wl,--export-dynamic
+		$(CC) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(LFLAGS)
 
 
 #

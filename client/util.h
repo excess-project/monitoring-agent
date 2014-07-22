@@ -10,14 +10,18 @@
 
 #include <time.h>
 #include <string.h>
+#include <stdio.h>
+
+//#include "plugin_discover.h"
+//#include "plugin_manager.h"
 
 extern int running;
 
-struct metric_t *metricPtr;
-typedef struct metric {
+typedef struct metric_t* metric;
+struct metric_t {
 	struct timespec timestamp;
 
 	char *msg;
-} metric_t;
+};
 
 #endif /* EXCESS_H_ */
