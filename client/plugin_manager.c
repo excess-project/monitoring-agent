@@ -5,7 +5,6 @@
  *      Author: hpcneich
  */
 
-#include <apr-1/apr_queue.h>
 #include <stdlib.h>
 
 #include "plugin_manager.h"
