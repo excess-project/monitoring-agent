@@ -31,8 +31,9 @@ PAPI_INC =  -I../binaries/papi/include/
 APR_CONFIG = ../binaries/apr/bin/apr-1-config
 APU_CONFIG = ../binaries/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
-APR_INC = $(shell $(APR_CONFIG --includes)) $(shell $(APR_CONFIG --includes))
-
+#APR = -L ../binaries/apr/lib/ -lapr-1 -L ../binaries/apr/lib -laprutil-1
+APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
+#APR_INC = -I ../binaries/apr/include/apr-1
 
 ## to use, type: make or make all
 all: excess_main $(PLUGIN_DIR)/mem_info.so
