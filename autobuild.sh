@@ -11,6 +11,8 @@ make install all
 cd $Default_path
 
 # Downloading and building curl
+# More comments
+# Even more comments
 wget http://curl.haxx.se/download/curl-7.37.0.tar.gz
 tar zxvf curl-7.37.0.tar.gz
 cd curl-7.37.0
