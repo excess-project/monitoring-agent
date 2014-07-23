@@ -78,6 +78,7 @@ int getConf(const char *argv) {
 
 	confFile = strdup(argv);
 	strcat(confFile, filename);
+	fprintf(stderr, "confFile is: %s \n", confFile);
 
 	return 1;
 
@@ -191,21 +192,24 @@ char* cutPwd(char *pwd) {
 }
 
 int main(int argc, const char* argv[]) {
+	char *buf[200];
+	readlink("/proc/self/exe", *buf, 200);
+
 	char *pos;
 	if (argc > 1) {
 		for (int iter = 0; iter < argc; iter++) {
+			fprintf(stderr, "arg #%d is: %s\n", iter, argv[iter]);
 			if ((pos = strstr(argv[iter], "-id="))) {
 				strcpy(execID_, pos + strlen("-id="));
 			}
 			if ((pos = strstr(argv[iter], "-h"))
 					|| (pos = strstr(argv[iter], "-?"))
 					|| (pos = strstr(argv[iter], "--help"))) {
-
 			}
 		}
 	}
 	pwd = malloc(200 * sizeof(char));
-	strcpy(pwd, argv[0]);
+	strcpy(pwd, *buf);
 	pwd = cutPwd(pwd);
 
 	getConf(pwd);

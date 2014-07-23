@@ -38,7 +38,7 @@ APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 #APR_INC = -I ../binaries/apr/include/apr-1
 
 ## to use, type: make or make all
-all: excess_main $(PLUGIN_DIR)/mem_info.so $(shell cp -f ./conf ../binaries)
+all: excess_main $(PLUGIN_DIR)/mem_info.so
 
 lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
 
@@ -68,7 +68,7 @@ $(PLUGIN_DIR)/mem_info.o: $(PLUGIN_DIR)/mem_info.c $(HEADER)
 
 
 clean:
-	rm -rf core *.o *.a $(OUTPUT) plugins/*.o plugins/*.so
+	rm -rf core *.o *.a $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so
 
 ## to generate the javadoc files
 ## to use, type: make doc
