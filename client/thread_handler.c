@@ -91,7 +91,7 @@ void *entryThreads(void *arg) {
 		checkConf();
 		break;
 	default:
-		gatherMetric(*typeT - MIN_THREADS);
+		gatherMetric(*typeT);
 		break;
 	}
 
