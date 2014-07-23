@@ -17,6 +17,8 @@
 
 extern int running;
 
+extern char *pwd;
+
 typedef struct metric_t* metric;
 struct metric_t {
 	struct timespec timestamp;

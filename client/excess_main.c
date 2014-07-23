@@ -24,6 +24,8 @@ struct timespec timeStampFile = { 0, 0 };
 
 char addr[100] = "http://localhost:3000/executions";
 
+char *pwd;
+
 int readConf(char *confFile) {
 	int tempTim = 0;
 //	int iter;
@@ -71,12 +73,12 @@ int readConf(char *confFile) {
 }
 
 int getConf(const char *argv) {
-	const char *filename[] = { "conf" };
-	char *filepath = strdup(argv);
+	confFile = malloc(200 * sizeof(char));
+	const char *filename = { "/conf" };
 
-	int length = strlen(filepath);
-	memcpy(filepath + (length - 9), *filename, sizeof(filename));
-	confFile = strdup(filepath);
+	confFile = strdup(argv);
+	strcat(confFile, filename);
+
 	return 1;
 
 }
@@ -178,6 +180,16 @@ char* get_execution_id(char *URL, char *msg) {
 	return execID_;
 }
 
+char* cutPwd(char *pwd) {
+	char* help = malloc(200 * sizeof(char));
+	char *lastslash = strrchr(pwd, '/');
+	int ptr = lastslash - pwd;
+
+	strncpy(help, pwd, ptr);
+
+	return help;
+}
+
 int main(int argc, const char* argv[]) {
 	char *pos;
 	if (argc > 1) {
@@ -192,8 +204,11 @@ int main(int argc, const char* argv[]) {
 			}
 		}
 	}
+	pwd = malloc(200 * sizeof(char));
+	strcpy(pwd, argv[0]);
+	pwd = cutPwd(pwd);
 
-	getConf(argv[0]);
+	getConf(pwd);
 	readConf(confFile);
 
 	char *timeArr = (char*) malloc(sizeof(char) * 80);

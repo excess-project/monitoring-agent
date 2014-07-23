@@ -38,10 +38,12 @@ int startThreads() {
 	running = 1;
 
 	pm = PluginManager_new();
-	const char *dirname = { "plugins" };
+	const char *dirname = { "/plugins" };
+	char *pluginLocation = strdup(pwd);
+	strcat(pluginLocation, dirname);
 
 //	look for plugins and register them
-	void* pdstate = discover_plugins(dirname, pm);
+	void* pdstate = discover_plugins(pluginLocation, pm);
 
 	int iret[MIN_THREADS + pluginCount];
 
