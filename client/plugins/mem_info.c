@@ -24,7 +24,8 @@ void getprocmeminfo(unsigned long *restrict mfre, unsigned long *restrict mtot) 
 
 	fp = fopen("/proc/meminfo", "r");
 	if (!fp) {
-		printf("/proc/meminfo not found!\n");
+		fprintf(stderr,"/proc/meminfo not found!\n");
+//		exit(-1);
 	}
 
 	while (fgets(line, 200, fp) != NULL ) {

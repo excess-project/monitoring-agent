@@ -21,6 +21,6 @@ int timingSend, timingCheck;
 
 int readConf(char *confFile);
 
-int getConf(const char *argv[]);
+int getConf(const char *argv);
 
 #endif /* EXCESS_MAIN_H_ */

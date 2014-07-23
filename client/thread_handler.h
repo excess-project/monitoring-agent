@@ -31,7 +31,7 @@ int startThreads();
 
 void *entryThreads(void *arg);
 
-int gatherMetric();
+int gatherMetric(int num);
 
 int startSending();
 

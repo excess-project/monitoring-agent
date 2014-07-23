@@ -70,9 +70,9 @@ int readConf(char *confFile) {
 	return 1;
 }
 
-int getConf(const char *argv[]) {
+int getConf(const char *argv) {
 	const char *filename[] = { "conf" };
-	char *filepath = strdup(*argv);
+	char *filepath = strdup(argv);
 
 	int length = strlen(filepath);
 	memcpy(filepath + (length - 9), *filename, sizeof(filename));
@@ -179,8 +179,21 @@ char* get_execution_id(char *URL, char *msg) {
 }
 
 int main(int argc, const char* argv[]) {
+	char *pos;
+	if (argc > 1) {
+		for (int iter = 0; iter < argc; iter++) {
+			if ((pos = strstr(argv[iter], "-id="))) {
+				strcpy(execID_, pos + strlen("-id="));
+			}
+			if ((pos = strstr(argv[iter], "-h"))
+					|| (pos = strstr(argv[iter], "-?"))
+					|| (pos = strstr(argv[iter], "--help"))) {
 
-	getConf(argv);
+			}
+		}
+	}
+
+	getConf(argv[0]);
 	readConf(confFile);
 
 	char *timeArr = (char*) malloc(sizeof(char) * 80);

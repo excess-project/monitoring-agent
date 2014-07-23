@@ -38,8 +38,10 @@ APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 ## to use, type: make or make all
 all: excess_main $(PLUGIN_DIR)/mem_info.so
 
+lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
+
 %.o: %.c $(HEADER)
-		$(CC) -c $< $(CFLAGS) 
+		$(CC) -c $< $(CFLAGS) -fpic
 
 
 ## main part
@@ -47,6 +49,9 @@ excess_main : excess_main.o thread_handler.o util.o plugin_discover.o \
 		plugin_manager.o
 		$(CC) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
+excess_main_lib: excess_main.o thread_handler.o util.o plugin_discover.o \
+		plugin_manager.o
+		$(CC) -shared -o $(OUTPUT).so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
 #
 # plugins 

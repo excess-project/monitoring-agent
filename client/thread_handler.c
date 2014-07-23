@@ -91,7 +91,7 @@ void *entryThreads(void *arg) {
 		checkConf();
 		break;
 	default:
-		gatherMetric();
+		gatherMetric(*typeT - MIN_THREADS);
 		break;
 	}
 
@@ -162,7 +162,17 @@ int prepSend(metric data) {
 	return 1;
 }
 
-int gatherMetric() {
+int gatherMetric(int num) {
+	struct timespec tim = { 0, 0 };
+	struct timespec tim2;
+	if (timings[num] >= 10e8) {
+		tim.tv_sec = timings[num] / 10e8;
+		tim.tv_nsec = timings[num] % (long) 10e8;
+	} else {
+		tim.tv_sec = 0;
+		tim.tv_nsec = timings[num];
+	}
+
 	apr_status_t status;
 	PluginHook hook = PluginManager_get_hook(pm);
 	metric resMetric = malloc(sizeof(metric));
@@ -172,6 +182,8 @@ int gatherMetric() {
 		status = apr_queue_push(data_queue, resMetric);
 		if (status != APR_SUCCESS)
 			fprintf(stderr, "Failed queue push");
+
+		nanosleep(&tim, &tim2);
 	}
 
 	return 1;
