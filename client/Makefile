@@ -11,7 +11,7 @@ PLUGIN_DIR = plugins
 CC = gcc
 OUTPUT = ../binaries/mf_client
 CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb -pthread $(PAPI_INC) $(APR_INC) $(CURL_INC)
+-Wcast-align -O0 -ggdb -pthread -D_LARGEFILE64_SOURCE $(PAPI_INC) $(APR_INC) $(CURL_INC)
  
 LFLAGS =  -lm $(CURL) $(PAPI) $(APR)
 
