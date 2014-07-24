@@ -78,7 +78,9 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 		char *name = get_plugin_name(direntry->d_name);
 		if (!name)
 			continue;
-		char *fullpath = strcpy(fullpath, dirname);
+		char *fullpath = malloc(200 * sizeof(char));
+		;
+		strcpy(fullpath, dirname);
 		strcat(fullpath, "/");
 		strcat(fullpath, direntry->d_name);
 		void *handle = load_plugin(name, fullpath, pm);

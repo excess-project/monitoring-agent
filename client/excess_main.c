@@ -193,7 +193,7 @@ char* cutPwd(char *pwd) {
 
 int main(int argc, const char* argv[]) {
 	char *buf[200];
-	readlink("/proc/self/exe", *buf, 200);
+	readlink("/proc/self/exe", *buf, 200); // obtain full path of executable
 
 	char *pos;
 	if (argc > 1) {
