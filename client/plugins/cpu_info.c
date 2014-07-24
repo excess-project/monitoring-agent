@@ -5,7 +5,25 @@
  *      Author: hpcneich
  */
 
-int cpu_int() {
+#include "../util.h"
+#include "../plugin_manager.h"
+
+static metric cpu_info_hook() {
+	metric resMetric = malloc(sizeof(metric));
+	resMetric->msg = malloc(100 * sizeof(char));
+
+	/**
+	 *
+	 * DO SOMETHING TO GATHER METRIC
+	 *
+	 */
+
+	return resMetric;
+}
+
+
+extern int init_cpu_info(PluginManager *pm) {
+	PluginManager_register_hook(pm, cpu_info_hook);
 	return 1;
 }
 

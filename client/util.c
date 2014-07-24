@@ -7,11 +7,6 @@
 
 #include "util.h"
 
-//struct metric_t {
-//	struct timespec timestamp;
-//
-//	char *msg;
-//};
 int bla() {
 	return 1;
 }
