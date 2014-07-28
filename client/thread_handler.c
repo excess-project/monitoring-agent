@@ -50,8 +50,8 @@ int startStop(const char *fnctName, int flag) {
 	apr_status_t status = apr_queue_push(data_queue, resMetric);
 	if (status != APR_SUCCESS)
 		fprintf(stderr, "Failed queue push");
-	free(resMetric->msg);
-	free(resMetric);
+//	free(resMetric->msg);
+//	free(resMetric);
 	return 1;
 }
 
@@ -90,7 +90,7 @@ int startThreads() {
 	sigemptyset(&sig.sa_mask);
 	sigaction(SIGTERM, &sig, NULL );
 	while (running)
-		;
+		sleep(1);
 
 	for (t = 0; t < NUM_THREADS; t++) {
 		pthread_join(threads[t], NULL );
@@ -124,6 +124,7 @@ void *entryThreads(void *arg) {
 }
 
 int startSending() {
+	startStop("startSending", START);
 	apr_status_t status;
 	void *ptr;
 
@@ -192,8 +193,7 @@ int prepSend(metric data) {
 }
 
 int gatherMetric(int num) {
-//	startStop("gatherMetric", 1);
-
+	startStop("gatherMetric", START);
 	struct timespec tim = { 0, 0 };
 	struct timespec tim2;
 	if (timings[num] >= 10e8) {
@@ -216,7 +216,6 @@ int gatherMetric(int num) {
 
 		nanosleep(&tim, &tim2);
 	}
-//	startStop("gatherMetric",0);
 
 	return 1;
 }
