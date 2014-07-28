@@ -13,7 +13,7 @@
 typedef struct PluginHookList_t {
 	PluginHook hook;
 	struct PluginHookList_t* next;
-	char *name;
+	const char *name;
 } PluginHookList;
 
 struct PluginManager_t {
@@ -37,9 +37,11 @@ void PluginManager_free(PluginManager *pm) {
 	free(pm);
 }
 
-void PluginManager_register_hook(PluginManager *pm,const char *name, PluginHook hook) {
+void PluginManager_register_hook(PluginManager *pm, const char *name,
+		PluginHook hook) {
 	PluginHookList *node = malloc(sizeof(PluginHookList));
 	node->hook = hook;
+	node->name = name;
 	node->next = pm->hook_list;
 	pm->hook_list = node;
 	pluginCount++;

@@ -21,6 +21,8 @@ int running;
 
 static PluginManager *pm;
 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 pthread_t threads[256];
 
 char execID_[ID_SIZE] = ""; /* storing the execution ID -- UUID is 36 chars */
@@ -29,8 +31,28 @@ CURL *curl_ = NULL;
 
 void catcher(int signo) {
 	running = 0;
-	printf("Signal %d catched\n", signo);
+	printf("\nSignal %d catched\n", signo);
 
+}
+
+int startStop(const char *fnctName, int flag) {
+	metric resMetric = malloc(sizeof(metric));
+	resMetric->msg = malloc(100 * sizeof(char));
+
+	int clk_id = CLOCK_REALTIME;
+	clock_gettime(clk_id, &resMetric->timestamp);
+
+//	&resMetric->timestamp=
+
+	sprintf(resMetric->msg, ",\"name\":\"%s\",\"status\":\"%d\"", fnctName,
+			flag);
+
+	apr_status_t status = apr_queue_push(data_queue, resMetric);
+	if (status != APR_SUCCESS)
+		fprintf(stderr, "Failed queue push");
+	free(resMetric->msg);
+	free(resMetric);
+	return 1;
 }
 
 int startThreads() {
@@ -114,6 +136,10 @@ int startSending() {
 			prepSend(mPtr);
 		}
 	}
+	while ((apr_queue_pop(data_queue, &ptr) == APR_SUCCESS)) {
+		metric mPtr = ptr;
+		prepSend(mPtr);
+	}
 	return 1;
 
 }
@@ -166,6 +192,8 @@ int prepSend(metric data) {
 }
 
 int gatherMetric(int num) {
+//	startStop("gatherMetric", 1);
+
 	struct timespec tim = { 0, 0 };
 	struct timespec tim2;
 	if (timings[num] >= 10e8) {
@@ -188,6 +216,7 @@ int gatherMetric(int num) {
 
 		nanosleep(&tim, &tim2);
 	}
+//	startStop("gatherMetric",0);
 
 	return 1;
 }

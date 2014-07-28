@@ -7,6 +7,8 @@
 
 #include "util.h"
 
-int bla() {
-	return 1;
+int bla(char *fnctName, int flag){
+
+
+return 1;
 }

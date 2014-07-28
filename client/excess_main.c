@@ -246,6 +246,6 @@ int main(int argc, const char* argv[]) {
 	prepare();
 	if (!startThreads())
 		fprintf(stderr, "Couldn't start the threads!\n");
-
+	fprintf(stderr,"kthxbye!");
 	exit(EXIT_SUCCESS);
 }

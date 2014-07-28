@@ -12,6 +12,9 @@
 #include <string.h>
 #include <stdio.h>
 
+#define START 1
+#define STOP 0
+
 //#include "plugin_discover.h"
 //#include "plugin_manager.h"
 
@@ -26,5 +29,8 @@ struct metric_t {
 
 	char *msg;
 };
+
+int startStop(const char *fnctName,int flag);
+
 
 #endif /* EXCESS_H_ */

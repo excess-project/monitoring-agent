@@ -18,7 +18,7 @@ PluginManager* PluginManager_new();
 
 void PluginManager_free(PluginManager *pm);
 
-void PluginManager_register_hook(PluginManager *pm,const char *name,
+void PluginManager_register_hook(PluginManager *pm, const char *name,
 		PluginHook hook);
 
 metric PluginManager_apply_hook(PluginManager *pm);
