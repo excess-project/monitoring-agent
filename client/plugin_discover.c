@@ -41,17 +41,19 @@ void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 		fprintf(stderr, "Error loading library: %s\n", dlerror());
 	}
 
-	char *init_func_name = malloc(
-			(strlen("init_") + strlen(name)) * sizeof(char));
-	init_func_name = strdup("init_");
+//	char *init_func_name = malloc(
+//			(strlen("init_") + strlen(name)) * sizeof(char));
+	char *init_func_name = strdup("init_");
 	strcat(init_func_name, name);
 
 	void *ptr = dlsym(libhandle, init_func_name);
-	PluginInitFunc init_func = (PluginInitFunc) (intptr_t) ptr;
-
-	if (!init_func) {
+	free(init_func_name);
+	if (!ptr) {
 		fprintf(stderr, "Error loadding init function: %s\n", dlerror());
 	}
+	PluginInitFunc init_func = (PluginInitFunc) (intptr_t) ptr;
+
+
 
 	int rc = init_func(pm);
 
@@ -59,6 +61,7 @@ void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 		fprintf(stderr, "Error: Plugin init function returned %d\n", rc);
 		dlclose(libhandle);
 	}
+
 	return libhandle;
 }
 
@@ -79,7 +82,7 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 		if (!name)
 			continue;
 		char *fullpath = malloc(200 * sizeof(char));
-		;
+
 		strcpy(fullpath, dirname);
 		strcat(fullpath, "/");
 		strcat(fullpath, direntry->d_name);
@@ -90,8 +93,7 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 			handle_node->next = plugins_state->handle_list;
 			plugins_state->handle_list = handle_node;
 		}
-//		free(name);
-//		free(fullpath);
+		free(fullpath);
 	}
 
 	closedir(dir);

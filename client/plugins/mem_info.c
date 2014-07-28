@@ -24,19 +24,19 @@ void getprocmeminfo(unsigned long *restrict mfre, unsigned long *restrict mtot) 
 
 	fp = fopen("/proc/meminfo", "r");
 	if (!fp) {
-		fprintf(stderr,"/proc/meminfo not found!\n");
+		fprintf(stderr, "/proc/meminfo not found!\n");
 //		exit(-1);
 	}
 
-	while (fgets(line, 200, fp) != NULL ) {
+	while (fgets(line, sizeof(line), fp) != NULL ) {
 		char *pos;
 
 		if ((pos = strstr(line, "MemFree: ")))
-			sscanf(pos, "MemFree: %lu kB", mfre);
+			sscanf(pos, "MemFree: %100lu kB", mfre);
 		if ((pos = strstr(line, "MemTotal: ")))
-			sscanf(pos, "MemTotal: %lu kB", mtot);
+			sscanf(pos, "MemTotal: %100lu kB", mtot);
 	}
-
+	fclose(fp);
 }
 
 double get_mem_usage() {
@@ -47,7 +47,7 @@ double get_mem_usage() {
 
 	double frac = (double) mfre / (double) mtot;
 
-	return 100.0-frac * 100.0;
+	return 100.0 - frac * 100.0;
 }
 char* toMemData(double usage) {
 	char *returnMsg = malloc(100 * sizeof(char));
@@ -79,7 +79,7 @@ static metric mem_info_hook() {
 
 extern int init_mem_info(PluginManager *pm) {
 
-	PluginManager_register_hook(pm, mem_info_hook);
+	PluginManager_register_hook(pm, "mem_info", mem_info_hook);
 	return 1;
 }
 

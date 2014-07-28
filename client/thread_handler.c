@@ -78,6 +78,7 @@ int startThreads() {
 
 	cleanup_plugins(pdstate);
 	cleanup_curl();
+	PluginManager_free(pm);
 	return 1;
 }
 

@@ -27,10 +27,9 @@ char addr[100] = "http://localhost:3000/executions";
 char *pwd;
 
 int readConf(char *confFile) {
-	int tempTim = 0;
+
 //	int iter;
 	struct stat st;
-	char helpAddr[300] = { "" };
 
 	stat(confFile, &st);
 	if (st.st_ctim.tv_sec > timeStampFile.tv_sec) {
@@ -47,14 +46,14 @@ int readConf(char *confFile) {
 		}
 		while (fgets(line, 200, fp) != NULL ) {
 			char* pos;
-			//		printf("%s", line);
 			if ((pos = strstr(line, "host: "))) {
+				char helpAddr[300] = { "" };
 				sprintf(helpAddr, "%s", pos + strlen("host: "));
 				strncpy(addr, helpAddr, strlen(helpAddr) - 1);
 			}
 			if ((pos = strstr(line, "timing_"))) {
 				int numTim = atoi(pos + strlen("timing_"));
-				tempTim = atoi(pos + strlen("timing_") + 2);
+				int tempTim = atoi(pos + strlen("timing_") + 2);
 				timings[numTim + MIN_THREADS] = tempTim;
 				fprintf(stderr, "timing no %d is: %ld \n", numTim + MIN_THREADS,
 						timings[numTim + MIN_THREADS]);
@@ -191,36 +190,17 @@ char* cutPwd(char *pwd) {
 	return help;
 }
 
-int main(int argc, const char* argv[]) {
-	char *buf[200];
-	readlink("/proc/self/exe", *buf, 200); // obtain full path of executable
-
-	char *pos;
-	if (argc > 1) {
-		for (int iter = 0; iter < argc; iter++) {
-			fprintf(stderr, "arg #%d is: %s\n", iter, argv[iter]);
-			if ((pos = strstr(argv[iter], "-id="))) {
-				strcpy(execID_, pos + strlen("-id="));
-			}
-			if ((pos = strstr(argv[iter], "-h"))
-					|| (pos = strstr(argv[iter], "-?"))
-					|| (pos = strstr(argv[iter], "--help"))) {
-			}
-		}
-	}
-	pwd = malloc(200 * sizeof(char));
-	strcpy(pwd, *buf);
-	pwd = cutPwd(pwd);
+int prepare() {
 
 	getConf(pwd);
 	readConf(confFile);
 
-	char *timeArr = (char*) malloc(sizeof(char) * 80);
-	time_t curTime = time(NULL );
-	sprintf(timeArr, "%s", asctime(localtime(&curTime)));
-
-	size_t two = strlen(timeArr);
-	timeArr[two - 1] = '\0';
+	char timeArr[80];
+	time_t curTime;
+	struct tm *timeinfo;
+	time(&curTime);
+	timeinfo = localtime(&curTime);
+	strftime(timeArr, 80, "%c", timeinfo);
 
 	char str[1000] = ""; /* storing the execution ID -- UUID is 36 chars */
 	char msg[1000] = "";
@@ -233,13 +213,39 @@ int main(int argc, const char* argv[]) {
 			"{\"Name\":\"Execution on node %s - %s\",\"Description\":\"Testing C gatherer\",\"Other\":\"values\",\"Onemore\":\"please\"}",
 			hostname + strlen("hostname: "), timeArr);
 
+	free(hostname);
+
 	/* init curl libs */
 	init_curl();
 	strcpy(str, get_execution_id(addr, msg)); /* get the execution ID */
 	strcat(addr, str);
+	return 1;
+}
 
+int main(int argc, const char* argv[]) {
+	char *buf = malloc(200 * sizeof(char));
+	readlink("/proc/self/exe", buf, 200); // obtain full path of executable
+
+	if (argc > 1) {
+		for (int iter = 0; iter < argc; iter++) {
+			char *pos;
+			fprintf(stderr, "arg #%d is: %s\n", iter, argv[iter]);
+			if ((pos = strstr(argv[iter], "-id="))) {
+				strcpy(execID_, pos + strlen("-id="));
+			}
+			if ((pos = strstr(argv[iter], "-h"))
+					|| (pos = strstr(argv[iter], "-?"))
+					|| (pos = strstr(argv[iter], "--help"))) {
+			}
+		}
+	}
+	pwd = malloc(200 * sizeof(char));
+	strcpy(pwd, buf);
+	pwd = cutPwd(pwd);
+	free(buf);
+	prepare();
 	if (!startThreads())
 		fprintf(stderr, "Couldn't start the threads!\n");
 
-	exit(0);
+	exit(EXIT_SUCCESS);
 }

@@ -38,7 +38,8 @@ APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 #APR_INC = -I ../binaries/apr/include/apr-1
 
 ## to use, type: make or make all
-all: excess_main $(PLUGIN_DIR)/mem_info.so
+all: excess_main $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/cpu_info.so \
+	$(PLUGIN_DIR)/start_stop.so
 
 lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
 
@@ -63,6 +64,18 @@ $(PLUGIN_DIR)/mem_info.so: $(PLUGIN_DIR)/mem_info.o
 	$(CC) -o $(PLUGIN_DEST)/mem_info.so $^ -shared
 
 $(PLUGIN_DIR)/mem_info.o: $(PLUGIN_DIR)/mem_info.c $(HEADER) 
+	$(CC) -c $< -o $@ $(COPT_SO) -I.
+	
+$(PLUGIN_DIR)/cpu_info.so: $(PLUGIN_DIR)/cpu_info.o
+	$(CC) -o $(PLUGIN_DEST)/cpu_info.so $^ -shared
+
+$(PLUGIN_DIR)/cpu_info.o: $(PLUGIN_DIR)/cpu_info.c $(HEADER) 
+	$(CC) -c $< -o $@ $(COPT_SO) -I.
+	
+$(PLUGIN_DIR)/start_stop.so: $(PLUGIN_DIR)/start_stop.o
+	$(CC) -o $(PLUGIN_DEST)/start_stop.so $^ -shared
+
+$(PLUGIN_DIR)/start_stop.o: $(PLUGIN_DIR)/start_stop.c $(HEADER) 
 	$(CC) -c $< -o $@ $(COPT_SO) -I.
 
 

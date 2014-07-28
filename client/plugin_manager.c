@@ -13,6 +13,7 @@
 typedef struct PluginHookList_t {
 	PluginHook hook;
 	struct PluginHookList_t* next;
+	char *name;
 } PluginHookList;
 
 struct PluginManager_t {
@@ -36,7 +37,7 @@ void PluginManager_free(PluginManager *pm) {
 	free(pm);
 }
 
-void PluginManager_register_hook(PluginManager *pm, PluginHook hook) {
+void PluginManager_register_hook(PluginManager *pm,const char *name, PluginHook hook) {
 	PluginHookList *node = malloc(sizeof(PluginHookList));
 	node->hook = hook;
 	node->next = pm->hook_list;
@@ -45,11 +46,13 @@ void PluginManager_register_hook(PluginManager *pm, PluginHook hook) {
 }
 // Don't actually need this funtion use
 metric PluginManager_apply_hook(PluginManager *pm) {
-	metric retMetric = malloc(sizeof(retMetric));
+	metric retMetric = malloc(sizeof(*retMetric));
 
 	PluginHookList *plugin = pm->hook_list;
-	if (!plugin)
-		return NULL;
+	if (!plugin) {
+		free(retMetric);
+		return NULL ;
+	}
 	while (plugin) {
 		retMetric = plugin->hook();
 
