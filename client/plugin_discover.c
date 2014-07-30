@@ -49,7 +49,7 @@ void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 	void *ptr = dlsym(libhandle, init_func_name);
 	free(init_func_name);
 	if (!ptr) {
-		fprintf(stderr, "Error loadding init function: %s\n", dlerror());
+		fprintf(stderr, "Error loading init function: %s\n", dlerror());
 	}
 	PluginInitFunc init_func = (PluginInitFunc) (intptr_t) ptr;
 

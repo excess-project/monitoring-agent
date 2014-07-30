@@ -65,7 +65,7 @@ char* toMemData(double usage) {
 static metric mem_info_hook() {
 	double usage;
 	metric resMetric = malloc(sizeof(metric));
-	resMetric->msg = malloc(sizeof(char));
+	resMetric->msg = malloc(100 * sizeof(char));
 
 	int clk_id = CLOCK_REALTIME;
 	clock_gettime(clk_id, &resMetric->timestamp);
