@@ -41,8 +41,12 @@ int readConf(const char *confFile) {
 		fp = fopen(confFile, "r");
 		timeStampFile = st.st_ctim;
 		if (!fp) {
-			printf("File not found!\n%s\n", confFile);
-			return 0;
+			printf("File not found!\n%s\n using default values\n", confFile);
+			for (int i = 2; i < 256; i++)
+				timings[i] = 1000000000;
+			timings[0] = 0;
+			timings[1] = 30;
+			return 1;
 		}
 		while (fgets(line, 200, fp) != NULL ) {
 			char* pos;
