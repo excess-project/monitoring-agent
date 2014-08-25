@@ -7,11 +7,8 @@
 
 #include "util.h"
 
-//struct metric_t {
-//	struct timespec timestamp;
-//
-//	char *msg;
-//};
-int bla() {
-	return 1;
+int bla(char *fnctName, int flag){
+
+
+return 1;
 }

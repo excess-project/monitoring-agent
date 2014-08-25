@@ -38,7 +38,7 @@ APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 #APR_INC = -I ../binaries/apr/include/apr-1
 
 ## to use, type: make or make all
-all: excess_main $(PLUGIN_DIR)/mem_info.so
+all: excess_main $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/papi.so 
 
 lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
 
@@ -64,6 +64,13 @@ $(PLUGIN_DIR)/mem_info.so: $(PLUGIN_DIR)/mem_info.o
 
 $(PLUGIN_DIR)/mem_info.o: $(PLUGIN_DIR)/mem_info.c $(HEADER) 
 	$(CC) -c $< -o $@ $(COPT_SO) -I.
+	
+$(PLUGIN_DIR)/papi.so: $(PLUGIN_DIR)/papi.o
+	$(CC) -o $(PLUGIN_DEST)/papi.so $^ -shared ../binaries/papi/lib/libpapi.so
+
+$(PLUGIN_DIR)/papi.o: $(PLUGIN_DIR)/papi.c $(HEADER) 
+	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi
+	
 
 
 

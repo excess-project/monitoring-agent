@@ -19,6 +19,10 @@ extern char *confFile;
 
 int timingSend, timingCheck;
 
+int printHelp();
+
+int prepare();
+
 int readConf(char *confFile);
 
 int getConf(const char *argv);
