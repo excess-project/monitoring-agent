@@ -206,6 +206,7 @@ int gatherMetric(int num) {
 
 	apr_status_t status;
 	PluginHook hook = PluginManager_get_hook(pm);
+	fprintf(stdout, "with timing: %ld ns\n", timings[num]);
 	metric resMetric = malloc(sizeof(metric));
 
 	while (running) {

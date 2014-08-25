@@ -66,6 +66,8 @@ metric PluginManager_apply_hook(PluginManager *pm) {
 
 PluginHook PluginManager_get_hook(PluginManager *pm) {
 	PluginHook funcPtr = pm->hook_list->hook;
+	fprintf(stdout, "\nusing plugin %s ", pm->hook_list->name);
 	pm->hook_list = pm->hook_list->next;
+
 	return funcPtr;
 }

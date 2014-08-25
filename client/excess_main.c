@@ -72,7 +72,7 @@ int readConf(char *confFile) {
 }
 
 int getConf(const char *argv) {
-	confFile = malloc(200 * sizeof(char));
+//	confFile = malloc(200 * sizeof(char));
 	const char *filename = { "/conf" };
 
 	confFile = strdup(argv);
@@ -88,7 +88,7 @@ int getFQDN(char *fqdn) {
 
 	int gai_result;
 
-	char *hostname = (char*) malloc(sizeof(char) * 80);
+	char *hostname = malloc(sizeof(char) * 80);
 	gethostname(hostname, sizeof hostname);
 
 	memset(&hints, 0, sizeof hints);
@@ -223,6 +223,8 @@ int prepare() {
 }
 
 int main(int argc, const char* argv[]) {
+
+	confFile = malloc(200 * sizeof(char));
 	char *buf = malloc(200 * sizeof(char));
 	readlink("/proc/self/exe", buf, 200); // obtain full path of executable
 
@@ -233,6 +235,10 @@ int main(int argc, const char* argv[]) {
 			if ((pos = strstr(argv[iter], "-id="))) {
 				strcpy(execID_, pos + strlen("-id="));
 			}
+			if ((pos = strstr(argv[iter], " -hostname="))) {
+//				TODO: do something
+//				strcpy();
+			}
 			if ((pos = strstr(argv[iter], "-h"))
 					|| (pos = strstr(argv[iter], "-?"))
 					|| (pos = strstr(argv[iter], "--help"))) {
@@ -242,10 +248,18 @@ int main(int argc, const char* argv[]) {
 	pwd = malloc(200 * sizeof(char));
 	strcpy(pwd, buf);
 	pwd = cutPwd(pwd);
+
+//	char prep[150];
+//	strcpy(prep, "source ");
+//	strcat(prep, pwd);
+//	strcat(prep, "/prep.sh");
+//	system(prep);
+
 	free(buf);
+
 	prepare();
 	if (!startThreads())
 		fprintf(stderr, "Couldn't start the threads!\n");
-	fprintf(stderr,"kthxbye!");
+	fprintf(stderr, "kthxbye!");
 	exit(EXIT_SUCCESS);
 }
