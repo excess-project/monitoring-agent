@@ -16,7 +16,7 @@
 #include "thread_handler.h"
 #include "excess_main.h"
 
-char *confFile;
+const char *confFile;
 
 long timings[256];
 
@@ -26,7 +26,7 @@ char addr[100] = "http://localhost:3000/executions";
 
 char *pwd;
 
-int readConf(char *confFile) {
+int readConf(const char *confFile) {
 
 //	int iter;
 	struct stat st;
@@ -41,8 +41,12 @@ int readConf(char *confFile) {
 		fp = fopen(confFile, "r");
 		timeStampFile = st.st_ctim;
 		if (!fp) {
-			printf("File not found!\n");
-			return 0;
+			printf("File not found!\n%s\n using default values\n", confFile);
+			for (int i = 2; i < 256; i++)
+				timings[i] = 1000000000;
+			timings[0] = 0;
+			timings[1] = 30;
+			return 1;
 		}
 		while (fgets(line, 200, fp) != NULL ) {
 			char* pos;
@@ -75,8 +79,10 @@ int getConf(const char *argv) {
 //	confFile = malloc(200 * sizeof(char));
 	const char *filename = { "/conf" };
 
-	confFile = strdup(argv);
-	strcat(confFile, filename);
+	char *tmpChar = strdup(argv);
+//	confFile = strdup(argv);
+	strcat(tmpChar, filename);
+	confFile = strdup(tmpChar);
 	fprintf(stderr, "confFile is: %s \n", confFile);
 
 	return 1;
@@ -224,7 +230,7 @@ int prepare() {
 
 int main(int argc, const char* argv[]) {
 
-	confFile = malloc(200 * sizeof(char));
+//	confFile = malloc(200 * sizeof(char));
 	char *buf = malloc(200 * sizeof(char));
 	readlink("/proc/self/exe", buf, 200); // obtain full path of executable
 
