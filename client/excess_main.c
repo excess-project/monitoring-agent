@@ -79,10 +79,12 @@ int getConf(const char *argv) {
 //	confFile = malloc(200 * sizeof(char));
 	const char *filename = { "/conf" };
 
-	char *tmpChar = strdup(argv);
+	char *tmpChar;
+	tmpChar = strdup(argv);
 //	confFile = strdup(argv);
 	strcat(tmpChar, filename);
 	confFile = strdup(tmpChar);
+	free(tmpChar);
 	fprintf(stderr, "confFile is: %s \n", confFile);
 
 	return 1;
