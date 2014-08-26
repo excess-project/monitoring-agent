@@ -16,7 +16,7 @@
 #include "thread_handler.h"
 #include "excess_main.h"
 
-const char *confFile;
+char *confFile;
 
 long timings[256];
 

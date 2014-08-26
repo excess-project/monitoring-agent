@@ -15,7 +15,7 @@ int NUM_THREADS;
 extern long timings[256];
 extern char addr[100];
 
-extern const char *confFile;
+extern char *confFile;
 
 int timingSend, timingCheck;
 
