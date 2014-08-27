@@ -61,7 +61,8 @@ int startThreads() {
 
 	pm = PluginManager_new();
 	const char *dirname = { "/plugins" };
-	char *pluginLocation = strdup(pwd);
+	char *pluginLocation = malloc(300 * sizeof(char));
+	strcpy(pluginLocation, pwd);
 	strcat(pluginLocation, dirname);
 
 //	look for plugins and register them
