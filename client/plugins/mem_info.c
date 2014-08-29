@@ -4,16 +4,16 @@
  *  Created on: 16.07.2014
  *      Author: hpcneich
  */
-#include "../util.h"
 #include <time.h>
-
-#include "../plugin_manager.h"
-
 //#include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "../util.h"
+#include "../plugin_manager.h"
+#include "../excess_main.h"
 
 #define BUFFER_SIZE 64*1000;
 
@@ -25,6 +25,7 @@ void getprocmeminfo(unsigned long *restrict mfre, unsigned long *restrict mtot) 
 	fp = fopen("/proc/meminfo", "r");
 	if (!fp) {
 		fprintf(stderr, "/proc/meminfo not found!\n");
+		fprintf(logFile, "/proc/meminfo not found!\n");
 //		exit(-1);
 	}
 

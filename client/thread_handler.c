@@ -48,8 +48,10 @@ int startStop(const char *fnctName, int flag) {
 			flag);
 
 	apr_status_t status = apr_queue_push(data_queue, resMetric);
-	if (status != APR_SUCCESS)
+	if (status != APR_SUCCESS) {
 		fprintf(stderr, "Failed queue push");
+		fprintf(logFile, "Failed queue push");
+	}
 //	free(resMetric->msg);
 //	free(resMetric);
 	return 1;
@@ -80,6 +82,8 @@ int startThreads() {
 		iret[t] = pthread_create(&threads[t], NULL, entryThreads, &nums[t]);
 		if (iret[t]) {
 			fprintf(stderr, "ERROR; return code from pthread_create() is %d\n",
+					iret[t]);
+			fprintf(logFile, "ERROR; return code from pthread_create() is %d\n",
 					iret[t]);
 			exit(-1);
 		}
@@ -153,6 +157,8 @@ int send_monitoring_data(char *URL, char *data) {
 	if (URL == NULL || strlen(URL) == 0) {
 		fprintf(stderr,
 				"send_monitoring_data(): Error - the given url is empty.\n");
+		fprintf(logFile,
+				"send_monitoring_data(): Error - the given url is empty.\n");
 		return SEND_FAILED;
 	}
 
@@ -174,6 +180,8 @@ int send_monitoring_data(char *URL, char *data) {
 	if (res != CURLE_OK) {
 		result = SEND_FAILED;
 		fprintf(stderr, "send_monitoring_data() failed: %s\n",
+				curl_easy_strerror(res));
+		fprintf(logFile, "send_monitoring_data() failed: %s\n",
 				curl_easy_strerror(res));
 
 	}
@@ -208,14 +216,16 @@ int gatherMetric(int num) {
 	apr_status_t status;
 	PluginHook hook = PluginManager_get_hook(pm);
 	fprintf(stdout, "with timing: %ld ns\n", timings[num]);
+	fprintf(logFile, "with timing: %ld ns\n", timings[num]);
 	metric resMetric = malloc(sizeof(metric));
 
 	while (running) {
 		resMetric = hook();
 		status = apr_queue_push(data_queue, resMetric);
-		if (status != APR_SUCCESS)
+		if (status != APR_SUCCESS) {
 			fprintf(stderr, "Failed queue push");
-
+			fprintf(logFile, "failed queue push");
+		}
 		nanosleep(&tim, &tim2);
 	}
 

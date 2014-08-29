@@ -9,6 +9,7 @@
 #define EXCESS_MAIN_H_
 
 #include <time.h>
+#include <stdio.h>
 
 int NUM_THREADS;
 
@@ -31,6 +32,8 @@ extern char addr[100];
  *
  */
 extern char *confFile;
+
+extern FILE *logFile;
 
 /** @brief function printing information about the tool
  *

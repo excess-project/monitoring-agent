@@ -7,7 +7,7 @@
 
 #include <pthread.h>
 #include <stdlib.h>
-#include <stdio.h>
+
 #include <sys/stat.h>
 #include <netdb.h>
 #include <unistd.h>
@@ -25,6 +25,8 @@ struct timespec timeStampFile = { 0, 0 };
 char addr[100] = "http://localhost:3000/executions";
 
 char *pwd;
+struct tm *time_info;
+FILE *logFile;
 
 int readConf(const char *confFile) {
 
@@ -61,6 +63,8 @@ int readConf(const char *confFile) {
 				timings[numTim + MIN_THREADS] = tempTim;
 				fprintf(stderr, "timing no %d is: %ld \n", numTim + MIN_THREADS,
 						timings[numTim + MIN_THREADS]);
+				fprintf(logFile, "timing no %d is: %ld \n", numTim + MIN_THREADS,
+										timings[numTim + MIN_THREADS]);
 			}
 			if ((pos = strstr(line, "timingSend")))
 				timings[0] = atoi(pos + strlen("timingSend") + 1);
@@ -86,6 +90,7 @@ int getConf(const char *argv) {
 	confFile = strdup(tmpChar);
 	free(tmpChar);
 	fprintf(stderr, "confFile is: %s \n", confFile);
+	fprintf(logFile, "confFile is: %s \n", confFile);
 
 	return 1;
 
@@ -105,8 +110,10 @@ int getFQDN(char *fqdn) {
 	hints.ai_flags = AI_CANONNAME;
 
 	if ((gai_result = getaddrinfo(hostname, "http", &hints, &info)) != 1) {
-		fprintf(stderr, "getaddrinfo: %s,\n using regular hostname",
+		fprintf(stderr, "getaddrinfo: %s,\n using regular hostname\n",
 				gai_strerror(gai_result));
+		fprintf(logFile, "getaddrinfo: %s,\n using regular hostname\n",
+						gai_strerror(gai_result));
 		FILE *tmp = NULL;
 		if ((tmp = popen("hostname", "r")) == NULL ) {
 			perror("popen");
@@ -143,11 +150,15 @@ char* get_execution_id(char *URL, char *msg) {
 	if (URL == NULL || strlen(URL) == 0) {
 		fprintf(stderr,
 				"get_execution_id(): Error - the given url is empty.\n");
+		fprintf(logFile,
+				"get_execution_id(): Error - the given url is empty.\n");
 		return NULL ;
 	}
 
 	if (msg == NULL || strlen(msg) == 0) {
 		fprintf(stderr,
+				"get_execution_id(): Error - empty message is going to be sent.\n");
+		fprintf(logFile,
 				"get_execution_id(): Error - empty message is going to be sent.\n");
 		return NULL ;
 	}
@@ -180,6 +191,8 @@ char* get_execution_id(char *URL, char *msg) {
 	if (res != CURLE_OK) {
 		fprintf(stderr, "get_execution_id() failed: %s\n",
 				curl_easy_strerror(res));
+		fprintf(logFile, "get_execution_id() failed: %s\n",
+				curl_easy_strerror(res));
 		return NULL ;
 
 	}
@@ -204,11 +217,8 @@ int prepare() {
 	readConf(confFile);
 
 	char timeArr[80];
-	time_t curTime;
-	struct tm *timeinfo;
-	time(&curTime);
-	timeinfo = localtime(&curTime);
-	strftime(timeArr, 80, "%c", timeinfo);
+
+	strftime(timeArr, 80, "%c", time_info);
 
 	char str[1000] = ""; /* storing the execution ID -- UUID is 36 chars */
 	char msg[1000] = "";
@@ -236,10 +246,27 @@ int main(int argc, const char* argv[]) {
 	char *buf = malloc(300 * sizeof(char));
 	readlink("/proc/self/exe", buf, 200); // obtain full path of executable
 
+	pwd = malloc(300 * sizeof(char));
+	strcpy(pwd, buf);
+	pwd = cutPwd(pwd);
+
+	time_t curTime;
+	time(&curTime);
+	time_info = localtime(&curTime);
+	char logFileName[300];
+	char timeForFile[50];
+	strftime(timeForFile, 50, "%F-%T", time_info);
+	sprintf(logFileName, "%s/log-%s", pwd, timeForFile);
+	fprintf(stderr, "using logfile: %s", logFileName);
+
+	logFile = fopen(logFileName, "w");
+	fprintf(logFile, "Starting at ... %s", timeForFile);
+
 	if (argc > 1) {
 		for (int iter = 0; iter < argc; iter++) {
 			char *pos;
 			fprintf(stderr, "arg #%d is: %s\n", iter, argv[iter]);
+			fprintf(logFile, "arg #%d is: %s\n", iter, argv[iter]);
 			if ((pos = strstr(argv[iter], "-id="))) {
 				strcpy(execID_, pos + strlen("-id="));
 			}
@@ -253,9 +280,6 @@ int main(int argc, const char* argv[]) {
 			}
 		}
 	}
-	pwd = malloc(300 * sizeof(char));
-	strcpy(pwd, buf);
-	pwd = cutPwd(pwd);
 
 //	char prep[150];
 //	strcpy(prep, "source ");
@@ -266,8 +290,11 @@ int main(int argc, const char* argv[]) {
 	free(buf);
 
 	prepare();
-	if (!startThreads())
+	if (!startThreads()) {
 		fprintf(stderr, "Couldn't start the threads!\n");
+		fprintf(logFile, "Couldn't start the threads!\n");
+	}
 	fprintf(stderr, "kthxbye!");
+	fprintf(logFile, "Program terminated regularly!");
 	exit(EXIT_SUCCESS);
 }

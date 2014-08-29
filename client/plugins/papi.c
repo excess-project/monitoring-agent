@@ -7,6 +7,7 @@
 
 #include "../util.h"
 #include "../plugin_manager.h"
+#include "../excess_main.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -38,6 +39,8 @@ char* toPapiData(long_long *val) {
 void handle_error(int err) {
 	fprintf(stderr, "papi-pcm.c: Failure with PAPI error '%s'.\n",
 			PAPI_strerror(err));
+	fprintf(logFile, "papi-pcm.c: Failure with PAPI error '%s'.\n",
+			PAPI_strerror(err));
 	exit(1);
 }
 int prepare_papi() {
@@ -49,6 +52,7 @@ int prepare_papi() {
 	retval = PAPI_library_init(PAPI_VER_CURRENT);
 	if (retval != PAPI_VER_CURRENT && retval > 0) {
 		fprintf(stderr, "getPapiValues: PAPI library version mismatch!\n");
+		fprintf(logFile, "getPapiValues: PAPI library version mismatch!\n");
 	}
 
 	retval = PAPI_create_eventset(&EventSet);
@@ -58,6 +62,7 @@ int prepare_papi() {
 
 	if (retval < 0) {
 		fprintf(stderr, "getPapiValues: Initialization error!\n");
+		fprintf(logFile, "getPapiValues: Initialization error!\n");
 	}
 	papiNumbers = sizeof(papiEvents) / sizeof(*papiEvents);
 
@@ -66,9 +71,13 @@ int prepare_papi() {
 		retval = PAPI_add_named_event(EventSet,
 				(char*) (intptr_t) papiEvents[i]);
 		if (retval != PAPI_OK) {
-			fprintf(stderr, "getPapiValues: Failure to add PAPI event '%s'.\n",
+			fprintf(stderr,
+					"getPapiValues: Failure to add PAPI event '%s'.\nskipping...\n",
 					(char*) (intptr_t) papiEvents[i]);
-			handle_error(retval);
+			fprintf(logFile,
+					"getPapiValues: Failure to add PAPI event '%s'.\nskipping...\n",
+					(char*) (intptr_t) papiEvents[i]);
+//			handle_error(retval);
 		}
 	}
 
