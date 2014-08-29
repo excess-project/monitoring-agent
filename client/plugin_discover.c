@@ -14,6 +14,7 @@
 #include <dlfcn.h>
 
 #include "plugin_discover.h"
+#include "excess_main.h"
 
 typedef struct PluginHandleList_t {
 	void* handle;
@@ -39,26 +40,28 @@ void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 
 	if (!libhandle) {
 		fprintf(stderr, "Error loading library: %s\n", dlerror());
+		fprintf(logFile, "Error loading library: %s\n", dlerror());
 	}
 
-//	char *init_func_name = malloc(
-//			(strlen("init_") + strlen(name)) * sizeof(char));
-	char *init_func_name = strdup("init_");
+	char *init_func_name = malloc(
+			(strlen("init_") + strlen(name)) * sizeof(char));
+
+	strcpy(init_func_name, "init_");
 	strcat(init_func_name, name);
 
 	void *ptr = dlsym(libhandle, init_func_name);
 	free(init_func_name);
 	if (!ptr) {
 		fprintf(stderr, "Error loading init function: %s\n", dlerror());
+		fprintf(logFile, "Error loading init function: %s\n", dlerror());
 	}
 	PluginInitFunc init_func = (PluginInitFunc) (intptr_t) ptr;
-
-
 
 	int rc = init_func(pm);
 
 	if (rc < 0) {
 		fprintf(stderr, "Error: Plugin init function returned %d\n", rc);
+		fprintf(logFile, "Error: Plugin init function returned %d\n", rc);
 		dlclose(libhandle);
 	}
 
@@ -70,6 +73,7 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 
 	if (!dir) {
 		fprintf(stderr, "unable to open directory %s!\n", dirname);
+		fprintf(logFile, "unable to open directory %s!\n", dirname);
 		return NULL ;
 	}
 

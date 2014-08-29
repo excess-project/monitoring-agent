@@ -9,16 +9,37 @@
 #define EXCESS_MAIN_H_
 
 #include <time.h>
+#include <stdio.h>
 
 int NUM_THREADS;
 
+/** @brief Array containing the timings of the plugins.
+ *
+ * 		The array containing the timings of the plugins allows to store the timing
+ * 		for up to 254 plugins, the first two values are reserved for the timing
+ * 		of the threads which manage the re-read of the config file and the sending
+ * 		of the gathered data.
+ *
+ */
 extern long timings[256];
+
+/** @brief adress of the server which will receive the data
+ *
+ */
 extern char addr[100];
 
+/** @brief location of the config file
+ *
+ */
 extern char *confFile;
 
-int timingSend, timingCheck;
+extern FILE *logFile;
 
+/** @brief function printing information about the tool
+ *
+ * TODO has to be finished
+ *
+ */
 int printHelp();
 
 int prepare();
