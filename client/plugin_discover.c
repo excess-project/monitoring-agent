@@ -41,9 +41,10 @@ void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 		fprintf(stderr, "Error loading library: %s\n", dlerror());
 	}
 
-//	char *init_func_name = malloc(
-//			(strlen("init_") + strlen(name)) * sizeof(char));
-	char *init_func_name = strdup("init_");
+	char *init_func_name = malloc(
+			(strlen("init_") + strlen(name)) * sizeof(char));
+
+	strcpy(init_func_name, "init_");
 	strcat(init_func_name, name);
 
 	void *ptr = dlsym(libhandle, init_func_name);
@@ -52,8 +53,6 @@ void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 		fprintf(stderr, "Error loading init function: %s\n", dlerror());
 	}
 	PluginInitFunc init_func = (PluginInitFunc) (intptr_t) ptr;
-
-
 
 	int rc = init_func(pm);
 

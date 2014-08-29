@@ -189,7 +189,7 @@ char* get_execution_id(char *URL, char *msg) {
 }
 
 char* cutPwd(char *pwd) {
-	char* help = malloc(200 * sizeof(char));
+	char* help = malloc(300 * sizeof(char));
 	char *lastslash = strrchr(pwd, '/');
 	int ptr = lastslash - pwd;
 
@@ -233,7 +233,7 @@ int prepare() {
 int main(int argc, const char* argv[]) {
 
 	confFile = malloc(300 * sizeof(char));
-	char *buf = malloc(200 * sizeof(char));
+	char *buf = malloc(300 * sizeof(char));
 	readlink("/proc/self/exe", buf, 200); // obtain full path of executable
 
 	if (argc > 1) {
@@ -253,7 +253,7 @@ int main(int argc, const char* argv[]) {
 			}
 		}
 	}
-	pwd = malloc(200 * sizeof(char));
+	pwd = malloc(300 * sizeof(char));
 	strcpy(pwd, buf);
 	pwd = cutPwd(pwd);
 
