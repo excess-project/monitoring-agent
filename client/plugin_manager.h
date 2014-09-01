@@ -10,8 +10,14 @@
 
 #include "util.h"
 
+/**
+ * @brief entry function of plugin
+ */
 typedef metric (*PluginHook)();
 
+/**
+ * @brief structure which manages the plugins
+ */
 typedef struct PluginManager_t PluginManager;
 
 PluginManager* PluginManager_new();

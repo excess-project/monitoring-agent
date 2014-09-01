@@ -33,6 +33,9 @@ extern char addr[100];
  */
 extern char *confFile;
 
+/** @brief log file which will contain message by the program
+ *
+ */
 extern FILE *logFile;
 
 /** @brief function printing information about the tool
@@ -42,10 +45,22 @@ extern FILE *logFile;
  */
 int printHelp();
 
+/**@ brief prepares the sending of the data
+ *
+ * will get the execution id and gathering information required by the program
+ *
+ */
 int prepare();
 
+
+/**
+ * @brief reads the config file
+ */
 int readConf(const char *confFile);
 
+/** @brief will find the path to the config file
+ *
+ */
 int getConf(const char *argv);
 
 #endif /* EXCESS_MAIN_H_ */
