@@ -43,7 +43,7 @@ void PluginManager_register_hook(PluginManager *pm, const char *name,
 	hookType->hook = hook;
 	hookType->name = name;
 	apr_status_t status = apr_queue_push(pm->hook_queue, hookType);
-	if (status != APR_SUCCESS){
+	if (status != APR_SUCCESS) {
 		fprintf(stderr, "Failed queue push");
 		fprintf(logFile, "Failed queue push");
 	}
@@ -58,7 +58,7 @@ metric PluginManager_apply_hook(PluginManager *pm) {
 }
 
 PluginHook PluginManager_get_hook(PluginManager *pm) {
-	PluginHook funcPtr;
+	PluginHook funcPtr = NULL;
 	void *retPtr;
 	apr_status_t status = apr_queue_pop(pm->hook_queue, &retPtr);
 	if (status == APR_SUCCESS) {
@@ -66,6 +66,8 @@ PluginHook PluginManager_get_hook(PluginManager *pm) {
 		intptr_t hlpr = (intptr_t) retPtr;
 		typePtr = (struct PluginHookType_t*) hlpr;
 		funcPtr = *(typePtr->hook);
+		fprintf(stderr, "using Plugin %s ", typePtr->name);
+		fprintf(logFile, "using Plugin %s ", typePtr->name);
 	}
 	return funcPtr;
 }

@@ -15,21 +15,33 @@
 #define START 1
 #define STOP 0
 
-//#include "plugin_discover.h"
-//#include "plugin_manager.h"
-
+/**
+ * @brief flags which indicates whether gathering cycle is running or not
+ */
 extern int running;
 
+/**
+ * @brief directory where the binary is located
+ */
 extern char *pwd;
 
+/**
+ * @brief pointer to the metric gathered by the plugins
+ */
 typedef struct metric_t* metric;
 
+/**
+ * @brief structure which represents a value of a metric
+ */
 struct metric_t {
 	struct timespec timestamp;
 
 	char *msg;
 };
 
+/**
+ * @brief function which creates values when a function has started/stopped
+ */
 int startStop(const char *fnctName,int flag);
 
 

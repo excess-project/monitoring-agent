@@ -35,15 +35,20 @@ int readConf(const char *confFile) {
 
 	stat(confFile, &st);
 	if (st.st_ctim.tv_sec > timeStampFile.tv_sec) {
-		if (timeStampFile.tv_sec > 0)
-			printf("\nConf file changed, read again!\n");
+		if (timeStampFile.tv_sec > 0) {
+			fprintf(stderr, "\nConf file changed, read again!\n");
+			fprintf(logFile, "\nConf file changed, read again!\n");
+		}
 
 		FILE *fp;
 		char line[200];
 		fp = fopen(confFile, "r");
 		timeStampFile = st.st_ctim;
 		if (!fp) {
-			printf("File not found!\n%s\n using default values\n", confFile);
+			fprintf(stderr, "File not found!\n%s\n using default values\n",
+					confFile);
+			fprintf(logFile, "File not found!\n%s\n using default values\n",
+					confFile);
 			for (int i = 2; i < 256; i++)
 				timings[i] = 1000000000;
 			timings[0] = 0;
@@ -63,8 +68,8 @@ int readConf(const char *confFile) {
 				timings[numTim + MIN_THREADS] = tempTim;
 				fprintf(stderr, "timing no %d is: %ld \n", numTim + MIN_THREADS,
 						timings[numTim + MIN_THREADS]);
-				fprintf(logFile, "timing no %d is: %ld \n", numTim + MIN_THREADS,
-										timings[numTim + MIN_THREADS]);
+				fprintf(logFile, "timing no %d is: %ld \n",
+						numTim + MIN_THREADS, timings[numTim + MIN_THREADS]);
 			}
 			if ((pos = strstr(line, "timingSend")))
 				timings[0] = atoi(pos + strlen("timingSend") + 1);
@@ -113,7 +118,7 @@ int getFQDN(char *fqdn) {
 		fprintf(stderr, "getaddrinfo: %s,\n using regular hostname\n",
 				gai_strerror(gai_result));
 		fprintf(logFile, "getaddrinfo: %s,\n using regular hostname\n",
-						gai_strerror(gai_result));
+				gai_strerror(gai_result));
 		FILE *tmp = NULL;
 		if ((tmp = popen("hostname", "r")) == NULL ) {
 			perror("popen");
@@ -294,7 +299,9 @@ int main(int argc, const char* argv[]) {
 		fprintf(stderr, "Couldn't start the threads!\n");
 		fprintf(logFile, "Couldn't start the threads!\n");
 	}
-	fprintf(stderr, "kthxbye!");
-	fprintf(logFile, "Program terminated regularly!");
+
+	fprintf(stderr, "kthxbye!\n");
+	fprintf(logFile, "Program terminated regularly!\n");
+	fclose(logFile);
 	exit(EXIT_SUCCESS);
 }
