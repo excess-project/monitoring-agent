@@ -299,8 +299,9 @@ int main(int argc, const char* argv[]) {
 		fprintf(stderr, "Couldn't start the threads!\n");
 		fprintf(logFile, "Couldn't start the threads!\n");
 	}
-	fclose(logFile);
+
 	fprintf(stderr, "kthxbye!\n");
 	fprintf(logFile, "Program terminated regularly!\n");
+	fclose(logFile);
 	exit(EXIT_SUCCESS);
 }
