@@ -106,6 +106,10 @@ int startThreads() {
 	cleanup_plugins(pdstate);
 	cleanup_curl();
 	PluginManager_free(pm);
+	apr_queue_term(data_queue);
+	apr_pool_destroy(data_pool);
+
+	apr_terminate();
 	return 1;
 }
 
@@ -197,6 +201,7 @@ int prepSend(metric data) {
 
 	sprintf(msg, "{\"Timestamp\":\"%.9Lf\"%s}", timeStamp, data->msg);
 	send_monitoring_data(addr, msg);
+	free(data);
 
 	return 1;
 }

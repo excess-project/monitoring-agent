@@ -33,6 +33,9 @@ PluginManager* PluginManager_new() {
 }
 
 void PluginManager_free(PluginManager *pm) {
+	apr_queue_term(pm->hook_queue);
+	apr_pool_destroy(pm->data_pool);
+	apr_terminate();
 	free(pm);
 }
 
