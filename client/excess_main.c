@@ -274,11 +274,11 @@ int main(int argc, const char* argv[]) {
 	char logFileName[300] = { '\0' };
 	char timeForFile[50];
 	strftime(timeForFile, 50, "%F-%T", time_info);
-	sprintf(logFileName, "%s/log-%s", pwd, timeForFile);
+	sprintf(logFileName, "%s/log/log-%s", pwd, timeForFile);
 	fprintf(stderr, "using logfile: %s\n", logFileName);
 
 	logFile = fopen(logFileName, "w");
-	fprintf(logFile, "Starting at ... %s", timeForFile);
+	fprintf(logFile, "Starting at ... %s\n", timeForFile);
 
 	if (argc > 1) {
 		for (int iter = 0; iter < argc; iter++) {
@@ -299,11 +299,7 @@ int main(int argc, const char* argv[]) {
 		}
 	}
 
-//	char prep[150];
-//	strcpy(prep, "source ");
-//	strcat(prep, pwd);
-//	strcat(prep, "/prep.sh");
-//	system(prep);
+
 
 	free(buf);
 
