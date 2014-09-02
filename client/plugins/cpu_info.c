@@ -11,18 +11,22 @@
 #include "../plugin_manager.h"
 
 static metric cpu_info_hook() {
-	metric resMetric = malloc(sizeof(metric));
-	resMetric->msg = malloc(100 * sizeof(char));
+	if (running) {
+		metric resMetric = malloc(sizeof(metric_t));
+		resMetric->msg = malloc(100 * sizeof(char));
 
-	int clk_id = CLOCK_REALTIME;
-	clock_gettime(clk_id, &resMetric->timestamp);
-	/**
-	 *
-	 * DO SOMETHING TO GATHER METRIC
-	 *
-	 */
-	strcat(resMetric->msg, ",\"type\":\"cpu\"");
-	return resMetric;
+		int clk_id = CLOCK_REALTIME;
+		clock_gettime(clk_id, &resMetric->timestamp);
+		/**
+		 *
+		 * DO SOMETHING TO GATHER METRIC
+		 *
+		 */
+		strcat(resMetric->msg, ",\"type\":\"cpu\"");
+		return resMetric;
+	} else {
+		return NULL ;
+	}
 }
 
 extern int init_cpu_info(PluginManager *pm) {

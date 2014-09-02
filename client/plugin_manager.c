@@ -33,6 +33,9 @@ PluginManager* PluginManager_new() {
 }
 
 void PluginManager_free(PluginManager *pm) {
+	apr_queue_term(pm->hook_queue);
+	apr_pool_destroy(pm->data_pool);
+	apr_terminate();
 	free(pm);
 }
 
@@ -52,7 +55,7 @@ void PluginManager_register_hook(PluginManager *pm, const char *name,
 
 // Don't actually need this funtion
 metric PluginManager_apply_hook(PluginManager *pm) {
-	metric retMetric = malloc(sizeof(*retMetric));
+	metric retMetric = malloc(sizeof(metric_t));
 
 	return retMetric;
 }

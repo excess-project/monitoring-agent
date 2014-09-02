@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <papi.h>
+#include <stdio.h>
 
 #define MAX_PAPI 256
 
@@ -21,7 +22,8 @@ static long_long values[MAX_PAPI];
 
 static int EventSet = PAPI_NULL;
 
-const char *papiEvents[] = { "PAPI_TOT_INS", "PAPI_SP_OPS", "PAPI_TOT_CYC" };
+//const char *papiEvents[] = { "PAPI_TOT_INS", "PAPI_SP_OPS", "PAPI_TOT_CYC" };
+char *papiEvents[256];
 
 char* toPapiData(long_long *val) {
 	char *returnMsg = malloc(200 * sizeof(char));
@@ -43,10 +45,52 @@ void handle_error(int err) {
 			PAPI_strerror(err));
 	exit(1);
 }
+
+int readPapiConf() {
+
+	char *papiConfLocation = malloc(300 * sizeof(char));
+	papiConfLocation[0] = '\0';
+	strcat(papiConfLocation, pwd);
+	strcat(papiConfLocation, "/plugins/pluginConf");
+	char line[200];
+	FILE *papiConf = fopen(papiConfLocation, "r");
+	if (!papiConf) {
+		fprintf(stderr, "File not found!\n%s\n using default events\n",
+				confFile);
+		fprintf(logFile, "File not found!\n%s\n using default events\n",
+				confFile);
+	}
+	while (fgets(line, 200, papiConf) != NULL ) {
+		char *pos;
+		if ((pos = strstr(line, "#"))) {
+			continue;
+		}
+		if ((pos = strstr(line, "Events: "))) {
+			int where = 0;
+			char *p = NULL;
+			p = strtok(pos + strlen("Events:") + 1, ",");
+			while (p) {
+				papiEvents[where] = malloc(256);
+				strcpy(papiEvents[where], p);
+				p = strtok(NULL, ",");
+				if (papiEvents[where][strlen(papiEvents[where]) - 1] == '\n')
+					papiEvents[where][strlen(papiEvents[where]) - 1] = '\0';
+				where++;
+			}
+			papiNumbers = where;
+			continue;
+		}
+
+	}
+
+	fclose(papiConf);
+	free(papiConfLocation);
+	return 1;
+}
 int prepare_papi() {
 	int retval;
 	int i;
-
+	readPapiConf();
 //	int EventSet = PAPI_NULL;
 
 	retval = PAPI_library_init(PAPI_VER_CURRENT);
@@ -64,7 +108,6 @@ int prepare_papi() {
 		fprintf(stderr, "getPapiValues: Initialization error!\n");
 		fprintf(logFile, "getPapiValues: Initialization error!\n");
 	}
-	papiNumbers = sizeof(papiEvents) / sizeof(*papiEvents);
 
 	for (i = 0; i < papiNumbers; i++) {
 
@@ -93,6 +136,7 @@ int prepare_papi() {
 
 int afterPapi() {
 	PAPI_stop(EventSet, values);
+	PAPI_shutdown();
 	return 1;
 }
 
@@ -102,20 +146,27 @@ int afterPapi() {
 //}
 
 static metric papi_hook() {
-	int retval;
-	metric resMetric = malloc(sizeof(metric));
-	resMetric->msg = malloc(100 * sizeof(char));
-	int clk_id = CLOCK_REALTIME;
+	if (running) {
+		int retval;
+		metric resMetric = malloc(sizeof(metric_t));
+		resMetric->msg = malloc(100 * sizeof(char));
+		int clk_id = CLOCK_REALTIME;
 
-	retval = PAPI_read(EventSet, values);
-	if (retval != PAPI_OK)
-		handle_error(retval);
+		retval = PAPI_read(EventSet, values);
+		if (retval != PAPI_OK)
+			handle_error(retval);
 
-	clock_gettime(clk_id, &resMetric->timestamp);
+		clock_gettime(clk_id, &resMetric->timestamp);
 
-	strcpy(resMetric->msg, toPapiData(values));
+		strcpy(resMetric->msg, toPapiData(values));
 
-	return resMetric;
+		return resMetric;
+	} else {
+		PAPI_shutdown();
+		fprintf(stderr, "Shutdown papi!\n");
+		fprintf(logFile, "Shutdown papi!\n");
+		return NULL ;
+	}
 }
 
 int init_papi(PluginManager *pm) {

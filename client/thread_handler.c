@@ -8,7 +8,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <time.h>
 #include <signal.h>
 
 #include "excess_main.h"
@@ -16,6 +16,8 @@
 
 #include "plugin_manager.h"
 #include "plugin_discover.h"
+
+#include "util.h"
 
 int running;
 
@@ -36,7 +38,8 @@ void catcher(int signo) {
 }
 
 int startStop(const char *fnctName, int flag) {
-	metric resMetric = malloc(sizeof(metric));
+	metric resMetric = malloc(sizeof(metric_t));
+
 	resMetric->msg = malloc(100 * sizeof(char));
 
 	int clk_id = CLOCK_REALTIME;
@@ -106,6 +109,10 @@ int startThreads() {
 	cleanup_plugins(pdstate);
 	cleanup_curl();
 	PluginManager_free(pm);
+	apr_queue_term(data_queue);
+	apr_pool_destroy(data_pool);
+
+	apr_terminate();
 	return 1;
 }
 
@@ -197,6 +204,7 @@ int prepSend(metric data) {
 
 	sprintf(msg, "{\"Timestamp\":\"%.9Lf\"%s}", timeStamp, data->msg);
 	send_monitoring_data(addr, msg);
+	free(data);
 
 	return 1;
 }
@@ -217,7 +225,7 @@ int gatherMetric(int num) {
 	PluginHook hook = PluginManager_get_hook(pm);
 	fprintf(stdout, "with timing: %ld ns\n", timings[num]);
 	fprintf(logFile, "with timing: %ld ns\n", timings[num]);
-	metric resMetric = malloc(sizeof(metric));
+	metric resMetric = malloc(sizeof(metric_t));
 
 	while (running) {
 		resMetric = hook();
@@ -228,6 +236,8 @@ int gatherMetric(int num) {
 		}
 		nanosleep(&tim, &tim2);
 	}
+	hook(); // call when terminating programm, enables cleanup of plugins
+	free(resMetric);
 
 	return 1;
 }
