@@ -37,12 +37,11 @@ struct metric_t {
 	struct timespec timestamp;
 
 	char *msg;
-};
+} metric_t;
 
 /**
  * @brief function which creates values when a function has started/stopped
  */
-int startStop(const char *fnctName,int flag);
-
+int startStop(const char *fnctName, int flag);
 
 #endif /* EXCESS_H_ */

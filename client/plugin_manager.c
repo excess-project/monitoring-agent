@@ -55,7 +55,7 @@ void PluginManager_register_hook(PluginManager *pm, const char *name,
 
 // Don't actually need this funtion
 metric PluginManager_apply_hook(PluginManager *pm) {
-	metric retMetric = malloc(sizeof(*retMetric));
+	metric retMetric = malloc(sizeof(metric_t));
 
 	return retMetric;
 }

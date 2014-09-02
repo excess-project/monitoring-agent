@@ -44,7 +44,7 @@ void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 	}
 
 	char *init_func_name = malloc(
-			(strlen("init_") + strlen(name)) * sizeof(char));
+			(strlen("init_") + strlen(name)) * sizeof(char) + 1);
 
 	strcpy(init_func_name, "init_");
 	strcat(init_func_name, name);
@@ -119,7 +119,7 @@ char* get_plugin_name(char filename[256]) {
 
 	if (!last_dot || strcmp(last_dot, ".so"))
 		return NULL ;
-	retStr = calloc(last_dot - name_start, sizeof(char));
+	retStr = calloc(last_dot - name_start + 1, sizeof(char));
 	return strncpy(retStr, name_start, last_dot - name_start);
 }
 

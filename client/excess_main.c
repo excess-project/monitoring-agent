@@ -56,11 +56,12 @@ int readConf(const char *confFile) {
 			return 1;
 		}
 		while (fgets(line, 200, fp) != NULL ) {
-			char* pos;
+			char *pos;
 			if ((pos = strstr(line, "host: "))) {
 				char helpAddr[300] = { "" };
 				sprintf(helpAddr, "%s", pos + strlen("host: "));
 				strncpy(addr, helpAddr, strlen(helpAddr) - 1);
+				continue;
 			}
 			if ((pos = strstr(line, "timing_"))) {
 				int numTim = atoi(pos + strlen("timing_"));
@@ -70,11 +71,16 @@ int readConf(const char *confFile) {
 						timings[numTim + MIN_THREADS]);
 				fprintf(logFile, "timing no %d is: %ld \n",
 						numTim + MIN_THREADS, timings[numTim + MIN_THREADS]);
+				continue;
 			}
-			if ((pos = strstr(line, "timingSend")))
+			if ((pos = strstr(line, "timingSend"))) {
 				timings[0] = atoi(pos + strlen("timingSend") + 1);
-			if ((pos = strstr(line, "timingCheck")))
+				continue;
+			}
+			if ((pos = strstr(line, "timingCheck"))) {
 				timings[1] = atoi(pos + strlen("timingCheck") + 1);
+				continue;
+			}
 
 		}
 
@@ -89,7 +95,8 @@ int getConf(const char *argv) {
 	const char *filename = { "/conf" };
 
 	char *tmpChar = malloc(300 * sizeof(char));
-	strcpy(tmpChar, argv);
+	memset(tmpChar, '\0', 300 * sizeof(char));
+	memcpy(tmpChar, argv, strlen(argv) * sizeof(char));
 //	confFile = strdup(argv);
 	strcat(tmpChar, filename);
 	confFile = strdup(tmpChar);
@@ -207,11 +214,13 @@ char* get_execution_id(char *URL, char *msg) {
 }
 
 char* cutPwd(char *pwd) {
-	char* help = malloc(300 * sizeof(char));
+	char *help = malloc(300 * sizeof(char));
+	memset(help, '\0', 300 * sizeof(char));
+//	help[0] = '\0';
 	char *lastslash = strrchr(pwd, '/');
 	int ptr = lastslash - pwd;
 
-	strncpy(help, pwd, ptr);
+	memcpy(help, pwd, ptr);
 
 	return help;
 }
@@ -249,20 +258,24 @@ int main(int argc, const char* argv[]) {
 
 	confFile = malloc(300 * sizeof(char));
 	char *buf = malloc(300 * sizeof(char));
+	memset(buf, '\0', 300 * sizeof(char));
+//	buf[0] = '0';
 	readlink("/proc/self/exe", buf, 200); // obtain full path of executable
 
 	pwd = malloc(300 * sizeof(char));
-	strcpy(pwd, buf);
+	memset(pwd, '\0', 300 * sizeof(char));
+	memcpy(pwd, buf, strlen(buf) * sizeof(char));
+
 	pwd = cutPwd(pwd);
 
 	time_t curTime;
 	time(&curTime);
 	time_info = localtime(&curTime);
-	char logFileName[300];
+	char logFileName[300] = { '\0' };
 	char timeForFile[50];
 	strftime(timeForFile, 50, "%F-%T", time_info);
 	sprintf(logFileName, "%s/log-%s", pwd, timeForFile);
-	fprintf(stderr, "using logfile: %s", logFileName);
+	fprintf(stderr, "using logfile: %s\n", logFileName);
 
 	logFile = fopen(logFileName, "w");
 	fprintf(logFile, "Starting at ... %s", timeForFile);

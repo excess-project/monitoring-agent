@@ -51,7 +51,7 @@ double get_mem_usage() {
 	return 100.0 - frac * 100.0;
 }
 char* toMemData(double usage) {
-	char *returnMsg = malloc(100 * sizeof(char));
+	char *returnMsg = malloc(250 * sizeof(char));
 
 	double ramUsed = usage;
 	double ramAvail = 100.0 - usage;
@@ -64,18 +64,24 @@ char* toMemData(double usage) {
 }
 
 static metric mem_info_hook() {
-	double usage;
-	metric resMetric = malloc(sizeof(metric));
-	resMetric->msg = malloc(100 * sizeof(char));
+	if (running) {
+		double usage;
+		metric resMetric = malloc(sizeof(metric_t));
+		resMetric->msg = malloc(100 * sizeof(char));
 
-	int clk_id = CLOCK_REALTIME;
-	clock_gettime(clk_id, &resMetric->timestamp);
+		int clk_id = CLOCK_REALTIME;
+		clock_gettime(clk_id, &resMetric->timestamp);
 
-	usage = get_mem_usage();
+		usage = get_mem_usage();
 
-	strcpy(resMetric->msg, toMemData(usage));
+		strcpy(resMetric->msg, toMemData(usage));
 
-	return resMetric;
+		return resMetric;
+	} else {
+		fprintf(stderr, "Shutdown mem_info\n");
+				fprintf(logFile, "Shutdown mem_info\n");
+		return NULL ;
+	}
 }
 
 extern int init_mem_info(PluginManager *pm) {

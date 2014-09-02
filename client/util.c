@@ -7,7 +7,7 @@
 
 #include "util.h"
 
-int bla(char *fnctName, int flag){
+int foo(int bar){
 
 
 return 1;
