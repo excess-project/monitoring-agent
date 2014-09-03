@@ -292,8 +292,7 @@ int main(int argc, const char* argv[]) {
 				strcpy(execID_, pos + strlen("-id="));
 			}
 			if ((pos = strstr(argv[iter], " -hostname="))) {
-//				TODO: do something
-//				strcpy();
+				strcpy(addr, pos + strlen("-hostname="));
 			}
 			if ((pos = strstr(argv[iter], "-h"))
 					|| (pos = strstr(argv[iter], "-?"))
