@@ -5,14 +5,16 @@
  *      Author: hpcneich
  */
 
-#include "../util.h"
-#include "../plugin_manager.h"
-#include "../excess_main.h"
+
 
 #include <stdlib.h>
 #include <stdint.h>
 #include <papi.h>
 #include <stdio.h>
+
+#include "../util.h"
+#include "../plugin_manager.h"
+#include "../excess_main.h"
 
 #define MAX_PAPI 256
 
