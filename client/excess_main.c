@@ -57,6 +57,9 @@ int readConf(const char *confFile) {
 		}
 		while (fgets(line, 200, fp) != NULL ) {
 			char *pos;
+			if ((pos = strstr(line, "#"))) {
+				continue;
+			}
 			if ((pos = strstr(line, "host: "))) {
 				char helpAddr[300] = { "" };
 				sprintf(helpAddr, "%s", pos + strlen("host: "));
@@ -298,8 +301,6 @@ int main(int argc, const char* argv[]) {
 			}
 		}
 	}
-
-
 
 	free(buf);
 
