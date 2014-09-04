@@ -19,7 +19,9 @@
 char *confFile;
 
 long timings[256];
-
+/**
+ * @brief timestamp for config file
+ */
 struct timespec timeStampFile = { 0, 0 };
 
 char addr[100] = "http://localhost:3000/executions";
@@ -110,7 +112,9 @@ int getConf(const char *argv) {
 	return 1;
 
 }
-
+/**
+ * @brief get fully-qualified domain name
+ */
 int getFQDN(char *fqdn) {
 	struct addrinfo hints, *info, *p;
 
@@ -149,7 +153,9 @@ int getFQDN(char *fqdn) {
 
 	return 1;
 }
-
+/**
+ * @brief return and print length of excution id
+ */
 size_t get_stream_data(void *ptr, size_t size, size_t count, void *stream) {
 	size_t total = size * count;
 
@@ -157,7 +163,9 @@ size_t get_stream_data(void *ptr, size_t size, size_t count, void *stream) {
 	memcpy(stream, ptr, total);
 	return total;
 }
-
+/**
+ * @brief get execution id from server side or skip if already existent
+ */
 char* get_execution_id(char *URL, char *msg) {
 	CURLcode res;
 
@@ -215,7 +223,9 @@ char* get_execution_id(char *URL, char *msg) {
 	curl_easy_reset(curl_);
 	return execID_;
 }
-
+/**
+ * @brief extract path folder of executable from it's path
+ */
 char* cutPwd(char *pwd) {
 	char *help = malloc(300 * sizeof(char));
 	memset(help, '\0', 300 * sizeof(char));
@@ -256,7 +266,9 @@ int prepare() {
 	strcat(addr, str);
 	return 1;
 }
-
+/**
+ * @brief everything starts here
+ */
 int main(int argc, const char* argv[]) {
 
 	confFile = malloc(300 * sizeof(char));
