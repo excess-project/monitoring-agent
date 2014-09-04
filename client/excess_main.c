@@ -274,7 +274,7 @@ int main(int argc, const char* argv[]) {
 	confFile = malloc(300 * sizeof(char));
 	char *buf = malloc(300 * sizeof(char));
 	memset(buf, '\0', 300 * sizeof(char));
-//	buf[0] = '0';
+
 	readlink("/proc/self/exe", buf, 200); // obtain full path of executable
 
 	pwd = malloc(300 * sizeof(char));
