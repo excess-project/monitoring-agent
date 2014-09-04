@@ -5,8 +5,6 @@
  *      Author: hpcneich
  */
 
-
-
 #include <stdlib.h>
 #include <stdint.h>
 #include <papi.h>
@@ -41,11 +39,11 @@ char* toPapiData(long_long *val) {
 	return returnMsg;
 }
 void handle_error(int err) {
-	fprintf(stderr, "papi-pcm.c: Failure with PAPI error '%s'.\n",
+	fprintf(stderr, "papi.c: Failure with PAPI error '%s'.\n",
 			PAPI_strerror(err));
-	fprintf(logFile, "papi-pcm.c: Failure with PAPI error '%s'.\n",
+	fprintf(logFile, "papi.c: Failure with PAPI error '%s'.\n",
 			PAPI_strerror(err));
-	exit(1);
+//	exit(1);
 }
 
 int readPapiConf() {
@@ -99,16 +97,16 @@ int prepare_papi() {
 	if (retval != PAPI_VER_CURRENT && retval > 0) {
 		fprintf(stderr, "getPapiValues: PAPI library version mismatch!\n");
 		fprintf(logFile, "getPapiValues: PAPI library version mismatch!\n");
+		handle_error(retval);
+		return -1;
 	}
 
 	retval = PAPI_create_eventset(&EventSet);
 	if (retval != PAPI_OK) {
 		handle_error(retval);
-	}
-
-	if (retval < 0) {
 		fprintf(stderr, "getPapiValues: Initialization error!\n");
 		fprintf(logFile, "getPapiValues: Initialization error!\n");
+		return -1;
 	}
 
 	for (i = 0; i < papiNumbers; i++) {
@@ -122,14 +120,14 @@ int prepare_papi() {
 			fprintf(logFile,
 					"getPapiValues: Failure to add PAPI event '%s'.\nskipping...\n",
 					(char*) (intptr_t) papiEvents[i]);
-//			handle_error(retval);
+			handle_error(retval);
 		}
 	}
 
 	retval = PAPI_start(EventSet);
 	if (retval != PAPI_OK) {
 		handle_error(retval);
-
+		return -1;
 	}
 
 //	gatherPapiData(&EventSet, &values);
@@ -172,7 +170,9 @@ static metric papi_hook() {
 }
 
 int init_papi(PluginManager *pm) {
-	prepare_papi();
+	int retval = prepare_papi();
+	if (retval < 0)
+		return -1;
 	PluginManager_register_hook(pm, "papi", papi_hook);
 	return 1;
 }

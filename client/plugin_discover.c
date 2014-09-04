@@ -34,7 +34,6 @@ int pluginCount = 0;
 void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 	char* slashed_path = strdup(fullpath);
 
-
 	void *libhandle = dlopen(slashed_path, RTLD_NOW);
 
 	if (!libhandle) {
@@ -62,6 +61,7 @@ void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 		fprintf(stderr, "Error: Plugin init function returned %d\n", rc);
 		fprintf(logFile, "Error: Plugin init function returned %d\n", rc);
 		dlclose(libhandle);
+		return NULL ;
 	}
 
 	return libhandle;
