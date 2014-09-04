@@ -97,6 +97,7 @@ int startThreads() {
 	sig.sa_flags = SA_RESTART;
 	sigemptyset(&sig.sa_mask);
 	sigaction(SIGTERM, &sig, NULL );
+	sigaction(SIGINT, &sig, NULL );
 	while (running)
 		sleep(1);
 
