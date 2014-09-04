@@ -28,13 +28,12 @@ typedef struct PluginDiscoveryState_t {
 typedef int (*PluginInitFunc)(PluginManager *pm);
 
 int pluginCount = 0;
-
+/**
+ * @brief load plugin, register hook and return handle to its library
+ */
 void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 	char* slashed_path = strdup(fullpath);
 
-//	char *slashed_path = malloc(strlen(fullpath) + 2);
-//	strcat(slashed_path, "./");
-//	strcat(slashed_path, fullpath);
 
 	void *libhandle = dlopen(slashed_path, RTLD_NOW);
 

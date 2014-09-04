@@ -13,11 +13,17 @@
 #include "plugin_discover.h"
 #include "excess_main.h"
 
+/**
+ * @brief old way of storing hooks
+ * @depreciated
+ */
 typedef struct PluginHookType_t {
 	PluginHook hook;
 	const char *name;
 } PluginHookType;
-
+/**
+ * @brief definition of plugin manager struct
+ */
 struct PluginManager_t {
 	struct apr_queue_t *hook_queue;
 	struct apr_pool_t *data_pool;
