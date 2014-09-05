@@ -29,6 +29,7 @@ char addr[100] = "http://localhost:3000/executions";
 char *pwd;
 struct tm *time_info;
 FILE *logFile;
+char name[300];
 
 int readConf(const char *confFile) {
 
@@ -266,6 +267,35 @@ int prepare() {
 	strcat(addr, str);
 	return 1;
 }
+
+int createLogFile() {
+
+	time_t curTime;
+	time(&curTime);
+	time_info = localtime(&curTime);
+	char logFileName[300] = { '\0' };
+	char timeForFile[50];
+	strftime(timeForFile, 50, "%F-%T", time_info);
+	sprintf(logFileName, "%s/log/log-%s", pwd, timeForFile);
+	fprintf(stderr, "using logfile: %s\n", logFileName);
+
+	logFile = fopen(logFileName, "w");
+	fprintf(logFile, "Starting at ... %s\n", timeForFile);
+	return 1;
+}
+
+int writeTmpPID(void) {
+
+	strcpy(name, pwd);
+	strcat(name, "/tmp_pid");
+
+	int pid = getpid();
+	FILE *tmpFile = fopen(name, "w");
+	fprintf(tmpFile, "%d", pid);
+	fclose(tmpFile);
+
+	return 1;
+}
 /**
  * @brief everything starts here
  */
@@ -282,18 +312,12 @@ int main(int argc, const char* argv[]) {
 	memcpy(pwd, buf, strlen(buf) * sizeof(char));
 
 	pwd = cutPwd(pwd);
+	writeTmpPID();
+	createLogFile();
 
-	time_t curTime;
-	time(&curTime);
-	time_info = localtime(&curTime);
-	char logFileName[300] = { '\0' };
-	char timeForFile[50];
-	strftime(timeForFile, 50, "%F-%T", time_info);
-	sprintf(logFileName, "%s/log/log-%s", pwd, timeForFile);
-	fprintf(stderr, "using logfile: %s\n", logFileName);
-
-	logFile = fopen(logFileName, "w");
-	fprintf(logFile, "Starting at ... %s\n", timeForFile);
+	int pid = getpid();
+	fprintf(stderr, "PID is: %d\n", pid);
+	fprintf(logFile, "PID is: %d\n", pid);
 
 	if (argc > 1) {
 		for (int iter = 0; iter < argc; iter++) {
@@ -301,6 +325,10 @@ int main(int argc, const char* argv[]) {
 			fprintf(stderr, "arg #%d is: %s\n", iter, argv[iter]);
 			fprintf(logFile, "arg #%d is: %s\n", iter, argv[iter]);
 			if ((pos = strstr(argv[iter], "-id="))) {
+				fprintf(stderr, "using executing id: %s\n",
+						pos + strlen("-id="));
+				fprintf(logFile, "using executing id: %s\n",
+						pos + strlen("-id="));
 				strcpy(execID_, pos + strlen("-id="));
 			}
 			if ((pos = strstr(argv[iter], " -hostname="))) {
@@ -324,5 +352,6 @@ int main(int argc, const char* argv[]) {
 	fprintf(stderr, "kthxbye!\n");
 	fprintf(logFile, "Program terminated regularly!\n");
 	fclose(logFile);
+	unlink(name);
 	exit(EXIT_SUCCESS);
 }

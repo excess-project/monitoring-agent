@@ -10,7 +10,7 @@ COPT_SO = $(CFLAGS) -fpic
 PLUGIN_DIR = plugins
 PLUGIN_DEST = ../binaries/plugins
 CC = gcc
-OUTPUT = ../binaries/mf_client
+OUTPUT = ../binaries/mf_agent
 
 CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
 -Wcast-align -O0 -ggdb -pthread -D_LARGEFILE64_SOURCE $(PAPI_INC) $(APR_INC) $(CURL_INC)

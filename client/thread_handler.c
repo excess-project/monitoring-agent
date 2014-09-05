@@ -137,7 +137,7 @@ void *entryThreads(void *arg) {
 }
 
 int startSending() {
-	startStop("startSending", START);
+//	startStop("startSending", START);
 	apr_status_t status;
 	void *ptr;
 
@@ -211,7 +211,7 @@ int prepSend(metric data) {
 }
 
 int gatherMetric(int num) {
-	startStop("gatherMetric", START);
+//	startStop("gatherMetric", START);
 	struct timespec tim = { 0, 0 };
 	struct timespec tim2;
 	if (timings[num] >= 10e8) {
@@ -224,7 +224,7 @@ int gatherMetric(int num) {
 
 	apr_status_t status;
 	PluginHook hook = PluginManager_get_hook(pm);
-	fprintf(stdout, "with timing: %ld ns\n", timings[num]);
+	fprintf(stderr, "with timing: %ld ns\n", timings[num]);
 	fprintf(logFile, "with timing: %ld ns\n", timings[num]);
 	metric resMetric = malloc(sizeof(metric_t));
 
