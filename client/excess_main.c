@@ -316,8 +316,8 @@ int main(int argc, const char* argv[]) {
 	createLogFile();
 
 	int pid = getpid();
-	fprintf(stderr, "PID is: %d", pid);
-	fprintf(logFile, "PID is: %d", pid);
+	fprintf(stderr, "PID is: %d\n", pid);
+	fprintf(logFile, "PID is: %d\n", pid);
 
 	if (argc > 1) {
 		for (int iter = 0; iter < argc; iter++) {
