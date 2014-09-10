@@ -57,7 +57,7 @@ char* toMemData(double usage) {
 	double ramAvail = 100.0 - usage;
 
 	sprintf(returnMsg,
-			",\"type\":\"mem\",\"mem_used\":\"%.2f\",\"mem_avail\":\"%.2f\"",
+			",\"type\":\"mem\",\"mem_used\":%.2f,\"mem_avail\":%.2f",
 			ramUsed, ramAvail);
 
 	return returnMsg;

@@ -25,6 +25,7 @@ long timings[256];
 struct timespec timeStampFile = { 0, 0 };
 
 char addr[100] = "http://localhost:3000/executions";
+int hostChanged = 0;
 
 char *pwd;
 struct tm *time_info;
@@ -64,6 +65,8 @@ int readConf(const char *confFile) {
 				continue;
 			}
 			if ((pos = strstr(line, "host: "))) {
+				if (hostChanged)
+					continue;
 				char helpAddr[300] = { "" };
 				sprintf(helpAddr, "%s", pos + strlen("host: "));
 				strncpy(addr, helpAddr, strlen(helpAddr) - 1);
@@ -331,8 +334,9 @@ int main(int argc, const char* argv[]) {
 						pos + strlen("-id="));
 				strcpy(execID_, pos + strlen("-id="));
 			}
-			if ((pos = strstr(argv[iter], " -hostname="))) {
+			if ((pos = strstr(argv[iter], "-hostname="))) {
 				strcpy(addr, pos + strlen("-hostname="));
+				hostChanged = 1;
 			}
 			if ((pos = strstr(argv[iter], "-h"))
 					|| (pos = strstr(argv[iter], "-?"))
