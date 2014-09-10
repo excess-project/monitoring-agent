@@ -32,7 +32,7 @@ char* toPapiData(long_long *val) {
 	char *msgPart = malloc(200 * sizeof(char));
 
 	for (int i = 0; i < papiNumbers; i++) {
-		sprintf(msgPart, ",\"%s\":\"%lld\"", papiEvents[i], val[i]);
+		sprintf(msgPart, ",\"%s\":%lld", papiEvents[i], val[i]);
 		strcat(returnMsg, msgPart);
 	}
 	free(msgPart);
