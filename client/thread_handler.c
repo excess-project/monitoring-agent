@@ -203,7 +203,7 @@ int prepSend(metric data) {
 	long double timeStamp = data->timestamp.tv_sec
 			+ (long double) (data->timestamp.tv_nsec / 10e8);
 
-	sprintf(msg, "{\"Timestamp\":\"%.9Lf\"%s}", timeStamp, data->msg);
+	sprintf(msg, "{\"Timestamp\":%.9Lf%s}", timeStamp, data->msg);
 	send_monitoring_data(addr, msg);
 	free(data);
 
