@@ -50,11 +50,7 @@ int startStop(const char *fnctName, int flag) {
 	sprintf(resMetric->msg, ",\"name\":\"%s\",\"status\":\"%d\"", fnctName,
 			flag);
 
-	apr_status_t status = apr_queue_push(data_queue, resMetric);
-	if (status != APR_SUCCESS) {
-		fprintf(stderr, "Failed queue push");
-		fprintf(logFile, "Failed queue push");
-	}
+	prepSend(resMetric);
 //	free(resMetric->msg);
 //	free(resMetric);
 	return 1;
