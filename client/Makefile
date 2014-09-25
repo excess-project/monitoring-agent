@@ -9,7 +9,7 @@ COPT_SO = $(CFLAGS) -fpic
 
 PLUGIN_DIR = plugins
 PLUGIN_DEST = ../binaries/plugins
-CC = gcc
+#CC = gcc
 OUTPUT = ../binaries/mf_agent
 
 CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
@@ -53,7 +53,7 @@ excess_main : excess_main.o thread_handler.o util.o plugin_discover.o \
 
 excess_main_lib: excess_main.o thread_handler.o util.o plugin_discover.o \
 		plugin_manager.o
-		$(CC) -shared -o $(OUTPUT).so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+		$(CC) -shared -o libagent.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
 #
 # plugins 
