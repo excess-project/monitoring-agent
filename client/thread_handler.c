@@ -157,6 +157,92 @@ int startSending() {
 	return 1;
 
 }
+
+static size_t write_data(void *data, size_t blksz, size_t nblk, void *ctx) {
+	static size_t sz = 0;
+	size_t currsz = blksz * nblk;
+
+	size_t prevsz = sz;
+	sz += currsz;
+	void *tmp = realloc(*(char **) ctx, sz);
+	if (tmp == NULL ) {
+		// handle error
+		free(*(char **) ctx);
+		*(char **) ctx = NULL;
+		return 0;
+	}
+	*(char **) ctx = tmp;
+
+	memcpy(*(char **) ctx + prevsz, data, currsz);
+	return currsz;
+}
+
+void removeSpace(char *str) {
+	char *p1 = str, *p2 = str;
+	do
+		while (*p2 == ' ')
+			p2++;
+	while (*p1++ = *p2++);
+}
+char* queryRangeFromDB(const char *URL, const char *id, long double t0,
+		long double t1) {
+
+	char data[300] = { '\0' };
+	char *response = malloc(100000 * sizeof(char));
+	memset(response, 100000, '\0');
+	sprintf(data, "%s/executions/%s/%.9Lf/%.9Lf", URL, id, t0, t1);
+
+	CURLcode res;
+	int result = SEND_SUCCESS;
+
+	/* perform some error checking */
+	if (URL == NULL || strlen(URL) == 0) {
+		fprintf(stderr,
+				"send_monitoring_data(): Error - the given url is empty.\n");
+		fprintf(logFile,
+				"send_monitoring_data(): Error - the given url is empty.\n");
+		return SEND_FAILED;
+	}
+
+	if (curl_ == NULL ) {
+		init_curl();
+	}
+
+	printf("curl -X GET %s -- len: %d\n", data, (int) strlen(data));
+	printf("Msg = %s -- len: %d\n", data, (int) strlen(data));
+
+	curl_easy_setopt(curl_, CURLOPT_URL, data);
+	curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers_);
+	curl_easy_setopt(curl_, CURLOPT_NOPROGRESS, 1L);
+
+	curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, write_data);
+	curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
+
+	res = curl_easy_perform(curl_);
+
+	/* Check for errors */
+	if (res != CURLE_OK) {
+		result = SEND_FAILED;
+		fprintf(stderr, "send_monitoring_data() failed: %s\n",
+				curl_easy_strerror(res));
+		fprintf(logFile, "send_monitoring_data() failed: %s\n",
+				curl_easy_strerror(res));
+
+	}
+
+	curl_easy_reset(curl_);
+	if (result != SEND_SUCCESS) {
+		return NULL ;
+	}
+
+	// lets trim the result
+	for (int ind = 0; ind < strlen(response); ind++)
+		if (response[ind] == '\n')
+			response[ind] = ' ';
+	removeSpace(response);
+	return response;
+}
+
 int send_monitoring_data(char *URL, char *data) {
 	CURLcode res;
 	int result = SEND_SUCCESS;
@@ -211,7 +297,9 @@ int prepSend(metric data) {
 }
 
 int gatherMetric(int num) {
-//	startStop("gatherMetric", START);
+	char name[50];
+	sprintf(name, "gatherMetricNo%d", num);
+//	startStop(name, START);
 	struct timespec tim = { 0, 0 };
 	struct timespec tim2;
 	if (timings[num] >= 10e8) {
@@ -239,7 +327,7 @@ int gatherMetric(int num) {
 	}
 	hook(); // call when terminating programm, enables cleanup of plugins
 	free(resMetric);
-
+	startStop(name, STOP);
 	return 1;
 }
 

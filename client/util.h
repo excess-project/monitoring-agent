@@ -40,6 +40,20 @@ struct metric_t {
 } metric_t;
 
 /**
+ * query database to get a range of datasets
+ */
+extern char* queryRangeFromDB(const char *host, const char *id, long double t0,
+		long double t1);
+
+/**
+ * query database to get a special range of one dataset
+ *
+ * not working on the serverside yet
+ */
+extern char* querySpecificRangeFromDB(const char *host, struct timespec t0,
+		struct timespec t1, char *metric);
+
+/**
  * @brief function which creates values when a function has started/stopped
  */
 int startStop(const char *fnctName, int flag);

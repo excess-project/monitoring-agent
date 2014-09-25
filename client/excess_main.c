@@ -272,17 +272,26 @@ int prepare() {
 }
 
 int createLogFile() {
+	char logFileName[300] = { '\0' };
+	char logFileFolder[300] = { '\0' };
 
 	time_t curTime;
 	time(&curTime);
 	time_info = localtime(&curTime);
-	char logFileName[300] = { '\0' };
+
 	char timeForFile[50];
+
 	strftime(timeForFile, 50, "%F-%T", time_info);
+	sprintf(logFileFolder, "%s/log", pwd);
 	sprintf(logFileName, "%s/log/log-%s", pwd, timeForFile);
 	fprintf(stderr, "using logfile: %s\n", logFileName);
 
+	struct stat st = { 0 };
+	if (stat(logFileFolder, &st) == -1)
+		mkdir(logFileFolder, 0700);
 	logFile = fopen(logFileName, "w");
+	if (!logFile)
+		return 0;
 	fprintf(logFile, "Starting at ... %s\n", timeForFile);
 	return 1;
 }
@@ -299,6 +308,24 @@ int writeTmpPID(void) {
 
 	return 1;
 }
+
+int initialise(char *confFile) {
+	char *buf = malloc(300 * sizeof(char));
+	memset(buf, '\0', 300 * sizeof(char));
+
+	readlink("/proc/self/exe", buf, 200); // obtain full path of executable
+
+	pwd = malloc(300 * sizeof(char));
+	memset(pwd, '\0', 300 * sizeof(char));
+	memcpy(pwd, buf, strlen(buf) * sizeof(char));
+
+	pwd = cutPwd(pwd);
+	createLogFile();
+	readConf(confFile);
+
+	return 1;
+}
+
 /**
  * @brief everything starts here
  */
