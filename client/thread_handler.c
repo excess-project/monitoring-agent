@@ -340,7 +340,7 @@ int send_monitoring_data(char *URL, char *data) {
 }
 int prepSend(metric data) {
 
-	char msg[500] = "";
+	char msg[4096] = "";
 	long double timeStamp = data->timestamp.tv_sec
 			+ (long double) (data->timestamp.tv_nsec / 10e8);
 

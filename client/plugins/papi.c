@@ -1,179 +1,126 @@
-/*
- * papi.c
- *
- *  Created on: 16.07.2014
- *      Author: hpcneich
- */
-
 #include <stdlib.h>
-#include <stdint.h>
 #include <papi.h>
-#include <stdio.h>
 
 #include "../util.h"
 #include "../plugin_manager.h"
 #include "../excess_main.h"
 
-#define MAX_PAPI 256
+const char *ALL_PRESETS = "ALL_PRESETS";
 
-int papiNumbers;
+void read_metric_info(
+        int EventSet,
+        PAPI_event_info_t metric,
+        char **collected_events,
+        long long *collected_values,
+        int *num_events)
+{
+    PAPI_start(EventSet);
 
-static long_long values[MAX_PAPI];
+    // START RETRIEVE DATA
+    long long value;
+    PAPI_read(EventSet, &value);
 
-static int EventSet = PAPI_NULL;
+    collected_events[*num_events] = malloc(strlen(metric.symbol) + 1);
+    strcpy(collected_events[*num_events], metric.symbol);
+    collected_values[*num_events] = value;
+    *num_events += 1;
+    // END RETRIEVE DATA
 
-//const char *papiEvents[] = { "PAPI_TOT_INS", "PAPI_SP_OPS", "PAPI_TOT_CYC" };
-char *papiEvents[256];
-
-char* toPapiData(long_long *val) {
-	char *returnMsg = malloc(200 * sizeof(char));
-	strcpy(returnMsg, ",\"type\":\"papi\"");
-
-	char *msgPart = malloc(200 * sizeof(char));
-
-	for (int i = 0; i < papiNumbers; i++) {
-		sprintf(msgPart, ",\"%s\":%lld", papiEvents[i], val[i]);
-		strcat(returnMsg, msgPart);
-	}
-	free(msgPart);
-	return returnMsg;
-}
-void handle_error(int err) {
-	fprintf(stderr, "papi.c: Failure with PAPI error '%s'.\n",
-			PAPI_strerror(err));
-	fprintf(logFile, "papi.c: Failure with PAPI error '%s'.\n",
-			PAPI_strerror(err));
-//	exit(1);
+    PAPI_stop(EventSet, &value);
+    PAPI_remove_event(EventSet, (int) metric.event_code);
 }
 
-int readPapiConf() {
+void retrieve_all_available_presets(
+        int MASK,
+        char **collected_events,
+        long long *collected_values,
+        int *num_events)
+{
+    int i = 0;
+    int EventSet = PAPI_NULL;
+    PAPI_event_info_t metric;
+    *num_events = 0;
 
-	char *papiConfLocation = malloc(300 * sizeof(char));
-	papiConfLocation[0] = '\0';
-	strcat(papiConfLocation, pwd);
-	strcat(papiConfLocation, "/plugins/pluginConf");
-	char line[200];
-	FILE *papiConf = fopen(papiConfLocation, "r");
-	if (!papiConf) {
-		fprintf(stderr, "File not found!\n%s\n using default events\n",
-				confFile);
-		fprintf(logFile, "File not found!\n%s\n using default events\n",
-				confFile);
-	}
-	while (fgets(line, 200, papiConf) != NULL ) {
-		char *pos;
-		if ((pos = strstr(line, "#"))) {
-			continue;
-		}
-		if ((pos = strstr(line, "Events: "))) {
-			int where = 0;
-			char *p = NULL;
-			p = strtok(pos + strlen("Events:") + 1, ",");
-			while (p) {
-				papiEvents[where] = malloc(256);
-				strcpy(papiEvents[where], p);
-				p = strtok(NULL, ",");
-				if (papiEvents[where][strlen(papiEvents[where]) - 1] == '\n')
-					papiEvents[where][strlen(papiEvents[where]) - 1] = '\0';
-				where++;
-			}
-			papiNumbers = where;
-			continue;
-		}
+    PAPI_library_init(PAPI_VER_CURRENT);
+    PAPI_create_eventset(&EventSet);
 
-	}
+    for (i = 0; i < PAPI_MAX_PRESET_EVENTS; ++i) {
+        if (PAPI_get_event_info(MASK | i, &metric) != PAPI_OK) {
+            continue;
+        }
 
-	fclose(papiConf);
-	free(papiConfLocation);
-	return 1;
-}
-int prepare_papi() {
-	int retval;
-	int i;
-	readPapiConf();
-//	int EventSet = PAPI_NULL;
+        if (PAPI_add_event(EventSet, (int) metric.event_code) == PAPI_OK) {
+            read_metric_info(EventSet, metric, collected_events,
+                    collected_values, num_events);
+        }
+    }
 
-	retval = PAPI_library_init(PAPI_VER_CURRENT);
-	if (retval != PAPI_VER_CURRENT && retval > 0) {
-		fprintf(stderr, "getPapiValues: PAPI library version mismatch!\n");
-		fprintf(logFile, "getPapiValues: PAPI library version mismatch!\n");
-		handle_error(retval);
-		return -1;
-	}
-
-	retval = PAPI_create_eventset(&EventSet);
-	if (retval != PAPI_OK) {
-		handle_error(retval);
-		fprintf(stderr, "getPapiValues: Initialization error!\n");
-		fprintf(logFile, "getPapiValues: Initialization error!\n");
-		return -1;
-	}
-
-	for (i = 0; i < papiNumbers; i++) {
-
-		retval = PAPI_add_named_event(EventSet,
-				(char*) (intptr_t) papiEvents[i]);
-		if (retval != PAPI_OK) {
-			fprintf(stderr,
-					"getPapiValues: Failure to add PAPI event '%s'.\nskipping...\n",
-					(char*) (intptr_t) papiEvents[i]);
-			fprintf(logFile,
-					"getPapiValues: Failure to add PAPI event '%s'.\nskipping...\n",
-					(char*) (intptr_t) papiEvents[i]);
-			handle_error(retval);
-		}
-	}
-
-	retval = PAPI_start(EventSet);
-	if (retval != PAPI_OK) {
-		handle_error(retval);
-		return -1;
-	}
-
-//	gatherPapiData(&EventSet, &values);
-	return 1;
+    PAPI_destroy_eventset(&EventSet);
+    PAPI_shutdown();
 }
 
-int afterPapi() {
-	PAPI_stop(EventSet, values);
-	PAPI_shutdown();
-	return 1;
+void retrieve_all_available_events_for(
+        const char *event_group,
+        char **collected_events,
+        long long *collected_values,
+        int *num_events)
+{
+    if (strncmp(ALL_PRESETS, event_group, strlen(ALL_PRESETS)) == 0) {
+        retrieve_all_available_presets(PAPI_PRESET_MASK, collected_events,
+                collected_values, num_events);
+    }
 }
 
-//long_long* gatherPapi(metric resMetric) {
-//
-//	return resMetric;
-//}
+char* to_JSON(
+        char *collected_events[],
+        long long collected_values[],
+        int num_events)
+{
+    int i;
+    char *json = malloc(4096 * sizeof(char));
+    strcpy(json, ",\"type\":\"papi\"");
 
-static metric papi_hook() {
-	if (running) {
-		int retval;
-		metric resMetric = malloc(sizeof(metric_t));
-		resMetric->msg = malloc(100 * sizeof(char));
-		int clk_id = CLOCK_REALTIME;
+    char *single_metric = malloc(512 * sizeof(char));
+    for (i = 0; i < num_events; ++i) {
+        sprintf(single_metric, ",\"%s\":%lld", collected_events[i],
+                collected_values[i]);
+        strcat(json, single_metric);
+    }
+    free(single_metric);
 
-		retval = PAPI_read(EventSet, values);
-		if (retval != PAPI_OK)
-			handle_error(retval);
-
-		clock_gettime(clk_id, &resMetric->timestamp);
-
-		strcpy(resMetric->msg, toPapiData(values));
-
-		return resMetric;
-	} else {
-		PAPI_shutdown();
-		fprintf(stderr, "Shutdown papi!\n");
-		fprintf(logFile, "Shutdown papi!\n");
-		return NULL ;
-	}
+    return json;
 }
 
-int init_papi(PluginManager *pm) {
-	int retval = prepare_papi();
-	if (retval < 0)
-		return -1;
-	PluginManager_register_hook(pm, "papi", papi_hook);
-	return 1;
+static metric papi_hook()
+{
+    if (running) {
+        metric resMetric = malloc(sizeof(metric_t));
+        resMetric->msg = malloc(4096 * sizeof(char));
+
+        int clk_id = CLOCK_REALTIME;
+        clock_gettime(clk_id, &resMetric->timestamp);
+
+        // START
+        int num_events;
+        const char *event_group = "ALL_PRESETS";
+        char *collected_events[PAPI_MAX_PRESET_EVENTS];
+        long long collected_values[PAPI_MAX_PRESET_EVENTS];
+        retrieve_all_available_events_for(event_group, collected_events,
+                collected_values, &num_events);
+
+        strcpy(resMetric->msg,
+                to_JSON(collected_events, collected_values, num_events));
+        // END
+
+        return resMetric;
+    } else {
+        return NULL;
+    }
 }
 
+extern int init_papi(PluginManager *pm)
+{
+    PluginManager_register_hook(pm, "papi", papi_hook);
+
+    return 1;
+}
