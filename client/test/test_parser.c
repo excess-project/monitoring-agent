@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <papi.h>
 #include <ctype.h>
 
 #include "../plugins/parser.h"

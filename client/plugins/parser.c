@@ -19,7 +19,7 @@ Parser* get_instance()
 
 void read_PAPI_events_from_line(Parser *parser, char *line)
 {
-    int j, n;
+    int n;
     char *ptr = line;
     parser->metrics_count = 0;
     char metric[256];

@@ -57,7 +57,8 @@ int is_preset_event(char *event_name)
 void read_available_named_events(PAPI_Plugin *papi, char **events, int num_events)
 {
     int i = 0;
-    int event_code, EventSet = PAPI_NULL;
+    int event_code = PAPI_NULL;
+    int EventSet = PAPI_NULL;
 
     papi->num_events = 0;
 
