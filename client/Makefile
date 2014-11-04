@@ -65,13 +65,17 @@ $(PLUGIN_DIR)/mem_info.so: $(PLUGIN_DIR)/mem_info.o
 $(PLUGIN_DIR)/mem_info.o: $(PLUGIN_DIR)/mem_info.c $(HEADER) 
 	$(CC) -c $< -o $@ $(COPT_SO) -I.
 	
-$(PLUGIN_DIR)/papi.so: $(PLUGIN_DIR)/papi.o
+$(PLUGIN_DIR)/papi.so: $(PLUGIN_DIR)/parser.o $(PLUGIN_DIR)/papi_plugin.o $(PLUGIN_DIR)/papi.o
 	$(CC) -o $(PLUGIN_DEST)/papi.so $^ -shared ../binaries/papi/lib/libpapi.so
 
-$(PLUGIN_DIR)/papi.o: $(PLUGIN_DIR)/papi.c $(HEADER) 
-	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi
-	
+$(PLUGIN_DIR)/parser.o: $(PLUGIN_DIR)/parser.c $(HEADER)
+	$(CC) -c $< -o $@ $(COPT_SO)
 
+$(PLUGIN_DIR)/papi_plugin.o: $(PLUGIN_DIR)/papi_plugin.c $(HEADER)
+	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi	
+
+$(PLUGIN_DIR)/papi.o: $(PLUGIN_DIR)/papi.c $(HEADER)
+	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi
 
 
 clean:

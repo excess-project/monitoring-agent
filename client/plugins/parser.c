@@ -35,9 +35,9 @@ void read_PAPI_events_from_line(Parser *parser, char *line)
 void read_PAPI_events_from_file(Parser *parser, char *filename)
 {
     char buffer[4096];
-    char *prefix = "#";
-    char *plugin_name = "#PAPI";
-    char *strEvents = "Events:";
+    const char *prefix = "#";
+    const char *plugin_name = "#PAPI";
+    const char *strEvents = "Events:";
     int flag = 0;
 
     FILE *fp;

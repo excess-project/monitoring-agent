@@ -4,6 +4,8 @@
 #include "../util.h"
 #include "../plugin_manager.h"
 #include "../excess_main.h"
+
+#include "papi_plugin.h"
 #include "parser.h"
 
 char* to_JSON(PAPI_Plugin *papi)
@@ -31,14 +33,18 @@ static metric papi_hook()
         int clk_id = CLOCK_REALTIME;
         clock_gettime(clk_id, &resMetric->timestamp);
 
-        /* init should be done once */
+        char *papi_conf = malloc(300 * sizeof(char));
+        papi_conf[0] = '\0';
+        strcat(papi_conf, pwd);
+        strcat(papi_conf, "/plugins/pluginConf");
+
         Parser *parser = get_instance();
-        read_PAPI_events_from_file(parser, "pluginConf");
+        read_PAPI_events_from_file(parser, papi_conf);
 
         PAPI_Plugin *papi = malloc(sizeof(PAPI_Plugin));
-        fetch_events(papi, parser->events);
+        read_available_named_events(papi, parser->events, parser->metrics_count);
 
-        strcpy(resMetric->msg, to_JSON(papi);
+        strcpy(resMetric->msg, to_JSON(papi));
 
         free(papi);
 
