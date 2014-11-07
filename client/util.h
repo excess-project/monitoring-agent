@@ -58,4 +58,9 @@ extern char* querySpecificStatFromDB(const char *URL,const char *id, long double
  */
 int startStop(const char *fnctName, int flag);
 
+/**
+ * @brief get fully-qualified domain name
+ */
+int getFQDN(char *fqdn);
+
 #endif /* EXCESS_H_ */
