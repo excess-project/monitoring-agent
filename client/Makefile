@@ -38,7 +38,7 @@ APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 #APR_INC = -I ../binaries/apr/include/apr-1
 
 ## to use, type: make or make all
-all: excess_main $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/papi.so 
+all: excess_main $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/papi.so $(PLUGIN_DIR)/rapl.so
 
 lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
 
@@ -77,6 +77,14 @@ $(PLUGIN_DIR)/papi_plugin.o: $(PLUGIN_DIR)/papi_plugin.c $(HEADER)
 $(PLUGIN_DIR)/papi.o: $(PLUGIN_DIR)/papi.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi
 
+$(PLUGIN_DIR)/rapl.so: $(PLUGIN_DIR)/rapl_plugin.o $(PLUGIN_DIR)/rapl.o
+	$(CC) -o $(PLUGIN_DEST)/rapl.so $^ -shared ../binaries/papi/lib/libpapi.so
+
+$(PLUGIN_DIR)/rapl_plugin.o: $(PLUGIN_DIR)/rapl_plugin.c $(HEADER)
+	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi	
+
+$(PLUGIN_DIR)/rapl.o: $(PLUGIN_DIR)/rapl.c $(HEADER)
+	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi
 
 clean:
 	rm -rf core *.o *.a $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so

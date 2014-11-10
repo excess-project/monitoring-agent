@@ -54,6 +54,19 @@ int is_preset_event(char *event_name)
     return (strncmp(ALL_PRESETS, event_name, strlen(ALL_PRESETS)) == 0) ? 1 : 0;
 }
 
+void initialize_PAPI()
+{
+    int retval = PAPI_is_initialized();
+
+    if (retval != PAPI_LOW_LEVEL_INITED) {
+        int retval = PAPI_library_init(PAPI_VER_CURRENT);
+        if (retval != PAPI_VER_CURRENT) {
+            // handle error
+            printf("%s", "RAPL: wrong PAPI version");
+        }
+    }
+}
+
 void read_available_named_events(PAPI_Plugin *papi, char **events, int num_events)
 {
     int i = 0;
@@ -62,7 +75,7 @@ void read_available_named_events(PAPI_Plugin *papi, char **events, int num_event
 
     papi->num_events = 0;
 
-    PAPI_library_init(PAPI_VER_CURRENT);
+    //initialize_PAPI();
     PAPI_create_eventset(&EventSet);
 
     for (i = 0; i < num_events; ++i) {
@@ -76,5 +89,5 @@ void read_available_named_events(PAPI_Plugin *papi, char **events, int num_event
     }
 
     PAPI_destroy_eventset(&EventSet);
-    PAPI_shutdown();
+    //PAPI_shutdown();
 }
