@@ -14,7 +14,7 @@ char* to_JSON(RAPL_Plugin *rapl)
 
     char *single_metric = malloc(512 * sizeof(char));
     for (i = 0; i < rapl->num_events; ++i) {
-        sprintf(single_metric, ",\"%s\":%.1f", rapl->events[i], rapl->values[i]);
+        sprintf(single_metric, ",\"%s\":%.4f", rapl->events[i], rapl->values[i]);
         strcat(json, single_metric);
     }
     free(single_metric);
