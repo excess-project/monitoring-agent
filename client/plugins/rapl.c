@@ -14,16 +14,7 @@ char* to_JSON(RAPL_Plugin *rapl)
 
     char *single_metric = malloc(512 * sizeof(char));
     for (i = 0; i < rapl->num_events; ++i) {
-        //printf("data-type: %d", rapl->data_types[rapl->num_events]);
-        /*
-        if (rapl->data_types[rapl->num_events] == PAPI_DATATYPE_UINT64) {
-            sprintf(single_metric, ",\"%s\":%lld", rapl->events[i], rapl->values[i]);
-        } else if (rapl->data_types[rapl->num_events] == PAPI_DATATYPE_FP64) {
-            sprintf(single_metric, ",\"%s\":%12.3f", rapl->events[i], rapl->values[i]);
-        } else {
-        */
-            sprintf(single_metric, ",\"%s\":%lld", rapl->events[i], rapl->values[i]);
-        //}
+        sprintf(single_metric, ",\"%s\":%.1f", rapl->events[i], rapl->values[i]);
         strcat(json, single_metric);
     }
     free(single_metric);

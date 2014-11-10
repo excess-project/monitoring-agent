@@ -21,6 +21,8 @@ void initialize_PAPI()
 
 int get_available_events(RAPL_Plugin *rapl)
 {
+    long long before_time, after_time;
+    double elapsed_time;
     int EventSet = PAPI_NULL;
     int num_events = 0;
 
@@ -64,25 +66,34 @@ int get_available_events(RAPL_Plugin *rapl)
     }
 
     rapl->values = calloc(num_events, sizeof(long long));
-    if (rapl->values == NULL) {
+    long long *values = calloc(num_events, sizeof(long long));
+    if (values == NULL) {
         // handle error
         return -1;
     }
     rapl->num_events = num_events;
 
+    before_time = PAPI_get_real_nsec();
     retval = PAPI_start(EventSet);
     if (retval != PAPI_OK) {
         // handle error
         return -1;
     }
 
-    /* Run test */
-    //sleep(1);
+    usleep(100000); // 100ms
 
-    retval = PAPI_stop(EventSet, rapl->values);
+    after_time = PAPI_get_real_nsec();
+    retval = PAPI_stop(EventSet, values);
     if (retval != PAPI_OK) {
         // handle error
         return -1;
+    }
+
+    elapsed_time = ((double)(after_time - before_time)) / 1.0e9;
+
+    int i;
+    for (i = 0; i < num_events; ++i) { // average
+        rapl->values[i] = ((double) values[i] / 1.0e9) / elapsed_time;
     }
 
     retval = PAPI_cleanup_eventset(EventSet);

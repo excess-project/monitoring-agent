@@ -10,7 +10,7 @@ typedef struct RAPL_Plugin_t RAPL_Plugin;
 struct RAPL_Plugin_t
 {
     char events[MAX_RAPL_EVENTS][PAPI_MAX_STR_LEN];
-    long long *values;
+    float *values;
     int data_types[MAX_RAPL_EVENTS];
     int num_events;
 };
