@@ -23,8 +23,11 @@ void TestLikwid_check_processor(CuTest *tc)
 {
     Likwid_Plugin *likwid = malloc(sizeof(Likwid_Plugin));
     check_processor(likwid);
-    CuAssertTrue(tc, likwid->hasPP0);
+
     CuAssertTrue(tc, likwid->hasDRAM);
+    CuAssertTrue(tc, likwid->hasPP0);
+    CuAssertTrue(tc, !likwid->hasPP1);
+
     free(likwid);
 }
 
