@@ -53,10 +53,31 @@ void TestLikwid_get_power_info(CuTest *tc)
 void TestLikwid_get_power_data(CuTest *tc)
 {
     Likwid_Plugin *likwid = malloc(sizeof(Likwid_Plugin));
-    int duration_in_sec = 1;
+    int duration_in_sec = 2;
     get_power_data(likwid, duration_in_sec);
-    printf("%s, %s\n", likwid->sockets[0][0], likwid->sockets[0][1]);
-    printf("%s, %s\n", likwid->sockets[0][2], likwid->sockets[0][3]);
+
+    int i;
+    for (i = 0; i < likwid->numSockets; ++i) {
+        // socket
+        CuAssertTrue(tc, strtod(likwid->sockets[i][1], NULL) > 0.0);
+        CuAssertTrue(tc, likwid->sockets[i][3] > likwid->sockets[i][1]);
+        // dram
+        if (likwid->hasDRAM) {
+            CuAssertTrue(tc, strtod(likwid->dram[i][1], NULL) > 0.0);
+            CuAssertTrue(tc, likwid->dram[i][3] > likwid->dram[i][1]);
+        }
+        // pp0
+        if (likwid->hasPP0) {
+            CuAssertTrue(tc, strtod(likwid->PP0[i][1], NULL) > 0.0);
+            CuAssertTrue(tc, likwid->PP0[i][3] > likwid->PP0[i][1]);
+        }
+        // pp1
+        if (likwid->hasPP1) {
+            CuAssertTrue(tc, strtod(likwid->PP1[i][1], NULL) > 0.0);
+            CuAssertTrue(tc, likwid->PP1[i][3] > likwid->PP1[i][1]);
+        }
+    }
+
     free(likwid);
 }
 
