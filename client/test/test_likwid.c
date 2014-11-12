@@ -32,10 +32,18 @@ void TestLikwid_get_power_info(CuTest *tc)
 {
     Likwid_Plugin *likwid = malloc(sizeof(Likwid_Plugin));
     get_power_info(likwid);
-    int i;
-    for (i = 0; i < 4; ++i) { // this is not a test-case
-        printf("name: %s, value: %g\n", likwid->power_names[i], likwid->power_values[i]);
-    }
+
+    // tdp
+    CuAssertTrue(tc, likwid->power_values[0] > 0);
+    // min power
+    float min_power = likwid->power_values[1];
+    CuAssertTrue(tc, min_power > 0);
+    // max power
+    float max_power = likwid->power_values[2];
+    CuAssertTrue(tc, max_power > 0 && max_power > min_power);
+    // max time window
+    CuAssertTrue(tc, likwid->power_values[3] > 0);
+
     free(likwid);
 }
 

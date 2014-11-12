@@ -5,24 +5,17 @@
 #include <cpuid.h>
 #include <accessClient.h>
 #include <unistd.h>
-#include <affinity.h>
 #include <numa.h>
-
-#include <types.h>
-#include <strUtil.h>
-#include <error.h>
-#include <timer.h>
 #include <msr.h>
-#include <perfmon.h>
-#include <thermal.h>
-#include <bstrlib.h>
 
 #include "../excess_main.h"
+
+int MAX_NUM_NODES = 4;
 
 int is_supported()
 {
     if (cpuid_init() == EXIT_FAILURE) {
-        printf("likwid-plugin.c: Unsupported processor!\n");
+        fprintf(stderr, "likwid-plugin.c: Unsupported processor!\n");
         return 0;
     }
 
@@ -99,20 +92,21 @@ void get_power_info(Likwid_Plugin *likwid)
     accessClient_init(&socket_fd);
     msr_init(socket_fd);
 
-    power_init(0);
+    check_processor(likwid);
+    numa_init();
 
-    int size = sizeof(likwid->power_names[0]);
-    strncpy(likwid->power_names[0], "TDP", size);
-    strncpy(likwid->power_names[1], "Minimum Power", size);
-    strncpy(likwid->power_names[2], "Maximum Power", size);
-    strncpy(likwid->power_names[3], "Maximum Time Window", size);
+    power_init(numa_info.nodes[0].processors[0]);
+
+    strcpy(likwid->power_names[0], "likwid:::TDP");
+    strcpy(likwid->power_names[1], "likwid:::Minimum Power");
+    strcpy(likwid->power_names[2], "likwid:::Maximum Power");
+    strcpy(likwid->power_names[3], "likwid:::Maximum Time Window");
+
     likwid->power_values[0] = power_info.tdp;
     likwid->power_values[1] = power_info.minPower;
     likwid->power_values[2] = power_info.maxPower;
     likwid->power_values[3] = power_info.maxTimeWindow;
 }
-
-int MAX_NUM_NODES = 4;
 
 void get_power_data(Likwid_Plugin *likwid, int duration_in_sec)
 {

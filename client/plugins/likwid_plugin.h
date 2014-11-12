@@ -12,7 +12,7 @@ struct Likwid_Plugin_t
     int hasDRAM;
     int hasPP0;
     int hasPP1;
-    char power_names[4][128]; // fix me
+    char power_names[4][256]; // fix me
     float power_values[4]; // fix me
     char sockets[4][4][128]; // fix me
     char dram[4][4][128]; // fix me
