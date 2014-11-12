@@ -33,9 +33,20 @@ void TestLikwid_get_power_info(CuTest *tc)
     Likwid_Plugin *likwid = malloc(sizeof(Likwid_Plugin));
     get_power_info(likwid);
     int i;
-    for (i = 0; i < 4; ++i) {
+    for (i = 0; i < 4; ++i) { // this is not a test-case
         printf("name: %s, value: %g\n", likwid->power_names[i], likwid->power_values[i]);
     }
+    free(likwid);
+}
+
+void TestLikwid_get_power_data(CuTest *tc)
+{
+    Likwid_Plugin *likwid = malloc(sizeof(Likwid_Plugin));
+    int duration_in_sec = 1;
+    get_power_data(likwid, duration_in_sec);
+    printf("%s, %s\n", likwid->sockets[0][0], likwid->sockets[0][1]);
+    printf("%s, %s\n", likwid->sockets[0][2], likwid->sockets[0][3]);
+    free(likwid);
 }
 
 CuSuite* CuGetSuite(void)
@@ -46,6 +57,7 @@ CuSuite* CuGetSuite(void)
     SUITE_ADD_TEST(suite, TestLikwid_is_processor_supported);
     SUITE_ADD_TEST(suite, TestLikwid_check_processor);
     SUITE_ADD_TEST(suite, TestLikwid_get_power_info);
+    SUITE_ADD_TEST(suite, TestLikwid_get_power_data);
 
     return suite;
 }

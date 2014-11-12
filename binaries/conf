@@ -6,6 +6,7 @@ timing_0: 1000000000ns
 timing_1: 1000000000ns
 timing_2: 1000000000ns
 timing_3: 1000000000ns
+timing_4: 1000000000ns
 # timing for sending the data
 timingSend: 0s
 # timing for checking the config file

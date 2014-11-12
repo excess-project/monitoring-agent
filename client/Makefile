@@ -29,6 +29,8 @@ CURL_INC = -I../binaries/curl/include/
 
 PAPI = -L../binaries/papi/lib/
 PAPI_INC =  -I../binaries/papi/include/
+LIKWID = -L../likwid-3.1/
+LIKWID_INC = -I../likwid-3.1/src/includes -I../likwid-3.1/GCC
 
 APR_CONFIG = ../binaries/apr/bin/apr-1-config
 APU_CONFIG = ../binaries/apr/bin/apu-1-config
@@ -38,7 +40,7 @@ APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 #APR_INC = -I ../binaries/apr/include/apr-1
 
 ## to use, type: make or make all
-all: excess_main $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/papi.so $(PLUGIN_DIR)/rapl.so
+all: excess_main $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/papi.so $(PLUGIN_DIR)/rapl.so $(PLUGIN_DIR)/likwid.so
 
 lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
 
@@ -59,12 +61,14 @@ excess_main_lib: excess_main.o thread_handler.o util.o plugin_discover.o \
 # plugins 
 #
 
+# mem_info
 $(PLUGIN_DIR)/mem_info.so: $(PLUGIN_DIR)/mem_info.o
 	$(CC) -o $(PLUGIN_DEST)/mem_info.so $^ -shared
 
 $(PLUGIN_DIR)/mem_info.o: $(PLUGIN_DIR)/mem_info.c $(HEADER) 
 	$(CC) -c $< -o $@ $(COPT_SO) -I.
-	
+
+# papi
 $(PLUGIN_DIR)/papi.so: $(PLUGIN_DIR)/parser.o $(PLUGIN_DIR)/papi_plugin.o $(PLUGIN_DIR)/papi.o
 	$(CC) -o $(PLUGIN_DEST)/papi.so $^ -shared ../binaries/papi/lib/libpapi.so
 
@@ -77,6 +81,7 @@ $(PLUGIN_DIR)/papi_plugin.o: $(PLUGIN_DIR)/papi_plugin.c $(HEADER)
 $(PLUGIN_DIR)/papi.o: $(PLUGIN_DIR)/papi.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi
 
+# rapl
 $(PLUGIN_DIR)/rapl.so: $(PLUGIN_DIR)/rapl_plugin.o $(PLUGIN_DIR)/rapl.o
 	$(CC) -o $(PLUGIN_DEST)/rapl.so $^ -shared ../binaries/papi/lib/libpapi.so
 
@@ -85,6 +90,16 @@ $(PLUGIN_DIR)/rapl_plugin.o: $(PLUGIN_DIR)/rapl_plugin.c $(HEADER)
 
 $(PLUGIN_DIR)/rapl.o: $(PLUGIN_DIR)/rapl.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi
+
+# likwid
+$(PLUGIN_DIR)/likwid.so: $(PLUGIN_DIR)/likwid_plugin.o $(PLUGIN_DIR)/likwid.o
+	$(CC) -o $(PLUGIN_DEST)/likwid.so $^ -shared ../likwid-3.1/liblikwid.so
+
+$(PLUGIN_DIR)/likwid_plugin.o: $(PLUGIN_DIR)/likwid_plugin.c $(HEADER)
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID_INC) -L$(LIKWID) -lm -lpthread	
+
+$(PLUGIN_DIR)/likwid.o: $(PLUGIN_DIR)/likwid.c $(HEADER)
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID_INC) -L$(LIKWID) -lm -lpthread
 
 clean:
 	rm -rf core *.o *.a $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so
