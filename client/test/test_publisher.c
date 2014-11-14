@@ -6,6 +6,8 @@
 #include "../publisher.h"
 
 
+static const char *URL = "http://localhost:3000/executions/wZ-XK-kaTIK0DBF9LzzVLg";
+
 void Test_data(CuTest *tc)
 {
     Data *data = malloc(sizeof(Data));
@@ -48,13 +50,42 @@ void Test_complex_message(CuTest *tc)
     free(message);
 }
 
+void Test_publish_json(CuTest *tc)
+{
+    char *message = "{ \"timestamp\":123, \"username\":\"hopped\" }";
+    int retval = publish_json(URL, message);
+    CuAssertTrue(tc, retval == 1);
+}
+
+void Test_publish_json_with_empty_URL(CuTest *tc)
+{
+    char *null_URL = NULL;
+    char *message = "{ \"timestamp\":123, \"username\":\"hopped\" }";
+    int retval = publish_json(null_URL, message);
+    CuAssertTrue(tc, retval == 0);
+    
+    char *empty_URL = "";
+    retval = publish_json(empty_URL, message);
+    CuAssertTrue(tc, retval == 0);
+}
+
+void Test_publish_json_with_empty_message(CuTest *tc)
+{
+    char *null_message = NULL;
+    int retval = publish_json(URL, null_message);
+    CuAssertTrue(tc, retval == 0);
+    
+    char *empty_message = "";
+    retval = publish_json(URL, empty_message);
+    CuAssertTrue(tc, retval == 0);
+}
+
 void Test_successful_publish(CuTest *tc)
 {
-    const char *url = "http://localhost:3000";
     Message messages[1] = {
         {.sender = "fe.excess-project.eu" }
     };
-    int retval = publish(url, messages);
+    int retval = publish(URL, messages);
     CuAssertTrue(tc, retval == 1);
 }
 
@@ -65,6 +96,9 @@ CuSuite* CuGetSuite(void)
     SUITE_ADD_TEST(suite, Test_data);
     SUITE_ADD_TEST(suite, Test_complex_message);
     SUITE_ADD_TEST(suite, Test_message);
+    SUITE_ADD_TEST(suite, Test_publish_json);
+    SUITE_ADD_TEST(suite, Test_publish_json_with_empty_URL);
+    SUITE_ADD_TEST(suite, Test_publish_json_with_empty_message);
     SUITE_ADD_TEST(suite, Test_successful_publish);
 
     return suite;
