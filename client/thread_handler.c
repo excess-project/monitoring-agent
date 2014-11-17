@@ -348,7 +348,7 @@ int prepSend(metric data) {
 	getFQDN(hostname);
 	hostname[strlen(hostname) - 1] = '\0';
 
-	sprintf(msg, "{\"timestamp\":%.9Lf,\"hostname\":\"%s\"%s}", timeStamp, hostname, data->msg);
+	sprintf(msg, "{\"Timestamp\":%.9Lf,\"hostname\":\"%s\"%s}", timeStamp, hostname, data->msg);
 	send_monitoring_data(addr, msg);
 	free(data);
 	free(hostname);
