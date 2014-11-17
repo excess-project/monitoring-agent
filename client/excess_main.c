@@ -214,19 +214,27 @@ int prepare() {
 	char msg[1000] = "";
 
 	char *hostname = (char*) malloc(sizeof(char) * 256);
+    char *username = getenv("USER");
+    if (username == NULL) {
+        username = malloc(sizeof(char) * 12);
+        username = "default";
+    }
+    const char *description = "default start of the mf agent for testing";
 
 	getFQDN(hostname);
 	hostname[strlen(hostname) - 1] = '\0';
 	sprintf(msg,
-			"{\"Name\":\"Execution on node %s - %s\",\"Description\":\"Testing C gatherer\",\"Other\":\"values\",\"Onemore\":\"please\"}",
-			hostname, timeArr);
-
-	free(hostname);
+	    "{\"Name\":\"%s\", \"Description\":\"%s\", \"Start_date\":\"%s\", \"Username\":\"%s\"}",
+	    hostname, description, timeArr, username
+	);
 
 	/* init curl libs */
 	init_curl();
 	strcpy(str, get_execution_id(addr, msg)); /* get the execution ID */
 	strcat(addr, str);
+	
+	free(hostname);
+	
 	return 1;
 }
 
