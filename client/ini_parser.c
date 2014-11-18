@@ -32,11 +32,77 @@ int parse_generic(const char* filename, generic *config)
 {
     int error = ini_parse(filename, handle_generic, config);
     if (error < 0) {
-        log_error("parse(const char*, configuration) Can't load %s", filename);
+        log_error("parse_generic(const char*, configuration) Can't load %s", filename);
         return 0;
     } else if (error) { // error
         //log_error("parse(const char*, configuration) bad config file; first error on line %d", error);
         return 0;
     }
+    return 1;
+}
+
+
+static int handle_timings(void* user, const char* section, const char* name, const char* value)
+{
+    timings* pconfig = (timings*) user;
+    
+    if (!MATCH_SECTION("timings")) {
+        return 0;
+    }
+    
+    if (MATCH_KEY("default")) {
+        pconfig->default_timing = strdup(value);
+    } else if (MATCH_KEY("papi")) {
+        pconfig->papi = strdup(value);        
+    } else if (MATCH_KEY("rapl")) {
+        pconfig->rapl = strdup(value);
+    } else if (MATCH_KEY("mem_info")) {
+        pconfig->rapl = strdup(value);
+    } else if (MATCH_KEY("likwid")) {
+        pconfig->rapl = strdup(value);
+    } else if (MATCH_KEY("hw_power")) {
+        pconfig->rapl = strdup(value);                        
+    } else {
+        log_error("handler_generic(..) Found an unknown entity: '%s'", name);
+    }
+    
+    return 1;
+}
+
+
+int parse_timings(const char* filename, timings *config)
+{
+    config->papi = NULL;
+    config->rapl = NULL;
+    config->hw_power = NULL;
+    config->likwid = NULL;
+    config->mem_info = NULL;
+    
+    int error = ini_parse(filename, handle_timings, config);
+    
+    if (config->papi == NULL || strlen(config->papi) == '\0') {
+        config->papi = config->default_timing;
+    }
+    if (config->rapl == NULL || strlen(config->rapl) == '\0') {
+        config->rapl = config->default_timing;
+    }
+    if (config->hw_power == NULL || strlen(config->hw_power) == '\0') {
+        config->hw_power = config->default_timing;
+    }
+    if (config->likwid == NULL || strlen(config->likwid) == '\0') {
+        config->likwid = config->default_timing;
+    }
+    if (config->mem_info == NULL || strlen(config->mem_info) == '\0') {
+        config->mem_info = config->default_timing;
+    }                
+    
+    if (error < 0) {
+        log_error("parse_timings(const char*, configuration) Can't load %s", filename);
+        return 0;
+    } else if (error) { // error
+        //log_error("parse(const char*, configuration) bad config file; first error on line %d", error);
+        return 0;
+    }
+    
     return 1;
 }
