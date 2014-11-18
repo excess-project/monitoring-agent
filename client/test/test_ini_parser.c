@@ -40,14 +40,10 @@ void Test_parse_plugins(CuTest *tc)
 
 void Test_parse_papi(CuTest *tc)
 {
-    int i;
     plugin config;
     parse_plugin("basic.ini", "papi", &config);
-    for (i = 0; i < config.size; ++i) {
-        if (strcmp(config.events[i],  "PAPI_DP_OPS") == 0) {
-            CuAssertStrEquals(tc, "on", config.values[i]);
-        }
-    }
+    CuAssertTrue(tc, 1 == config.size);
+    CuAssertStrEquals(tc, "PAPI_DP_OPS", config.events[0]);
 }
 
 CuSuite* CuGetSuite(void)

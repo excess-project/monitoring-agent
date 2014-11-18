@@ -27,7 +27,6 @@ typedef struct {
 typedef struct {
     const char* name;
     const char* events[256];
-    const char* values[256];
     int size;
 } plugin;
 

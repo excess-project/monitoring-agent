@@ -157,8 +157,11 @@ static int handle_plugin(void* user, const char* section, const char* name, cons
         return 0;
     }
 
+    if (strcmp("off", value) == 0) {
+        return 0;
+    }
+    
     pconfig->events[pconfig->size] = strdup(name);
-    pconfig->values[pconfig->size] = strdup(value);
     ++pconfig->size;
 
     return 1;
