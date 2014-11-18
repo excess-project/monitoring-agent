@@ -1,5 +1,2 @@
 #PAPI
-Events: PAPI_TOT_INS,PAPI_SP_OPS,PAPI_TOT_CYC
-
-
-#misc
+Events: ALL_PRESETS

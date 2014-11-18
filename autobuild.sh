@@ -5,7 +5,7 @@ Default_path=`pwd`
 wget http://icl.cs.utk.edu/projects/papi/downloads/papi-5.3.2.tar.gz
 tar zxvf papi-5.3.2.tar.gz
 cd papi-5.3.2/src
-./configure --prefix=`pwd`/../../binaries/papi
+./configure --prefix=`pwd`/../../binaries/papi --with-components="rapl coretemp"
 make 
 make install all
 cd $Default_path

@@ -114,49 +114,8 @@ int getConf(const char *argv) {
 	fprintf(logFile, "confFile is: %s \n", confFile);
 
 	return 1;
-
 }
-/**
- * @brief get fully-qualified domain name
- */
-int getFQDN(char *fqdn) {
-	struct addrinfo hints, *info, *p;
 
-	int gai_result;
-
-	char *hostname = malloc(sizeof(char) * 80);
-	gethostname(hostname, sizeof hostname);
-
-	memset(&hints, 0, sizeof hints);
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_CANONNAME;
-
-	if ((gai_result = getaddrinfo(hostname, "http", &hints, &info)) != 1) {
-		fprintf(stderr, "getaddrinfo: %s,\n using regular hostname\n",
-				gai_strerror(gai_result));
-		fprintf(logFile, "getaddrinfo: %s,\n using regular hostname\n",
-				gai_strerror(gai_result));
-		FILE *tmp = NULL;
-		if ((tmp = popen("hostname", "r")) == NULL ) {
-			perror("popen");
-			return -1;
-		}
-		char line[200];
-		while (fgets(line, 200, tmp) != NULL )
-
-			sprintf(fqdn, "hostname: %s", line);
-		return 1;
-	}
-	for (p = info; p != NULL ; p = p->ai_next) {
-		sprintf(fqdn, "hostname: %s\n", p->ai_canonname);
-	}
-
-	if (info->ai_canonname)
-		freeaddrinfo(info);
-
-	return 1;
-}
 /**
  * @brief return and print length of excution id
  */
@@ -254,20 +213,28 @@ int prepare() {
 	char str[1000] = ""; /* storing the execution ID -- UUID is 36 chars */
 	char msg[1000] = "";
 
-	char *hostname = (char*) malloc(sizeof(char) * 80);
+	char *hostname = (char*) malloc(sizeof(char) * 256);
+    char *username = getenv("USER");
+    if (username == NULL) {
+        username = malloc(sizeof(char) * 12);
+        username = "default";
+    }
+    const char *description = "default start of the mf agent for testing";
 
 	getFQDN(hostname);
 	hostname[strlen(hostname) - 1] = '\0';
 	sprintf(msg,
-			"{\"Name\":\"Execution on node %s - %s\",\"Description\":\"Testing C gatherer\",\"Other\":\"values\",\"Onemore\":\"please\"}",
-			hostname + strlen("hostname: "), timeArr);
-
-	free(hostname);
+	    "{\"Name\":\"%s\", \"Description\":\"%s\", \"Start_date\":\"%s\", \"Username\":\"%s\"}",
+	    hostname, description, timeArr, username
+	);
 
 	/* init curl libs */
 	init_curl();
 	strcpy(str, get_execution_id(addr, msg)); /* get the execution ID */
 	strcat(addr, str);
+	
+	free(hostname);
+	
 	return 1;
 }
 
