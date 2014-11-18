@@ -6,7 +6,8 @@
 #include "../publisher.h"
 
 
-static const char *URL = "http://localhost:3000/executions/wZ-XK-kaTIK0DBF9LzzVLg";
+//static const char *URL = "http://localhost:3000/executions/wZ-XK-kaTIK0DBF9LzzVLg";
+static const char *URL = "http://141.58.0.8:3000/executions/lnWrd10tQFmR30ekCjkAuQ";
 
 void Test_data(CuTest *tc)
 {
@@ -52,7 +53,7 @@ void Test_complex_message(CuTest *tc)
 
 void Test_publish_json(CuTest *tc)
 {
-    char *message = "{ \"timestamp\":123, \"username\":\"hopped\" }";
+    char *message = "{ \"Start_date\":123, \"Username\":\"hopped\" }";
     int retval = publish_json(URL, message);
     CuAssertTrue(tc, retval == 1);
 }
@@ -60,7 +61,7 @@ void Test_publish_json(CuTest *tc)
 void Test_publish_json_with_empty_URL(CuTest *tc)
 {
     char *null_URL = NULL;
-    char *message = "{ \"timestamp\":123, \"username\":\"hopped\" }";
+    char *message = "{ \"Start_date\":123, \"Username\":\"hopped\" }";
     int retval = publish_json(null_URL, message);
     CuAssertTrue(tc, retval == 0);
     
@@ -89,6 +90,13 @@ void Test_successful_publish(CuTest *tc)
     CuAssertTrue(tc, retval == 1);
 }
 
+void Test_get_execution_id(CuTest *tc)
+{
+    char *query = "";
+    char *id = get_execution_id(URL, query);
+    CuAssertTrue(tc, id != NULL && strlen(id) == 22);
+}
+
 CuSuite* CuGetSuite(void)
 {
     CuSuite* suite = CuSuiteNew();
@@ -100,6 +108,7 @@ CuSuite* CuGetSuite(void)
     SUITE_ADD_TEST(suite, Test_publish_json_with_empty_URL);
     SUITE_ADD_TEST(suite, Test_publish_json_with_empty_message);
     SUITE_ADD_TEST(suite, Test_successful_publish);
+    SUITE_ADD_TEST(suite, Test_get_execution_id);
 
     return suite;
 }

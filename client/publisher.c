@@ -32,23 +32,35 @@ static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 }
 #endif
 
-int publish_json(const char *URL, char *message)
+int check_URL(const char *URL)
 {
-	int result = SEND_SUCCESS;
-	CURLcode response;
-
     if (URL == NULL || *URL == '\0') {
         char *error_msg = "URL not set.";
 		log_error("publish(const char*, Message) %s", error_msg);
 		return 0;
 	}
-	
+	return 1;
+}
+
+int check_message(char *message)
+{
 	if (message == NULL || *message == '\0') {
 	    char *error_msg = "message not set.";
 		log_error("publish(const char*, Message) %s", error_msg);
 		return 0;	    
 	}
-	
+	return 1;
+}
+
+int publish_json(const char *URL, char *message)
+{
+	int result = SEND_SUCCESS;
+	CURLcode response;
+
+    if (!check_URL(URL) || !check_message(message)) {
+        return 0;
+    }
+
     init_curl();
 	
 	curl_easy_setopt(curl, CURLOPT_URL, URL);
@@ -77,6 +89,12 @@ int publish_json(const char *URL, char *message)
 int publish(const char *URL, Message *messages)
 {
     return SEND_SUCCESS;
+}
+
+char* get_execution_id(const char *URL, char *message)
+{
+    
+    return "lnWrd10tQFmR30ekCjkAuQ";
 }
 
 void shutdown_curl()

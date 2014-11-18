@@ -19,8 +19,12 @@ struct Message_t {
   Data *data;
 };
 
-int publish_json(const char *URL, char *message);
+char* get_execution_id(const char *URL, char *message);
 
 int publish(const char *URL, Message *messages);
+
+int publish_json(const char *URL, char *message);
+
+
 
 #endif
