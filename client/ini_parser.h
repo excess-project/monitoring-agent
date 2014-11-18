@@ -24,10 +24,19 @@ typedef struct {
     const char* hw_power;
 } plugins;
 
+typedef struct {
+    const char* name;
+    const char* events[256];
+    const char* values[256];
+    int size;
+} plugin;
+
 int parse_generic(const char* filename, generic *config);
 
 int parse_timings(const char* filename, timings *config);
 
 int parse_plugins(const char* filename, plugins *config);
+
+int parse_plugin(const char* filename, const char* plugin_name, plugin *config);
 
 #endif

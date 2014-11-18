@@ -36,7 +36,18 @@ void Test_parse_plugins(CuTest *tc)
     CuAssertStrEquals(tc, "off", config.likwid);
     CuAssertStrEquals(tc, "on" , config.mem_info);
     CuAssertStrEquals(tc, "off", config.hw_power);
-    
+}
+
+void Test_parse_papi(CuTest *tc)
+{
+    int i;
+    plugin config;
+    parse_plugin("basic.ini", "papi", &config);
+    for (i = 0; i < config.size; ++i) {
+        if (strcmp(config.events[i],  "PAPI_DP_OPS") == 0) {
+            CuAssertStrEquals(tc, "on", config.values[i]);
+        }
+    }
 }
 
 CuSuite* CuGetSuite(void)
@@ -46,6 +57,7 @@ CuSuite* CuGetSuite(void)
     SUITE_ADD_TEST(suite, Test_parse_generic);
     SUITE_ADD_TEST(suite, Test_parse_timings);
     SUITE_ADD_TEST(suite, Test_parse_plugins);
+    SUITE_ADD_TEST(suite, Test_parse_papi);
 
     return suite;
 }

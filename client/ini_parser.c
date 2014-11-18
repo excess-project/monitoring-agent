@@ -9,11 +9,11 @@
 static int handle_generic(void* user, const char* section, const char* name, const char* value)
 {
     generic* pconfig = (generic*) user;
-    
+
     if (!MATCH_SECTION("generic")) {
         return 0;
     }
-    
+
     if (MATCH_KEY("hostname")) {
         pconfig->hostname = strdup(value);
     } else if (MATCH_KEY("publish_data_interval")) {
@@ -23,7 +23,7 @@ static int handle_generic(void* user, const char* section, const char* name, con
     } else {
         log_error("handler_generic(..) Found an unknown entity: '%s'", name);
     }
-    
+
     return 1;
 }
 
@@ -38,6 +38,7 @@ int parse_generic(const char* filename, generic *config)
         //log_error("parse(const char*, configuration) bad config file; first error on line %d", error);
         return 0;
     }
+
     return 1;
 }
 
@@ -94,8 +95,8 @@ int parse_timings(const char* filename, timings *config)
     }
     if (config->mem_info == NULL || strlen(config->mem_info) == '\0') {
         config->mem_info = config->default_timing;
-    }                
-    
+    }
+
     if (error < 0) {
         log_error("parse_timings(const char*, timings) Can't load %s", filename);
         return 0;
@@ -103,20 +104,20 @@ int parse_timings(const char* filename, timings *config)
         //log_error("parse(const char*, configuration) bad config file; first error on line %d", error);
         return 0;
     }
-    
+
     return 1;
 }
 
 static int handle_plugins(void* user, const char* section, const char* name, const char* value)
 {
     plugins* pconfig = (plugins*) user;
-    
+
     if (!MATCH_SECTION("plugins")) {
         return 0;
     }
-    
+
     if (MATCH_KEY("papi")) {
-        pconfig->papi = strdup(value);        
+        pconfig->papi = strdup(value);
     } else if (MATCH_KEY("rapl")) {
         pconfig->rapl = strdup(value);
     } else if (MATCH_KEY("mem_info")) {
@@ -128,7 +129,7 @@ static int handle_plugins(void* user, const char* section, const char* name, con
     } else {
         log_error("handler_plugins(..) Found an unknown entity: '%s'", name);
     }
-    
+
     return 1;
 }
 
@@ -143,6 +144,40 @@ int parse_plugins(const char* filename, plugins *config)
         //log_error("parse(const char*, configuration) bad config file; first error on line %d", error);
         return 0;
     }
-    
+
+    return 1;
+}
+
+
+static int handle_plugin(void* user, const char* section, const char* name, const char* value)
+{
+    plugin* pconfig = (plugin*) user;
+
+    if (!MATCH_SECTION(pconfig->name)) {
+        return 0;
+    }
+
+    pconfig->events[pconfig->size] = strdup(name);
+    pconfig->values[pconfig->size] = strdup(value);
+    ++pconfig->size;
+
+    return 1;
+}
+
+
+int parse_plugin(const char* filename, const char* plugin_name, plugin *config)
+{
+    config->name = plugin_name;
+    config->size = 0;
+
+    int error = ini_parse(filename, handle_plugin, config);
+    if (error < 0) {
+        log_error("parse_plugin(const char*, const char*, plugin) Can't load %s", filename);
+        return 0;
+    } else if (error) { // error
+        //log_error("parse(const char*, configuration) bad config file; first error on line %d", error);
+        return 0;
+    }
+
     return 1;
 }
