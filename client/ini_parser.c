@@ -11,7 +11,7 @@ static int handle_generic(void* user, const char* section, const char* name, con
     generic* pconfig = (generic*) user;
 
     if (!MATCH_SECTION("generic")) {
-        return 0;
+        return 1;
     }
 
     if (MATCH_KEY("hostname")) {
@@ -22,6 +22,7 @@ static int handle_generic(void* user, const char* section, const char* name, con
         pconfig->update_config = strdup(value);
     } else {
         log_error("handler_generic(..) Found an unknown entity: '%s'", name);
+        return 0;
     }
 
     return 1;
@@ -46,11 +47,11 @@ int parse_generic(const char* filename, generic *config)
 static int handle_timings(void* user, const char* section, const char* name, const char* value)
 {
     timings* pconfig = (timings*) user;
-    
+
     if (!MATCH_SECTION("timings")) {
-        return 0;
+        return 1;
     }
-    
+
     if (MATCH_KEY("default")) {
         pconfig->default_timing = strdup(value);
     } else if (MATCH_KEY("papi")) {
@@ -62,11 +63,12 @@ static int handle_timings(void* user, const char* section, const char* name, con
     } else if (MATCH_KEY("likwid")) {
         pconfig->likwid = strdup(value);
     } else if (MATCH_KEY("hw_power")) {
-        pconfig->hw_power = strdup(value);                        
+        pconfig->hw_power = strdup(value);
     } else {
         log_error("handler_timings(..) Found an unknown entity: '%s'", name);
+        return 0;
     }
-    
+
     return 1;
 }
 
@@ -78,9 +80,9 @@ int parse_timings(const char* filename, timings *config)
     config->hw_power = NULL;
     config->likwid = NULL;
     config->mem_info = NULL;
-    
+
     int error = ini_parse(filename, handle_timings, config);
-    
+
     if (config->papi == NULL || strlen(config->papi) == '\0') {
         config->papi = config->default_timing;
     }
@@ -108,12 +110,13 @@ int parse_timings(const char* filename, timings *config)
     return 1;
 }
 
+
 static int handle_plugins(void* user, const char* section, const char* name, const char* value)
 {
     plugins* pconfig = (plugins*) user;
 
     if (!MATCH_SECTION("plugins")) {
-        return 0;
+        return 1;
     }
 
     if (MATCH_KEY("papi")) {
@@ -128,6 +131,7 @@ static int handle_plugins(void* user, const char* section, const char* name, con
         pconfig->hw_power = strdup(value);                       
     } else {
         log_error("handler_plugins(..) Found an unknown entity: '%s'", name);
+        return 0;
     }
 
     return 1;
@@ -154,13 +158,13 @@ static int handle_plugin(void* user, const char* section, const char* name, cons
     plugin* pconfig = (plugin*) user;
 
     if (!MATCH_SECTION(pconfig->name)) {
-        return 0;
+        return 1;
     }
 
     if (strcmp("off", value) == 0) {
-        return 0;
+        return 1;
     }
-    
+
     pconfig->events[pconfig->size] = strdup(name);
     ++pconfig->size;
 
@@ -179,6 +183,8 @@ int parse_plugin(const char* filename, const char* plugin_name, plugin *config)
         return 0;
     } else if (error) { // error
         //log_error("parse(const char*, configuration) bad config file; first error on line %d", error);
+        return 0;
+    } else if (config->size == 0) {
         return 0;
     }
 
