@@ -5,10 +5,9 @@
 #include "CuTest.h"
 #include "../publisher.h"
 
-
-//static const char *URL = "http://localhost:3000/executions/wZ-XK-kaTIK0DBF9LzzVLg";
 static const char *SERVER = "http://141.58.0.8:3000/executions";
-static const char *URL = "http://141.58.0.8:3000/executions/lnWrd10tQFmR30ekCjkAuQ";
+
+static char *URL;
 
 void Test_data(CuTest *tc)
 {
@@ -55,6 +54,7 @@ void Test_complex_message(CuTest *tc)
 void Test_publish_json(CuTest *tc)
 {
     char *message = "{ \"Start_date\":123, \"Username\":\"hopped\" }";
+    printf("%s\n", URL);
     int retval = publish_json(URL, message);
     CuAssertTrue(tc, retval == 1);
 }
@@ -91,27 +91,48 @@ void Test_successful_publish(CuTest *tc)
     CuAssertTrue(tc, retval == 1);
 }
 
-void Test_get_execution_id(CuTest *tc)
+void set_default_query(char *query)
 {
     char *hostname = "localhost";
     char *description = "test";
     char *start_date = "Tu 18 Nov 2014 13:08:47 CET";
     char *username = "hpcmfagent";    
-    char *query = malloc(sizeof(char) * 256);
 	sprintf(query,
 	    "{\"Name\":\"%s\", \"Description\":\"%s\", \"Start_date\":\"%s\", \"Username\":\"%s\"}",
 	    hostname, description, start_date, username
 	);
+}
 
+void Test_get_execution_id(CuTest *tc)
+{
+    char *query = malloc(sizeof(char) * 256);
+    set_default_query(query);
     char *id = get_execution_id(SERVER, query);
     CuAssertTrue(tc, id != NULL && strlen(id) == 22);
-    
     free(query);
+}
+
+void startup()
+{
+    char *query = malloc(sizeof(char) * 256);
+    set_default_query(query);
+    URL = malloc(sizeof(char) * 256);
+    strcpy(URL, SERVER);
+    strcat(URL, "/");
+    strcat(URL, get_execution_id(SERVER, query));
+    free(query);
+}
+
+void shutdown()
+{
+    free(URL);
 }
 
 CuSuite* CuGetSuite(void)
 {
     CuSuite* suite = CuSuiteNew();
+
+    startup();
 
     SUITE_ADD_TEST(suite, Test_data);
     SUITE_ADD_TEST(suite, Test_complex_message);
@@ -121,6 +142,8 @@ CuSuite* CuGetSuite(void)
     SUITE_ADD_TEST(suite, Test_publish_json_with_empty_message);
     SUITE_ADD_TEST(suite, Test_successful_publish);
     SUITE_ADD_TEST(suite, Test_get_execution_id);
+
+    shutdown();
 
     return suite;
 }
