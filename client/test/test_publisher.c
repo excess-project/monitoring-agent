@@ -7,6 +7,7 @@
 
 
 //static const char *URL = "http://localhost:3000/executions/wZ-XK-kaTIK0DBF9LzzVLg";
+static const char *SERVER = "http://141.58.0.8:3000/executions";
 static const char *URL = "http://141.58.0.8:3000/executions/lnWrd10tQFmR30ekCjkAuQ";
 
 void Test_data(CuTest *tc)
@@ -92,9 +93,20 @@ void Test_successful_publish(CuTest *tc)
 
 void Test_get_execution_id(CuTest *tc)
 {
-    char *query = "";
-    char *id = get_execution_id(URL, query);
+    char *hostname = "localhost";
+    char *description = "test";
+    char *start_date = "Tu 18 Nov 2014 13:08:47 CET";
+    char *username = "hpcmfagent";    
+    char *query = malloc(sizeof(char) * 256);
+	sprintf(query,
+	    "{\"Name\":\"%s\", \"Description\":\"%s\", \"Start_date\":\"%s\", \"Username\":\"%s\"}",
+	    hostname, description, start_date, username
+	);
+
+    char *id = get_execution_id(SERVER, query);
     CuAssertTrue(tc, id != NULL && strlen(id) == 22);
+    
+    free(query);
 }
 
 CuSuite* CuGetSuite(void)

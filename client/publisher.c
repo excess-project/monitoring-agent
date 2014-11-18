@@ -5,6 +5,7 @@
 #include "publisher.h"
 
 static CURL *curl;
+static char execution_id[64];
 struct curl_slist *headers = NULL;
 
 static void init_curl()
@@ -31,6 +32,13 @@ static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
    return size * nmemb;
 }
 #endif
+
+static size_t get_stream_data(void *buffer, size_t size, size_t nmemb, void *stream) {
+	size_t total = size * nmemb;
+	memcpy(stream, buffer, total);
+	
+	return total;
+}
 
 int check_URL(const char *URL)
 {
@@ -92,9 +100,39 @@ int publish(const char *URL, Message *messages)
 }
 
 char* get_execution_id(const char *URL, char *message)
-{
+{    
+    if (execution_id != NULL && strlen(execution_id) == 22) {
+		return execution_id;
+	}
+	
+    if (!check_URL(URL) || !check_message(message)) {
+        return 0;
+    }
+
+    init_curl();
     
-    return "lnWrd10tQFmR30ekCjkAuQ";
+    curl_easy_setopt(curl, CURLOPT_URL, URL);
+	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+	
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, message);
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long ) strlen(message));
+	#ifdef DEBUG
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+	#endif
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_stream_data);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &execution_id);
+
+	CURLcode response = curl_easy_perform(curl);
+    if (response != CURLE_OK) {
+		const char *error_msg = curl_easy_strerror(response);
+		log_error("publish(const char*, Message) %s", error_msg);
+	}
+	
+    debug("get_execution_id(const char*, char*) Execution ID= %s", execution_id);
+
+	curl_easy_reset(curl);
+	
+	return execution_id;
 }
 
 void shutdown_curl()
