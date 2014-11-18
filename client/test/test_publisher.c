@@ -54,7 +54,6 @@ void Test_complex_message(CuTest *tc)
 void Test_publish_json(CuTest *tc)
 {
     char *message = "{ \"Start_date\":123, \"Username\":\"hopped\" }";
-    printf("%s\n", URL);
     int retval = publish_json(URL, message);
     CuAssertTrue(tc, retval == 1);
 }
