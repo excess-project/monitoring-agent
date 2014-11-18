@@ -25,6 +25,8 @@ int publish(const char *URL, Message *messages);
 
 int publish_json(const char *URL, char *message);
 
+void shutdown_curl();
+
 
 
 #endif
