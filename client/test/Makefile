@@ -15,8 +15,10 @@ CURL_INC = -I../../binaries/curl/include/
 LFLAGS =  -lm $(CURL)
 
 DEBUG ?= 1
-ifeq ($(DEBUG), 1)
+ifeq (${DEBUG}, 1)
     CFLAGS += -DDEBUG -g
+else
+    CFLAGS += -DNDEBUG -g
 endif
 
 all: test_parser test_papi test_rapl test_likwid test_publisher
@@ -35,6 +37,7 @@ test_likwid:
 
 test_publisher:
 	$(CC) -o test_publisher AllTests.c CuTest.c test_publisher.c ../publisher.c $(CFLAGS) $(CURL_INC) $(LFLAGS)
+
 clean:
 	rm -rf test_parser
 	rm -rf test_papi
