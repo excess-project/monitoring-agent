@@ -123,11 +123,6 @@ void startup()
     free(query);
 }
 
-void shutdown()
-{
-    free(URL);
-}
-
 CuSuite* CuGetSuite(void)
 {
     CuSuite* suite = CuSuiteNew();
@@ -143,7 +138,7 @@ CuSuite* CuGetSuite(void)
     SUITE_ADD_TEST(suite, Test_successful_publish);
     SUITE_ADD_TEST(suite, Test_get_execution_id);
 
-    shutdown();
+    //shutdown_curl();
 
     return suite;
 }
