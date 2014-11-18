@@ -27,12 +27,25 @@ void Test_parse_timings(CuTest *tc)
     CuAssertStrEquals(tc, "1000000000ns", config.hw_power);
 }
 
+void Test_parse_plugins(CuTest *tc)
+{
+    plugins config;
+    parse_plugins("basic.ini", &config);
+    CuAssertStrEquals(tc, "off", config.papi);
+    CuAssertStrEquals(tc, "off", config.rapl);
+    CuAssertStrEquals(tc, "off", config.likwid);
+    CuAssertStrEquals(tc, "on" , config.mem_info);
+    CuAssertStrEquals(tc, "off", config.hw_power);
+    
+}
+
 CuSuite* CuGetSuite(void)
 {
     CuSuite* suite = CuSuiteNew();
 
     SUITE_ADD_TEST(suite, Test_parse_generic);
     SUITE_ADD_TEST(suite, Test_parse_timings);
+    SUITE_ADD_TEST(suite, Test_parse_plugins);
 
     return suite;
 }

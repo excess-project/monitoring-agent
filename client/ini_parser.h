@@ -16,8 +16,18 @@ typedef struct {
     const char* hw_power;
 } timings;
 
+typedef struct {
+    const char* papi;
+    const char* rapl;
+    const char* likwid;
+    const char* mem_info;
+    const char* hw_power;
+} plugins;
+
 int parse_generic(const char* filename, generic *config);
 
 int parse_timings(const char* filename, timings *config);
+
+int parse_plugins(const char* filename, plugins *config);
 
 #endif

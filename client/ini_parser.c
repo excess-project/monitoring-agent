@@ -32,7 +32,7 @@ int parse_generic(const char* filename, generic *config)
 {
     int error = ini_parse(filename, handle_generic, config);
     if (error < 0) {
-        log_error("parse_generic(const char*, configuration) Can't load %s", filename);
+        log_error("parse_generic(const char*, generic) Can't load %s", filename);
         return 0;
     } else if (error) { // error
         //log_error("parse(const char*, configuration) bad config file; first error on line %d", error);
@@ -57,13 +57,13 @@ static int handle_timings(void* user, const char* section, const char* name, con
     } else if (MATCH_KEY("rapl")) {
         pconfig->rapl = strdup(value);
     } else if (MATCH_KEY("mem_info")) {
-        pconfig->rapl = strdup(value);
+        pconfig->mem_info = strdup(value);
     } else if (MATCH_KEY("likwid")) {
-        pconfig->rapl = strdup(value);
+        pconfig->likwid = strdup(value);
     } else if (MATCH_KEY("hw_power")) {
-        pconfig->rapl = strdup(value);                        
+        pconfig->hw_power = strdup(value);                        
     } else {
-        log_error("handler_generic(..) Found an unknown entity: '%s'", name);
+        log_error("handler_timings(..) Found an unknown entity: '%s'", name);
     }
     
     return 1;
@@ -97,7 +97,47 @@ int parse_timings(const char* filename, timings *config)
     }                
     
     if (error < 0) {
-        log_error("parse_timings(const char*, configuration) Can't load %s", filename);
+        log_error("parse_timings(const char*, timings) Can't load %s", filename);
+        return 0;
+    } else if (error) { // error
+        //log_error("parse(const char*, configuration) bad config file; first error on line %d", error);
+        return 0;
+    }
+    
+    return 1;
+}
+
+static int handle_plugins(void* user, const char* section, const char* name, const char* value)
+{
+    plugins* pconfig = (plugins*) user;
+    
+    if (!MATCH_SECTION("plugins")) {
+        return 0;
+    }
+    
+    if (MATCH_KEY("papi")) {
+        pconfig->papi = strdup(value);        
+    } else if (MATCH_KEY("rapl")) {
+        pconfig->rapl = strdup(value);
+    } else if (MATCH_KEY("mem_info")) {
+        pconfig->mem_info = strdup(value);
+    } else if (MATCH_KEY("likwid")) {
+        pconfig->likwid = strdup(value);
+    } else if (MATCH_KEY("hw_power")) {
+        pconfig->hw_power = strdup(value);                       
+    } else {
+        log_error("handler_plugins(..) Found an unknown entity: '%s'", name);
+    }
+    
+    return 1;
+}
+
+
+int parse_plugins(const char* filename, plugins *config)
+{
+    int error = ini_parse(filename, handle_plugins, config);
+    if (error < 0) {
+        log_error("parse_plugins(const char*, plugins) Can't load %s", filename);
         return 0;
     } else if (error) { // error
         //log_error("parse(const char*, configuration) bad config file; first error on line %d", error);
