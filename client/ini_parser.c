@@ -6,10 +6,12 @@
 #define MATCH_KEY(n) strcmp(name, n) == 0
 
 
-void handle_generic(configuration *pconfig, void* user, const char* section, const char* name, const char* value)
+static int handle_generic(void* user, const char* section, const char* name, const char* value)
 {
+    generic* pconfig = (generic*) user;
+    
     if (!MATCH_SECTION("generic")) {
-        return;
+        return 0;
     }
     
     if (MATCH_KEY("hostname")) {
@@ -21,22 +23,14 @@ void handle_generic(configuration *pconfig, void* user, const char* section, con
     } else {
         log_error("handler_generic(..) Found an unknown entity: '%s'", name);
     }
-}
-
     
-static int handler(void* user, const char* section, const char* name, const char* value)
-{
-    configuration* pconfig = (configuration*) user;
-
-    handle_generic(pconfig, user, section, name, value);
-
     return 1;
 }
 
 
-int parse(const char* filename, configuration *config)
+int parse_generic(const char* filename, generic *config)
 {
-    int error = ini_parse(filename, handler, config);
+    int error = ini_parse(filename, handle_generic, config);
     if (error < 0) {
         log_error("parse(const char*, configuration) Can't load %s", filename);
         return 0;

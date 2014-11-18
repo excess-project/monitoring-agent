@@ -5,8 +5,8 @@ typedef struct {
     const char* hostname;
     const char* update_interval;
     const char* update_config;
-} configuration;
+} generic;
 
-int parse(const char* filename, configuration *config);
+int parse_generic(const char* filename, generic *config);
 
 #endif
