@@ -15,8 +15,10 @@ CURL = -L../../binaries/curl/lib/ -lcurl
 CURL_INC = -I../../binaries/curl/include/
 
 DEBUG ?= 1
-ifeq ($(DEBUG), 1)
+ifeq (${DEBUG}, 1)
     CFLAGS += -DDEBUG -g
+else
+    CFLAGS += -DNDEBUG -g
 endif
 
 all: test_papi test_rapl test_likwid test_publisher
