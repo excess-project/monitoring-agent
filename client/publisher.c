@@ -62,10 +62,6 @@ int check_message(char *message)
 
 static int prepare_publish(const char *URL, char *message)
 {
-    if (!check_URL(URL) || !check_message(message)) {
-        return 0;
-    }
-
     init_curl();
 	
 	curl_easy_setopt(curl, CURLOPT_URL, URL);
@@ -84,6 +80,10 @@ int publish_json(const char *URL, char *message)
 {
 	int result = SEND_SUCCESS;
 
+    if (!check_URL(URL) || !check_message(message)) {
+        return 0;
+    }
+    
     if (!prepare_publish(URL, message)) {
         return 0;
     }
@@ -114,6 +114,10 @@ char* get_execution_id(const char *URL, char *message)
     if (execution_id != NULL && strlen(execution_id) == 22) {
 		return execution_id;
 	}
+	
+    if (!check_URL(URL) || !check_message(message)) {
+        return 0;
+    }
 	
     if (!prepare_publish(URL, message)) {
         return '\0';
