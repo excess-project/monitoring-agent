@@ -15,7 +15,7 @@ OUTPUT = ../binaries/mf_agent
 CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
 -Wcast-align -O0 -ggdb -pthread -D_LARGEFILE64_SOURCE $(PAPI_INC) $(APR_INC) $(CURL_INC) $(LIKWID_INC)
  
-LFLAGS =  -lm $(CURL) $(PAPI) $(APR)
+LFLAGS =  -lm $(CURL) $(PAPI) $(APR) $(LIKWID)
 
 ## List of source files
 
@@ -29,8 +29,8 @@ CURL_INC = -I../binaries/curl/include/
 
 PAPI = -L../binaries/papi/lib/
 PAPI_INC =  -I../binaries/papi/include/
-LIKWID = -L../likwid-3.1/
-LIKWID_INC = -I../likwid-3.1/src/includes -I../likwid-3.1/GCC
+LIKWID = -L../binaries/likwid/lib/
+LIKWID_INC = -I../binaries/likwid/include/likwid
 
 APR_CONFIG = ../binaries/apr/bin/apr-1-config
 APU_CONFIG = ../binaries/apr/bin/apu-1-config
@@ -93,13 +93,13 @@ $(PLUGIN_DIR)/rapl.o: $(PLUGIN_DIR)/rapl.c $(HEADER)
 
 # likwid
 $(PLUGIN_DIR)/likwid.so: $(PLUGIN_DIR)/likwid_plugin.o $(PLUGIN_DIR)/likwid.o
-	$(CC) -o $(PLUGIN_DEST)/likwid.so $^ -shared ../likwid-3.1/liblikwid.so
+	$(CC) -o $(PLUGIN_DEST)/likwid.so $^ -shared ../binaries/likwid/lib/liblikwid.so
 
 $(PLUGIN_DIR)/likwid_plugin.o: $(PLUGIN_DIR)/likwid_plugin.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID_INC) -L$(LIKWID) -llikwid -lm -lpthread	
+	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(LIKWID) -llikwid -lm -lpthread	
 
 $(PLUGIN_DIR)/likwid.o: $(PLUGIN_DIR)/likwid.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID_INC) -L$(LIKWID) -llikwid -lm -lpthread
+	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(LIKWID) -llikwid -lm -lpthread
 
 clean:
 	rm -rf core *.o *.a $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so
