@@ -2,9 +2,9 @@
 #This file is used for building all needed libraries in jenkins
 Default_path=`pwd`
 # Downloading and building papi
-wget http://icl.cs.utk.edu/projects/papi/downloads/papi-5.3.2.tar.gz
-tar zxvf papi-5.3.2.tar.gz
-cd papi-5.3.2/src
+wget http://icl.cs.utk.edu/projects/papi/downloads/papi-5.4.0.tar.gz
+tar zxvf papi-5.4.0.tar.gz
+cd papi-5.4.0/src
 ./configure --prefix=`pwd`/../../binaries/papi --with-components="rapl coretemp"
 make 
 make install all
