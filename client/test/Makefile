@@ -6,8 +6,8 @@ LIKWID_CFLAGS = $(CFLAGS) -lm -lpthread
 PAPI = ../../binaries/papi/lib/libpapi.a
 PAPI_INC =  -I../../binaries/papi/include/
 
-LIKWID = ../../likwid-3.1/liblikwid.a
-LIKWID_INC = -I../../likwid-3.1/src/includes -I../../likwid-3.1/GCC
+LIKWID = ../../binaries/likwid/lib/liblikwid.a
+LIKWID_INC = -I../../binaries/likwid/include/likwid
 
 CURL = -L../../binaries/curl/lib/ -lcurl
 CURL_INC = -I../../binaries/curl/include/
