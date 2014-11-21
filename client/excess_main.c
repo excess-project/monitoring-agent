@@ -184,7 +184,7 @@ char* cutPwd(char *pwd) {
 	return help;
 }
 
-int prepare() {
+static int prepare() {
 	char *confFile = malloc(strlen(pwd) + strlen("..") + strlen("mf_config.ini") + 3);
 	if (confFile == NULL) {
 		fprintf(stderr, "prepare() failed: cannot allocate memory for fullpath");

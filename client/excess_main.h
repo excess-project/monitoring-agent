@@ -45,13 +45,6 @@ extern FILE *logFile;
  */
 int printHelp();
 
-/**@ brief prepares the sending of the data
- *
- * will get the execution id and gathering information required by the program
- *
- */
-int prepare();
-
 /**
  * @brief reads the config file
  */
