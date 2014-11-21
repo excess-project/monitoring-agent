@@ -11,12 +11,13 @@ make
 make install all
 cd $Default_path
 
-# Downloading and build likwid
+# Downloading and build likwid (build both *.a and *.so)
 wget http://ftp.fau.de/pub/likwid/likwid-3.1.3.tar.gz
 tar zxvf likwid-3.1.3.tar.gz
 cd likwid-3.1.3
-#sed -i 's/^SHARED_LIBRARY\s=\sfalse/SHARED_LIBRARY = true/' config.mk
 sed -i -e 's@^PREFIX\s=\s/usr/local@PREFIX = '"$Default_path"'/../../binaries/likwid@' config.mk
+make
+sed -i 's/^SHARED_LIBRARY\s=\sfalse/SHARED_LIBRARY = true/' config.mk
 make
 make install
 cd $Default_path
