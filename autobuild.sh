@@ -1,6 +1,7 @@
 #!/bin/bash
 #This file is used for building all needed libraries in jenkins
 Default_path=`pwd`
+
 # Downloading and building papi
 wget http://icl.cs.utk.edu/projects/papi/downloads/papi-5.4.0.tar.gz
 tar zxvf papi-5.4.0.tar.gz
@@ -10,9 +11,17 @@ make
 make install all
 cd $Default_path
 
+# Downloading and build likwid
+wget http://ftp.fau.de/pub/likwid/likwid-3.1.3.tar.gz
+tar zxvf likwid-3.1.3.tar.gz
+cd likwid-3.1.3
+sed -i 's/^SHARED_LIBRARY\s=\sfalse/SHARED_LIBRARY = true/' config.mk
+sed -i -e 's@^PREFIX\s=\s/usr/local@PREFIX = '"$Default_path"'/../../binaries/likwid@' config.mk
+make
+make install
+cd $Default_path
+
 # Downloading and building curl
-# More comments
-# Even more comments
 wget http://curl.haxx.se/download/curl-7.37.0.tar.gz
 tar zxvf curl-7.37.0.tar.gz
 cd curl-7.37.0
@@ -41,7 +50,3 @@ make
 make install
 make install all
 cd $Default_path
-
-# Finally building the client
-#cd client/
-#make
