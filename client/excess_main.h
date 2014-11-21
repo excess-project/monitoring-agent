@@ -52,17 +52,10 @@ int printHelp();
  */
 int prepare();
 
-
-
 /**
  * @brief reads the config file
  */
 int readConf(const char *confFile);
-
-/** @brief will find the path to the config file
- *
- */
-int getConf(const char *argv);
 
 
 #endif /* EXCESS_MAIN_H_ */

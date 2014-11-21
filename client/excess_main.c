@@ -99,23 +99,6 @@ int readConf(const char *confFile) {
 	return 1;
 }
 
-int getConf(const char *argv) {
-//	confFile = malloc(200 * sizeof(char));
-	const char *filename = { "/conf" };
-
-	char *tmpChar = malloc(300 * sizeof(char));
-	memset(tmpChar, '\0', 300 * sizeof(char));
-	memcpy(tmpChar, argv, strlen(argv) * sizeof(char));
-//	confFile = strdup(argv);
-	strcat(tmpChar, filename);
-	confFile = strdup(tmpChar);
-	free(tmpChar);
-	fprintf(stderr, "confFile is: %s \n", confFile);
-	fprintf(logFile, "confFile is: %s \n", confFile);
-
-	return 1;
-}
-
 /**
  * @brief return and print length of excution id
  */
@@ -202,8 +185,13 @@ char* cutPwd(char *pwd) {
 }
 
 int prepare() {
-
-	getConf(pwd);
+	char *confFile = malloc(strlen(pwd) + strlen("..") + strlen("mf_config.ini") + 3);
+	if (confFile == NULL) {
+		fprintf(stderr, "prepare() failed: cannot allocate memory for fullpath");
+		return 0;
+	}
+	sprintf(confFile, "%s/%s/%s", pwd, "..", "mf_config.ini");
+	fprintf(logFile, "confFile is: %s \n", confFile);
 	readConf(confFile);
 
 	char timeArr[80];
@@ -280,8 +268,6 @@ int writeTmpPID(void) {
  * @brief everything starts here
  */
 int main(int argc, const char* argv[]) {
-
-	confFile = malloc(300 * sizeof(char));
 	char *buf = malloc(300 * sizeof(char));
 	memset(buf, '\0', 300 * sizeof(char));
 
@@ -334,5 +320,8 @@ int main(int argc, const char* argv[]) {
 	fprintf(logFile, "Program terminated regularly!\n");
 	fclose(logFile);
 	unlink(name);
+
+	free(confFile);
+
 	exit(EXIT_SUCCESS);
 }
