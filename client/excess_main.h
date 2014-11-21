@@ -64,10 +64,5 @@ int readConf(const char *confFile);
  */
 int getConf(const char *argv);
 
-/**
- * @brief initialises the library
- */
-
- int initialise();
 
 #endif /* EXCESS_MAIN_H_ */

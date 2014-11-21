@@ -276,23 +276,6 @@ int writeTmpPID(void) {
 	return 1;
 }
 
-int initialise(char *confFile) {
-	char *buf = malloc(300 * sizeof(char));
-	memset(buf, '\0', 300 * sizeof(char));
-
-	readlink("/proc/self/exe", buf, 200); // obtain full path of executable
-
-	pwd = malloc(300 * sizeof(char));
-	memset(pwd, '\0', 300 * sizeof(char));
-	memcpy(pwd, buf, strlen(buf) * sizeof(char));
-
-	pwd = cutPwd(pwd);
-	createLogFile();
-	readConf(confFile);
-
-	return 1;
-}
-
 /**
  * @brief everything starts here
  */
