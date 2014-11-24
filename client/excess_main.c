@@ -16,88 +16,23 @@
 #include "thread_handler.h"
 #include "excess_main.h"
 
-char *confFile;
 
-long timings[256];
+// configuration file
+char *confFile;
+config_generic conf_generic;
+config_timings conf_timings;
+
 /**
  * @brief timestamp for config file
  */
 struct timespec timeStampFile = { 0, 0 };
 
-char addr[100] = "http://localhost:3000/executions";
 int hostChanged = 0;
 
 char *pwd;
 struct tm *time_info;
 FILE *logFile;
 char name[300];
-
-int readConf(const char *confFile) {
-
-//	int iter;
-	struct stat st;
-
-	stat(confFile, &st);
-	if (st.st_ctim.tv_sec > timeStampFile.tv_sec) {
-		if (timeStampFile.tv_sec > 0) {
-			fprintf(stderr, "\nConf file changed, read again!\n");
-			fprintf(logFile, "\nConf file changed, read again!\n");
-		}
-
-		FILE *fp;
-		char line[200];
-		fp = fopen(confFile, "r");
-		timeStampFile = st.st_ctim;
-		if (!fp) {
-			fprintf(stderr, "File not found!\n%s\n using default values\n",
-					confFile);
-			fprintf(logFile, "File not found!\n%s\n using default values\n",
-					confFile);
-			for (int i = 2; i < 256; i++)
-				timings[i] = 1000000000;
-			timings[0] = 0;
-			timings[1] = 30;
-			return 1;
-		}
-		while (fgets(line, 200, fp) != NULL ) {
-			char *pos;
-			if ((pos = strstr(line, "#"))) {
-				continue;
-			}
-			if ((pos = strstr(line, "host: "))) {
-				if (hostChanged)
-					continue;
-				char helpAddr[300] = { "" };
-				sprintf(helpAddr, "%s", pos + strlen("host: "));
-				strncpy(addr, helpAddr, strlen(helpAddr) - 1);
-				continue;
-			}
-			if ((pos = strstr(line, "timing_"))) {
-				int numTim = atoi(pos + strlen("timing_"));
-				int tempTim = atoi(pos + strlen("timing_") + 2);
-				timings[numTim + MIN_THREADS] = tempTim;
-				fprintf(stderr, "timing no %d is: %ld \n", numTim + MIN_THREADS,
-						timings[numTim + MIN_THREADS]);
-				fprintf(logFile, "timing no %d is: %ld \n",
-						numTim + MIN_THREADS, timings[numTim + MIN_THREADS]);
-				continue;
-			}
-			if ((pos = strstr(line, "timingSend"))) {
-				timings[0] = atoi(pos + strlen("timingSend") + 1);
-				continue;
-			}
-			if ((pos = strstr(line, "timingCheck"))) {
-				timings[1] = atoi(pos + strlen("timingCheck") + 1);
-				continue;
-			}
-
-		}
-
-		fclose(fp);
-
-	}
-	return 1;
-}
 
 /**
  * @brief return and print length of excution id
@@ -185,14 +120,15 @@ char* cutPwd(char *pwd) {
 }
 
 static int prepare() {
-	char *confFile = malloc(strlen(pwd) + strlen("..") + strlen("mf_config.ini") + 3);
+	confFile = malloc(strlen(pwd) + strlen("..") + strlen("mf_config.ini") + 3);
 	if (confFile == NULL) {
 		fprintf(stderr, "prepare() failed: cannot allocate memory for fullpath");
 		return 0;
 	}
 	sprintf(confFile, "%s/%s/%s", pwd, "..", "mf_config.ini");
 	fprintf(logFile, "confFile is: %s \n", confFile);
-	readConf(confFile);
+	parse_generic(confFile, &conf_generic);
+	parse_timings(confFile, &conf_timings);
 
 	char timeArr[80];
 
@@ -205,7 +141,7 @@ static int prepare() {
     char *username = getenv("USER");
     if (username == NULL) {
         username = malloc(sizeof(char) * 12);
-        username = "default";
+        strcpy(username, "default");
     }
     const char *description = "default start of the mf agent for testing";
 
@@ -218,11 +154,12 @@ static int prepare() {
 
 	/* init curl libs */
 	init_curl();
-	strcpy(str, get_execution_id(addr, msg)); /* get the execution ID */
-	strcat(addr, str);
-	
+
+	strcpy(str, get_execution_id(conf_generic.server, msg)); /* get the execution ID */
+	strcat(conf_generic.server, str);
+
 	free(hostname);
-	
+
 	return 1;
 }
 
@@ -298,7 +235,7 @@ int main(int argc, const char* argv[]) {
 				strcpy(execID_, pos + strlen("-id="));
 			}
 			if ((pos = strstr(argv[iter], "-hostname="))) {
-				strcpy(addr, pos + strlen("-hostname="));
+				strcpy(conf_generic.server, pos + strlen("-hostname=")); // FIXME
 				hostChanged = 1;
 			}
 			if ((pos = strstr(argv[iter], "-h"))

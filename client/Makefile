@@ -50,11 +50,11 @@ lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
 
 ## main part
 excess_main : excess_main.o thread_handler.o util.o plugin_discover.o \
-		plugin_manager.o
+		plugin_manager.o ini_parser.o ini.o
 		$(CC) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
 excess_main_lib: excess_main.o thread_handler.o util.o plugin_discover.o \
-		plugin_manager.o
+		plugin_manager.o ini_parser.o ini.o
 		$(CC) -shared -o libagent.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
 #

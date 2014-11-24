@@ -45,10 +45,6 @@ int gatherMetric(int num);
  * @brief pop from queue and send data, hook for sending thread
  */
 int startSending();
-/**
- *
- */
-
 
 /**
  * @brief prepare for sending data

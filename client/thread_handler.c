@@ -21,6 +21,7 @@
 
 int running;
 
+
 static PluginManager *pm;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -116,7 +117,6 @@ int startThreads() {
 void *entryThreads(void *arg) {
 
 	int *typeT = (int*) arg;
-
 	switch (*typeT) {
 	case 0:
 		startSending();
@@ -138,7 +138,7 @@ int startSending() {
 	void *ptr;
 
 	while (running) {
-		sleep(timings[0]);
+		sleep(conf_timings.update_interval);
 
 		status = apr_queue_pop(data_queue, &ptr);
 		if (status == APR_SUCCESS) {
@@ -178,7 +178,7 @@ void removeSpace(char *str) {
 	do
 		while (*p2 == ' ')
 			p2++;
-	while (*p1++ = *p2++);
+	while ( (*p1++ = *p2++) );
 }
 char* queryRangeFromDB(const char *URL, const char *id, long double t0,
 		long double t1) {
@@ -349,7 +349,7 @@ int prepSend(metric data) {
 	hostname[strlen(hostname) - 1] = '\0';
 
 	sprintf(msg, "{\"Timestamp\":%.9Lf,\"hostname\":\"%s\"%s}", timeStamp, hostname, data->msg);
-	send_monitoring_data(addr, msg);
+	send_monitoring_data(conf_generic.server, msg);
 	free(data);
 	free(hostname);
 
@@ -362,18 +362,18 @@ int gatherMetric(int num) {
 //	startStop(name, START);
 	struct timespec tim = { 0, 0 };
 	struct timespec tim2;
-	if (timings[num] >= 10e8) {
-		tim.tv_sec = timings[num] / 10e8;
-		tim.tv_nsec = timings[num] % (long) 10e8;
+	if (conf_timings.timings[num] >= 10e8) {
+		tim.tv_sec = conf_timings.timings[num] / 10e8;
+		tim.tv_nsec = conf_timings.timings[num] % (long) 10e8;
 	} else {
 		tim.tv_sec = 0;
-		tim.tv_nsec = timings[num];
+		tim.tv_nsec = conf_timings.timings[num];
 	}
 
 	apr_status_t status;
 	PluginHook hook = PluginManager_get_hook(pm);
-	fprintf(stderr, "with timing: %ld ns\n", timings[num]);
-	fprintf(logFile, "with timing: %ld ns\n", timings[num]);
+	fprintf(stderr,  "with timing: %lld ns\n", conf_timings.timings[num]);
+	fprintf(logFile, "with timing: %lld ns\n", conf_timings.timings[num]);
 	metric resMetric = malloc(sizeof(metric_t));
 
 	while (running) {
@@ -412,8 +412,8 @@ void cleanup_curl() {
 
 int checkConf() {
 	while (running) {
-		readConf(confFile);
-		sleep(timings[1]);
+		parse_timings(confFile, &conf_timings);
+		sleep(conf_timings.update_config);
 	}
 	return 1;
 }

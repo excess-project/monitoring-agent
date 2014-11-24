@@ -11,6 +11,8 @@
 #include <time.h>
 #include <stdio.h>
 
+#include "ini_parser.h"
+
 int NUM_THREADS;
 
 /** @brief Array containing the timings of the plugins.
@@ -38,17 +40,16 @@ extern char *confFile;
  */
 extern FILE *logFile;
 
+extern config_generic conf_generic;
+extern config_timings conf_timings;
+
+
 /** @brief function printing information about the tool
  *
  * TODO has to be finished
  *
  */
 int printHelp();
-
-/**
- * @brief reads the config file
- */
-int readConf(const char *confFile);
 
 
 #endif /* EXCESS_MAIN_H_ */

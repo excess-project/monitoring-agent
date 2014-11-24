@@ -2,40 +2,43 @@
 #define INI_PARSER_H_
 
 typedef struct {
-    const char* hostname;
-    const char* update_interval;
-    const char* update_config;
-} generic;
+    char* server;
+} config_generic;
 
 typedef struct {
-    const char* default_timing;
-    const char* papi;
-    const char* rapl;
-    const char* likwid;
-    const char* mem_info;
-    const char* hw_power;
-} timings;
+    long default_timing;
+    long update_interval;
+    long update_config;
+    long papi;
+    long rapl;
+    long likwid;
+    long mem_info;
+    long hw_power;
+    // FIXME: just for compatibility (likely to be removed)
+    long long timings[256];
+    int num_plugins;
+} config_timings;
 
 typedef struct {
-    const char* papi;
-    const char* rapl;
-    const char* likwid;
-    const char* mem_info;
-    const char* hw_power;
-} plugins;
+    char* papi;
+    char* rapl;
+    char* likwid;
+    char* mem_info;
+    char* hw_power;
+} config_plugins;
 
 typedef struct {
-    const char* name;
-    const char* events[256];
+    char* name;
+    char* events[256];
     int size;
-} plugin;
+} config_plugin;
 
-int parse_generic(const char* filename, generic *config);
+int parse_generic(const char* filename, config_generic *config);
 
-int parse_timings(const char* filename, timings *config);
+int parse_timings(const char* filename, config_timings *config);
 
-int parse_plugins(const char* filename, plugins *config);
+int parse_plugins(const char* filename, config_plugins *config);
 
-int parse_plugin(const char* filename, const char* plugin_name, plugin *config);
+int parse_plugin(const char* filename, char* plugin_name, config_plugin *config);
 
 #endif
