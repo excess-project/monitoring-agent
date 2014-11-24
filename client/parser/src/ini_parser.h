@@ -39,6 +39,6 @@ int parse_timings(const char* filename, config_timings *config);
 
 int parse_plugins(const char* filename, config_plugins *config);
 
-int parse_plugin(const char* filename, char* plugin_name, config_plugin *config);
+int parse_plugin(const char* filename, const char* plugin_name, config_plugin *config);
 
 #endif
