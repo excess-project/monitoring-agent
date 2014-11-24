@@ -1,0 +1,26 @@
+CC = /usr/bin/gcc 
+
+COPT_SO = $(CFLAGS) -fpic
+
+CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
+-Wcast-align -O0 -ggdb
+
+LFLAGS =  -lm
+
+all: clean-all libparser.a
+
+ini_parser.o:
+		$(CC) -c src/ini_parser.c libs/ini/ini.c -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+
+libparser.a:	ini_parser.o ini.o
+		ar rcs $@ $^
+
+clean:
+	rm -rf core *.o
+
+clean-all:
+	rm -rf core *.o *.a
+
+doc: $(FILES)
+	doxygen Doxyfile
+

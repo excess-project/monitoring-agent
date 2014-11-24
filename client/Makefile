@@ -13,9 +13,9 @@ PLUGIN_DEST = ../binaries/plugins
 OUTPUT = ../binaries/mf_agent
 
 CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb -pthread -D_LARGEFILE64_SOURCE $(PAPI_INC) $(APR_INC) $(CURL_INC) $(LIKWID_INC)
+-Wcast-align -O0 -ggdb -pthread -D_LARGEFILE64_SOURCE $(PAPI_INC) $(APR_INC) $(CURL_INC) $(LIKWID_INC) $(PARSER_INC)
 
-LFLAGS =  -lm $(CURL) $(PAPI) $(APR) $(LIKWID)
+LFLAGS =  -lm $(CURL) $(PAPI) $(APR) $(LIKWID) $(PARSER)
 
 ## List of source files
 
@@ -26,6 +26,10 @@ HEADER  = $(shell find . -name "*.h")
 ## NOTE: below is used to include boost libraries
 CURL = -L../binaries/curl/lib/ -lcurl
 CURL_INC = -I../binaries/curl/include/
+
+# MF modules
+PARSER = -Lparser/ -lparser
+PARSER_INC = -Iparser/src/
 
 PAPI = -L../binaries/papi/lib/
 PAPI_INC =  -I../binaries/papi/include/
@@ -50,11 +54,11 @@ lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
 
 ## main part
 excess_main : excess_main.o thread_handler.o util.o plugin_discover.o \
-		plugin_manager.o ini_parser.o ini.o
+		plugin_manager.o
 		$(CC) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
 excess_main_lib: excess_main.o thread_handler.o util.o plugin_discover.o \
-		plugin_manager.o ini_parser.o ini.o
+		plugin_manager.o
 		$(CC) -shared -o libagent.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
 #
@@ -71,12 +75,12 @@ $(PLUGIN_DIR)/mem_info.o: $(PLUGIN_DIR)/mem_info.c $(HEADER)
 # papi
 $(PLUGIN_DIR)/papi.so: $(PLUGIN_DIR)/parser.o $(PLUGIN_DIR)/papi_plugin.o $(PLUGIN_DIR)/papi.o
 	$(CC) -o $(PLUGIN_DEST)/papi.so $^ -shared ../binaries/papi/lib/libpapi.so
-
+ 
 $(PLUGIN_DIR)/parser.o: $(PLUGIN_DIR)/parser.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO)
 
 $(PLUGIN_DIR)/papi_plugin.o: $(PLUGIN_DIR)/papi_plugin.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi	
+	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi
 
 $(PLUGIN_DIR)/papi.o: $(PLUGIN_DIR)/papi.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi
