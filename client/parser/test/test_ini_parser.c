@@ -31,14 +31,15 @@ void Test_parse_timings(CuTest *tc)
 
 void Test_parse_plugins(CuTest *tc)
 {
-    config_plugins config;
-    int retval = parse_plugins("config.ini", &config);
+    int retval = parse_plugins("config.ini");
     CuAssertTrue(tc, retval);
-    CuAssertStrEquals(tc, "off", config.papi);
-    CuAssertStrEquals(tc, "off", config.rapl);
-    CuAssertStrEquals(tc, "off", config.likwid);
-    CuAssertStrEquals(tc, "on" , config.mem_info);
-    CuAssertStrEquals(tc, "off", config.hw_power);
+    CuAssertTrue(tc, num_plugins());
+    CuAssertTrue(tc, num_active_plugins());
+    CuAssertTrue(tc,  is_enabled("mem_info"));
+    CuAssertTrue(tc, !is_enabled("papi"));
+    CuAssertTrue(tc, !is_enabled("rapl"));
+    CuAssertTrue(tc, !is_enabled("likwid"));
+    CuAssertTrue(tc, !is_enabled("hw_power"));
 }
 
 void Test_parse_papi(CuTest *tc)

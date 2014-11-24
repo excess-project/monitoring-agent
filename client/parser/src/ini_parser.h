@@ -1,6 +1,9 @@
 #ifndef INI_PARSER_H_
 #define INI_PARSER_H_
 
+#include <apr.h>
+#include <apr_hash.h>
+
 typedef struct {
     char* server;
 } config_generic;
@@ -20,15 +23,7 @@ typedef struct {
 } config_timings;
 
 typedef struct {
-    char* papi;
-    char* rapl;
-    char* likwid;
-    char* mem_info;
-    char* hw_power;
-} config_plugins;
-
-typedef struct {
-    char* name;
+    char name[256];
     char* events[256];
     int size;
 } config_plugin;
@@ -37,8 +32,16 @@ int parse_generic(const char* filename, config_generic *config);
 
 int parse_timings(const char* filename, config_timings *config);
 
-int parse_plugins(const char* filename, config_plugins *config);
+int parse_plugins(const char* filename);
 
 int parse_plugin(const char* filename, const char* plugin_name, config_plugin *config);
+
+
+int is_enabled(const char* plugin_name);
+void get_plugins(char** plugins);
+int num_plugins();
+int num_active_plugins();
+
+
 
 #endif
