@@ -6,10 +6,10 @@ LFLAGS = -lm $(APR)
 SRC = ../src
 LIBS = ../libs
 INI = $(LIBS)/ini
-COMMON_LIBS = ../../libs
+COMMON_LIBS = ../../../libs
 CUTEST = $(COMMON_LIBS)/CuTest
 
-BINARIES = ../../../binaries
+BINARIES = ../../../../binaries
 APR_CONFIG = $(BINARIES)/apr/bin/apr-1-config
 APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)

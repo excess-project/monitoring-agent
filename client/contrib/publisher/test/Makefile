@@ -3,11 +3,11 @@ CC = /usr/bin/gcc
 CFLAGS = -std=gnu99 -pedantic -Wall $(CURL_INC)
 LFLAGS = -lm $(CURL)
 
-COMMON_LIBS = ../../libs
+COMMON_LIBS = ../../../libs
 CUTEST = $(COMMON_LIBS)/CuTest
 
 SRC = ../src
-BINARIES = ../../../binaries
+BINARIES = ../../../../binaries
 CURL = -L$(BINARIES)/curl/lib/ -lcurl
 CURL_INC = -I$(BINARIES)/curl/include/
 

@@ -29,11 +29,11 @@ HEADER  = $(shell find . -name "*.h")
 
 
 ## Internal Libraries
-PARSER = -Lparser/ -lparser
-PARSER_INC = -Iparser/src/
+PARSER = -Lcontrib/parser/ -lparser
+PARSER_INC = -Icontrib/parser/src/
 
-PUBLISHER = -Lpublisher/ -Lpublisher
-PULISHER_INC = -Ipublisher/src/
+PUBLISHER = -Lcontrib/publisher/ -Lpublisher
+PULISHER_INC = -Icontrib/publisher/src/
 
 
 ## External Libraries

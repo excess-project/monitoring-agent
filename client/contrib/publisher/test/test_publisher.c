@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../../libs/CuTest/CuTest.h"
+#include "../../../libs/CuTest/CuTest.h"
 #include "../src/publisher.h"
 
 static const char *SERVER = "http://141.58.0.8:3000/executions";

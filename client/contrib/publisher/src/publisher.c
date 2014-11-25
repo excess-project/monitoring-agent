@@ -1,7 +1,7 @@
 #include <curl/curl.h>
 #include <string.h>
 
-#include "../../debug.h"
+#include "../../../debug.h"
 #include "publisher.h"
 
 static CURL *curl;

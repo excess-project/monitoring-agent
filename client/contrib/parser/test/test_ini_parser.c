@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../../libs/CuTest/CuTest.h"
+#include "../../../libs/CuTest/CuTest.h"
 #include "../src/ini_parser.h"
 
 

@@ -7,8 +7,8 @@ CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
 
 LFLAGS =  -lm $(CURL)
 
-CURL = -L../../binaries/curl/lib/ -lcurl
-CURL_INC = -I../../binaries/curl/include/
+CURL = -L../../../binaries/curl/lib/ -lcurl
+CURL_INC = -I../../../binaries/curl/include/
 
 all: clean-all libpublisher.a
 
