@@ -11,6 +11,8 @@
 #include <time.h>
 #include <signal.h>
 
+#include <publisher.h>
+
 #include "excess_main.h"
 #include "thread_handler.h"
 
@@ -25,36 +27,14 @@ int running;
 static PluginManager *pm;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
 pthread_t threads[256];
 
 char execID_[ID_SIZE] = ""; /* storing the execution ID -- UUID is 36 chars */
-struct curl_slist *headers_ = NULL;
-CURL *curl_ = NULL;
 
 void catcher(int signo) {
 	running = 0;
 	printf("\nSignal %d catched\n", signo);
 
-}
-
-int startStop(const char *fnctName, int flag) {
-	metric resMetric = malloc(sizeof(metric_t));
-
-	resMetric->msg = malloc(100 * sizeof(char));
-
-	int clk_id = CLOCK_REALTIME;
-	clock_gettime(clk_id, &resMetric->timestamp);
-
-//	&resMetric->timestamp=
-
-	sprintf(resMetric->msg, ",\"name\":\"%s\",\"status\":\"%d\"", fnctName,
-			flag);
-
-	prepSend(resMetric);
-//	free(resMetric->msg);
-//	free(resMetric);
-	return 1;
 }
 
 int startThreads() {
@@ -105,7 +85,7 @@ int startThreads() {
 //	metric returnMetric = PluginManager_apply_hook(pm);
 
 	cleanup_plugins(pdstate);
-	cleanup_curl();
+	shutdown_curl();
 	PluginManager_free(pm);
 	apr_queue_term(data_queue);
 	apr_pool_destroy(data_pool);
@@ -180,164 +160,7 @@ void removeSpace(char *str) {
 			p2++;
 	while ( (*p1++ = *p2++) );
 }
-char* queryRangeFromDB(const char *URL, const char *id, long double t0,
-		long double t1) {
 
-	char data[300] = { '\0' };
-	char *response = malloc(100000 * sizeof(char));
-	memset(response, 100000, '\0');
-	sprintf(data, "%s/executions/%s/%.9Lf/%.9Lf", URL, id, t0, t1);
-
-	CURLcode res;
-	int result = SEND_SUCCESS;
-
-	/* perform some error checking */
-	if (URL == NULL || strlen(URL) == 0) {
-		fprintf(stderr,
-				"send_monitoring_data(): Error - the given url is empty.\n");
-		fprintf(logFile,
-				"send_monitoring_data(): Error - the given url is empty.\n");
-		return SEND_FAILED;
-	}
-
-	if (curl_ == NULL ) {
-		init_curl();
-	}
-
-	printf("curl -X GET %s -- len: %d\n", data, (int) strlen(data));
-	printf("Msg = %s -- len: %d\n", data, (int) strlen(data));
-
-	curl_easy_setopt(curl_, CURLOPT_URL, data);
-	curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers_);
-	curl_easy_setopt(curl_, CURLOPT_NOPROGRESS, 1L);
-
-	curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, write_data);
-	curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
-
-	res = curl_easy_perform(curl_);
-
-	/* Check for errors */
-	if (res != CURLE_OK) {
-		result = SEND_FAILED;
-		fprintf(stderr, "send_monitoring_data() failed: %s\n",
-				curl_easy_strerror(res));
-		fprintf(logFile, "send_monitoring_data() failed: %s\n",
-				curl_easy_strerror(res));
-
-	}
-
-	curl_easy_reset(curl_);
-	if (result != SEND_SUCCESS) {
-		return NULL ;
-	}
-
-	// lets trim the result
-	for (int ind = 0; ind < strlen(response); ind++)
-		if (response[ind] == '\n')
-			response[ind] = ' ';
-	removeSpace(response);
-	return response;
-}
-
-char* querySpecificStatFromDB(const char *URL, const char *id, long double t0,
-		long double t1, char *metric) {
-
-	char data[300] = { '\0' };
-	char *response = malloc(100000 * sizeof(char));
-	memset(response, 100000, '\0');
-	sprintf(data, "%s/execution/stats/%s/%s/%.9Lf/%.9Lf", URL, id, metric, t0, t1);
-
-	CURLcode res;
-	int result = SEND_SUCCESS;
-
-	/* perform some error checking */
-	if (URL == NULL || strlen(URL) == 0) {
-		fprintf(stderr,
-				"send_monitoring_data(): Error - the given url is empty.\n");
-		fprintf(logFile,
-				"send_monitoring_data(): Error - the given url is empty.\n");
-		return SEND_FAILED;
-	}
-
-	if (curl_ == NULL ) {
-		init_curl();
-	}
-
-	printf("curl -X GET %s -- len: %d\n", data, (int) strlen(data));
-	printf("Msg = %s -- len: %d\n", data, (int) strlen(data));
-
-	curl_easy_setopt(curl_, CURLOPT_URL, data);
-	curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers_);
-	curl_easy_setopt(curl_, CURLOPT_NOPROGRESS, 1L);
-
-	curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, write_data);
-	curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
-
-	res = curl_easy_perform(curl_);
-
-	/* Check for errors */
-	if (res != CURLE_OK) {
-		result = SEND_FAILED;
-		fprintf(stderr, "send_monitoring_data() failed: %s\n",
-				curl_easy_strerror(res));
-		fprintf(logFile, "send_monitoring_data() failed: %s\n",
-				curl_easy_strerror(res));
-
-	}
-
-	curl_easy_reset(curl_);
-	if (result != SEND_SUCCESS) {
-		return NULL ;
-	}
-
-	// lets trim the result
-	for (int ind = 0; ind < strlen(response); ind++)
-		if (response[ind] == '\n')
-			response[ind] = ' ';
-	removeSpace(response);
-	return response;
-}
-
-int send_monitoring_data(char *URL, char *data) {
-	CURLcode res;
-	int result = SEND_SUCCESS;
-
-	/* perform some error checking */
-	if (URL == NULL || strlen(URL) == 0) {
-		fprintf(stderr,
-				"send_monitoring_data(): Error - the given url is empty.\n");
-		fprintf(logFile,
-				"send_monitoring_data(): Error - the given url is empty.\n");
-		return SEND_FAILED;
-	}
-
-	if (curl_ == NULL ) {
-		init_curl();
-	}
-
-	printf("curl -X POST %s -- len: %d\n", URL, (int) strlen(URL));
-	printf("Msg = %s -- len: %d\n", data, (int) strlen(data));
-
-	curl_easy_setopt(curl_, CURLOPT_URL, URL);
-	curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers_);
-	curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, data);
-	curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, (long ) strlen(data));
-
-	res = curl_easy_perform(curl_);
-
-	/* Check for errors */
-	if (res != CURLE_OK) {
-		result = SEND_FAILED;
-		fprintf(stderr, "send_monitoring_data() failed: %s\n",
-				curl_easy_strerror(res));
-		fprintf(logFile, "send_monitoring_data() failed: %s\n",
-				curl_easy_strerror(res));
-
-	}
-
-	curl_easy_reset(curl_);
-	return result;
-}
 int prepSend(metric data) {
 
 	char msg[4096] = "";
@@ -349,7 +172,7 @@ int prepSend(metric data) {
 	hostname[strlen(hostname) - 1] = '\0';
 
 	sprintf(msg, "{\"Timestamp\":%.9Lf,\"hostname\":\"%s\"%s}", timeStamp, hostname, data->msg);
-	send_monitoring_data(conf_generic.server, msg);
+	publish_json(conf_generic.server, msg);
 	free(data);
 	free(hostname);
 
@@ -387,27 +210,10 @@ int gatherMetric(int num) {
 	}
 	hook(); // call when terminating programm, enables cleanup of plugins
 	free(resMetric);
-	startStop(name, STOP);
+	
+	//startStop(name, STOP);
+
 	return 1;
-}
-
-void init_curl() {
-	if (curl_ != NULL ) {
-		return;
-	}
-
-	curl_global_init(CURL_GLOBAL_ALL);
-	curl_ = curl_easy_init();
-
-	headers_ = curl_slist_append(headers_, "Accept: application/json");
-	headers_ = curl_slist_append(headers_, "Content-Type: application/json");
-	headers_ = curl_slist_append(headers_, "charsets: utf-8");
-}
-
-void cleanup_curl() {
-	curl_easy_cleanup(curl_);
-	curl_slist_free_all(headers_); /* free the header list */
-	curl_global_cleanup();
 }
 
 int checkConf() {
