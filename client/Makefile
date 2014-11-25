@@ -53,13 +53,16 @@ APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
 
 ## to use, type: make or make all
-all: excess_main $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/papi.so $(PLUGIN_DIR)/rapl.so $(PLUGIN_DIR)/likwid.so
+all: prepare excess_main $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/papi.so $(PLUGIN_DIR)/rapl.so $(PLUGIN_DIR)/likwid.so
 
 lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
 
 %.o: %.c $(HEADER)
 		$(CC) -c $< $(CFLAGS) -fpic
 
+prepare:
+	$(MAKE) -C contrib/parser
+	$(MAKE) -C contrib/publisher
 
 ## main part
 excess_main : excess_main.o thread_handler.o util.o plugin_discover.o \
@@ -113,6 +116,8 @@ $(PLUGIN_DIR)/likwid.o: $(PLUGIN_DIR)/likwid.c $(HEADER)
 
 clean:
 	rm -rf core *.o *.a $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so
+	$(MAKE) -C contrib/parser clean
+	$(MAKE) -C contrib/publisher clean
 
 ## to generate the javadoc files
 ## to use, type: make doc
