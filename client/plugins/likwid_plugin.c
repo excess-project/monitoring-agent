@@ -8,8 +8,6 @@
 #include <numa.h>
 #include <msr.h>
 
-#include "../excess_main.h"
-
 int MAX_NUM_NODES = 4;
 
 int is_supported()
