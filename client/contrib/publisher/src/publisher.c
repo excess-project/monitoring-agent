@@ -72,8 +72,8 @@ static int prepare_publish(const char *URL, char *message)
 	#ifdef DEBUG
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
     #endif
-
-    return 1;
+    
+    return 1;    
 }
 
 int publish_json(const char *URL, char *message)
@@ -110,7 +110,7 @@ int publish(const char *URL, Message *messages)
 }
 
 char* get_execution_id(const char *URL, char *message)
-{    
+{
     if (execution_id != NULL && strlen(execution_id) == 22) {
 		return execution_id;
 	}

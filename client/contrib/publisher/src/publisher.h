@@ -27,6 +27,4 @@ int publish_json(const char *URL, char *message);
 
 void shutdown_curl(); // FIXME: CURL should be hidden
 
-
-
 #endif
