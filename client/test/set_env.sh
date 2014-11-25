@@ -1,0 +1,11 @@
+#!/bin/bash
+PWD=`pwd`
+
+TOP_PATH=../../binaries
+PAPI=$TOP_PATH/papi/lib
+LIKWID=$TOP_PATH/likwid/lib
+
+OLD_PATH=$LD_LIBRARY_PATH
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD/$PAPI
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD/$LIKWID

@@ -6,7 +6,7 @@
 #include <papi.h>
 #include <ctype.h>
 
-#include "CuTest.h"
+#include "../libs/CuTest/CuTest.h"
 #include "../plugins/papi_plugin.h"
 
 void TestPAPI_get_named_events(CuTest *tc)

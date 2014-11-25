@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-#include "CuTest.h"
+#include "../libs/CuTest/CuTest.h"
 #include "../plugins/likwid_plugin.h"
 
 /* tests for EXCESS testbed at 141.58.0.8 */

@@ -6,9 +6,8 @@
 #include <papi.h>
 #include <ctype.h>
 
-#include "CuTest.h"
+#include "../libs/CuTest/CuTest.h"
 #include "../plugins/rapl_plugin.h"
-
 
 void TestRAPL_get_available_events(CuTest *tc)
 {
