@@ -89,30 +89,30 @@ $(PLUGIN_DIR)/papi.so: $(PLUGIN_DIR)/papi_plugin.o $(PLUGIN_DIR)/papi.o
 	$(CC) -o $(PLUGIN_DEST)/papi.so $^ -shared ../binaries/papi/lib/libpapi.so
 
 $(PLUGIN_DIR)/papi_plugin.o: $(PLUGIN_DIR)/papi_plugin.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
 
 $(PLUGIN_DIR)/papi.o: $(PLUGIN_DIR)/papi.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
 
 # rapl
 $(PLUGIN_DIR)/rapl.so: $(PLUGIN_DIR)/rapl_plugin.o $(PLUGIN_DIR)/rapl.o
 	$(CC) -o $(PLUGIN_DEST)/rapl.so $^ -shared ../binaries/papi/lib/libpapi.so
 
 $(PLUGIN_DIR)/rapl_plugin.o: $(PLUGIN_DIR)/rapl_plugin.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi	
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi	
 
 $(PLUGIN_DIR)/rapl.o: $(PLUGIN_DIR)/rapl.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(PAPI) -lpapi
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
 
 # likwid
 $(PLUGIN_DIR)/likwid.so: $(PLUGIN_DIR)/likwid_plugin.o $(PLUGIN_DIR)/likwid.o
 	$(CC) -o $(PLUGIN_DEST)/likwid.so $^ -shared ../binaries/likwid/lib/liblikwid.so
 
 $(PLUGIN_DIR)/likwid_plugin.o: $(PLUGIN_DIR)/likwid_plugin.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(LIKWID) -llikwid -lm -lpthread	
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID) -llikwid -lm -lpthread	
 
 $(PLUGIN_DIR)/likwid.o: $(PLUGIN_DIR)/likwid.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. -L$(LIKWID) -llikwid -lm -lpthread
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID) -llikwid -lm -lpthread
 
 clean:
 	rm -rf core *.o *.a $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so
