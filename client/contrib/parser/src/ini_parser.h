@@ -1,9 +1,6 @@
 #ifndef INI_PARSER_H_
 #define INI_PARSER_H_
 
-#include <apr.h>
-#include <apr_hash.h>
-
 typedef struct {
     char* server;
 } config_generic;

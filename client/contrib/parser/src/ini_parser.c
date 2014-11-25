@@ -1,6 +1,8 @@
-#include <stdlib.h>
+#include <apr.h>
+#include <apr_hash.h>
 #include <apr_strings.h>
 #include <apr_general.h>
+#include <stdlib.h>
 
 #include "../libs/ini/ini.h"
 #include "../../../debug.h"
