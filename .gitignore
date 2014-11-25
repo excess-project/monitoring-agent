@@ -21,3 +21,6 @@
 /inih_r29.zip
 /.project
 /client/parser/libparser.a
+/client/parser/test/test
+/client/publisher/libpublisher.a
+/client/publisher/test/test

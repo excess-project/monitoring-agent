@@ -1,7 +1,7 @@
 #include <curl/curl.h>
 #include <string.h>
 
-#include "debug.h"
+#include "../../debug.h"
 #include "publisher.h"
 
 static CURL *curl;
@@ -43,7 +43,7 @@ static size_t get_stream_data(void *buffer, size_t size, size_t nmemb, void *str
 static int check_URL(const char *URL)
 {
     if (URL == NULL || *URL == '\0') {
-        char *error_msg = "URL not set.";
+        const char *error_msg = "URL not set.";
 		log_error("publish(const char*, Message) %s", error_msg);
 		return 0;
 	}
@@ -53,7 +53,7 @@ static int check_URL(const char *URL)
 static int check_message(char *message)
 {
 	if (message == NULL || *message == '\0') {
-	    char *error_msg = "message not set.";
+	    const char *error_msg = "message not set.";
 		log_error("publish(const char*, Message) %s", error_msg);
 		return 0;	    
 	}

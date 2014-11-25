@@ -9,39 +9,48 @@ COPT_SO = $(CFLAGS) -fpic
 
 PLUGIN_DIR = plugins
 PLUGIN_DEST = ../binaries/plugins
-#CC = gcc
 OUTPUT = ../binaries/mf_agent
 
 CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb -pthread -D_LARGEFILE64_SOURCE $(PAPI_INC) $(APR_INC) $(CURL_INC) $(LIKWID_INC) $(PARSER_INC)
+-Wcast-align -O0 -ggdb -pthread -D_LARGEFILE64_SOURCE \
+$(PAPI_INC) \
+$(APR_INC) \
+$(CURL_INC) \
+$(LIKWID_INC) \
+$(PARSER_INC) \
+$(PUBLISHER_INC) \
 
-LFLAGS =  -lm $(CURL) $(PAPI) $(APR) $(LIKWID) $(PARSER)
+LFLAGS =  -lm $(CURL) $(PAPI) $(APR) $(LIKWID) $(PARSER) $(PUBLISHER)
+
 
 ## List of source files
-
 FILES  = $(shell find . -name "*.c")
-
 HEADER  = $(shell find . -name "*.h")
 
-## NOTE: below is used to include boost libraries
-CURL = -L../binaries/curl/lib/ -lcurl
-CURL_INC = -I../binaries/curl/include/
 
-# MF modules
+## Internal Libraries
 PARSER = -Lparser/ -lparser
 PARSER_INC = -Iparser/src/
 
+PUBLISHER = -Lpublisher/ -Lpublisher
+PULISHER_INC = -Ipublisher/src/
+
+
+## External Libraries
+CURL = -L../binaries/curl/lib/ -lcurl
+CURL_INC = -I../binaries/curl/include/
+
 PAPI = -L../binaries/papi/lib/
 PAPI_INC =  -I../binaries/papi/include/
+
 LIKWID = -L../binaries/likwid/lib/
 LIKWID_INC = -I../binaries/likwid/include/likwid
 
 APR_CONFIG = ../binaries/apr/bin/apr-1-config
 APU_CONFIG = ../binaries/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
-#APR = -L ../binaries/apr/lib/ -lapr-1 -L ../binaries/apr/lib -laprutil-1
 APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
-#APR_INC = -I ../binaries/apr/include/apr-1
+
 
 ## to use, type: make or make all
 all: excess_main $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/papi.so $(PLUGIN_DIR)/rapl.so $(PLUGIN_DIR)/likwid.so
