@@ -58,7 +58,6 @@ static metric rapl_hook()
 
 extern int init_rapl(PluginManager *pm)
 {
-    PAPI_library_init(PAPI_VER_CURRENT);
     PluginManager_register_hook(pm, "RAPL", rapl_hook);
 
     return 1;

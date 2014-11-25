@@ -51,6 +51,7 @@ static metric papi_hook()
 
 extern int init_papi(PluginManager *pm)
 {
+    PAPI_library_init(PAPI_VER_CURRENT);
     parse_plugin(confFile, "papi", &conf_papi);
 
     PluginManager_register_hook(pm, "papi", papi_hook);
