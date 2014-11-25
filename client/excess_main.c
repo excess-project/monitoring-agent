@@ -94,9 +94,6 @@ static int prepare() {
 	    hostname, description, timeArr, username
 	);
 
-	/* init curl libs */
-	init_curl();
-
 	char *execution_id = get_execution_id(conf_generic.server, msg);
 	strcpy(str, execution_id);
 	strcat(conf_generic.server, str);
