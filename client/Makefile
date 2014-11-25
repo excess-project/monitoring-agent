@@ -18,7 +18,7 @@ $(APR_INC) \
 $(CURL_INC) \
 $(LIKWID_INC) \
 $(PARSER_INC) \
-$(PUBLISHER_INC) \
+$(PUBLISHER_INC)
 
 LFLAGS =  -lm $(CURL) $(PAPI) $(APR) $(LIKWID) $(PARSER) $(PUBLISHER)
 
@@ -32,8 +32,8 @@ HEADER  = $(shell find . -name "*.h")
 PARSER = -Lcontrib/parser/ -lparser
 PARSER_INC = -Icontrib/parser/src/
 
-PUBLISHER = -Lcontrib/publisher/ -Lpublisher
-PULISHER_INC = -Icontrib/publisher/src/
+PUBLISHER = -Lcontrib/publisher/ -lpublisher
+PUBLISHER_INC = -Icontrib/publisher/src/
 
 
 ## External Libraries
