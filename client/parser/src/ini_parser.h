@@ -36,10 +36,16 @@ int parse_plugins(const char* filename);
 
 int parse_plugin(const char* filename, const char* plugin_name, config_plugin *config);
 
+//------------------------------------------------------------------------------
+// PLUGIN CONFIGURATION
+//------------------------------------------------------------------------------
 
 int is_enabled(const char* plugin_name);
-void get_plugins(char** plugins);
+
+void read_plugins(char** plugins);
+
 int num_plugins();
+
 int num_active_plugins();
 
 

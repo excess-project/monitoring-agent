@@ -213,7 +213,7 @@ int is_enabled(const char* plugin_name)
 }
 
 
-void get_plugins(char** names)
+void read_plugins(char** names)
 {
     apr_hash_index_t *hi;
     for (hi = apr_hash_first(NULL, plugins); hi; hi = apr_hash_next(hi)) {
