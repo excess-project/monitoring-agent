@@ -16,6 +16,7 @@
 #include "thread_handler.h"
 #include "excess_main.h"
 
+#include <publisher.h>
 
 // configuration file
 char *confFile;
@@ -44,66 +45,7 @@ size_t get_stream_data(void *ptr, size_t size, size_t count, void *stream) {
 	memcpy(stream, ptr, total);
 	return total;
 }
-/**
- * @brief get execution id from server side or skip if already existent
- */
-char* get_execution_id(char *URL, char *msg) {
-	CURLcode res;
 
-	/* perform some error checking */
-	if (URL == NULL || strlen(URL) == 0) {
-		fprintf(stderr,
-				"get_execution_id(): Error - the given url is empty.\n");
-		fprintf(logFile,
-				"get_execution_id(): Error - the given url is empty.\n");
-		return NULL ;
-	}
-
-	if (msg == NULL || strlen(msg) == 0) {
-		fprintf(stderr,
-				"get_execution_id(): Error - empty message is going to be sent.\n");
-		fprintf(logFile,
-				"get_execution_id(): Error - empty message is going to be sent.\n");
-		return NULL ;
-	}
-
-	if (execID_ != NULL && strlen(execID_) > 0) {
-
-		return execID_;
-	}
-
-	if (curl_ == NULL ) {
-		init_curl();
-	}
-
-	printf("\nSending curl -X POST %s -- len: %d\n", URL, (int) strlen(URL));
-	printf("Msg = %s -- len: %d\n", msg, (int) strlen(msg));
-
-	curl_easy_setopt(curl_, CURLOPT_URL, URL);
-	curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers_);
-	curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, msg);
-	curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, (long ) strlen(msg));
-
-	/* get the execution ID from the stream data */
-	curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, get_stream_data);
-	curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &execID_);
-
-	res = curl_easy_perform(curl_);
-	printf("\n-- Execution ID: %s -- len: %d\n", execID_,
-			(int) strlen(execID_));
-
-	if (res != CURLE_OK) {
-		fprintf(stderr, "get_execution_id() failed: %s\n",
-				curl_easy_strerror(res));
-		fprintf(logFile, "get_execution_id() failed: %s\n",
-				curl_easy_strerror(res));
-		return NULL ;
-
-	}
-
-	curl_easy_reset(curl_);
-	return execID_;
-}
 /**
  * @brief extract path folder of executable from it's path
  */
@@ -155,7 +97,8 @@ static int prepare() {
 	/* init curl libs */
 	init_curl();
 
-	strcpy(str, get_execution_id(conf_generic.server, msg)); /* get the execution ID */
+	char *execution_id = get_execution_id(conf_generic.server, msg);
+	strcpy(str, execution_id);
 	strcat(conf_generic.server, str);
 
 	free(hostname);

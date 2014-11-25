@@ -11,7 +11,7 @@
 #include <time.h>
 #include <stdio.h>
 
-#include "ini_parser.h"
+#include <ini_parser.h>
 
 int NUM_THREADS;
 
