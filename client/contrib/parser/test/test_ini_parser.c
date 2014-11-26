@@ -11,24 +11,30 @@ void Test_parse(CuTest *tc)
     CuAssertTrue(tc, retval);
 }
 
+void Test_parse_non_existing_file(CuTest *tc)
+{
+    int retval = mfp_parse("not_existing.ini");
+    CuAssertTrue(tc, !retval);
+}
+
 void Test_get_section_value(CuTest *tc)
 {
     mfp_parse("config.ini");
-    char* server_name = mfp_get_value("generic", "server");
+    const char* server_name = mfp_get_value("generic", "server");
     CuAssertStrEquals(tc, "http://141.58.0.2:3000/executions/", server_name);
 }
 
 void Test_get_non_existing_section(CuTest *tc)
 {
     mfp_parse("config.ini");
-    char* lottery_numbers = mfp_get_value("lottery", "numbers");
+    const char* lottery_numbers = mfp_get_value("lottery", "numbers");
     CuAssertTrue(tc, (lottery_numbers == NULL || strlen(lottery_numbers) == 0));
 }
 
 void Test_get_non_existing_value(CuTest *tc)
 {
     mfp_parse("config.ini");
-    char* lottery_numbers = mfp_get_value("generic", "numbers");
+    const char* lottery_numbers = mfp_get_value("generic", "numbers");
     CuAssertTrue(tc, (lottery_numbers == NULL || strlen(lottery_numbers) == 0));
 }
 
@@ -79,12 +85,44 @@ void Test_keys_values_check_value_of_timings(CuTest *tc)
     free(data);
 }
 
+void Test_set_value_for_non_existing_section(CuTest *tc)
+{
+    mfp_data *data = malloc(sizeof(mfp_data));
+
+    mfp_set_value("new_section", "foo", "bar");
+    mfp_get_data("new_section", data);
+    CuAssertStrEquals(tc, "foo", data->keys[0]);
+    CuAssertStrEquals(tc, "bar", data->values[0]);
+
+    free(data);
+}
+
+void Test_set_value_for_existing_key(CuTest *tc)
+{
+    mfp_data *data = malloc(sizeof(mfp_data));
+
+    mfp_parse("config.ini");
+    const char* value = mfp_get_value("plugins", "papi");
+    CuAssertStrEquals(tc, "off", value);
+
+    mfp_set_value("plugins", "papi", "on");
+    value = mfp_get_value("plugins", "papi");
+    CuAssertStrEquals(tc, "on", value);
+
+    free(data);
+}
+
 CuSuite* CuGetSuite(void)
 {
     CuSuite* suite = CuSuiteNew();
 
     // mfp_parse
     SUITE_ADD_TEST(suite, Test_parse);
+    SUITE_ADD_TEST(suite, Test_parse_non_existing_file);
+
+    // mfp_set
+    SUITE_ADD_TEST(suite, Test_set_value_for_non_existing_section);
+    SUITE_ADD_TEST(suite, Test_set_value_for_existing_key);
 
     // mfp_get
     SUITE_ADD_TEST(suite, Test_get_section_value);
