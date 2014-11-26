@@ -5,68 +5,96 @@
 #include "../../../libs/CuTest/CuTest.h"
 #include "../src/ini_parser.h"
 
-
-void Test_parse_generic(CuTest *tc)
+void Test_parse(CuTest *tc)
 {
-    config_generic config;
-    int retval = parse_generic("config.ini", &config);
+    int retval = mfp_parse("config.ini");
     CuAssertTrue(tc, retval);
-    CuAssertStrEquals(tc, "http://141.58.0.2:3000/executions/", config.server);
 }
 
-void Test_parse_timings(CuTest *tc)
+void Test_get_section_value(CuTest *tc)
 {
-    config_timings config;
-    int retval = parse_timings("config.ini", &config);
-    CuAssertTrue(tc, retval);
-    CuAssertTrue(tc,  0 == config.update_interval);
-    CuAssertTrue(tc, 30 == config.update_config);
-    CuAssertTrue(tc, 1000000000 == config.default_timing);
-    CuAssertTrue(tc,  200000000 == config.papi);
-    CuAssertTrue(tc,  400000000 == config.rapl);
-    CuAssertTrue(tc, 1000000000 == config.likwid);
-    CuAssertTrue(tc,  300000000 == config.mem_info);
-    //CuAssertTrue(tc, 1000000000 == config.hw_power);
+    mfp_parse("config.ini");
+    char* server_name = mfp_get_value("generic", "server");
+    CuAssertStrEquals(tc, "http://141.58.0.2:3000/executions/", server_name);
 }
 
-void Test_parse_plugins(CuTest *tc)
+void Test_get_non_existing_section(CuTest *tc)
 {
-    int retval = parse_plugins("config.ini");
-    CuAssertTrue(tc, retval);
-    CuAssertTrue(tc, num_plugins());
-    CuAssertTrue(tc, num_active_plugins());
-    CuAssertTrue(tc,  is_enabled("mem_info"));
-    CuAssertTrue(tc, !is_enabled("papi"));
-    CuAssertTrue(tc, !is_enabled("rapl"));
-    CuAssertTrue(tc, !is_enabled("likwid"));
-    CuAssertTrue(tc, !is_enabled("hw_power"));
+    mfp_parse("config.ini");
+    char* lottery_numbers = mfp_get_value("lottery", "numbers");
+    CuAssertTrue(tc, (lottery_numbers == NULL || strlen(lottery_numbers) == 0));
 }
 
-void Test_parse_papi(CuTest *tc)
+void Test_get_non_existing_value(CuTest *tc)
 {
-    config_plugin config;
-    int retval = parse_plugin("config.ini", "papi", &config);
-    CuAssertTrue(tc, retval);    
-    CuAssertTrue(tc, 1 == config.size);
-    CuAssertStrEquals(tc, "PAPI_DP_OPS", config.events[0]);
+    mfp_parse("config.ini");
+    char* lottery_numbers = mfp_get_value("generic", "numbers");
+    CuAssertTrue(tc, (lottery_numbers == NULL || strlen(lottery_numbers) == 0));
 }
 
-void Test_parse_plugin_without_section(CuTest *tc)
+void Test_keys_values_check_plugins_size(CuTest *tc)
 {
-    config_plugin config;
-    int retval = parse_plugin("config.ini", "hw_power", &config);
-    CuAssertTrue(tc, !retval);
+    mfp_data *data = malloc(sizeof(mfp_data));
+
+    mfp_parse("config.ini");
+    mfp_get_data("plugins", data);
+    CuAssertTrue(tc, 5 == data->size);
+
+    free(data);
+}
+
+void Test_keys_values_check_key_of_timings(CuTest *tc)
+{
+    int key_found = 0;
+    mfp_data *data = malloc(sizeof(mfp_data));
+
+    mfp_parse("config.ini");
+    mfp_get_data("timings", data);
+    for (int i = 0; i < data->size; ++i) {
+        if (strcmp("likwid", data->keys[i]) == 0) {
+            key_found = 1;
+        }
+    }
+    CuAssertTrue(tc, key_found);
+
+    free(data);
+}
+
+void Test_keys_values_check_value_of_timings(CuTest *tc)
+{
+    int key_value_pair_found = 0;
+    mfp_data *data = malloc(sizeof(mfp_data));
+
+    mfp_parse("config.ini");
+    mfp_get_data("timings", data);
+    for (int i = 0; i < data->size; ++i) {
+        if (strcmp("likwid", data->keys[i]) == 0) {
+            if (strcmp("1000000000ns", data->values[i]) == 0) {
+                key_value_pair_found = 1;
+            }
+        }
+    }
+    CuAssertTrue(tc, key_value_pair_found);
+
+    free(data);
 }
 
 CuSuite* CuGetSuite(void)
 {
     CuSuite* suite = CuSuiteNew();
 
-    SUITE_ADD_TEST(suite, Test_parse_generic);
-    SUITE_ADD_TEST(suite, Test_parse_timings);
-    SUITE_ADD_TEST(suite, Test_parse_plugins);
-    SUITE_ADD_TEST(suite, Test_parse_papi);
-    SUITE_ADD_TEST(suite, Test_parse_plugin_without_section);
+    // mfp_parse
+    SUITE_ADD_TEST(suite, Test_parse);
+
+    // mfp_get
+    SUITE_ADD_TEST(suite, Test_get_section_value);
+    SUITE_ADD_TEST(suite, Test_get_non_existing_section);
+    SUITE_ADD_TEST(suite, Test_get_non_existing_value);
+
+    // mfp_keys_values
+    SUITE_ADD_TEST(suite, Test_keys_values_check_plugins_size);
+    SUITE_ADD_TEST(suite, Test_keys_values_check_key_of_timings);
+    SUITE_ADD_TEST(suite, Test_keys_values_check_value_of_timings);
 
     return suite;
 }
