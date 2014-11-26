@@ -61,6 +61,7 @@ lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
 		$(CC) -c $< $(CFLAGS) -fpic
 
 prepare:
+	@mkdir -p $(PLUGIN_DEST)
 	$(MAKE) -C contrib/parser
 	$(MAKE) -C contrib/publisher
 
