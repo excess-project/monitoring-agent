@@ -9,7 +9,7 @@
 
 #include "papi_plugin.h"
 
-static config_plugin conf_papi;
+static mfp_data *conf_papi;
 
 char* to_JSON(PAPI_Plugin *papi)
 {
@@ -37,7 +37,9 @@ static metric papi_hook()
         clock_gettime(clk_id, &resMetric->timestamp);
 
         PAPI_Plugin *papi = malloc(sizeof(PAPI_Plugin));
-        read_available_named_events(papi, conf_papi.events, conf_papi.size);
+
+        mfp_get_data("papi", conf_papi);
+        read_available_named_events(papi, conf_papi->keys, conf_papi->size);
 
         strcpy(resMetric->msg, to_JSON(papi));
 
@@ -52,7 +54,7 @@ static metric papi_hook()
 extern int init_papi(PluginManager *pm)
 {
     PAPI_library_init(PAPI_VER_CURRENT);
-    parse_plugin(confFile, "papi", &conf_papi);
+    conf_papi = malloc(sizeof(mfp_data));
 
     PluginManager_register_hook(pm, "papi", papi_hook);
 

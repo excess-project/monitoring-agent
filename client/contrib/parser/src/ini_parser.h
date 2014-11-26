@@ -9,7 +9,7 @@ typedef struct {
 
 int mfp_parse(const char* filename);
 
-const char* mfp_get_value(const char* section, const char* key);
+char* mfp_get_value(const char* section, const char* key);
 
 void mfp_set_value(const char* section, const char* key, const char* value);
 

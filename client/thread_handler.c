@@ -118,7 +118,8 @@ int startSending() {
 	void *ptr;
 
 	while (running) {
-		sleep(conf_timings.update_interval);
+		char* update_interval = mfp_get_value("timings", "publish_data_interval");
+		sleep(atoi(update_interval));
 
 		status = apr_queue_pop(data_queue, &ptr);
 		if (status == APR_SUCCESS) {
@@ -132,25 +133,6 @@ int startSending() {
 	}
 	return 1;
 
-}
-
-static size_t write_data(void *data, size_t blksz, size_t nblk, void *ctx) {
-	static size_t sz = 0;
-	size_t currsz = blksz * nblk;
-
-	size_t prevsz = sz;
-	sz += currsz;
-	void *tmp = realloc(*(char **) ctx, sz);
-	if (tmp == NULL ) {
-		// handle error
-		free(*(char **) ctx);
-		*(char **) ctx = NULL;
-		return 0;
-	}
-	*(char **) ctx = tmp;
-
-	memcpy(*(char **) ctx + prevsz, data, currsz);
-	return currsz;
 }
 
 void removeSpace(char *str) {
@@ -172,11 +154,33 @@ int prepSend(metric data) {
 	hostname[strlen(hostname) - 1] = '\0';
 
 	sprintf(msg, "{\"Timestamp\":%.9Lf,\"hostname\":\"%s\"%s}", timeStamp, hostname, data->msg);
-	publish_json(conf_generic.server, msg);
+	publish_json(server_name, msg);
 	free(data);
 	free(hostname);
 
 	return 1;
+}
+
+static mfp_data *mfp_timing_data;
+long timings[256];
+
+static void init_timings()
+{
+	mfp_data *mfp_timing_data = malloc(sizeof(mfp_data));
+
+	mfp_get_data("timings", mfp_timing_data);
+	char* timing = mfp_get_value("timings", "publish_data_interval");
+	timings[0] = atoi(timing);
+	timing = mfp_get_value("timings", "update_configuration");
+	timings[1] = atoi(timing);
+
+	// FIXME: just set default timing for the rest of the plugins
+	long default_timing = atoi(mfp_get_value("timings", "default"));
+	for (int i = 3; i < mfp_timing_data->size; ++i) {
+		timings[i] = default_timing;
+	}
+
+	free(mfp_timing_data);
 }
 
 int gatherMetric(int num) {
@@ -185,18 +189,21 @@ int gatherMetric(int num) {
 //	startStop(name, START);
 	struct timespec tim = { 0, 0 };
 	struct timespec tim2;
-	if (conf_timings.timings[num] >= 10e8) {
-		tim.tv_sec = conf_timings.timings[num] / 10e8;
-		tim.tv_nsec = conf_timings.timings[num] % (long) 10e8;
+
+	init_timings(); // FIXME: just a work-around
+
+	if (timings[num] >= 10e8) {
+		tim.tv_sec = timings[num] / 10e8;
+		tim.tv_nsec = timings[num] % (long) 10e8;
 	} else {
 		tim.tv_sec = 0;
-		tim.tv_nsec = conf_timings.timings[num];
+		tim.tv_nsec = timings[num];
 	}
 
 	apr_status_t status;
 	PluginHook hook = PluginManager_get_hook(pm);
-	fprintf(stderr,  "with timing: %lld ns\n", conf_timings.timings[num]);
-	fprintf(logFile, "with timing: %lld ns\n", conf_timings.timings[num]);
+	fprintf(stderr,  "with timing: %ld ns\n", timings[num]);
+	fprintf(logFile, "with timing: %ld ns\n", timings[num]);
 	metric resMetric = malloc(sizeof(metric_t));
 
 	while (running) {
@@ -218,8 +225,10 @@ int gatherMetric(int num) {
 
 int checkConf() {
 	while (running) {
-		parse_timings(confFile, &conf_timings);
-		sleep(conf_timings.update_config);
+		mfp_parse(confFile);
+
+		char *wait_some_seconds = mfp_get_value("timings", "update_configuration");
+		sleep(atoi(wait_some_seconds));
 	}
 	return 1;
 }

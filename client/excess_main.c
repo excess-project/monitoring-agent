@@ -18,10 +18,8 @@
 
 #include <publisher.h>
 
-// configuration file
+// configuration
 char *confFile;
-config_generic conf_generic;
-config_timings conf_timings;
 
 /**
  * @brief timestamp for config file
@@ -33,6 +31,7 @@ int hostChanged = 0;
 char *pwd;
 struct tm *time_info;
 FILE *logFile;
+char server_name[256];
 char name[300];
 
 /**
@@ -69,8 +68,7 @@ static int prepare() {
 	}
 	sprintf(confFile, "%s/%s/%s", pwd, "..", "mf_config.ini");
 	fprintf(logFile, "confFile is: %s \n", confFile);
-	parse_generic(confFile, &conf_generic);
-	parse_timings(confFile, &conf_timings);
+	mfp_parse(confFile);
 
 	char timeArr[80];
 
@@ -94,9 +92,10 @@ static int prepare() {
 	    hostname, description, timeArr, username
 	);
 
-	char *execution_id = get_execution_id(conf_generic.server, msg);
+	strcpy(server_name, mfp_get_value("generic", "server"));
+	char *execution_id = get_execution_id(server_name, msg);
 	strcpy(str, execution_id);
-	strcat(conf_generic.server, str);
+	strcat(server_name, str);
 
 	free(hostname);
 
@@ -175,7 +174,7 @@ int main(int argc, const char* argv[]) {
 				strcpy(execID_, pos + strlen("-id="));
 			}
 			if ((pos = strstr(argv[iter], "-hostname="))) {
-				strcpy(conf_generic.server, pos + strlen("-hostname=")); // FIXME
+				strcpy(server_name, pos + strlen("-hostname="));
 				hostChanged = 1;
 			}
 			if ((pos = strstr(argv[iter], "-h"))

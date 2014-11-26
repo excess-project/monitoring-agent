@@ -25,6 +25,8 @@ int NUM_THREADS;
  */
 extern long timings[256];
 
+extern char server_name[256];
+
 /** @brief adress of the server which will receive the data
  *
  */
@@ -39,10 +41,6 @@ extern char *confFile;
  *
  */
 extern FILE *logFile;
-
-extern config_generic conf_generic;
-extern config_timings conf_timings;
-
 
 /** @brief function printing information about the tool
  *
