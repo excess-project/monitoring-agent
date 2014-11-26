@@ -53,7 +53,6 @@ static void intialize_ht()
 
     apr_initialize();
     apr_pool_create(&mp, NULL);
-    ht_plugins = apr_hash_make(mp); // FIXME:
     ht_config = apr_hash_make(mp);
     ht_initialized = 1;
 }
