@@ -1,0 +1,10 @@
+var searchData=
+[
+  ['pluginmanager_5fapply_5fhook',['PluginManager_apply_hook',['../plugin__manager_8c.html#a66ac05a680a972d3730176e8f79ef3a1',1,'PluginManager_apply_hook(PluginManager *pm):&#160;plugin_manager.c'],['../plugin__manager_8h.html#a66ac05a680a972d3730176e8f79ef3a1',1,'PluginManager_apply_hook(PluginManager *pm):&#160;plugin_manager.c']]],
+  ['pluginmanager_5ffree',['PluginManager_free',['../plugin__manager_8c.html#aeeea0c8fe63699fccea089c6293492b3',1,'PluginManager_free(PluginManager *pm):&#160;plugin_manager.c'],['../plugin__manager_8h.html#aeeea0c8fe63699fccea089c6293492b3',1,'PluginManager_free(PluginManager *pm):&#160;plugin_manager.c']]],
+  ['pluginmanager_5fget_5fhook',['PluginManager_get_hook',['../plugin__manager_8c.html#a19372a4ddd1d0db10689eb7aeb08509b',1,'PluginManager_get_hook(PluginManager *pm):&#160;plugin_manager.c'],['../plugin__manager_8h.html#a19372a4ddd1d0db10689eb7aeb08509b',1,'PluginManager_get_hook(PluginManager *pm):&#160;plugin_manager.c']]],
+  ['pluginmanager_5fnew',['PluginManager_new',['../plugin__manager_8c.html#a9e6470232c5f18d313c5d7963f629edc',1,'PluginManager_new():&#160;plugin_manager.c'],['../plugin__manager_8h.html#a9e6470232c5f18d313c5d7963f629edc',1,'PluginManager_new():&#160;plugin_manager.c']]],
+  ['pluginmanager_5fregister_5fhook',['PluginManager_register_hook',['../plugin__manager_8c.html#adef81ce98ce51e80c925e0d4d56f28a3',1,'PluginManager_register_hook(PluginManager *pm, const char *name, PluginHook hook):&#160;plugin_manager.c'],['../plugin__manager_8h.html#adef81ce98ce51e80c925e0d4d56f28a3',1,'PluginManager_register_hook(PluginManager *pm, const char *name, PluginHook hook):&#160;plugin_manager.c']]],
+  ['prepsend',['prepSend',['../thread__handler_8c.html#a126cebab85d1b470693189d93506ef60',1,'prepSend(metric data):&#160;thread_handler.c'],['../thread__handler_8h.html#a126cebab85d1b470693189d93506ef60',1,'prepSend(metric data):&#160;thread_handler.c']]],
+  ['printhelp',['printHelp',['../excess__main_8h.html#af03f7609a66def2e7fae02a477c38d97',1,'excess_main.h']]]
+];
