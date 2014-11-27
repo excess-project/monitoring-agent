@@ -176,7 +176,7 @@ static void init_timings()
 
 	// FIXME: just set default timing for the rest of the plugins
 	long default_timing = atoi(mfp_get_value("timings", "default"));
-	for (int i = 3; i < mfp_timing_data->size; ++i) {
+	for (int i = 2; i < mfp_timing_data->size; ++i) {
 		timings[i] = default_timing;
 	}
 
