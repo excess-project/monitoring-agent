@@ -7,6 +7,11 @@ CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
 
 LFLAGS =  -lm $(CURL)
 
+DEBUG ?= 1
+ifeq ($(DEBUG), 1)
+    CFLAGS += -DDEBUG -g
+endif
+
 CURL = -L../../../binaries/curl/lib -lcurl
 CURL_INC = -I../../../binaries/curl/include/
 
