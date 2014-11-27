@@ -29,8 +29,6 @@ static PluginManager *pm;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_t threads[256];
 
-char execID_[ID_SIZE] = ""; /* storing the execution ID -- UUID is 36 chars */
-
 void catcher(int signo) {
 	running = 0;
 	printf("\nSignal %d catched\n", signo);

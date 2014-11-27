@@ -15,9 +15,6 @@
 #define MIN_THREADS 2 //minimum number of thread required for sending and config
 #define SEND_SUCCESS 1
 #define SEND_FAILED  0
-#define ID_SIZE 50
-
-extern char execID_[ID_SIZE];
 
 struct apr_queue_t *data_queue;
 struct apr_pool_t *data_pool;

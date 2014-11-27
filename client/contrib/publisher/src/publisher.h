@@ -3,6 +3,9 @@
 
 #define SEND_SUCCESS 1
 #define SEND_FAILED  0
+#define ID_SIZE 64
+
+extern char execution_id[ID_SIZE];
 
 typedef struct Message_t Message;
 typedef struct Data_t Data;

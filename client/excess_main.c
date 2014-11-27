@@ -171,7 +171,7 @@ int main(int argc, const char* argv[]) {
 						pos + strlen("-id="));
 				fprintf(logFile, "using executing id: %s\n",
 						pos + strlen("-id="));
-				strcpy(execID_, pos + strlen("-id="));
+				strcpy(execution_id, pos + strlen("-id="));
 			}
 			if ((pos = strstr(argv[iter], "-hostname="))) {
 				strcpy(server_name, pos + strlen("-hostname="));

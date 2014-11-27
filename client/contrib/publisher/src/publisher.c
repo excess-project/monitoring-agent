@@ -5,7 +5,7 @@
 #include "publisher.h"
 
 static CURL *curl;
-static char execution_id[64];
+char execution_id[ID_SIZE] = { 0 };
 struct curl_slist *headers = NULL;
 
 static void init_curl()
@@ -111,7 +111,7 @@ int publish(const char *URL, Message *messages)
 
 char* get_execution_id(const char *URL, char *message)
 {
-    if (execution_id != NULL && strlen(execution_id) == 22) {
+    if (strlen(execution_id) > 0) {
 		return execution_id;
 	}
 
