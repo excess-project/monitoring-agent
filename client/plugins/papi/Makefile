@@ -16,20 +16,38 @@ endif
 
 COMMON = ../..
 SRC = src
+LIB = lib
 TESTS = tests
 UTILS = $(SRC)/utils
-PAPI = -L$(COMMON)/../binaries/papi/lib -lpapi
-PAPI_INC = -I$(COMMON)/../binaries/papi/include/
+BINARIES = $(COMMON)/../binaries
+PAPI = -L$(BINARIES)/papi/lib -lpapi
+PAPI_INC = -I$(BINARIES)/papi/include/
 DEBUG_INC = -I$(COMMON)/
 
-all: clean mf_papi_client
+FILES = $(shell find src -name '*.c')
+HEADER = $(shell find src -name '*.h')
+
+all: clean prepare mf_papi_client mf_plugin_papi.so
+
+mf_plugin_papi.so: mf_plugin_papi.o mf_papi_connector.o
+	$(CC) -o $(LIB)/mf_plugin_papi.so $^ -shared $(BINARIES)/papi/lib/libpapi.so
+
+mf_papi_connector.o: $(SRC)/mf_papi_connector.c $(HEADER)
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
+
+mf_plugin_papi.o: $(SRC)/mf_plugin_papi.c $(HEADER)
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
 
 mf_papi_client:
 	$(CC) $(UTILS)/mf_papi_client.c -o mf_papi_client $(CFLAGS) $(LFLAGS)
 
+prepare:
+	@mkdir -p lib
+
 clean:
 	rm -rf *.o
 	rm -f mf_papi_client
+	rm -rf lib
 
 doc: $(FILES)
 	doxygen Doxyfile
