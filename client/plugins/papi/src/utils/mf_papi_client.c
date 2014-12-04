@@ -149,7 +149,6 @@ main(int argc, char** argv)
         }
     }
 
-    debug("suhtdown %s", "bla");
     PAPI_shutdown();
 }
 
@@ -210,7 +209,8 @@ mf_PAPI_create_eventset_systemwide(
         char *error = PAPI_strerror(retval);
         log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_CPU_ATTACH): %s", error);
         free(error);
-        return retval;
+        PAPI_shutdown();
+        exit(EXIT_FAILURE);
     }
 
     retval = mf_set_affinity(cpu_num);
