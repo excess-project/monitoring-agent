@@ -45,25 +45,31 @@ main(int argc, char** argv)
 
     retval = PAPI_library_init(PAPI_VER_CURRENT);
     if (retval != PAPI_VER_CURRENT) {
-        log_error("main(int, char**) - PAPI_library_init: %s",
-            PAPI_strerror(retval));
+        char *error = PAPI_strerror(retval);
+        log_error("main(int, char**) - PAPI_library_init: %s", error);
+        free(error);
     }
 
     /***************************************************************************
      * Create EventSets for each socket
      **************************************************************************/
 
-    num_cores = PAPI_get_opt(PAPI_MAX_CPUS, NULL);
+    num_cores = PAPI_get_opt(PAPI_MAX_CPUS,/*@-nullpass@*/ NULL);
     log_info("main(int, char**) - num_cores = %d", num_cores);
     if (num_cores <= 0) {
         char itostr[num_cores];
-        snprintf(itostr, sizeof(itostr) / sizeof(char), "%d", num_cores);
+        (void) snprintf(itostr, sizeof(itostr) / sizeof(char), "%d", num_cores);
         log_error("main(int, char**) - PAPI_get_opt(PAPI_MAX_CPUS): %s", itostr);
         PAPI_shutdown();
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     event_sets = malloc(num_cores * sizeof(int));
+    if (event_sets == NULL) {
+        log_error("Could not allocated memory: %s", "event_sets");
+        PAPI_shutdown();
+        exit(EXIT_FAILURE);
+    }
     for (i = 0; i != num_cores; ++i) {
         event_sets[i] = PAPI_NULL;
     }
@@ -80,11 +86,13 @@ main(int argc, char** argv)
 
     num_events_per_socket = malloc(num_cores * sizeof(int));
     for (i = 0; i != num_cores; ++i) {
+        num_events_per_socket[i] = 0;
         for (j = 1; j != argc; ++j) {
             retval = PAPI_add_named_event(event_sets[i], argv[j]);
             if (retval != PAPI_OK) {
-                log_error("main(int, char**) - PAPI_add_named_event (%s): %s",
-                    argv[j], PAPI_strerror(retval));
+                char *error = PAPI_strerror(retval);
+                log_error("main(int, char**) - PAPI_add_named_event (%s): %s", argv[j], error);
+                free(error);
             } else {
                 num_events_per_socket[i]++;
                 log_info("main(int, char**) - Added event %s to CPU%d", argv[j], i);
@@ -95,11 +103,10 @@ main(int argc, char** argv)
     for (i = 0; i != num_cores; ++i) {
         debug("num_events_per_socket: %d", num_events_per_socket[i]);
         if (num_events_per_socket[i] == 0) {
-            log_warn("main(int, char**) - No events added for monitoring. %s",
-                "Abort.");
+            log_warn("main(int, char**) - No events added for monitoring. %s", "Abort.");
             free(event_sets);
             PAPI_shutdown();
-            exit(1);
+            exit(EXIT_FAILURE);
         }
     }
 
@@ -113,7 +120,9 @@ main(int argc, char** argv)
         debug("Start PAPI Monitoring for CPU%d", i);
         retval = PAPI_start(event_sets[i]);
         if (retval != PAPI_OK) {
-            log_error("main(int, char**) - PAPI_start: %s", PAPI_strerror(retval));
+            char *error = PAPI_strerror(retval);
+            log_error("main(int, char**) - PAPI_start: %s", error);
+            free(error);
         }
     }
 
@@ -128,7 +137,9 @@ main(int argc, char** argv)
         values_per_core[i] = malloc(num_events_per_socket[i] * sizeof(long long));
         retval = PAPI_stop(event_sets[i], values_per_core[i]);
         if (retval != PAPI_OK) {
-            log_error("main(int, char**) - PAPI_stop: %s", PAPI_strerror(retval));
+            char *error = PAPI_strerror(retval);
+            log_error("main(int, char**) - PAPI_stop: %s", error);
+            free(error);
         }
     }
 
@@ -176,15 +187,17 @@ mf_PAPI_create_eventset_systemwide(
 
     retval = PAPI_create_eventset(EventSet);
     if (retval != PAPI_OK) {
-        log_error("create_eventset_systemwide - PAPI_create_eventset: %s",
-            PAPI_strerror(retval));
+        char *error = PAPI_strerror(retval);
+        log_error("create_eventset_systemwide - PAPI_create_eventset: %s", error);
+        free(error);
         return retval;
     }
 
     retval = PAPI_assign_eventset_component(*EventSet, cidx);
     if (retval != PAPI_OK) {
-        log_error("create_eventset_systemwide - PAPI_assign_eventset_component: (%s)",
-            PAPI_strerror(retval));
+        char *error = PAPI_strerror(retval);
+        log_error("create_eventset_systemwide - PAPI_assign_eventset_component: (%s)", error);
+        free(error);
         return retval;
     }
 
@@ -193,8 +206,9 @@ mf_PAPI_create_eventset_systemwide(
     domain_opt.domain = domain;
     retval = PAPI_set_opt(PAPI_DOMAIN, (PAPI_option_t*) &domain_opt);
     if (retval != PAPI_OK) {
-        log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_DOMAIN): %s",
-            PAPI_strerror(retval));
+        char *error = PAPI_strerror(retval);
+        log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_DOMAIN): %s", error);
+        free(error);
         return retval;
     }
 
@@ -202,8 +216,9 @@ mf_PAPI_create_eventset_systemwide(
     gran_opt.granularity = granularity;
     retval = PAPI_set_opt(PAPI_GRANUL, (PAPI_option_t*) &gran_opt);
     if (retval != PAPI_OK) {
-        log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_GRANUL): %s",
-            PAPI_strerror(retval));
+        char *error = PAPI_strerror(retval);
+        log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_GRANUL): %s", error);
+        free(error);
         return retval;
     }
 
@@ -211,15 +226,17 @@ mf_PAPI_create_eventset_systemwide(
     cpu_opt.cpu_num = cpu_num;
     retval = PAPI_set_opt(PAPI_CPU_ATTACH, (PAPI_option_t*) &cpu_opt);
     if (retval != PAPI_OK) {
-        log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_CPU_ATTACH): %s",
-            PAPI_strerror(retval));
+        char *error = PAPI_strerror(retval);
+        log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_CPU_ATTACH): %s", error);
+        free(error);
         return retval;
     }
 
     retval = mf_set_affinity(cpu_num);
     if (retval != PAPI_OK) {
-        log_error("create_eventset_systemwide - sched_setaffinity: %s",
-            PAPI_strerror(retval));
+        char *error = PAPI_strerror(retval);
+        log_error("create_eventset_systemwide - sched_setaffinity: %s", error);
+        free(error);
         return retval;
     }
 
