@@ -15,7 +15,7 @@ endif
 COMMON = ../..
 SRC = src
 TESTS = tests
-APPS = $(SRC)/applications
+UTILS = $(SRC)/utils
 PAPI = -L$(COMMON)/../binaries/papi/lib -lpapi
 PAPI_INC = -I$(COMMON)/../binaries/papi/include/
 DEBUG_INC = -I$(COMMON)/
@@ -23,7 +23,7 @@ DEBUG_INC = -I$(COMMON)/
 all: clean mf_papi_client
 
 mf_papi_client:
-	$(CC) $(APPS)/mf_papi_client.c -o mf_papi_client $(CFLAGS) $(LFLAGS)
+	$(CC) $(UTILS)/mf_papi_client.c -o mf_papi_client $(CFLAGS) $(LFLAGS)
 
 clean:
 	rm -rf *.o
