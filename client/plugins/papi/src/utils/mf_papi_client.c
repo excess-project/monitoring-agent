@@ -29,7 +29,7 @@ main(int argc, char** argv)
     int domain, granularity;
     int i, j, cpu_num, num_sockets;
     int *num_events_per_socket;
-    long long **values_per_socket;
+    long long **values_per_core;
 
     /***************************************************************************
      * Set default values
@@ -104,7 +104,7 @@ main(int argc, char** argv)
         }
     }
 
-    values_per_socket = malloc(num_sockets * sizeof(long long *));
+    values_per_core = malloc(num_sockets * sizeof(long long *));
 
     /***************************************************************************
      * Start PAPI
@@ -126,8 +126,8 @@ main(int argc, char** argv)
 
     for (i = 0; i != num_sockets; ++i) {
         debug("Stop PAPI Monitoring for CPU%d", i);
-        values_per_socket[i] = malloc(num_events_per_socket[i] * sizeof(long long));
-        retval = PAPI_stop(event_sets[i], values_per_socket[i]);
+        values_per_core[i] = malloc(num_events_per_socket[i] * sizeof(long long));
+        retval = PAPI_stop(event_sets[i], values_per_core[i]);
         if (retval != PAPI_OK) {
             log_error("main(int, char**) - PAPI_stop: %s", PAPI_strerror(retval));
         }
@@ -139,12 +139,12 @@ main(int argc, char** argv)
 
     for (i = 0; i != num_sockets; ++i) {
         for (j = 0; j != num_events_per_socket[i]; ++j) {
-            printf("CPU%d \t %s \t%lld\n", i, argv[j+1], values_per_socket[i][j]);
+            printf("CPU%d \t %s \t%lld\n", i, argv[j+1], values_per_core[i][j]);
         }
     }
 
     free(num_events_per_socket);
-    free(values_per_socket);
+    free(values_per_core);
     free(event_sets);
     PAPI_shutdown();
 }
