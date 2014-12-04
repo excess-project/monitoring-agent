@@ -27,7 +27,7 @@ main(int argc, char** argv)
     int retval;
     int *event_sets;
     int domain, granularity;
-    int i, j, cpu_num, num_sockets;
+    int i, j, cpu_num, num_cores;
     int *num_events_per_socket;
     long long **values_per_core;
 
@@ -53,23 +53,22 @@ main(int argc, char** argv)
      * Create EventSets for each socket
      **************************************************************************/
 
-    num_sockets = PAPI_get_opt(PAPI_MAX_CPUS, NULL);
-    num_sockets = 2;
-    log_info("main(int, char**) - num_sockets = %d", num_sockets);
-    if (num_sockets <= 0) {
-        char itostr[num_sockets];
-        snprintf(itostr, sizeof(itostr) / sizeof(char), "%d", num_sockets);
+    num_cores = PAPI_get_opt(PAPI_MAX_CPUS, NULL);
+    log_info("main(int, char**) - num_cores = %d", num_cores);
+    if (num_cores <= 0) {
+        char itostr[num_cores];
+        snprintf(itostr, sizeof(itostr) / sizeof(char), "%d", num_cores);
         log_error("main(int, char**) - PAPI_get_opt(PAPI_MAX_CPUS): %s", itostr);
         PAPI_shutdown();
         exit(1);
     }
 
-    event_sets = malloc(num_sockets * sizeof(int));
-    for (i = 0; i != num_sockets; ++i) {
+    event_sets = malloc(num_cores * sizeof(int));
+    for (i = 0; i != num_cores; ++i) {
         event_sets[i] = PAPI_NULL;
     }
 
-    for (cpu_num = 0; cpu_num != num_sockets; ++cpu_num) {
+    for (cpu_num = 0; cpu_num != num_cores; ++cpu_num) {
         retval = mf_PAPI_create_eventset_systemwide(
             event_sets+cpu_num, cidx, cpu_num, domain, granularity
         );
@@ -79,8 +78,8 @@ main(int argc, char** argv)
      * Add events passed via command line to each socket separately
      **************************************************************************/
 
-    num_events_per_socket = malloc(num_sockets * sizeof(int));
-    for (i = 0; i != num_sockets; ++i) {
+    num_events_per_socket = malloc(num_cores * sizeof(int));
+    for (i = 0; i != num_cores; ++i) {
         for (j = 1; j != argc; ++j) {
             retval = PAPI_add_named_event(event_sets[i], argv[j]);
             if (retval != PAPI_OK) {
@@ -93,7 +92,7 @@ main(int argc, char** argv)
         }
     }
 
-    for (i = 0; i != num_sockets; ++i) {
+    for (i = 0; i != num_cores; ++i) {
         debug("num_events_per_socket: %d", num_events_per_socket[i]);
         if (num_events_per_socket[i] == 0) {
             log_warn("main(int, char**) - No events added for monitoring. %s",
@@ -104,13 +103,13 @@ main(int argc, char** argv)
         }
     }
 
-    values_per_core = malloc(num_sockets * sizeof(long long *));
+    values_per_core = malloc(num_cores * sizeof(long long *));
 
     /***************************************************************************
      * Start PAPI
      **************************************************************************/
 
-    for (i = 0; i != num_sockets; ++i) {
+    for (i = 0; i != num_cores; ++i) {
         debug("Start PAPI Monitoring for CPU%d", i);
         retval = PAPI_start(event_sets[i]);
         if (retval != PAPI_OK) {
@@ -124,7 +123,7 @@ main(int argc, char** argv)
      * Stop PAPI
      **************************************************************************/
 
-    for (i = 0; i != num_sockets; ++i) {
+    for (i = 0; i != num_cores; ++i) {
         debug("Stop PAPI Monitoring for CPU%d", i);
         values_per_core[i] = malloc(num_events_per_socket[i] * sizeof(long long));
         retval = PAPI_stop(event_sets[i], values_per_core[i]);
@@ -137,7 +136,7 @@ main(int argc, char** argv)
      * Print Counters
      **************************************************************************/
 
-    for (i = 0; i != num_sockets; ++i) {
+    for (i = 0; i != num_cores; ++i) {
         for (j = 0; j != num_events_per_socket[i]; ++j) {
             printf("CPU%d \t %s \t%lld\n", i, argv[j+1], values_per_core[i][j]);
         }
