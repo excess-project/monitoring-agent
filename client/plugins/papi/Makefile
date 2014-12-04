@@ -14,18 +14,20 @@ endif
 
 COMMON = ../..
 SRC = src
+TESTS = tests
+APPS = $(SRC)/applications
 PAPI = -L$(COMMON)/../binaries/papi/lib -lpapi
 PAPI_INC = -I$(COMMON)/../binaries/papi/include/
 DEBUG_INC = -I$(COMMON)/
 
-all: clean mf_papi
+all: clean mf_papi_client
 
-mf_papi:
-	$(CC) $(SRC)/mf_papi.c -o mf_papi $(CFLAGS) $(LFLAGS)
+mf_papi_client:
+	$(CC) $(APPS)/mf_papi_client.c -o mf_papi_client $(CFLAGS) $(LFLAGS)
 
 clean:
 	rm -rf *.o
-	rm -f mf_papi
+	rm -f mf_papi_client
 
 doc: $(FILES)
 	doxygen Doxyfile
