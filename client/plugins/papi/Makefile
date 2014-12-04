@@ -1,4 +1,4 @@
-CC = /usr/bin/gcc 
+CC = /usr/bin/gcc
 
 COPT_SO = $(CFLAGS) -fpic
 
@@ -10,6 +10,8 @@ LFLAGS = $(PAPI)
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
     CFLAGS += -DDEBUG -g
+else
+	CFLAGS += -DNDEBUG
 endif
 
 COMMON = ../..
