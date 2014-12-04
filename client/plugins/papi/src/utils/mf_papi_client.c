@@ -7,6 +7,8 @@
 #include <papi.h>
 #include <pthread.h>
 #include <sched.h>
+#include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -16,9 +18,10 @@
  * Forward Declarations
  ******************************************************************************/
 
-static int mf_set_affinity(int);
 int mf_PAPI_create_eventset_systemwide(int*, int, int, int, int);
-
+static void start_monitoring(int*, int*, long long**, int, char**);
+static int mf_set_affinity(int);
+static void my_exit_handler(int);
 
 int
 main(int argc, char** argv)
@@ -110,48 +113,23 @@ main(int argc, char** argv)
         }
     }
 
+    struct sigaction sigIntHandler;
+    sigIntHandler.sa_handler = my_exit_handler;
+    sigemptyset(&sigIntHandler.sa_mask);
+    sigIntHandler.sa_flags = 0;
+    sigaction(SIGINT, &sigIntHandler, NULL);
+
     values_per_core = malloc(num_cores * sizeof(long long *));
 
-    /***************************************************************************
-     * Start PAPI
-     **************************************************************************/
-
-    for (i = 0; i != num_cores; ++i) {
-        debug("Start PAPI Monitoring for CPU%d", i);
-        retval = PAPI_start(event_sets[i]);
-        if (retval != PAPI_OK) {
-            char *error = PAPI_strerror(retval);
-            log_error("main(int, char**) - PAPI_start: %s", error);
-            free(error);
-        }
-    }
-
-    sleep(1);
-
-    /***************************************************************************
-     * Stop PAPI
-     **************************************************************************/
-
-    for (i = 0; i != num_cores; ++i) {
-        debug("Stop PAPI Monitoring for CPU%d", i);
-        values_per_core[i] = malloc(num_events_per_socket[i] * sizeof(long long));
-        retval = PAPI_stop(event_sets[i], values_per_core[i]);
-        if (retval != PAPI_OK) {
-            char *error = PAPI_strerror(retval);
-            log_error("main(int, char**) - PAPI_stop: %s", error);
-            free(error);
-        }
-    }
-
-    /***************************************************************************
-     * Print Counters
-     **************************************************************************/
-
-    for (i = 0; i != num_cores; ++i) {
-        for (j = 0; j != num_events_per_socket[i]; ++j) {
-            printf("CPU%d \t %s \t%lld\n", i, argv[j+1], values_per_core[i][j]);
-        }
-    }
+    do {
+        start_monitoring(
+            event_sets,
+            num_events_per_socket,
+            values_per_core,
+            num_cores,
+            argv
+        );
+    } while (1);
 
     free(num_events_per_socket);
     free(values_per_core);
@@ -171,20 +149,8 @@ main(int argc, char** argv)
         }
     }
 
+    debug("suhtdown %s", "bla");
     PAPI_shutdown();
-}
-
-static int
-mf_set_affinity(int thread_id)
-{
-    int retval;
-    cpu_set_t processor_mask;
-
-    CPU_ZERO(&processor_mask);
-    CPU_SET(thread_id,&processor_mask);
-    retval = sched_setaffinity(0, sizeof(cpu_set_t), &processor_mask);
-
-    return retval;
 }
 
 int
@@ -258,4 +224,78 @@ mf_PAPI_create_eventset_systemwide(
     debug("EventSet created for CPU%d", cpu_num);
 
     return retval;
+}
+
+static int
+mf_set_affinity(int thread_id)
+{
+    int retval;
+    cpu_set_t processor_mask;
+
+    CPU_ZERO(&processor_mask);
+    CPU_SET(thread_id,&processor_mask);
+    retval = sched_setaffinity(0, sizeof(cpu_set_t), &processor_mask);
+
+    return retval;
+}
+
+static void
+start_monitoring(
+    int *event_sets,
+    int *num_events_per_socket,
+    long long **values_per_core,
+    int num_cores,
+    char **argv)
+{
+    int i, j;
+    int retval;
+
+    /***************************************************************************
+     * Start PAPI
+     **************************************************************************/
+
+    for (i = 0; i != num_cores; ++i) {
+        debug("Start PAPI Monitoring for CPU%d", i);
+        retval = PAPI_start(event_sets[i]);
+        if (retval != PAPI_OK) {
+            char *error = PAPI_strerror(retval);
+            log_error("main(int, char**) - PAPI_start: %s", error);
+            free(error);
+        }
+    }
+
+    sleep(1);
+
+    /***************************************************************************
+     * Stop PAPI
+     **************************************************************************/
+
+    for (i = 0; i != num_cores; ++i) {
+        debug("Stop PAPI Monitoring for CPU%d", i);
+        values_per_core[i] = malloc(num_events_per_socket[i] * sizeof(long long));
+        retval = PAPI_stop(event_sets[i], values_per_core[i]);
+        if (retval != PAPI_OK) {
+            char *error = PAPI_strerror(retval);
+            log_error("main(int, char**) - PAPI_stop: %s", error);
+            free(error);
+        }
+    }
+
+    /***************************************************************************
+     * Print Counters
+     **************************************************************************/
+
+    for (i = 0; i != num_cores; ++i) {
+        for (j = 0; j != num_events_per_socket[i]; ++j) {
+            printf("CPU%d \t %s \t\t%lld\n", i, argv[j+1], values_per_core[i][j]);
+        }
+        puts("--------------------------------------------");
+    }
+}
+
+static void
+my_exit_handler(int s)
+{
+    puts("\nBye bye!");
+    exit(EXIT_FAILURE);
 }
