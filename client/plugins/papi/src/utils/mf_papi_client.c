@@ -155,7 +155,22 @@ main(int argc, char** argv)
 
     free(num_events_per_socket);
     free(values_per_core);
-    free(event_sets);
+
+    for (i = 0; i != num_cores; ++i) {
+        retval = PAPI_cleanup_eventset(event_sets[i]);
+        if (retval != PAPI_OK) {
+            char *error = PAPI_strerror(retval);
+            log_error("main(int, char**) - PAPI_cleanup_eventset: %s", error);
+            free(error);
+        }
+        retval = PAPI_destroy_eventset(event_sets+i);
+        if (retval != PAPI_OK) {
+            char *error = PAPI_strerror(retval);
+            log_error("main(int, char**) - PAPI_destroy_eventset: %s", error);
+            free(error);
+        }
+    }
+
     PAPI_shutdown();
 }
 
