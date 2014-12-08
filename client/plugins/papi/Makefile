@@ -38,8 +38,8 @@ mf_papi_connector.o: $(SRC)/mf_papi_connector.c $(HEADER)
 mf_plugin_papi.o: $(SRC)/mf_plugin_papi.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
 
-mf_papi_client:
-	$(CC) $(UTILS)/mf_papi_client.c -o mf_papi_client $(CFLAGS) $(LFLAGS)
+mf_papi_client: $(UTILS)/mf_papi_client.c $(SRC)/mf_papi_connector.c
+	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)
 
 prepare:
 	@mkdir -p lib
