@@ -12,6 +12,12 @@ struct PAPI_Plugin_t
     int num_events;
 };
 
-void read_counters(PAPI_Plugin *papi, char **events, size_t num_events);
+void mf_papi_init(char **named_events, size_t num_events);
+
+void mf_papi_profile(int sleep_in_ms);
+
+void mf_papi_read(PAPI_Plugin *papi, char **events);
+
+void mf_papi_shutdown();
 
 #endif

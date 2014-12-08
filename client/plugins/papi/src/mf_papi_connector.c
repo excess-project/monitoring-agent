@@ -18,7 +18,21 @@
 #define SUCCESS 1
 #define FAILURE 0
 
-static void initialize_papi();
+static int cidx;
+static int *event_sets;
+static int num_cores;
+static int domain;
+static int granularity;
+static int *num_events_per_socket;
+static long long **values_per_core;
+static int is_initialized;
+
+void mf_papi_profile();
+void mf_papi_read();
+static int is_papi_initialized();
+static int create_eventset_systemwide();
+static int mf_set_affinity();
+static void load_papi();
 static void get_max_cpus();
 static void init_eventsets();
 static void create_eventset_for_each_core();
@@ -26,46 +40,41 @@ static void bind_events_to_all_cores();
 #ifdef DEBUG
 static void check_events();
 #endif
-static void start_monitoring();
-static void fetch_counters();
-static int create_eventset_systemwide();
-static int mf_set_affinity();
 
 void
-read_counters(PAPI_Plugin *papi, char **named_events, size_t num_events)
+mf_papi_init(char **named_events, size_t num_events)
 {
-    int cidx = 0;
-    int *event_sets = NULL;
-    int num_cores = 0;
-    int domain = 0;
-    int granularity = 0;
-    int *num_events_per_socket = NULL;
-    long long **values_per_core = NULL;
+    if (is_papi_initialized()) {
+        return;
+    }
 
-    initialize_papi();
+    cidx = 0;
+    num_cores = 0;
+    event_sets = NULL;
+    domain = PAPI_DOM_ALL;
+    granularity = PAPI_GRN_SYS;
+    num_events_per_socket = NULL;
+    values_per_core = NULL;
+
+    load_papi();
     get_max_cpus(&num_cores);
-    init_eventsets(event_sets);
-    create_eventset_for_each_core(event_sets, cidx, domain, granularity, num_cores);
-    bind_events_to_all_cores(named_events, num_events, event_sets, num_events_per_socket, num_cores);
+    create_eventset_for_each_core();
+    bind_events_to_all_cores(named_events, num_events);
     #ifdef DEBUG
-    check_events(num_events_per_socket, num_cores);
+    check_events();
     #endif
 
-    values_per_core = malloc(num_cores * sizeof(long long *));
+    is_initialized = 1;
+}
 
-    start_monitoring(
-        event_sets,
-        num_events_per_socket,
-        values_per_core,
-        num_cores,
-        named_events
-    );
-
-    fetch_counters(papi, values_per_core, num_cores, named_events);
+static int
+is_papi_initialized()
+{
+    return is_initialized;
 }
 
 static void
-initialize_papi()
+load_papi()
 {
     if (PAPI_is_initialized()) {
         return;
@@ -74,23 +83,24 @@ initialize_papi()
     int retval = PAPI_library_init(PAPI_VER_CURRENT);
     if (retval != PAPI_VER_CURRENT) {
         char *error = PAPI_strerror(retval);
-        log_error("initialize_papi() - PAPI_library_init: %s", error);
+        log_error("load_papi() - PAPI_library_init: %s", error);
         free(error);
     }
 }
 
-static void
-create_eventset_for_each_core(
-    int *event_sets,
-    int cidx,
-    int domain,
-    int granularity,
-    int num_cores)
+void
+mf_papi_shutdown()
 {
+    PAPI_shutdown();
+}
+
+static void
+create_eventset_for_each_core()
+{
+    init_eventsets();
+
     for (int cpu_num = 0; cpu_num != num_cores; ++cpu_num) {
-        (void) create_eventset_systemwide(
-            event_sets+cpu_num, cidx, cpu_num, domain, granularity
-        );
+        (void) create_eventset_systemwide(event_sets+cpu_num, cpu_num);
     }
 }
 
@@ -110,7 +120,7 @@ get_max_cpus(int *max_cpus)
 }
 
 static void
-init_eventsets(int *event_sets, int num_cores)
+init_eventsets()
 {
     event_sets = malloc(num_cores * sizeof(int));
     if (event_sets == NULL) {
@@ -124,12 +134,7 @@ init_eventsets(int *event_sets, int num_cores)
 }
 
 static int
-create_eventset_systemwide(
-    int *EventSet,
-    int cidx,
-    int cpu_num,
-    int domain,
-    int granularity)
+create_eventset_systemwide(int *EventSet, int cpu_num)
 {
     int retval;
     PAPI_domain_option_t domain_opt;
@@ -211,12 +216,7 @@ mf_set_affinity(int thread_id)
 }
 
 static void
-bind_events_to_all_cores(
-    char **named_events,
-    size_t num_events,
-    int *event_sets,
-    int *num_events_per_socket,
-    int num_cores)
+bind_events_to_all_cores(char **named_events, size_t num_events)
 {
     int i, j;
     int retval;
@@ -224,7 +224,7 @@ bind_events_to_all_cores(
     num_events_per_socket = malloc(num_cores * sizeof(int));
     for (i = 0; i != num_cores; ++i) {
         num_events_per_socket[i] = 0;
-        for (j = 1; j != num_events; ++j) {
+        for (j = 0; j != num_events; ++j) {
             retval = PAPI_add_named_event(event_sets[i], named_events[j]);
             if (retval != PAPI_OK) {
                 char *error = PAPI_strerror(retval);
@@ -242,7 +242,7 @@ bind_events_to_all_cores(
 
 #ifdef DEBUG
 static void
-check_events(int *num_events_per_socket, int num_cores)
+check_events()
 {
     if (num_events_per_socket == NULL) {
         log_warn("check_events() - num_events_per_socket not %s", "initialized");
@@ -257,28 +257,28 @@ check_events(int *num_events_per_socket, int num_cores)
 }
 #endif
 
-static void
-start_monitoring(
-    int *event_sets,
-    int *num_events_per_socket,
-    long long **values_per_core,
-    int num_cores,
-    char **named_events)
+void
+mf_papi_profile(int sleep_in_ms)
 {
-    int i, j;
+    int i;
     int retval;
+    values_per_core = malloc(num_cores * sizeof(long long *));
+
+    if (sleep_in_ms < 1000) {
+        sleep_in_ms = 1000;
+    }
 
     for (i = 0; i != num_cores; ++i) {
         debug("Start PAPI Monitoring for CPU%d", i);
         retval = PAPI_start(event_sets[i]);
         if (retval != PAPI_OK) {
             char *error = PAPI_strerror(retval);
-            log_error("main(int, char**) - PAPI_start: %s", error);
+            log_error("mf_papi_profile() - PAPI_start: %s", error);
             free(error);
         }
     }
 
-    sleep(1);  // FIXME: should be variable and the interval should be much shorter
+    usleep(sleep_in_ms);
 
     for (i = 0; i != num_cores; ++i) {
         debug("Stop PAPI Monitoring for CPU%d", i);
@@ -286,28 +286,14 @@ start_monitoring(
         retval = PAPI_stop(event_sets[i], values_per_core[i]);
         if (retval != PAPI_OK) {
             char *error = PAPI_strerror(retval);
-            log_error("main(int, char**) - PAPI_stop: %s", error);
+            log_error("mf_papi_profile() - PAPI_stop: %s", error);
             free(error);
         }
     }
-
-    #ifdef DEBUG
-    for (i = 0; i != num_cores; ++i) {
-        for (j = 0; j != num_events_per_socket[i]; ++j) {
-            printf("CPU%d \t %s \t\t%lld\n", i, named_events[j+1], values_per_core[i][j]);
-        }
-        puts("--------------------------------------------");
-    }
-    #endif
 }
 
-static void
-fetch_counters(
-    PAPI_Plugin *papi,
-    long long **values_per_core,
-    int num_cores,
-    int *num_events_per_socket,
-    char **named_events)
+void
+mf_papi_read(PAPI_Plugin *papi, char **named_events)
 {
     int i, j;
 
@@ -327,7 +313,14 @@ fetch_counters(
             char metric_name[PAPI_MAX_STR_LEN];
             sprintf(metric_name, "CPU%d::%s", i, named_events[j]);
             strcpy(papi->events[papi->num_events], metric_name);
-            papi->values[papi->num_events++] = values_per_core[i][j];
+            papi->values[papi->num_events] = values_per_core[i][j];
+
+            debug("mf_papi_read() - %s=%lld",
+                papi->events[papi->num_events],
+                papi->values[papi->num_events]
+            );
+
+            papi->num_events++;
         }
     }
 }
