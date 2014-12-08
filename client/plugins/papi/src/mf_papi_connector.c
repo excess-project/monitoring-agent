@@ -84,7 +84,6 @@ load_papi()
     if (retval != PAPI_VER_CURRENT) {
         char *error = PAPI_strerror(retval);
         log_error("load_papi() - PAPI_library_init: %s", error);
-        free(error);
     }
 }
 
@@ -145,7 +144,6 @@ create_eventset_systemwide(int *EventSet, int cpu_num)
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
         log_error("create_eventset_systemwide - PAPI_create_eventset: %s", error);
-        free(error);
         return retval;
     }
 
@@ -153,7 +151,6 @@ create_eventset_systemwide(int *EventSet, int cpu_num)
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
         log_error("create_eventset_systemwide - PAPI_assign_eventset_component: (%s)", error);
-        free(error);
         return retval;
     }
 
@@ -164,7 +161,6 @@ create_eventset_systemwide(int *EventSet, int cpu_num)
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
         log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_DOMAIN): %s", error);
-        free(error);
         return retval;
     }
 
@@ -174,7 +170,6 @@ create_eventset_systemwide(int *EventSet, int cpu_num)
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
         log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_GRANUL): %s", error);
-        free(error);
         return retval;
     }
 
@@ -184,7 +179,6 @@ create_eventset_systemwide(int *EventSet, int cpu_num)
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
         log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_CPU_ATTACH): %s", error);
-        free(error);
         PAPI_shutdown();
         exit(EXIT_FAILURE);
     }
@@ -193,7 +187,6 @@ create_eventset_systemwide(int *EventSet, int cpu_num)
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
         log_error("create_eventset_systemwide - sched_setaffinity: %s", error);
-        free(error);
         return retval;
     }
 
@@ -273,7 +266,6 @@ mf_papi_profile(int sleep_in_ms)
         if (retval != PAPI_OK) {
             char *error = PAPI_strerror(retval);
             log_error("mf_papi_profile() - PAPI_start: %s", error);
-            free(error);
         }
     }
 
@@ -286,7 +278,6 @@ mf_papi_profile(int sleep_in_ms)
         if (retval != PAPI_OK) {
             char *error = PAPI_strerror(retval);
             log_error("mf_papi_profile() - PAPI_stop: %s", error);
-            free(error);
         }
     }
 }

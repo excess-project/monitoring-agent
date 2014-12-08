@@ -16,7 +16,6 @@ void initialize_PAPI()
     if (retval != PAPI_VER_CURRENT) {
         char *error = PAPI_strerror(retval);
         log_error("RAPL:: - PAPI_library_init: %s", error);
-        free(error);
     }
 }
 

@@ -114,9 +114,9 @@ mfp_get_data_filtered_by_value(
             }
         }
 
-        data->keys[data->size] = malloc(sizeof(char) * strlen(key));
+        data->keys[data->size] = malloc(sizeof(char) * 256);
         strcpy(data->keys[data->size], key);
-        data->values[data->size] = malloc(sizeof(char) * strlen(value));
+        data->values[data->size] = malloc(sizeof(char) * 256);
         strcpy(data->values[data->size], value);
 
         data->size++;

@@ -113,10 +113,10 @@ void get_power_data(Likwid_Plugin *likwid, int duration_in_sec)
 
     numa_init();
 
-    int numSockets = numSockets = numa_info.numberOfNodes;
+    int numSockets = numa_info.numberOfNodes;
     if (numSockets > cpuid_topology.numSockets) {
-        printf("Error numsockets\n");
-        exit (1);
+        printf("likwid::get_power_data() -- numsockets\n");
+        numSockets = cpuid_topology.numSockets;
     }
     likwid->numSockets = numSockets;
 
