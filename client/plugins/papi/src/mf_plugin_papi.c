@@ -7,14 +7,14 @@
 #include "plugin_manager.h"
 #include "util.h"
 
-static PAPI_Plugin *papi;
-
 char*
 to_JSON(PAPI_Plugin *papi)
 {
     int i;
     char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"papi\"");
+    strcpy(json, ",\"type\":\"performance\"");
+
+    printf("toJSON() - %d", papi->num_events);
 
     char *single_metric = malloc(512 * sizeof(char));
     for (i = 0; i < papi->num_events; ++i) {
@@ -27,7 +27,7 @@ to_JSON(PAPI_Plugin *papi)
 }
 
 static metric
-papi_hook()
+mf_plugin_papi_hook()
 {
     if (running) {
         metric resMetric = malloc(sizeof(metric_t));
@@ -36,15 +36,20 @@ papi_hook()
         int clk_id = CLOCK_REALTIME;
         clock_gettime(clk_id, &resMetric->timestamp);
 
-        // will be replaced by a parser call
-        char *event_names[2] = {
+        // will be replaced with a parser call
+        int sleep_in_ms = 500000; // 0.5s
+        char *named_events[2] = {
             "PAPI_L2_DCA",
-            "INSTRUCTIONS_RETIRED",
+            "PAPI_TOT_INS",
         };
         size_t num_events = 2;
 
-        read_counters(papi, event_names, num_events);
+        mf_papi_init(named_events, num_events);
+        mf_papi_profile(sleep_in_ms);
+        PAPI_Plugin *papi = malloc(sizeof(PAPI_Plugin));
+        mf_papi_read(papi, named_events);
         strcpy(resMetric->msg, to_JSON(papi));
+        free(papi);
 
         return resMetric;
     } else {
@@ -53,9 +58,9 @@ papi_hook()
 }
 
 extern int
-init_papi(PluginManager *pm)
+init_mf_plugin_papi(PluginManager *pm)
 {
-    PluginManager_register_hook(pm, "papi", papi_hook);
+    PluginManager_register_hook(pm, "mf_plugin_papi", mf_plugin_papi_hook);
 
     return 1;
 }
