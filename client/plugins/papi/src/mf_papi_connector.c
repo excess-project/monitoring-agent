@@ -230,7 +230,6 @@ bind_events_to_all_cores(char **named_events, size_t num_events)
                 char *error = PAPI_strerror(retval);
                 log_warn("bind_events_to_all_cores() - PAPI_add_named_event (%s): %s",
                     named_events[j], error);
-                free(error);
             } else {
                 num_events_per_socket[i]++;
                 log_info("bind_events_to_all_cores() - Added event %s to CPU%d",

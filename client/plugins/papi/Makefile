@@ -3,9 +3,9 @@ CC = /usr/bin/gcc
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb $(PAPI_INC) $(DEBUG_INC)
+-Wcast-align -O0 -ggdb $(PAPI_INC) $(DEBUG_INC) $(PARSER_INC) -I$(COMMON)
 
-LFLAGS = $(PAPI)
+LFLAGS = $(PAPI) $(PARSER)
 
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
@@ -20,9 +20,14 @@ LIB = lib
 TESTS = tests
 UTILS = $(SRC)/utils
 BINARIES = $(COMMON)/../binaries
+
 PAPI = -L$(BINARIES)/papi/lib -lpapi
 PAPI_INC = -I$(BINARIES)/papi/include/
+
 DEBUG_INC = -I$(COMMON)/
+
+PARSER = -L$(COMMON)/contrib/parser/ -lparser
+PARSER_INC = -I$(COMMON)/contrib/parser/src
 
 FILES = $(shell find src -name '*.c')
 HEADER = $(shell find src -name '*.h')
