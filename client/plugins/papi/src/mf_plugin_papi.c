@@ -34,8 +34,6 @@ mf_plugin_papi_hook()
         resMetric->msg = malloc(4096 * sizeof(char));
 
         int clk_id = CLOCK_REALTIME;
-        int retval;
-
         clock_gettime(clk_id, &resMetric->timestamp);
 
         // will be replaced with a parser call
@@ -46,10 +44,7 @@ mf_plugin_papi_hook()
         };
         size_t num_events = 2;
 
-        retval = mf_papi_init(named_events, num_events);
-        if (retval != PAPI_OK) {
-            return NULL;
-        }
+        mf_papi_init(named_events, num_events);
         mf_papi_profile(sleep_in_ms);
         PAPI_Plugin *papi = malloc(sizeof(PAPI_Plugin));
         mf_papi_read(papi, named_events);
