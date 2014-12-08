@@ -1,10 +1,10 @@
+#include <mf_parser.h>
 #include <papi.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "debug.h"
-#include "ini_parser.h"
 #include "mf_papi_connector.h"
 #include "plugin_manager.h"
 #include "util.h"

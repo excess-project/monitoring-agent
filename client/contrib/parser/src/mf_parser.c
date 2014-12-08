@@ -5,8 +5,8 @@
 #include <stdlib.h>
 
 #include "../libs/ini/ini.h"
-#include "../../../debug.h"
-#include "ini_parser.h"
+#include "debug.h"
+#include "mf_parser.h"
 
 #define MAKE_DUP(s) apr_pstrdup(mp, s)
 
@@ -16,8 +16,10 @@ static int ht_initialized = 0;
 
 static void intialize_ht();
 static int handle_parser(void*, const char*, const char*, const char*);
+void mfp_set_value(const char* section, const char* key, const char* value);
 
-int mfp_parse(const char* filename)
+int
+mfp_parse(const char* filename)
 {
     intialize_ht();
 
@@ -31,15 +33,15 @@ int mfp_parse(const char* filename)
     return 1;
 }
 
-void mfp_set_value(const char* section, const char* key, const char* value);
-
-static int handle_parser(void* user, const char* section, const char* name, const char* value)
+static int
+handle_parser(void* user, const char* section, const char* name, const char* value)
 {
     mfp_set_value(section, name, value);
     return 1;
 }
 
-void mfp_set_value(const char* section, const char* key, const char* value)
+void
+mfp_set_value(const char* section, const char* key, const char* value)
 {
     intialize_ht();
 
@@ -54,7 +56,8 @@ void mfp_set_value(const char* section, const char* key, const char* value)
     apr_hash_set(ht_config, MAKE_DUP(section), APR_HASH_KEY_STRING, ht_values);
 }
 
-static void intialize_ht()
+static void
+intialize_ht()
 {
     if (ht_initialized) {
         return;
@@ -66,7 +69,8 @@ static void intialize_ht()
     ht_initialized = 1;
 }
 
-char* mfp_get_value(const char* section, const char* key)
+char*
+mfp_get_value(const char* section, const char* key)
 {
     intialize_ht();
 
@@ -79,7 +83,11 @@ char* mfp_get_value(const char* section, const char* key)
     return (char*) apr_hash_get(ht_values, key, APR_HASH_KEY_STRING);
 }
 
-void mfp_get_data(const char* section, mfp_data* data)
+void
+mfp_get_data_filtered_by_value(
+    const char* section,
+    mfp_data* data,
+    const char* filter_by_value)
 {
     intialize_ht();
 
@@ -99,6 +107,13 @@ void mfp_get_data(const char* section, mfp_data* data)
 
         apr_hash_this(ht_index, (const void**)&key, NULL, (void**)&value);
 
+        // filter keys by value
+        if (filter_by_value != NULL) {
+            if (strcmp(value, filter_by_value) != 0) {
+                continue;
+            }
+        }
+
         data->keys[data->size] = malloc(sizeof(char) * strlen(key));
         strcpy(data->keys[data->size], key);
         data->values[data->size] = malloc(sizeof(char) * strlen(value));
@@ -106,6 +121,12 @@ void mfp_get_data(const char* section, mfp_data* data)
 
         data->size++;
     }
+}
+
+void
+mfp_get_data(const char* section, mfp_data* data)
+{
+    mfp_get_data_filtered_by_value(section, data, NULL);
 }
 
 /*

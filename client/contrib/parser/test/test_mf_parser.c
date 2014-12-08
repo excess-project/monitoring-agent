@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "../../../libs/CuTest/CuTest.h"
-#include "../src/ini_parser.h"
+#include "mf_parser.h"
 
 void Test_parse(CuTest *tc)
 {
@@ -112,6 +112,17 @@ void Test_set_value_for_existing_key(CuTest *tc)
     free(data);
 }
 
+void Test_get_data_filtered(CuTest *tc)
+{
+    mfp_data *data = malloc(sizeof(mfp_data));
+
+    mfp_parse("config.ini");
+    mfp_get_data_filtered_by_value("papi", data, "on");
+    CuAssertTrue(tc, data->size == 1);
+
+    free(data);
+}
+
 CuSuite* CuGetSuite(void)
 {
     CuSuite* suite = CuSuiteNew();
@@ -133,6 +144,9 @@ CuSuite* CuGetSuite(void)
     SUITE_ADD_TEST(suite, Test_keys_values_check_plugins_size);
     SUITE_ADD_TEST(suite, Test_keys_values_check_key_of_timings);
     SUITE_ADD_TEST(suite, Test_keys_values_check_value_of_timings);
+
+    // mfp_get_data
+    SUITE_ADD_TEST(suite, Test_get_data_filtered);
 
     return suite;
 }

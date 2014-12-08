@@ -1,6 +1,6 @@
 CC = /usr/bin/gcc
 
-CFLAGS = -std=gnu99 -pedantic -Wall $(APR_INC)
+CFLAGS = -std=gnu99 -pedantic -Wall $(APR_INC) -I$(COMMON_INC) -I$(SRC)
 LFLAGS = -lm $(APR)
 
 SRC = ../src
@@ -9,6 +9,7 @@ INI = $(LIBS)/ini
 COMMON_LIBS = ../../../libs
 CUTEST = $(COMMON_LIBS)/CuTest
 
+COMMON_INC = ../../../
 BINARIES = ../../../../binaries
 APR_CONFIG = $(BINARIES)/apr/bin/apr-1-config
 APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config
@@ -23,7 +24,7 @@ endif
 all: test_parser
 
 test_parser:
-	$(CC) -o test $(CUTEST)/*.c test_ini_parser.c $(SRC)/ini_parser.c $(INI)/ini.c $(CFLAGS) $(LFLAGS)
+	$(CC) -o test $(CUTEST)/*.c test_mf_parser.c $(SRC)/mf_parser.c $(INI)/ini.c $(CFLAGS) $(LFLAGS)
 
 clean:
 	rm -rf test
