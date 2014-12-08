@@ -15,7 +15,7 @@ char* to_JSON(PAPI_Plugin *papi)
 {
     int i;
     char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"performance\"");
+    strcpy(json, ",\"type\":\"papi\"");
 
     char *single_metric = malloc(512 * sizeof(char));
     for (i = 0; i < papi->num_events; ++i) {
