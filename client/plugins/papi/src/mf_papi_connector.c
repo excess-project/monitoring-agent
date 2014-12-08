@@ -29,24 +29,26 @@ static int is_initialized;
 
 void mf_papi_profile();
 void mf_papi_read();
-static int is_papi_initialized();
+static int is_mf_papi_initialized();
 static int create_eventset_systemwide();
 static int mf_set_affinity();
 static void load_papi();
 static void get_max_cpus();
 static void init_eventsets();
-static void create_eventset_for_each_core();
+static int create_eventset_for_each_core();
 static void bind_events_to_all_cores();
 #ifdef DEBUG
 static void check_events();
 #endif
 
-void
+int
 mf_papi_init(char **named_events, size_t num_events)
 {
-    if (is_papi_initialized()) {
-        return;
+    if (is_mf_papi_initialized()) {
+        return is_initialized;
     }
+
+    int retval;
 
     cidx = 0;
     num_cores = 0;
@@ -58,17 +60,23 @@ mf_papi_init(char **named_events, size_t num_events)
 
     load_papi();
     get_max_cpus(&num_cores);
-    create_eventset_for_each_core();
+    retval = create_eventset_for_each_core();
+    if (retval != PAPI_OK) {
+        is_initialized = 0;
+        return is_initialized;
+    }
     bind_events_to_all_cores(named_events, num_events);
     #ifdef DEBUG
     check_events();
     #endif
 
     is_initialized = 1;
+
+    return is_initialized;
 }
 
 static int
-is_papi_initialized()
+is_mf_papi_initialized()
 {
     return is_initialized;
 }
@@ -94,14 +102,20 @@ mf_papi_shutdown()
     PAPI_shutdown();
 }
 
-static void
+static int
 create_eventset_for_each_core()
 {
+    int retval;
     init_eventsets();
 
     for (int cpu_num = 0; cpu_num != num_cores; ++cpu_num) {
-        (void) create_eventset_systemwide(event_sets+cpu_num, cpu_num);
+        retval = create_eventset_systemwide(event_sets+cpu_num, cpu_num);
+        if (retval != PAPI_OK) {
+            return retval;
+        }
     }
+
+    return PAPI_OK;
 }
 
 static void
@@ -185,7 +199,6 @@ create_eventset_systemwide(int *EventSet, int cpu_num)
         char *error = PAPI_strerror(retval);
         log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_CPU_ATTACH): %s", error);
         free(error);
-        PAPI_shutdown();
         exit(EXIT_FAILURE);
     }
 

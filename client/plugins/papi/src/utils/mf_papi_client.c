@@ -74,7 +74,7 @@ to_csv(PAPI_Plugin *papi)
     char *row;
 
     if (papi == NULL) {
-        log_error("No data fetched during profiling: %s", NULL);
+        log_error("No data fetched during profiling: %s", "NULL");
         return NULL;
     }
 

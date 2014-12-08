@@ -12,7 +12,7 @@ struct PAPI_Plugin_t
     int num_events;
 };
 
-void mf_papi_init(char **named_events, size_t num_events);
+int mf_papi_init(char **named_events, size_t num_events);
 
 void mf_papi_profile(int sleep_in_ms);
 
