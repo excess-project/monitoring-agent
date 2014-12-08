@@ -51,9 +51,10 @@ APU_CONFIG = ../binaries/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
 APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
+.PHONY: plugins copy_plugins clean
 
 ## to use, type: make or make all
-all: prepare excess_main plugins copy_plugins $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/rapl.so $(PLUGIN_DIR)/likwid.so
+all: prepare excess_main copy_plugins $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/rapl.so $(PLUGIN_DIR)/likwid.so
 
 lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
 
@@ -77,11 +78,10 @@ excess_main_lib: excess_main.o thread_handler.o util.o plugin_discover.o \
 #
 # plugins
 #
-# papi
 plugins:
-	$(MAKE) -C plugins/papi
+	$(MAKE) -C $(PLUGIN_DIR)/papi
 
-copy_plugins:
+copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
 
 # mem_info
