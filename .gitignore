@@ -24,3 +24,5 @@
 /client/parser/test/test
 /client/publisher/libpublisher.a
 /client/publisher/test/test
+/likwid-latest
+/likwid-read-only
