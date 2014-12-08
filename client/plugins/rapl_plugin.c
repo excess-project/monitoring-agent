@@ -4,17 +4,19 @@
 #include <unistd.h>
 
 #include "rapl_plugin.h"
+#include "debug.h"
 
 void initialize_PAPI()
 {
-    int retval = PAPI_is_initialized();
+    if (PAPI_is_initialized()) {
+        return;
+    }
 
-    if (retval != PAPI_LOW_LEVEL_INITED) {
-        int retval = PAPI_library_init(PAPI_VER_CURRENT);
-        if (retval != PAPI_VER_CURRENT) {
-            // handle error
-            printf("%s", "RAPL: wrong PAPI version");
-        }
+    int retval = PAPI_library_init(PAPI_VER_CURRENT);
+    if (retval != PAPI_VER_CURRENT) {
+        char *error = PAPI_strerror(retval);
+        log_error("RAPL:: - PAPI_library_init: %s", error);
+        free(error);
     }
 }
 
@@ -26,7 +28,7 @@ int get_available_events(RAPL_Plugin *rapl)
     int EventSet = PAPI_NULL;
     int num_events = 0;
 
-    //initialize_PAPI();
+    initialize_PAPI();
 
     int retval = PAPI_create_eventset(&EventSet);
     if (retval != PAPI_OK) {
@@ -116,13 +118,13 @@ int get_available_events(RAPL_Plugin *rapl)
 
 int get_rapl_component_id()
 {
-    //initialize_PAPI();
-
     int cid;
+    int numcmp;
     int rapl_cid;
     const PAPI_component_info_t *cmpinfo = NULL;
 
-    int numcmp = PAPI_num_components();
+    initialize_PAPI();
+    numcmp = PAPI_num_components();
     for (cid = 0; cid < numcmp; ++cid) {
         if ((cmpinfo = PAPI_get_component_info(cid)) == NULL) {
             // handle error

@@ -2,7 +2,7 @@
 ## Author: Anthony Sulistio edited by Nico Eichhorn
 ## Date: April 2013
 
-CC = /usr/bin/gcc 
+CC = /usr/bin/gcc
 ## gcc-Version 4.4.7 20120313 (Red Hat 4.4.7-4) (GCC)
 
 COPT_SO = $(CFLAGS) -fpic
@@ -53,7 +53,7 @@ APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
 
 ## to use, type: make or make all
-all: prepare excess_main $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/papi.so $(PLUGIN_DIR)/rapl.so $(PLUGIN_DIR)/likwid.so
+all: prepare excess_main plugins copy_plugins $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/rapl.so $(PLUGIN_DIR)/likwid.so
 
 lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
 
@@ -75,32 +75,28 @@ excess_main_lib: excess_main.o thread_handler.o util.o plugin_discover.o \
 		$(CC) -shared -o libagent.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
 #
-# plugins 
+# plugins
 #
+# papi
+plugins:
+	$(MAKE) -C plugins/papi
+
+copy_plugins:
+	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
 
 # mem_info
 $(PLUGIN_DIR)/mem_info.so: $(PLUGIN_DIR)/mem_info.o
 	$(CC) -o $(PLUGIN_DEST)/mem_info.so $^ -shared
 
-$(PLUGIN_DIR)/mem_info.o: $(PLUGIN_DIR)/mem_info.c $(HEADER) 
+$(PLUGIN_DIR)/mem_info.o: $(PLUGIN_DIR)/mem_info.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I.
-
-# papi
-$(PLUGIN_DIR)/papi.so: $(PLUGIN_DIR)/papi_plugin.o $(PLUGIN_DIR)/papi.o
-	$(CC) -o $(PLUGIN_DEST)/papi.so $^ -shared ../binaries/papi/lib/libpapi.so
-
-$(PLUGIN_DIR)/papi_plugin.o: $(PLUGIN_DIR)/papi_plugin.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
-
-$(PLUGIN_DIR)/papi.o: $(PLUGIN_DIR)/papi.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
 
 # rapl
 $(PLUGIN_DIR)/rapl.so: $(PLUGIN_DIR)/rapl_plugin.o $(PLUGIN_DIR)/rapl.o
 	$(CC) -o $(PLUGIN_DEST)/rapl.so $^ -shared ../binaries/papi/lib/libpapi.so
 
 $(PLUGIN_DIR)/rapl_plugin.o: $(PLUGIN_DIR)/rapl_plugin.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi	
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
 
 $(PLUGIN_DIR)/rapl.o: $(PLUGIN_DIR)/rapl.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
@@ -110,7 +106,7 @@ $(PLUGIN_DIR)/likwid.so: $(PLUGIN_DIR)/likwid_plugin.o $(PLUGIN_DIR)/likwid.o
 	$(CC) -o $(PLUGIN_DEST)/likwid.so $^ -shared ../binaries/likwid/lib/liblikwid.so
 
 $(PLUGIN_DIR)/likwid_plugin.o: $(PLUGIN_DIR)/likwid_plugin.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID) -llikwid -lm -lpthread	
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID) -llikwid -lm -lpthread
 
 $(PLUGIN_DIR)/likwid.o: $(PLUGIN_DIR)/likwid.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID) -llikwid -lm -lpthread
