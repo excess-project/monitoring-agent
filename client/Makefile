@@ -18,7 +18,8 @@ $(APR_INC) \
 $(CURL_INC) \
 $(LIKWID_INC) \
 $(PARSER_INC) \
-$(PUBLISHER_INC)
+$(PUBLISHER_INC) \
+$(CORE_INC)
 
 LFLAGS =  -lm $(CURL) $(PAPI) $(APR) $(LIKWID) $(PARSER) $(PUBLISHER)
 
@@ -29,6 +30,8 @@ HEADER  = $(shell find . -name "*.h")
 
 
 ## Internal Libraries
+CORE_INC = -Icore/src
+
 PARSER = -Lcontrib/parser/ -lparser
 PARSER_INC = -Icontrib/parser/src/
 
@@ -112,7 +115,7 @@ $(PLUGIN_DIR)/likwid.o: $(PLUGIN_DIR)/likwid.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID) -llikwid -lm -lpthread
 
 clean:
-	rm -rf core *.o *.a $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so
+	rm -rf *.o *.a $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so
 	$(MAKE) -C contrib/parser clean
 	$(MAKE) -C contrib/publisher clean
 

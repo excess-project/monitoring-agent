@@ -13,6 +13,7 @@
 
 #include <dlfcn.h>
 
+#include "mf_types.h"
 #include "plugin_discover.h"
 #include "excess_main.h"
 

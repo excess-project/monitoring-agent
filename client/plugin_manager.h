@@ -8,6 +8,7 @@
 #ifndef PLUGIN_MANAGER_H_
 #define PLUGIN_MANAGER_H_
 
+#include "mf_types.h"
 #include "util.h"
 
 /**
