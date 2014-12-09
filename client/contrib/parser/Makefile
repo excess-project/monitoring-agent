@@ -3,11 +3,12 @@ CC = /usr/bin/gcc
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb $(APR_INC) -I$(COMMON_INC)
+-Wcast-align -O0 -ggdb $(APR_INC) $(CORE_INC)
 
 LFLAGS =  -lm $(APR)
 
-COMMON_INC = ../../
+COMMON = ../..
+CORE_INC = -I$(COMMON)/core/src
 BINARIES = ../../../binaries
 APR_CONFIG = $(BINARIES)/apr/bin/apr-1-config
 APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "debug.h"
+#include "mf_debug.h"
 #include "mf_papi_connector.h"
 #include "plugin_manager.h"
 #include "util.h"

@@ -13,7 +13,7 @@
 #include <unistd.h>
 
 #include "mf_papi_connector.h"
-#include "debug.h"
+#include "mf_debug.h"
 
 static char *csv;
 

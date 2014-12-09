@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #include "../libs/ini/ini.h"
-#include "debug.h"
+#include "mf_debug.h"
 #include "mf_parser.h"
 
 #define MAKE_DUP(s) apr_pstrdup(mp, s)

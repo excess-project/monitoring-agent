@@ -1,7 +1,7 @@
 #include <curl/curl.h>
 #include <string.h>
 
-#include "../../../debug.h"
+#include "mf_debug.h"
 #include "publisher.h"
 
 static CURL *curl;
@@ -36,7 +36,7 @@ static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 static size_t get_stream_data(void *buffer, size_t size, size_t nmemb, void *stream) {
 	size_t total = size * nmemb;
 	memcpy(stream, buffer, total);
-	
+
 	return total;
 }
 
@@ -55,7 +55,7 @@ static int check_message(char *message)
 	if (message == NULL || *message == '\0') {
 	    const char *error_msg = "message not set.";
 		log_error("publish(const char*, Message) %s", error_msg);
-		return 0;	    
+		return 0;
 	}
 	return 1;
 }
@@ -72,8 +72,8 @@ static int prepare_publish(const char *URL, char *message)
 	#ifdef DEBUG
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
     #endif
-    
-    return 1;    
+
+    return 1;
 }
 
 int publish_json(const char *URL, char *message)
@@ -144,7 +144,7 @@ void shutdown_curl()
     if (curl == NULL ) {
 		return;
 	}
-	
+
     curl_easy_cleanup(curl);
     curl_global_cleanup();
 }

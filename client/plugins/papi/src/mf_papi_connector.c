@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "debug.h"
+#include "mf_debug.h"
 #include "mf_papi_connector.h"
 
 #define SUCCESS 1
