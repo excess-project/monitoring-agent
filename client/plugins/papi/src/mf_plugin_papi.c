@@ -39,7 +39,7 @@ mf_plugin_papi_hook()
         clock_gettime(clk_id, &resMetric->timestamp);
         int sleep_in_ms = 500000; // 0.5s
 
-        mfp_get_data("papi", conf_data);
+        mfp_get_data_filtered_by_value("papi", conf_data, "on");
         mf_papi_init(conf_data->keys, conf_data->size);
         mf_papi_profile(sleep_in_ms);
         PAPI_Plugin *papi = malloc(sizeof(PAPI_Plugin));
