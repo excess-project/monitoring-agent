@@ -3,7 +3,7 @@ CC = /usr/bin/gcc
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb $(APR_INC) $(CORE_INC)
+-Wcast-align -O0 -ggdb -fPIC $(APR_INC) $(CORE_INC)
 
 LFLAGS =  -lm $(APR)
 
@@ -15,19 +15,25 @@ APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
 APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
-all: clean-all libparser.a
+all: clean-all libparser.so libparser.a
 
 mf_parser.o:
-		$(CC) -c src/mf_parser.c libs/ini/ini.c -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+	$(CC) -c src/mf_parser.c libs/ini/ini.c -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
-libparser.a:	mf_parser.o ini.o
-		ar rcs $@ $^
+ini.o:
+	$(CC) -c libs/ini/ini.c -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+
+libparser.so: mf_parser.o ini.o
+	$(CC) -shared -o $@ $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+
+libparser.a: mf_parser.o ini.o
+	ar rcs $@ $^
 
 clean:
 	rm -rf core *.o
 
 clean-all:
-	rm -rf core *.o *.a
+	rm -rf core *.o *.a *.so
 
 doc: $(FILES)
 	doxygen Doxyfile

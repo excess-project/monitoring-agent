@@ -54,7 +54,7 @@ APU_CONFIG = ../binaries/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
 APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
-.PHONY: plugins copy_plugins clean
+.PHONY: libmf plugins copy_plugins clean
 
 ## to use, type: make or make all
 all: prepare excess_main copy_plugins $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/rapl.so $(PLUGIN_DIR)/likwid.so
@@ -77,6 +77,12 @@ excess_main : excess_main.o thread_handler.o util.o plugin_discover.o \
 excess_main_lib: excess_main.o thread_handler.o util.o plugin_discover.o \
 		plugin_manager.o
 		$(CC) -shared -o libagent.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+
+libmf: excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
+	$(CC) -shared -o libmf.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+
+libmf.a: excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
+	ar rcs $@ $^
 
 #
 # plugins
@@ -115,7 +121,7 @@ $(PLUGIN_DIR)/likwid.o: $(PLUGIN_DIR)/likwid.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID) -llikwid -lm -lpthread
 
 clean:
-	rm -rf *.o *.a $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so
+	rm -rf *.o *.a *.so $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so
 	$(MAKE) -C contrib/parser clean
 	$(MAKE) -C contrib/publisher clean
 
