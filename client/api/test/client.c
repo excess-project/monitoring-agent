@@ -74,5 +74,8 @@ main(int argc, char** argv)
     response = get_data_by_metric_by_interval("mem_used", start_time, end_time);
     puts(response);
 
+    response = get_data_by_metric_by_interval("mem_not_used", start_time, end_time);
+    puts(response);
+
     return EXIT_SUCCESS;
 }
