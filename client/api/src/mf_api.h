@@ -30,12 +30,12 @@ char* get_data_by_interval(long double start_time, long double stop_time);
  * @brief Query the database running on host by id in order to retrieve a
  *        specific value for the given metric.
  */
-char* get_data_by_interval_by_metric(
-    const char *URL,
-    const char *id,
-    long double t0,
-    long double t1,
-    char *metric
+char* get_data_by_metric_by_interval(
+    const char* metric_name,
+    long double start_time,
+    long double end_time
 );
+
+void mf_api_send(const char* json);
 
 #endif

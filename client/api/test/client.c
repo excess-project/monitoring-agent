@@ -8,7 +8,7 @@
 int
 main(int argc, char** argv)
 {
-    int c;
+    int i, c;
     const char* URL = NULL;
     char* db_key = NULL;
     long double start_time, end_time;
@@ -51,7 +51,19 @@ main(int argc, char** argv)
     mf_api_initialize(URL, db_key);
 
     start_time = mf_api_start_profiling("fcnt1");
-    usleep(2000000);
+
+    char* mem_info = malloc(256 * sizeof(char));
+    for (i = 0; i != 2; ++i) {
+        sprintf(mem_info, ",\"mem_used\":%d", i);
+        mf_api_send(mem_info);
+
+        usleep(500000);
+
+        sprintf(mem_info, ",\"mem_not_used\":%d", i);
+        mf_api_send(mem_info);
+    }
+    free(mem_info);
+
     end_time = mf_api_stop_profiling("fcnt1");
 
     usleep(1000000);
@@ -59,12 +71,8 @@ main(int argc, char** argv)
     char *response = get_data_by_interval(start_time, end_time);
     puts(response);
 
-    //query database for stats of a metric
-    /*
-    char *res1 = querySpecificStatFromDB("http://mf.excess-project.eu",
-            "JcJNPcVZRa6bVSnn9rejcA", 1411648702.428327942,
-            1411648702.429081288, "mem_used");
-    */
+    response = get_data_by_metric_by_interval("mem_used", start_time, end_time);
+    puts(response);
 
     return EXIT_SUCCESS;
 }

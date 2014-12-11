@@ -18,6 +18,7 @@ static int api_is_initialized = 0;
 static void check_api();
 static long double get_time_in_ns();
 static long double send_trigger();
+static char* get_data_by_query();
 
 void
 mf_api_initialize(const char* URL, char* db_key)
@@ -102,10 +103,7 @@ get_time_in_ns(struct timespec date)
 char*
 get_data_by_interval(long double start_time, long double stop_time)
 {
-    check_api();
-
     char query_url[300] = { '\0' };
-    char* response;
 
     // <server_name> := http://localhost:3000/executions/
     // query_url := <server_name>/<db_key>/<start_time>/<stop_time>
@@ -114,10 +112,52 @@ get_data_by_interval(long double start_time, long double stop_time)
         start_time,
         stop_time
     );
-    response = malloc(10000 * sizeof(char));
+
+    return get_data_by_query(query_url);
+}
+
+char*
+get_data_by_metric_by_interval(
+    const char* metric_name,
+    long double start_time,
+    long double stop_time)
+{
+    char query_url[300] = { '\0' };
+
+    // <server_name> := http://localhost:3000/executions/
+    // query_url := <server_name>/<db_key>/<metric_name>/<start_time>/<stop_time>
+    sprintf(query_url, "%s/%s/%.9Lf/%.9Lf",
+        server_name,
+        metric_name,
+        start_time,
+        stop_time
+    );
+
+    return get_data_by_query(query_url);
+}
+
+static char*
+get_data_by_query(char* query_url)
+{
+    check_api();
+
+    char* response = malloc(10000 * sizeof(char));
     memset(response, 10000, '\0');
 
     query(query_url, response);
 
     return response;
+}
+
+void
+mf_api_send(const char* json)
+{
+    metric resMetric = malloc(sizeof(metric_t));
+    resMetric->msg = malloc(100 * sizeof(char));
+
+    int clk_id = CLOCK_REALTIME;
+    clock_gettime(clk_id, &resMetric->timestamp);
+    strcpy(resMetric->msg, json);
+
+    prepSend(resMetric);
 }
