@@ -36,8 +36,8 @@ struct Message_t {
 /**
  * @brief Returns the execution id used for communication with Elasticsearch.
  *
- * If the variable #execution_id is set, then this function returns the already 
- * initialized value of #execution_id. Otherwise, this function queries 
+ * If the variable #execution_id is set, then this function returns the already
+ * initialized value of #execution_id. Otherwise, this function queries
  * the server via calling publish_json() based on the given URL. The #message
  * must have the following format in JSON:
  *
@@ -51,6 +51,13 @@ struct Message_t {
  * \endcode
  */
 char* get_execution_id(const char *URL, char *message);
+
+/**
+ * @brief Queries a server by the given query, and writes the response into
+ *        received data.
+ *
+ */
+int query(const char* query, char* received_data);
 
 /**
  * @brief Publishes previously defined Message objects.

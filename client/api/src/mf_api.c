@@ -15,6 +15,7 @@
 
 static int api_is_initialized = 0;
 
+static void check_api();
 static long double get_time_in_ns();
 static long double send_trigger();
 
@@ -42,21 +43,23 @@ mf_api_initialize(const char* URL, char* db_key)
 long double
 mf_api_start_profiling(const char* function_name)
 {
-    if (!api_is_initialized) {
-        log_error("Library is not initialized: %s", "mf_api_start_profiling");
-        exit(EXIT_FAILURE);
-    }
+    check_api();
     return send_trigger(function_name, START_MONITORING);
 }
 
 long double
 mf_api_stop_profiling(const char* function_name)
 {
+    check_api();
+    return send_trigger(function_name, STOP_MONITORING);
+}
+
+static void check_api()
+{
     if (!api_is_initialized) {
-        log_error("Library is not initialized: %s", "mf_api_stop_profiling");
+        log_error("Library is not initialized. Please call %s first.", "mf_api_initialize");
         exit(EXIT_FAILURE);
     }
-    return send_trigger(function_name, STOP_MONITORING);
 }
 
 static long double
@@ -94,4 +97,27 @@ get_time_in_ns(struct timespec date)
         (long double) (date.tv_nsec / 10e8);
 
     return timestamp;
+}
+
+char*
+get_data_by_interval(long double start_time, long double stop_time)
+{
+    check_api();
+
+    char query_url[300] = { '\0' };
+    char* response;
+
+    // <server_name> := http://localhost:3000/executions/
+    // query_url := <server_name>/<db_key>/<start_time>/<stop_time>
+    sprintf(query_url, "%s/%.9Lf/%.9Lf",
+        server_name,
+        start_time,
+        stop_time
+    );
+    response = malloc(10000 * sizeof(char));
+    memset(response, 10000, '\0');
+
+    query(query_url, response);
+
+    return response;
 }

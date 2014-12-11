@@ -51,17 +51,13 @@ main(int argc, char** argv)
     mf_api_initialize(URL, db_key);
 
     start_time = mf_api_start_profiling("fcnt1");
-    printf("\nStart: %.9Lf\n", start_time);
-    usleep(100000);
+    usleep(2000000);
     end_time = mf_api_stop_profiling("fcnt1");
-    printf("\nEnd: %.9Lf\n", end_time);
 
-    // query database for range of time for all metrics
-    /*
-    char *res = get_all_data_by_interval("http://mf.excess-project.eu",
-            "JcJNPcVZRa6bVSnn9rejcA", 1411648702.428327942,
-            1411648702.429081288);
-    */
+    usleep(1000000);
+
+    char *response = get_data_by_interval(start_time, end_time);
+    puts(response);
 
     //query database for stats of a metric
     /*

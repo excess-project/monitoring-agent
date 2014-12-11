@@ -1,5 +1,7 @@
 #include <curl/curl.h>
+#include <stdlib.h>
 #include <string.h>
+
 
 #include "mf_debug.h"
 #include "publisher.h"
@@ -27,11 +29,42 @@ static void init_curl()
 }
 
 #ifndef DEBUG
-static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
+static size_t write_non_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
    return size * nmemb;
 }
 #endif
+
+struct string {
+    char *ptr;
+    size_t len;
+};
+
+void init_string(struct string *s) {
+    s->len = 0;
+    s->ptr = malloc(s->len+1);
+    if (s->ptr == NULL) {
+        fprintf(stderr, "malloc() failed\n");
+        exit(EXIT_FAILURE);
+    }
+    s->ptr[0] = '\0';
+}
+
+static size_t
+write_data(void *ptr, size_t size, size_t nmemb, struct string *s)
+{
+    size_t new_len = s->len + size*nmemb;
+    s->ptr = realloc(s->ptr, new_len+1);
+    if (s->ptr == NULL) {
+        fprintf(stderr, "realloc() failed\n");
+        exit(EXIT_FAILURE);
+    }
+    memcpy(s->ptr+s->len, ptr, size*nmemb);
+    s->ptr[new_len] = '\0';
+    s->len = new_len;
+
+    return size*nmemb;
+}
 
 static size_t get_stream_data(void *buffer, size_t size, size_t nmemb, void *stream) {
 	size_t total = size * nmemb;
@@ -76,6 +109,61 @@ static int prepare_publish(const char *URL, char *message)
     return 1;
 }
 
+static int
+prepare_query(const char* URL)
+{
+    init_curl();
+
+    curl_easy_setopt(curl, CURLOPT_URL, URL);
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    #ifdef DEBUG
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    #endif
+
+    return 1;
+}
+
+size_t curl_write( void *ptr, size_t size, size_t nmemb, void *stream)
+{
+    return fwrite(ptr, size, nmemb, stdout);
+}
+
+int
+query(const char* query, char* received_data)
+{
+    int result = SEND_SUCCESS;
+    struct string response_message;
+
+    if (!check_URL(query)) {
+        return 0;
+    }
+
+    if (!prepare_query(query)) {
+        return 0;
+    }
+
+    puts(query);
+
+    init_string(&response_message);
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, response_message);
+
+    CURLcode response = curl_easy_perform(curl);
+    if (response != CURLE_OK) {
+        result = SEND_FAILED;
+        const char *error_msg = curl_easy_strerror(response);
+        log_error("query(const char*, char*) %s", error_msg);
+    }
+
+    received_data = (char*) realloc (received_data, response_message.len);
+    received_data = response_message.ptr;
+
+    curl_easy_reset(curl);
+
+    return 1;
+}
+
 int publish_json(const char *URL, char *message)
 {
 	int result = SEND_SUCCESS;
@@ -89,7 +177,7 @@ int publish_json(const char *URL, char *message)
     }
 
     #ifndef DEBUG
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_non_data);
 	#endif
 
 	CURLcode response = curl_easy_perform(curl);
