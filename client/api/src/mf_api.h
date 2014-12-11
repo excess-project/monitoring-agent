@@ -7,17 +7,17 @@
 #define MF_API_H_
 
 
-void mf_api_initialize(const char* conf_file, char* dbkey);
+void mf_api_initialize(const char* URL, char* db_key);
 
 /**
  * @brief Triggers the monitoring of given external function.
  */
-void mf_api_start_profiling(const char *function_name);
+long double mf_api_start_profiling(const char *function_name);
 
 /**
  * @brief Stops the monitoring of the given external function.
  */
-void mf_api_stop_profiling(const char *function_name);
+long double mf_api_stop_profiling(const char *function_name);
 
 /**
  * @brief Query the database running on host by id in order to retrieve all

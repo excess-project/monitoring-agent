@@ -123,11 +123,13 @@ int startSending() {
 		if (status == APR_SUCCESS) {
 			metric mPtr = ptr;
 			prepSend(mPtr);
+			free(mPtr);
 		}
 	}
 	while ((apr_queue_pop(data_queue, &ptr) == APR_SUCCESS)) {
 		metric mPtr = ptr;
 		prepSend(mPtr);
+		free(mPtr);
 	}
 	return 1;
 
@@ -153,7 +155,6 @@ int prepSend(metric data) {
 
 	sprintf(msg, "{\"Timestamp\":%.9Lf,\"hostname\":\"%s\"%s}", timeStamp, hostname, data->msg);
 	publish_json(server_name, msg);
-	free(data);
 	free(hostname);
 
 	return 1;
@@ -215,7 +216,7 @@ int gatherMetric(int num) {
 	}
 	hook(); // call when terminating programm, enables cleanup of plugins
 	free(resMetric);
-	
+
 	//startStop(name, STOP);
 
 	return 1;
