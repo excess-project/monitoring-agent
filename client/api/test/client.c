@@ -1,3 +1,8 @@
+/**
+ * @brief Example showing sending user-defined metrics to the MF server
+ *
+ * @author Dennis Hoppe <hoppe@hrls.de>
+ */
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,9 +14,13 @@ int
 main(int argc, char** argv)
 {
     int i, c;
-    const char* URL = NULL;
     char* db_key = NULL;
+    const char* URL = NULL;
     long double start_time, end_time;
+
+    /***************************************************************************
+     * GET OPTIONS
+     **************************************************************************/
 
     opterr = 0;
     while ((c = getopt(argc, argv, "?k:u:")) != -1) {
@@ -39,6 +48,10 @@ main(int argc, char** argv)
         }
     }
 
+    /***************************************************************************
+     * Initialize API and send custom data to the server
+     **************************************************************************/
+
     mf_api_initialize(URL, db_key);
 
     start_time = mf_api_start_profiling("fcnt1");
@@ -48,10 +61,7 @@ main(int argc, char** argv)
         sprintf(mem_info, ",\"mem_used\":%d", i);
         mf_api_send(mem_info);
 
-        usleep(500000);
-
-        sprintf(mem_info, ",\"mem_not_used\":%d", i);
-        mf_api_send(mem_info);
+        usleep(250000);
     }
     free(mem_info);
 
@@ -59,14 +69,16 @@ main(int argc, char** argv)
 
     usleep(1000000);
 
+    /***************************************************************************
+     * Retrieve information from the database
+     **************************************************************************/
+
     char *response = get_data_by_interval(start_time, end_time);
     puts(response);
 
     response = get_statistics_on_metric_by_interval("mem_used", start_time, end_time);
     puts(response);
 
-    response = get_statistics_on_metric_by_interval("mem_not_used", start_time, end_time);
-    puts(response);
 
     return EXIT_SUCCESS;
 }

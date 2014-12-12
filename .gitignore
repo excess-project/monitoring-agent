@@ -20,9 +20,14 @@
 /likwid-3.1.3.tar.gz
 /inih_r29.zip
 /.project
-/client/parser/libparser.a
+/client/parser/*.a
 /client/parser/test/test
-/client/publisher/libpublisher.a
+/client/publisher/*.a
 /client/publisher/test/test
 /likwid-latest
 /likwid-read-only
+/binaries/tmp_pid
+/client/contrib/parser/*.so
+/client/plugins/likwid/mf_likwid
+/client/plugins/papi/lib/*.so
+/client/plugins/papi/mf_papi_client
