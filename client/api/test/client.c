@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "mf_api.h"
+#include <mf_api.h>
 
 int
 main(int argc, char** argv)

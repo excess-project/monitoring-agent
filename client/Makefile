@@ -38,6 +38,10 @@ PARSER_INC = -Icontrib/parser/src/
 PUBLISHER = -Lcontrib/publisher/ -lpublisher
 PUBLISHER_INC = -Icontrib/publisher/src/
 
+MF_API_SRC = api/src
+MF_API_INC = -I$(MF_API_SRC)
+
+MF = -L$(COMMON) -lagent
 
 ## External Libraries
 CURL = -L../binaries/curl/lib/ -lcurl
@@ -54,12 +58,12 @@ APU_CONFIG = ../binaries/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
 APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
-.PHONY: libmf plugins copy_plugins clean
+.PHONY: libmf.so plugins copy_plugins clean
 
 ## to use, type: make or make all
 all: prepare excess_main copy_plugins $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/rapl.so $(PLUGIN_DIR)/likwid.so
 
-lib: excess_main_lib $(PLUGIN_DIR)/mem_info.so
+lib: prepare libmf.so
 
 %.o: %.c $(HEADER)
 		$(CC) -c $< $(CFLAGS) -fpic
@@ -68,21 +72,22 @@ prepare:
 	@mkdir -p $(PLUGIN_DEST)
 	$(MAKE) -C contrib/parser
 	$(MAKE) -C contrib/publisher
+	@mkdir -p lib/
+	cp -f contrib/parser/libparser.so lib/
+	cp -f contrib/publisher/libpublisher.so lib/
 
 ## main part
-excess_main : excess_main.o thread_handler.o util.o plugin_discover.o \
-		plugin_manager.o
-		$(CC) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+excess_main: excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
+	$(CC) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
-excess_main_lib: excess_main.o thread_handler.o util.o plugin_discover.o \
-		plugin_manager.o
-		$(CC) -shared -o libagent.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+libagent.so: excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
+	$(CC) -shared -o $@ $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
-libmf: excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
-	$(CC) -shared -o libmf.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+mf_api.o:
+	$(CC) -c $(MF_API_SRC)/mf_api.c -o $@ $(COPT_SO) -I. $(MF_API_INC) $(CFLAGS) $(MF) $(LFLAGS)
 
-libmf.a: excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
-	ar rcs $@ $^
+libmf.so: mf_api.o excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
+	$(CC) -shared -o lib/libmf.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(MF) $(LFLAGS)
 
 #
 # plugins
@@ -121,7 +126,7 @@ $(PLUGIN_DIR)/likwid.o: $(PLUGIN_DIR)/likwid.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID) -llikwid -lm -lpthread
 
 clean:
-	rm -rf *.o *.a *.so $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so
+	rm -rf *.o *.a *.so $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so lib
 	$(MAKE) -C contrib/parser clean
 	$(MAKE) -C contrib/publisher clean
 
