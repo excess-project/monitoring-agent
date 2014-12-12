@@ -20,10 +20,10 @@ CURL_INC = -I../../../binaries/curl/include/
 all: clean-all publisher
 
 publisher:
-		$(CC) -shared src/publisher.c -o libpublisher.so -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+	$(CC) -shared src/publisher.c -o libpublisher.so -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
 libpublisher.a:	publisher
-		ar rcs $@ $^
+	ar rcs $@ $^
 
 clean:
 	rm -rf *.o

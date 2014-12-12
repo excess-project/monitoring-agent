@@ -12,7 +12,7 @@ PLUGIN_DEST = ../binaries/plugins
 OUTPUT = ../binaries/mf_agent
 
 CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb -pthread -D_LARGEFILE64_SOURCE \
+-Wcast-align -O0 -ggdb -fPIC -pthread -D_LARGEFILE64_SOURCE \
 $(PAPI_INC) \
 $(APR_INC) \
 $(CURL_INC) \

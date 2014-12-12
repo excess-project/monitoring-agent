@@ -1,6 +1,7 @@
 CC = /usr/bin/gcc
 
-CFLAGS = -std=gnu99 -pedantic -Wall \
+CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
+-Wcast-align -O0 -ggdb -fPIC \
 $(SRC_INC) \
 $(CORE_INC) \
 $(COMMON_INC) \

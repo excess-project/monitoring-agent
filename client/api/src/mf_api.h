@@ -30,7 +30,7 @@ char* get_data_by_interval(long double start_time, long double stop_time);
  * @brief Query the database running on host by id in order to retrieve a
  *        specific value for the given metric.
  */
-char* get_data_by_metric_by_interval(
+char* get_statistics_on_metric_by_interval(
     const char* metric_name,
     long double start_time,
     long double end_time

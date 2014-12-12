@@ -3,8 +3,9 @@
 #include <time.h>
 
 #include <excess_main.h>    // createLogFile, prepare
-#include <publisher.h>
+#include <publisher.h>      // prepSend, get_execution_id, query
 #include <thread_handler.h> // prepSend
+#include <util.h>           // getFQDN
 
 #include "mf_debug.h"
 #include "mf_api.h"
@@ -14,11 +15,13 @@
 #define STOP_MONITORING 0
 
 static int api_is_initialized = 0;
+static char stats_request_url[128];
 
 static void check_api();
 static long double get_time_in_ns();
 static long double send_trigger();
 static char* get_data_by_query();
+static char* retrieve_execution_id();
 
 void
 mf_api_initialize(const char* URL, char* db_key)
@@ -28,14 +31,20 @@ mf_api_initialize(const char* URL, char* db_key)
         exit(EXIT_FAILURE);
     }
     if (db_key == NULL || strlen(db_key) == 0) {
-        log_error("mf_api_initialize() - DB key is not set: %s", db_key);
-        exit(EXIT_FAILURE);
+        char exec_url[128];
+        strcpy(exec_url, URL);
+        strcat(exec_url, "/executions");
+        db_key = retrieve_execution_id(exec_url);
     }
 
     strcpy(execution_id, db_key);  // execution_id is defined in publisher.h
     strcpy(server_name, URL);  // server_name is defined in excess_main.h
     strcat(server_name, "/executions/");
     strcat(server_name, execution_id);
+
+    strcpy(stats_request_url, URL);
+    strcat(stats_request_url, "/execution/stats/");
+    strcat(stats_request_url, execution_id);
 
     createLogFile();
     api_is_initialized = 1;
@@ -117,17 +126,17 @@ get_data_by_interval(long double start_time, long double stop_time)
 }
 
 char*
-get_data_by_metric_by_interval(
+get_statistics_on_metric_by_interval(
     const char* metric_name,
     long double start_time,
     long double stop_time)
 {
     char query_url[300] = { '\0' };
 
-    // <server_name> := http://localhost:3000/executions/
+    // <server_name> := http://localhost:3000/execution/stats/
     // query_url := <server_name>/<db_key>/<metric_name>/<start_time>/<stop_time>
     sprintf(query_url, "%s/%s/%.9Lf/%.9Lf",
-        server_name,
+        stats_request_url,
         metric_name,
         start_time,
         stop_time
@@ -160,4 +169,34 @@ mf_api_send(const char* json)
     strcpy(resMetric->msg, json);
 
     prepSend(resMetric);
+}
+
+static char*
+retrieve_execution_id(const char* URL)
+{
+    char msg[1000] = "";
+    struct tm *time_info;
+    time_t curTime;
+    char timeArr[80];
+    char* hostname = (char*) malloc(sizeof(char) * 256);
+    char* username = getenv("USER");
+
+    if (username == NULL) {
+        username = malloc(sizeof(char) * 12);
+        strcpy(username, "default");
+    }
+    const char *description = "Test with User-Library";
+
+    time(&curTime);
+    time_info = localtime(&curTime);
+    strftime(timeArr, 80, "%c", time_info);
+
+    getFQDN(hostname);
+    hostname[strlen(hostname) - 1] = '\0';
+    sprintf(msg,
+        "{\"Name\":\"%s\", \"Description\":\"%s\", \"Start_date\":\"%s\", \"Username\":\"%s\"}",
+        hostname, description, timeArr, username
+    );
+
+    return get_execution_id(URL, msg);
 }

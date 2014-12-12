@@ -39,15 +39,6 @@ main(int argc, char** argv)
         }
     }
 
-    if (URL == NULL) {
-        fprintf(stderr, "URL not set. Please specify the URL using the 'u' parameter.\n");
-        exit(EXIT_FAILURE);
-    }
-    if (db_key == NULL) {
-        fprintf(stderr, "db_key not set. Please specify the key using the 'k' parameter.\n");
-        exit(EXIT_FAILURE);
-    }
-
     mf_api_initialize(URL, db_key);
 
     start_time = mf_api_start_profiling("fcnt1");
@@ -71,10 +62,10 @@ main(int argc, char** argv)
     char *response = get_data_by_interval(start_time, end_time);
     puts(response);
 
-    response = get_data_by_metric_by_interval("mem_used", start_time, end_time);
+    response = get_statistics_on_metric_by_interval("mem_used", start_time, end_time);
     puts(response);
 
-    response = get_data_by_metric_by_interval("mem_not_used", start_time, end_time);
+    response = get_statistics_on_metric_by_interval("mem_not_used", start_time, end_time);
     puts(response);
 
     return EXIT_SUCCESS;
