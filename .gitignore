@@ -31,3 +31,7 @@
 /client/plugins/likwid/mf_likwid
 /client/plugins/papi/lib/*.so
 /client/plugins/papi/mf_papi_client
+/client/benchmarks/database_access_latency
+/client/benchmarks/log/*
+/client/lib/*.so
+/client/api/doc/*

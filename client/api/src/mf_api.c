@@ -23,22 +23,20 @@ static long double send_trigger();
 static char* get_data_by_query();
 static char* retrieve_execution_id();
 
-void
-mf_api_initialize(const char* URL, char* db_key)
+char*
+mf_api_initialize(const char* URL)
 {
     if (URL == NULL || strlen(URL) == 0) {
         log_error("mf_api_initialize() - URL is not set: %s", URL);
         exit(EXIT_FAILURE);
     }
-    if (db_key == NULL || strlen(db_key) == 0) {
-        char exec_url[128];
-        strcpy(exec_url, URL);
-        strcat(exec_url, "/executions");
-        db_key = retrieve_execution_id(exec_url);
-    }
+    char exec_url[128];
+    strcpy(exec_url, URL);
+    strcat(exec_url, "/executions");
+    char* db_key = retrieve_execution_id(exec_url);
 
     strcpy(execution_id, db_key);  // execution_id is defined in publisher.h
-    strcpy(server_name, URL);  // server_name is defined in excess_main.h
+    strcpy(server_name, URL);      // server_name is defined in excess_main.h
     strcat(server_name, "/executions/");
     strcat(server_name, execution_id);
 
@@ -48,6 +46,8 @@ mf_api_initialize(const char* URL, char* db_key)
 
     createLogFile();
     api_is_initialized = 1;
+
+    return execution_id;
 }
 
 long double
@@ -64,7 +64,8 @@ mf_api_stop_profiling(const char* function_name)
     return send_trigger(function_name, STOP_MONITORING);
 }
 
-static void check_api()
+static void
+check_api()
 {
     if (!api_is_initialized) {
         log_error("Library is not initialized. Please call %s first.", "mf_api_initialize");
@@ -125,7 +126,7 @@ get_data_by_interval(long double start_time, long double stop_time)
     return get_data_by_query(query_url);
 }
 
-char*
+static char*
 get_statistics_on_metric_by_interval(
     const char* metric_name,
     long double start_time,
@@ -166,9 +167,14 @@ mf_api_send(const char* json)
 
     int clk_id = CLOCK_REALTIME;
     clock_gettime(clk_id, &resMetric->timestamp);
-    strcpy(resMetric->msg, json);
+    char* final_msg = malloc(strlen(json)+2);
+    final_msg[0] = ',';
+    strcpy(final_msg+1, json);
+    strcpy(resMetric->msg, final_msg);
 
     prepSend(resMetric);
+
+    free(final_msg);
 }
 
 static char*
@@ -199,4 +205,17 @@ retrieve_execution_id(const char* URL)
     );
 
     return get_execution_id(URL, msg);
+}
+
+char*
+mf_api_get_execution_id()
+{
+    check_api();
+    return execution_id;
+}
+
+char*
+mf_api_get_data_by_id(char* execution_id)
+{
+    return get_data_by_query(server_name);
 }

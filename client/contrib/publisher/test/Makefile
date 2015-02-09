@@ -1,12 +1,14 @@
 CC = /usr/bin/gcc
 
-CFLAGS = -std=gnu99 -pedantic -Wall $(CURL_INC)
+CFLAGS = -std=gnu99 -pedantic -Wall $(CURL_INC) $(CORE_INC) -DDEBUG -g
 LFLAGS = -lm $(CURL)
 
 COMMON_LIBS = ../../../libs
 CUTEST = $(COMMON_LIBS)/CuTest
 
 SRC = ../src
+COMMON = ../../..
+CORE_INC = -I$(COMMON)/core/src
 BINARIES = ../../../../binaries
 CURL = -L$(BINARIES)/curl/lib/ -lcurl
 CURL_INC = -I$(BINARIES)/curl/include/

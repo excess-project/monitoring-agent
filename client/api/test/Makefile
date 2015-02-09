@@ -1,51 +1,23 @@
 CC = /usr/bin/gcc
 
-CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb -fPIC \
-$(SRC_INC) \
-$(CORE_INC) \
-$(COMMON_INC) \
-$(APR_INC) \
-$(MF_PARSER_INC) \
-$(MF_PUBLISHER_INC)
+CFLAGS = -std=gnu99 -pedantic -Wall $(MF_INC)
 
-LFLAGS = -lm $(MF) $(MF_PARSER) $(MF_PUBLISHER)
+LFLAGS = $(MF_LIB) -Wl,-rpath-link,lib
 
-SRC = ../src
-SRC_INC = -I$(SRC)
+BASE = .
+SRC = $(BASE)
+LIB = $(BASE)/lib
+INC = $(BASE)/include
 
-COMMON = ../..
-BINARIES = $(COMMON)/../binaries
+MF_LIB = -L$(LIB) -lmf
+MF_INC = -I$(INC)
 
-MF = -L$(COMMON)/lib -lmf
-CORE_INC = -I$(COMMON)/core/src
-COMMON_INC = -I$(COMMON)
+.PHONY: mf_test
 
-MF_PARSER = -L$(COMMON)/lib -lparser
-MF_PARSER_INC = -I$(COMMON)/contrib/parser/src/
+all: mf_test
 
-MF_PUBLISHER = -L$(COMMON)/lib -lpublisher
-MF_PUBLISHER_INC = -I$(COMMON)/contrib/publisher/src
-
-APR_CONFIG = $(BINARIES)/apr/bin/apr-1-config
-APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config
-APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
-APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
-
-DEBUG ?= 1
-ifeq ($(DEBUG), 1)
-    CFLAGS += -DDEBUG -g
-endif
-
-.PHONY: prepare client
-
-all: prepare client
-
-prepare:
-	$(MAKE) -C $(COMMON) lib
-
-client:
-	$(CC) client.c -o client -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+mf_test:
+	$(CC) mf_test.c -o $@ $(CFLAGS) $(LFLAGS)
 
 clean:
-	rm -rf client
+	rm -rf mf_test

@@ -51,3 +51,35 @@
 
 #### Client Usage
 - ./monitoring-framework-client/binaries/mf_agent
+
+
+
+
+## Elastic Search
+
+~~~bash
+sudo apt-get install openjdk-6-jdk # if you haven't
+sudo export JAVA_HOME=/usr/lib/jvm/java-6-openjdk-amd64 >> /etc/bash.bashrc
+wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.6.tar.gz
+tar xvf elasticsearch-0.90.6.tar.gz
+mv elasticsearch-0.90.6 elasticsearch
+cd elasticsearch
+sudo export ES_HOME=`(pwd)` >> /etc/bash.bashrc
+cd ./bin
+./elasticsearch -f  # to run in the foreground
+~~~
+
+Whenever you want, you can type the following, in order to see what the program do:
+
+~~~
+tail -f ES_HOME/logs/elasticsearch.log
+~~~
+
+Finally, you can kill the program with the pid. There are a lot of ways. A simple is the following:
+
+~~~
+ps -ef |grep elasticsearch
+kill #PID result of previous command or more easy:
+
+pkill -f elasticsearch
+~~~
