@@ -250,15 +250,11 @@ check_events()
 #endif
 
 void
-mf_papi_profile(int sleep_in_ms)
+mf_papi_profile(struct timespec profile_interval)
 {
     int i;
     int retval;
     values_per_core = malloc(num_cores * sizeof(long long *));
-
-    if (sleep_in_ms < 1000) {
-        sleep_in_ms = 1000;
-    }
 
     for (i = 0; i != num_cores; ++i) {
         debug("Start PAPI Monitoring for CPU%d", i);
@@ -269,7 +265,7 @@ mf_papi_profile(int sleep_in_ms)
         }
     }
 
-    usleep(sleep_in_ms);
+    nanosleep(&profile_interval, NULL);
 
     for (i = 0; i != num_cores; ++i) {
         debug("Stop PAPI Monitoring for CPU%d", i);

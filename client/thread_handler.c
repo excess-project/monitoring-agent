@@ -197,7 +197,7 @@ int gatherMetric(int num) {
 	struct timespec tim = { 0, 0 };
 	struct timespec tim2;
 
-	init_timings(); // FIXME: just a work-around
+	init_timings();
 
 	if (timings[num] >= 10e8) {
 		tim.tv_sec = timings[num] / 10e8;

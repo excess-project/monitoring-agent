@@ -10,6 +10,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "mf_papi_connector.h"
@@ -27,8 +28,6 @@ static void my_exit_handler();
 int
 main(int argc, char** argv)
 {
-    int sleep_in_ms = 1000000; // 1s
-
     PAPI_Plugin *papi = malloc(sizeof(PAPI_Plugin));
     csv = malloc(4096 * sizeof(char));
 
@@ -48,10 +47,14 @@ main(int argc, char** argv)
      * Monitoring
      **************************************************************************/
 
+    struct timespec profile_time = { 0, 0 };
+    profile_time.tv_sec = 0;
+    profile_time.tv_nsec = 500000000;
+
     ++argv;
     mf_papi_init(argv, --argc);
     do {
-        mf_papi_profile(sleep_in_ms);
+        mf_papi_profile(profile_time);
         mf_papi_read(papi, argv);
         puts(to_csv(papi));
     } while (1);

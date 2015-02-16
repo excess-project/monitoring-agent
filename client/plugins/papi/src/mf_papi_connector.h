@@ -2,6 +2,7 @@
 #define _MF_PAPI_CONNECTOR_H_
 
 #include <papi.h>
+#include <time.h>
 
 typedef struct PAPI_Plugin_t PAPI_Plugin;
 
@@ -14,7 +15,7 @@ struct PAPI_Plugin_t
 
 void mf_papi_init(char **named_events, size_t num_events);
 
-void mf_papi_profile(int sleep_in_ms);
+void mf_papi_profile(struct timespec profile_interval);
 
 void mf_papi_read(PAPI_Plugin *papi, char **events);
 
