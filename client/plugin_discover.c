@@ -4,17 +4,16 @@
  *  Created on: 16.07.2014
  *      Author: hpcneich
  */
-
+#include <dlfcn.h>
 #include <dirent.h>
+#include <mf_parser.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 
-#include <dlfcn.h>
-
-#include "plugin_discover.h"
 #include "excess_main.h"
+#include "plugin_discover.h"
 
 typedef struct PluginHandleList_t {
 	void* handle;
@@ -82,8 +81,16 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 	struct dirent *direntry;
 	while ((direntry = readdir(dir))) {
 		char *name = get_plugin_name(direntry->d_name);
-		if (!name)
+		if (!name) {
 			continue;
+		}
+
+		/* do not consider plug-ins that are switched off */
+		char* value = mfp_get_value("plugins", name);
+		if (strcmp(value, "off") == 0) {
+			continue;
+		}
+
 		char *fullpath = malloc(200 * sizeof(char));
 
 		strcpy(fullpath, dirname);
