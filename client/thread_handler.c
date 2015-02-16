@@ -45,7 +45,7 @@ int startThreads() {
 	strcpy(pluginLocation, pwd);
 	strcat(pluginLocation, dirname);
 
-//	look for plugins and register them
+//	look for plug-ins and register them
 	void* pdstate = discover_plugins(pluginLocation, pm);
 
 	int iret[MIN_THREADS + pluginCount];
@@ -175,7 +175,16 @@ static void init_timings()
 	// FIXME: just set default timing for the rest of the plugins
 	long default_timing = atoi(mfp_get_value("timings", "default"));
 	for (int i = 2; i < mfp_timing_data->size; ++i) {
-		timings[i] = default_timing;
+		char* current_plugin_name = plugin_name[i];
+		if (current_plugin_name == NULL) {
+			continue;
+		}
+		char* value = mfp_get_value("timings", current_plugin_name);
+		if (value[0] == '\0') {
+			timings[i] = default_timing;
+		} else {
+			timings[i] = atoi(value);
+		}
 	}
 
 	free(mfp_timing_data);
@@ -183,8 +192,8 @@ static void init_timings()
 
 int gatherMetric(int num) {
 	char name[50];
-	sprintf(name, "gatherMetricNo%d", num);
-//	startStop(name, START);
+	char* current_plugin_name = plugin_name[num];
+
 	struct timespec tim = { 0, 0 };
 	struct timespec tim2;
 
@@ -200,8 +209,8 @@ int gatherMetric(int num) {
 
 	apr_status_t status;
 	PluginHook hook = PluginManager_get_hook(pm);
-	fprintf(stderr,  "with timing: %ld ns\n", timings[num]);
-	fprintf(logFile, "with timing: %ld ns\n", timings[num]);
+	fprintf(stderr,  "\ngather metric %s (#%d) with update interval of %ld ns\n", current_plugin_name, num, timings[num]);
+	fprintf(logFile, "\ngather metric %s (#%d) with update interval of %ld ns\n", current_plugin_name, num, timings[num]);
 	metric resMetric = malloc(sizeof(metric_t));
 
 	while (running) {
@@ -213,9 +222,9 @@ int gatherMetric(int num) {
 		}
 		nanosleep(&tim, &tim2);
 	}
-	hook(); // call when terminating programm, enables cleanup of plugins
+	hook(); // call when terminating program, enables cleanup of plug-ins
 	free(resMetric);
-	
+
 	//startStop(name, STOP);
 
 	return 1;

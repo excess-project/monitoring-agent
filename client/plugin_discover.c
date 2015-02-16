@@ -15,6 +15,8 @@
 #include "excess_main.h"
 #include "plugin_discover.h"
 
+#define MIN_THREADS 2
+
 typedef struct PluginHandleList_t {
 	void* handle;
 	struct PluginHandleList_t* next;
@@ -27,6 +29,9 @@ typedef struct PluginDiscoveryState_t {
 typedef int (*PluginInitFunc)(PluginManager *pm);
 
 int pluginCount = 0;
+
+char* plugin_name[256];
+
 /**
  * @brief load plugin, register hook and return handle to its library
  */
@@ -78,6 +83,9 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 	PluginDiscoveryState *plugins_state = malloc(sizeof(*plugins_state));
 	plugins_state->handle_list = NULL;
 
+	plugin_name[0] = malloc(sizeof(char) * 256);
+	plugin_name[1] = malloc(sizeof(char) * 256);
+
 	struct dirent *direntry;
 	while ((direntry = readdir(dir))) {
 		char *name = get_plugin_name(direntry->d_name);
@@ -96,6 +104,8 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 		strcpy(fullpath, dirname);
 		strcat(fullpath, "/");
 		strcat(fullpath, direntry->d_name);
+		plugin_name[MIN_THREADS + pluginCount] = malloc(256);
+		strcpy(plugin_name[MIN_THREADS + pluginCount], name);
 		void *handle = load_plugin(name, fullpath, pm);
 		if (handle) {
 			PluginHandleList *handle_node = malloc(sizeof(*handle_node));

@@ -15,6 +15,8 @@
  */
 extern int pluginCount;
 
+extern char* plugin_name[256];
+
 /** @brief searches for plugins
  *
  */

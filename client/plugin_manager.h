@@ -42,7 +42,7 @@ void PluginManager_register_hook(PluginManager *pm, const char *name,
 metric PluginManager_apply_hook(PluginManager *pm);
 
 /**
- * @brief returns a entry function from the plugin manager structure
+ * @brief returns an entry function from the plugin manager structure
  *
  * hooks / entry functions are stored in a FIFO queue
  */
