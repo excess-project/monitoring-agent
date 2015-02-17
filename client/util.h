@@ -26,20 +26,6 @@ extern int running;
 extern char *pwd;
 
 /**
- * @brief pointer to the metric gathered by the plugins
- */
-typedef struct metric_t* metric;
-
-/**
- * @brief structure which represents a value of a metric
- */
-struct metric_t {
-	struct timespec timestamp;
-
-	char *msg;
-} metric_t;
-
-/**
  * @brief get fully-qualified domain name
  */
 int getFQDN(char *fqdn);

@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <netdb.h>
 #include <unistd.h>
- 
+
 #include "excess_main.h"
 #include "util.h"
 
@@ -31,8 +31,6 @@ int getFQDN(char *fqdn) {
 
     if ((gai_result = getaddrinfo(hostname, "http", &hints, &info)) != 1) {
         fprintf(stderr, "getaddrinfo: %s,\n using regular hostname\n",
-                gai_strerror(gai_result));
-        fprintf(logFile, "getaddrinfo: %s,\n using regular hostname\n",
                 gai_strerror(gai_result));
         FILE *tmp = NULL;
         if ((tmp = popen("hostname", "r")) == NULL ) {

@@ -27,12 +27,15 @@ char *confFile;
 struct timespec timeStampFile = { 0, 0 };
 
 int hostChanged = 0;
+int pwd_is_set = 0;
 
 char *pwd;
 struct tm *time_info;
 FILE *logFile;
 char server_name[256];
 char name[300];
+
+static void set_pwd();
 
 /**
  * @brief return and print length of excution id
@@ -60,13 +63,16 @@ char* cutPwd(char *pwd) {
 	return help;
 }
 
-static int prepare() {
-	confFile = malloc(strlen(pwd) + strlen("..") + strlen("mf_config.ini") + 3);
+int prepare(const char* conf_file) {
+	if (!pwd_is_set) {
+		set_pwd();
+	}
+	confFile = malloc(strlen(pwd) + strlen(conf_file) + 2);
 	if (confFile == NULL) {
 		fprintf(stderr, "prepare() failed: cannot allocate memory for fullpath");
 		return 0;
 	}
-	sprintf(confFile, "%s/%s/%s", pwd, "..", "mf_config.ini");
+	sprintf(confFile, "%s/%s", pwd, conf_file);
 	fprintf(logFile, "confFile is: %s \n", confFile);
 	mfp_parse(confFile);
 
@@ -103,6 +109,9 @@ static int prepare() {
 }
 
 int createLogFile() {
+	if (!pwd_is_set) {
+		set_pwd();
+	}
 	char logFileName[300] = { '\0' };
 	char logFileFolder[300] = { '\0' };
 
@@ -128,6 +137,9 @@ int createLogFile() {
 }
 
 int writeTmpPID(void) {
+	if (!pwd_is_set) {
+		set_pwd();
+	}
 
 	strcpy(name, pwd);
 	strcat(name, "/tmp_pid");
@@ -140,10 +152,13 @@ int writeTmpPID(void) {
 	return 1;
 }
 
-/**
- * @brief everything starts here
- */
-int main(int argc, const char* argv[]) {
+static void
+set_pwd()
+{
+	if (pwd_is_set) {
+		return;
+	}
+
 	char *buf = malloc(300 * sizeof(char));
 	memset(buf, '\0', 300 * sizeof(char));
 
@@ -154,6 +169,17 @@ int main(int argc, const char* argv[]) {
 	memcpy(pwd, buf, strlen(buf) * sizeof(char));
 
 	pwd = cutPwd(pwd);
+
+	free(buf);
+	pwd_is_set = 1;
+}
+
+/**
+ * @brief everything starts here
+ */
+int main(int argc, const char* argv[]) {
+	set_pwd();
+
 	writeTmpPID();
 	createLogFile();
 
@@ -184,9 +210,7 @@ int main(int argc, const char* argv[]) {
 		}
 	}
 
-	free(buf);
-
-	prepare();
+	prepare("../mf_config.ini");
 	if (!startThreads()) {
 		fprintf(stderr, "Couldn't start the threads!\n");
 		fprintf(logFile, "Couldn't start the threads!\n");

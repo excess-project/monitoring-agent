@@ -1,6 +1,6 @@
 CC = /usr/bin/gcc
 
-CFLAGS = -std=gnu99 -pedantic -Wall $(APR_INC) -I$(COMMON_INC) -I$(SRC)
+CFLAGS = -std=gnu99 -pedantic -Wall $(APR_INC) $(CORE_INC)
 LFLAGS = -lm $(APR)
 
 SRC = ../src
@@ -9,7 +9,8 @@ INI = $(LIBS)/ini
 COMMON_LIBS = ../../../libs
 CUTEST = $(COMMON_LIBS)/CuTest
 
-COMMON_INC = ../../../
+COMMON = ../../..
+CORE_INC = -I$(COMMON)/core/src
 BINARIES = ../../../../binaries
 APR_CONFIG = $(BINARIES)/apr/bin/apr-1-config
 APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config

@@ -1,5 +1,5 @@
-#ifndef DEBUG_H_
-#define DEBUG_H_
+#ifndef MF_DEBUG_H_
+#define MF_DEBUG_H_
 
 #include <stdio.h>
 #include <errno.h>

@@ -49,5 +49,8 @@ extern FILE *logFile;
  */
 int printHelp();
 
+int createLogFile();
+
+int prepare(const char* conf_file);
 
 #endif /* EXCESS_MAIN_H_ */

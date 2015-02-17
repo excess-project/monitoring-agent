@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "debug.h"
+#include "excess_main.h"
+#include "mf_debug.h"
 #include "mf_papi_connector.h"
 #include "plugin_manager.h"
 #include "util.h"
-#include "excess_main.h"
 
 struct timespec profile_time = { 0, 0 };
 mfp_data *conf_data;

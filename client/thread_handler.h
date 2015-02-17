@@ -10,6 +10,7 @@
 
 #include <apr_queue.h>
 
+#include "mf_types.h"
 #include "util.h"
 
 #define MIN_THREADS 2 //minimum number of thread required for sending and config

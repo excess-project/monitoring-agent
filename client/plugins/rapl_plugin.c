@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 #include "rapl_plugin.h"
-#include "debug.h"
+#include "mf_debug.h"
 
 void initialize_PAPI()
 {
