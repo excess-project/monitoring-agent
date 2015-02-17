@@ -68,7 +68,7 @@ APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 #
 .PHONY: libmf.so plugins copy_plugins clean
 
-all: prepare excess_main copy_plugins $(PLUGIN_DIR)/mem_info.so
+all: excess_main lib copy_plugins
 
 lib: prepare libmf.so
 
@@ -102,21 +102,17 @@ plugins:
 	$(MAKE) -C $(PLUGIN_DIR)/papi DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/likwid DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/rapl DEBUG=$(DEBUG)
+	$(MAKE) -C $(PLUGIN_DIR)/meminfo DEBUG=$(DEBUG)
 
 copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(PLUGIN_DEST)/
 
 #
-# TO BE REMOVED
+# CLEAN-UP
 #
-$(PLUGIN_DIR)/mem_info.so: $(PLUGIN_DIR)/mem_info.o
-	$(CC) -o $(PLUGIN_DEST)/mem_info.so $^ -shared
-
-$(PLUGIN_DIR)/mem_info.o: $(PLUGIN_DIR)/mem_info.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I.
-
 clean:
 	rm -rf *.o *.a *.so $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so lib
 	$(MAKE) -C contrib/parser clean
