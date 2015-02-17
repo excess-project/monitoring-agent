@@ -36,7 +36,7 @@ HEADER = $(shell find src -name '*.h')
 all: clean prepare mf_plugin_likwid.so
 
 mf_plugin_likwid.so: mf_plugin_likwid.o mf_likwid_connector.o
-	$(CC) -o $(LIB)/mf_plugin_likwid.so $^ -shared likwid/lib/liblikwid.so
+	$(CC) -o $(LIB)/mf_plugin_likwid.so $^ -shared liblikwid.so
 
 mf_likwid_connector.o: $(SRC)/mf_likwid_connector.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIKWID) -llikwid -lm -lpthread
@@ -46,8 +46,7 @@ mf_plugin_likwid.o: $(SRC)/mf_plugin_likwid.c $(HEADER)
 
 prepare:
 	@mkdir -p lib
-	@mkdir -p likwid/lib
-	cp -f $(BINARIES)/likwid/lib/liblikwid.so likwid/lib
+	cp -f $(BINARIES)/likwid/lib/liblikwid.so .
 
 clean:
 	rm -rf *.o

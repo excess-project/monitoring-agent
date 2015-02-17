@@ -5,9 +5,14 @@ CC = /usr/bin/gcc
 
 COPT_SO = $(CFLAGS) -fpic
 
+REVISION = 0.1.3
+INSTALL_DIR = ../mf/$(REVISION)
+INSTALL_PLUGINS_DIR = $(INSTALL_DIR)/bin/plugins
+
+BINARIES = ../binaries
 PLUGIN_DIR = plugins
-PLUGIN_DEST = ../binaries/plugins
-OUTPUT = ../binaries/mf_agent
+PLUGIN_DEST = $(BINARIES)/plugins
+OUTPUT = $(BINARIES)/mf_agent
 
 CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
 -Wcast-align -O0 -ggdb -fPIC -pthread -D_LARGEFILE64_SOURCE \
@@ -47,19 +52,19 @@ PUBLISHER_INC = -Icontrib/publisher/src/
 MF_API_SRC = api/src
 MF_API_INC = -I$(MF_API_SRC)
 
-MF = -L$(COMMON) -lagent
-
 #
 # EXTERNAL LIBS
 #
-CURL = -L../binaries/curl/lib/ -lcurl
-CURL_INC = -I../binaries/curl/include/
+CURL = -L$(BINARIES)/curl/lib/ -lcurl
+CURL_INC = -I$(BINARIES)/curl/include/
 
-PAPI = -L../binaries/papi/lib/
-PAPI_INC =  -I../binaries/papi/include/
+PAPI = -L$(BINARIES)/papi/lib/
+PAPI_INC =  -I$(BINARIES)/papi/include/
 
-APR_CONFIG = ../binaries/apr/bin/apr-1-config
-APU_CONFIG = ../binaries/apr/bin/apu-1-config
+LIKWID_DIR = $(BINARIES)/likwid
+
+APR_CONFIG = $(BINARIES)/apr/bin/apr-1-config
+APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
 APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
@@ -96,6 +101,48 @@ libmf.so: mf_api.o excess_main.o thread_handler.o util.o plugin_discover.o plugi
 	$(CC) -shared -o lib/libmf.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(MF) $(LFLAGS)
 
 #
+# INSTALL
+install: prepare_install copy_tasks
+
+
+prepare_install: clean_install
+	@mkdir -p $(INSTALL_DIR)
+	@mkdir -p $(INSTALL_DIR)/bin/plugins
+	@mkdir -p $(INSTALL_DIR)/lib
+
+copy_tasks: copy_ini copy_scripts copy_plugins_to_install copy_agent copy_likwid copy_libs
+
+copy_ini:
+	cp -f ../mf_config.ini $(INSTALL_DIR)
+
+copy_scripts:
+	cp -r ../scripts $(INSTALL_DIR)
+	sed -i "s/REV/${REVISION}/g" $(INSTALL_DIR)/scripts/setenv.sh
+
+copy_plugins_to_install:
+	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(INSTALL_PLUGINS_DIR)
+	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(INSTALL_PLUGINS_DIR)/
+
+copy_agent:
+	cp -f $(OUTPUT) $(INSTALL_DIR)/bin
+
+copy_libs:
+	cp -f $(BINARIES)/papi/lib/libpapi.so* $(INSTALL_DIR)/lib
+	cp -f $(BINARIES)/papi/lib/libpfm.so* $(INSTALL_DIR)/lib
+	cp -f $(BINARIES)/likwid/lib/liblikwid.so $(INSTALL_DIR)/lib
+	cp -f $(BINARIES)/likwid/sbin/likwid-accessD $(INSTALL_DIR)/lib
+	cp -f lib/* $(INSTALL_DIR)/lib
+
+# work-around for EXCESS cluster
+copy_likwid:
+	cp -r $(LIKWID_DIR) $(INSTALL_DIR)/likwid
+
+# libs=/home/hopped/hlrs/codebase/excess/gitlab/monitoring-framework-client/mf/0.1.3/lib
+
+#
+#
 # PLUG-IN MANAGEMENT
 #
 plugins:
@@ -115,8 +162,17 @@ copy_plugins: plugins
 #
 clean:
 	rm -rf *.o *.a *.so $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so lib
+
+clean_all:
 	$(MAKE) -C contrib/parser clean
 	$(MAKE) -C contrib/publisher clean
+	$(MAKE) -C $(PLUGIN_DIR)/papi clean
+	$(MAKE) -C $(PLUGIN_DIR)/likwid clean
+	$(MAKE) -C $(PLUGIN_DIR)/rapl clean
+	$(MAKE) -C $(PLUGIN_DIR)/meminfo clean
+
+clean_install:
+	rm -rf $(INSTALL_DIR)
 
 #
 # JAVADOC
