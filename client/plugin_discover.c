@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdint.h>
 
+#include "mf_types.h"
 #include "excess_main.h"
 #include "plugin_discover.h"
 
