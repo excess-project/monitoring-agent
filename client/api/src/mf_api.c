@@ -16,6 +16,7 @@
 
 static int api_is_initialized = 0;
 static char stats_request_url[128];
+static char exec_url[128];
 
 static void check_api();
 static long double get_time_in_ns();
@@ -30,7 +31,6 @@ mf_api_initialize(const char* URL)
         log_error("mf_api_initialize() - URL is not set: %s", URL);
         exit(EXIT_FAILURE);
     }
-    char exec_url[128];
     strcpy(exec_url, URL);
     strcat(exec_url, "/executions");
     char* db_key = retrieve_execution_id(exec_url);
@@ -127,26 +127,6 @@ get_data_by_interval(long double start_time, long double stop_time)
 }
 
 static char*
-get_statistics_on_metric_by_interval(
-    const char* metric_name,
-    long double start_time,
-    long double stop_time)
-{
-    char query_url[300] = { '\0' };
-
-    // <server_name> := http://localhost:3000/execution/stats/
-    // query_url := <server_name>/<db_key>/<metric_name>/<start_time>/<stop_time>
-    sprintf(query_url, "%s/%s/%.9Lf/%.9Lf",
-        stats_request_url,
-        metric_name,
-        start_time,
-        stop_time
-    );
-
-    return get_data_by_query(query_url);
-}
-
-static char*
 get_data_by_query(char* query_url)
 {
     check_api();
@@ -217,5 +197,10 @@ mf_api_get_execution_id()
 char*
 mf_api_get_data_by_id(char* execution_id)
 {
-    return get_data_by_query(server_name);
+    char query_url[300] = { '\0' };
+
+    // e.g. http://localhost:3000/executions/:id
+    sprintf(query_url, "%s/%s", exec_url, execution_id);
+
+    return get_data_by_query(query_url);
 }

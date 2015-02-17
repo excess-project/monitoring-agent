@@ -1,11 +1,12 @@
+#include <mf_parser.h>
 #include <stdlib.h>
 
-#include "../util.h"
-#include "../plugin_manager.h"
+#include "util.h"
+#include "plugin_manager.h"
+#include "mf_likwid_connector.h"
 
-#include "likwid_plugin.h"
-
-char* to_JSON(Likwid_Plugin *likwid)
+char*
+to_JSON(Likwid_Plugin *likwid)
 {
     char *json = malloc(4096 * sizeof(char));
     strcpy(json, ",\"type\":\"likwid\"");
@@ -39,33 +40,23 @@ char* to_JSON(Likwid_Plugin *likwid)
     }
 
     free(single_metric);
-
-    // where to put free(json) ?
-
     return json;
 }
 
-static metric likwid_hook()
+static metric
+mf_plugin_likwid_hook()
 {
     if (running) {
         metric resMetric = malloc(sizeof(metric_t));
         resMetric->msg = malloc(4096 * sizeof(char));
+        mfp_data *conf_data = malloc(sizeof(mfp_data));
 
         int clk_id = CLOCK_REALTIME;
         clock_gettime(clk_id, &resMetric->timestamp);
 
-        /*
-        char *papi_conf = malloc(300 * sizeof(char));
-        papi_conf[0] = '\0';
-        strcat(papi_conf, pwd);
-        strcat(papi_conf, "/plugins/pluginConf");
-
-        Parser *parser = get_instance();
-        read_PAPI_events_from_file(parser, papi_conf);
-        */
-
+        //mfp_get_data_filtered_by_value("likwid", conf_data, "on");
         Likwid_Plugin *likwid = malloc(sizeof(Likwid_Plugin));
-        get_power_data(likwid, 1);
+        get_power_data(likwid, conf_data->keys, conf_data->size, 1);
 
         strcpy(resMetric->msg, to_JSON(likwid));
 
@@ -78,12 +69,11 @@ static metric likwid_hook()
     }
 }
 
-extern int init_likwid(PluginManager *pm)
+extern int
+init_mf_plugin_likwid(PluginManager *pm)
 {
     cpuid_init();
-
-
-    PluginManager_register_hook(pm, "Likwid", likwid_hook);
+    PluginManager_register_hook(pm, "mf_plugin_likwid", mf_plugin_likwid_hook);
 
     return 1;
 }

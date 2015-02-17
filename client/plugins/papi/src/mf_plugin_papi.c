@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "excess_main.h"
 #include "mf_debug.h"
 #include "mf_papi_connector.h"
 #include "plugin_manager.h"
 #include "util.h"
-#include "excess_main.h"
 
 char*
 to_JSON(PAPI_Plugin *papi)

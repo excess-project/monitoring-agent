@@ -115,8 +115,8 @@ int startSending() {
 	apr_status_t status;
 	void *ptr;
 
+	char* update_interval = mfp_get_value("timings", "publish_data_interval");
 	while (running) {
-		char* update_interval = mfp_get_value("timings", "publish_data_interval");
 		sleep(atoi(update_interval));
 
 		status = apr_queue_pop(data_queue, &ptr);
