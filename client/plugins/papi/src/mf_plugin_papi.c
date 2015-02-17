@@ -40,7 +40,6 @@ mf_plugin_papi_hook()
 
         int clk_id = CLOCK_REALTIME;
         clock_gettime(clk_id, &resMetric->timestamp);
-
         mf_papi_profile(profile_time);
         PAPI_Plugin *papi = malloc(sizeof(PAPI_Plugin));
         mf_papi_read(papi, conf_data->keys);
@@ -58,7 +57,6 @@ init_mf_plugin_papi(PluginManager *pm)
 {
     PluginManager_register_hook(pm, "mf_plugin_papi", mf_plugin_papi_hook);
 
-    /* set time-consuming parameters once */
     conf_data = malloc(sizeof(mfp_data));
     int num_cores = -1;
     char* str_num_cores = mfp_get_value("mf_plugin_papi", "MAX_CPU_CORES");
@@ -79,8 +77,6 @@ init_mf_plugin_papi(PluginManager *pm)
         profile_time.tv_sec = 0;
         profile_time.tv_nsec = timing;
     }
-
-
 
     return 1;
 }

@@ -39,3 +39,4 @@
 /client/plugins/likwid/lib/*.so
 /client/plugins/likwid/likwid/lib/*.so
 /*.save
+/client/plugins/rapl/lib/mf_plugin_rapl.so

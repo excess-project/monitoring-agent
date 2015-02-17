@@ -13,7 +13,7 @@ char*
 to_JSON(Likwid_Plugin *likwid)
 {
     char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"likwid\"");
+    strcpy(json, ",\"type\":\"energy\"");
 
     int i;
     char *single_metric = malloc(512 * sizeof(char));

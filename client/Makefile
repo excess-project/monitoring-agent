@@ -1,9 +1,7 @@
 ## Copyright 2014 University of Stuttgart
-## Author: Anthony Sulistio edited by Nico Eichhorn
-## Date: April 2013
-
+## Authors: Anthony Sulistio, Nico Eichhorn, Dennis Hoppe
+## Last Update: 17/02/2015
 CC = /usr/bin/gcc
-## gcc-Version 4.4.7 20120313 (Red Hat 4.4.7-4) (GCC)
 
 COPT_SO = $(CFLAGS) -fpic
 
@@ -22,7 +20,12 @@ $(CORE_INC)
 
 LFLAGS =  -lm $(CURL) $(PAPI) $(APR) $(PARSER) $(PUBLISHER)
 
-# PRODUCTION = 0, DEVELOPMENT WITH DEBUG = 1
+FILES  = $(shell find . -name "*.c")
+HEADER  = $(shell find . -name "*.h")
+
+#
+# DEBUG SWITCH
+#
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
     CFLAGS += -DDEBUG -g
@@ -30,12 +33,9 @@ else
 	CFLAGS += -DNDEBUG
 endif
 
-## List of source files
-FILES  = $(shell find . -name "*.c")
-HEADER  = $(shell find . -name "*.h")
-
-
-## Internal Libraries
+#
+# INTERNAL LIBS
+#
 CORE_INC = -Icore/src
 
 PARSER = -Lcontrib/parser/ -lparser
@@ -49,7 +49,9 @@ MF_API_INC = -I$(MF_API_SRC)
 
 MF = -L$(COMMON) -lagent
 
-## External Libraries
+#
+# EXTERNAL LIBS
+#
 CURL = -L../binaries/curl/lib/ -lcurl
 CURL_INC = -I../binaries/curl/include/
 
@@ -61,10 +63,12 @@ APU_CONFIG = ../binaries/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
 APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
+#
+# TARGETS
+#
 .PHONY: libmf.so plugins copy_plugins clean
 
-## to use, type: make or make all
-all: prepare excess_main copy_plugins $(PLUGIN_DIR)/mem_info.so $(PLUGIN_DIR)/rapl.so
+all: prepare excess_main copy_plugins $(PLUGIN_DIR)/mem_info.so
 
 lib: prepare libmf.so
 
@@ -79,7 +83,6 @@ prepare:
 	cp -f contrib/parser/libparser.so lib/
 	cp -f contrib/publisher/libpublisher.so lib/
 
-## main part
 excess_main: excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
 	$(CC) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
@@ -93,40 +96,34 @@ libmf.so: mf_api.o excess_main.o thread_handler.o util.o plugin_discover.o plugi
 	$(CC) -shared -o lib/libmf.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(MF) $(LFLAGS)
 
 #
-# plugins
+# PLUG-IN MANAGEMENT
 #
 plugins:
 	$(MAKE) -C $(PLUGIN_DIR)/papi DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/likwid DEBUG=$(DEBUG)
+	$(MAKE) -C $(PLUGIN_DIR)/rapl DEBUG=$(DEBUG)
 
 copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(PLUGIN_DEST)/
 
-# mem_info
+#
+# TO BE REMOVED
+#
 $(PLUGIN_DIR)/mem_info.so: $(PLUGIN_DIR)/mem_info.o
 	$(CC) -o $(PLUGIN_DEST)/mem_info.so $^ -shared
 
 $(PLUGIN_DIR)/mem_info.o: $(PLUGIN_DIR)/mem_info.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I.
 
-# rapl
-$(PLUGIN_DIR)/rapl.so: $(PLUGIN_DIR)/rapl_plugin.o $(PLUGIN_DIR)/rapl.o
-	$(CC) -o $(PLUGIN_DEST)/rapl.so $^ -shared ../binaries/papi/lib/libpapi.so
-
-$(PLUGIN_DIR)/rapl_plugin.o: $(PLUGIN_DIR)/rapl_plugin.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
-
-$(PLUGIN_DIR)/rapl.o: $(PLUGIN_DIR)/rapl.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
-
 clean:
 	rm -rf *.o *.a *.so $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so lib
 	$(MAKE) -C contrib/parser clean
 	$(MAKE) -C contrib/publisher clean
 
-## to generate the javadoc files
-## to use, type: make doc
+#
+# JAVADOC
+#
 doc : $(FILES)
 	doxygen Doxyfile
-

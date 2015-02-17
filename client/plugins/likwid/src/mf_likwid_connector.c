@@ -15,7 +15,7 @@ static int
 is_supported()
 {
     if (cpuid_init() == EXIT_FAILURE) {
-        fprintf(stderr, "mf_plugin_likwid.c: Unsupported processor!\n");
+        fprintf(stderr, "mf_likwid_connector.c: Unsupported processor!\n");
         return 0;
     }
 

@@ -3,10 +3,11 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "rapl_plugin.h"
 #include "mf_debug.h"
+#include "mf_rapl_connector.h"
 
-void initialize_PAPI()
+void
+initialize_PAPI()
 {
     if (PAPI_is_initialized()) {
         return;
@@ -20,7 +21,8 @@ void initialize_PAPI()
 }
 
 
-int get_available_events(RAPL_Plugin *rapl)
+int
+get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval)
 {
     long long before_time, after_time;
     double elapsed_time;
@@ -31,7 +33,6 @@ int get_available_events(RAPL_Plugin *rapl)
 
     int retval = PAPI_create_eventset(&EventSet);
     if (retval != PAPI_OK) {
-        // handle error
         return -1;
     }
 
@@ -42,7 +43,6 @@ int get_available_events(RAPL_Plugin *rapl)
 
     while (r == PAPI_OK) {
         retval = PAPI_event_code_to_name(code, rapl->events[num_events]);
-        //printf("event_name: %s\n", rapl->events[num_events]);
         if (retval != PAPI_OK) {
             printf("Error translating %#x\n", code);
             return -1;
@@ -54,12 +54,11 @@ int get_available_events(RAPL_Plugin *rapl)
             return -1;
         }
 
-        //strncpy(units[num_events], evinfo.units, PAPI_MIN_STR_LEN);
         rapl->data_types[num_events] = evinfo.data_type;
 
         retval = PAPI_add_event(EventSet, code);
         if (retval != PAPI_OK) {
-            break; /* We've hit an event limit */
+            break;
         }
         num_events++;
 
@@ -69,7 +68,6 @@ int get_available_events(RAPL_Plugin *rapl)
     rapl->values = calloc(num_events, sizeof(long long));
     long long *values = calloc(num_events, sizeof(long long));
     if (values == NULL) {
-        // handle error
         return -1;
     }
     rapl->num_events = num_events;
@@ -77,16 +75,14 @@ int get_available_events(RAPL_Plugin *rapl)
     before_time = PAPI_get_real_nsec();
     retval = PAPI_start(EventSet);
     if (retval != PAPI_OK) {
-        // handle error
         return -1;
     }
 
-    usleep(100000); // 100ms
+    nanosleep(&profile_interval, NULL);
 
     after_time = PAPI_get_real_nsec();
     retval = PAPI_stop(EventSet, values);
     if (retval != PAPI_OK) {
-        // handle error
         return -1;
     }
 
@@ -99,23 +95,20 @@ int get_available_events(RAPL_Plugin *rapl)
 
     retval = PAPI_cleanup_eventset(EventSet);
     if (retval != PAPI_OK) {
-        // handle error
         return -1;
     }
 
     retval = PAPI_destroy_eventset(&EventSet);
     if (retval != PAPI_OK) {
-        // handle error
         return -1;
     }
-
-    //PAPI_shutdown();
 
     return num_events;
 }
 
 
-int get_rapl_component_id()
+int
+get_rapl_component_id()
 {
     int cid;
     int numcmp;
@@ -126,7 +119,6 @@ int get_rapl_component_id()
     numcmp = PAPI_num_components();
     for (cid = 0; cid < numcmp; ++cid) {
         if ((cmpinfo = PAPI_get_component_info(cid)) == NULL) {
-            // handle error
             printf("%s", "RAPL: cannot call component info");
             return 0;
         }
@@ -135,7 +127,6 @@ int get_rapl_component_id()
             rapl_cid = cid;
 
             if (cmpinfo->disabled) {
-                // RAPL component is disabled
                 printf("%s", "RAPL: component is disabled");
                 return 0;
             }
@@ -144,7 +135,6 @@ int get_rapl_component_id()
     }
 
     if (cid == numcmp) {
-        // No RAPL component found
         printf("%s", "RAPL: component not found");
         return 0;
     }

@@ -2,6 +2,7 @@
 #define RAPL_PLUGIN_H_
 
 #include <papi.h>
+#include <time.h>
 
 #define MAX_RAPL_EVENTS 64
 
@@ -15,7 +16,7 @@ struct RAPL_Plugin_t
     int num_events;
 };
 
-int get_available_events(RAPL_Plugin *rapl);
+int get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval);
 
 int get_rapl_component_id();
 
