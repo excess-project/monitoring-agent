@@ -52,3 +52,6 @@ make
 make install
 make install all
 cd $Default_path
+
+# Clean up downloaded files
+rm -f *.tar.gz

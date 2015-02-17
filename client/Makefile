@@ -25,8 +25,9 @@ $(CORE_INC)
 
 LFLAGS =  -lm $(CURL) $(PAPI) $(APR) $(PARSER) $(PUBLISHER)
 
-FILES  = $(shell find . -name "*.c")
-HEADER  = $(shell find . -name "*.h")
+SRC = src
+FILES = $(shell find $(SRC) -name "*.c")
+HEADER = $(shell find $(SRC) -name "*.h")
 
 #
 # DEBUG SWITCH
@@ -43,11 +44,14 @@ endif
 #
 CORE_INC = -Icore/src
 
-PARSER = -Lcontrib/parser/ -lparser
-PARSER_INC = -Icontrib/parser/src/
+CONTRIB = contrib
+PARSER = -L$(CONTRIB)/parser/ -lparser
+PARSER_INC = -I$(CONTRIB)/parser/src/
 
-PUBLISHER = -Lcontrib/publisher/ -lpublisher
-PUBLISHER_INC = -Icontrib/publisher/src/
+EXCESS_INC = -Isrc
+
+PUBLISHER = -L$(CONTRIB)/publisher/ -lpublisher
+PUBLISHER_INC = -I$(CONTRIB)/publisher/src/
 
 MF_API_SRC = api/src
 MF_API_INC = -I$(MF_API_SRC)
@@ -73,11 +77,11 @@ APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 #
 .PHONY: libmf.so plugins copy_plugins clean
 
-all: excess_main lib copy_plugins
+all: prepare excess_main copy_plugins
 
-lib: prepare libmf.so
+lib: all libmf.so
 
-%.o: %.c $(HEADER)
+$(SRC)/%.o: %.c $(HEADER)
 		$(CC) -c $< $(CFLAGS) -fpic
 
 prepare:
@@ -88,24 +92,24 @@ prepare:
 	cp -f contrib/parser/libparser.so lib/
 	cp -f contrib/publisher/libpublisher.so lib/
 
-excess_main: excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
+excess_main: $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(SRC)/plugin_discover.o $(SRC)/plugin_manager.o
 	$(CC) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
-libagent.so: excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
-	$(CC) -shared -o $@ $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+#libagent.so: excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
+#	$(CC) -shared -o $@ $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
 mf_api.o:
-	$(CC) -c $(MF_API_SRC)/mf_api.c -o $@ $(COPT_SO) -I. $(MF_API_INC) $(CFLAGS) $(MF) $(LFLAGS)
+	$(CC) -c $(MF_API_SRC)/mf_api.c -o $@ $(COPT_SO) -I. $(MF_API_INC) $(CFLAGS) $(EXCESS_INC) $(MF) $(LFLAGS)
 
 libmf.so: mf_api.o excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
 	$(CC) -shared -o lib/libmf.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(MF) $(LFLAGS)
 
 #
 # INSTALL
-install: prepare_install copy_tasks
+install: prepare-install copy_tasks
 
 
-prepare_install: clean_install
+prepare-install: clean-install
 	@mkdir -p $(INSTALL_DIR)
 	@mkdir -p $(INSTALL_DIR)/bin/plugins
 	@mkdir -p $(INSTALL_DIR)/lib
@@ -163,7 +167,7 @@ copy_plugins: plugins
 clean:
 	rm -rf *.o *.a *.so $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so lib
 
-clean_all:
+clean-all:
 	$(MAKE) -C contrib/parser clean
 	$(MAKE) -C contrib/publisher clean
 	$(MAKE) -C $(PLUGIN_DIR)/papi clean
@@ -171,7 +175,7 @@ clean_all:
 	$(MAKE) -C $(PLUGIN_DIR)/rapl clean
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo clean
 
-clean_install:
+clean-install:
 	rm -rf $(INSTALL_DIR)
 
 #

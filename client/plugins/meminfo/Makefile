@@ -3,7 +3,7 @@ CC = /usr/bin/gcc
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb $(PARSER_INC) $(CORE_INC) $(COMMON_INC)
+-Wcast-align -O0 -ggdb $(PARSER_INC) $(EXCESS_INC) $(CORE_INC) $(COMMON_INC)
 
 LFLAGS = $(PARSER)
 
@@ -23,6 +23,8 @@ BINARIES = $(COMMON)/../binaries
 
 COMMON_INC = -I$(COMMON)
 CORE_INC = -I$(COMMON)/core/src
+
+EXCESS_INC = -I$(COMMON)/src
 
 PARSER = -L$(COMMON)/contrib/parser/ -lparser
 PARSER_INC = -I$(COMMON)/contrib/parser/src

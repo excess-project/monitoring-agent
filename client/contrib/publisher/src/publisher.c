@@ -50,22 +50,6 @@ void init_string(struct string *s) {
     s->ptr[0] = '\0';
 }
 
-static size_t
-write_data(void *ptr, size_t size, size_t nmemb, struct string *s)
-{
-    size_t new_len = s->len + size*nmemb;
-    s->ptr = realloc(s->ptr, new_len+1);
-    if (s->ptr == NULL) {
-        fprintf(stderr, "realloc() failed\n");
-        exit(EXIT_FAILURE);
-    }
-    memcpy(s->ptr+s->len, ptr, size*nmemb);
-    s->ptr[new_len] = '\0';
-    s->len = new_len;
-
-    return size*nmemb;
-}
-
 static size_t get_stream_data(void *buffer, size_t size, size_t nmemb, void *stream) {
 	size_t total = size * nmemb;
 	memcpy(stream, buffer, total);
@@ -161,7 +145,7 @@ query(const char* query, char* received_data)
 
     curl_easy_reset(curl);
 
-    return 1;
+    return result;
 }
 
 int publish_json(const char *URL, char *message)
