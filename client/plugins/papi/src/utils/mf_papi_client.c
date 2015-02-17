@@ -52,7 +52,8 @@ main(int argc, char** argv)
     profile_time.tv_nsec = 500000000;
 
     ++argv;
-    mf_papi_init(argv, --argc);
+    int num_cores = 1;
+    mf_papi_init(argv, --argc, num_cores);
     do {
         mf_papi_profile(profile_time);
         mf_papi_read(papi, argv);

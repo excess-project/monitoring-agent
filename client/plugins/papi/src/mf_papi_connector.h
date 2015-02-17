@@ -13,7 +13,11 @@ struct PAPI_Plugin_t
     int num_events;
 };
 
-void mf_papi_init(char **named_events, size_t num_events);
+void mf_papi_init(
+    char **named_events,
+    size_t num_events,
+    int requested_num_cores
+);
 
 void mf_papi_profile(struct timespec profile_interval);
 

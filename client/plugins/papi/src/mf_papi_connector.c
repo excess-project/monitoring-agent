@@ -42,7 +42,7 @@ static void check_events();
 #endif
 
 void
-mf_papi_init(char **named_events, size_t num_events)
+mf_papi_init(char **named_events, size_t num_events, int requested_num_cores)
 {
     if (is_papi_initialized()) {
         return;
@@ -58,6 +58,12 @@ mf_papi_init(char **named_events, size_t num_events)
 
     load_papi();
     get_max_cpus(&num_cores);
+    if (requested_num_cores < num_cores) {
+        if (requested_num_cores > 0) {
+            num_cores = requested_num_cores;
+        }
+    }
+
     create_eventset_for_each_core();
     bind_events_to_all_cores(named_events, num_events);
     #ifdef DEBUG

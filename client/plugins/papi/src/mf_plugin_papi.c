@@ -60,8 +60,13 @@ init_mf_plugin_papi(PluginManager *pm)
 
     /* set time-consuming parameters once */
     conf_data = malloc(sizeof(mfp_data));
+    int num_cores = -1;
+    char* str_num_cores = mfp_get_value("mf_plugin_papi", "MAX_CPU_CORES");
+    if (strcmp(str_num_cores, "MAX") != 0) {
+        num_cores = atoi(str_num_cores);
+    }
     mfp_get_data_filtered_by_value("mf_plugin_papi", conf_data, "on");
-    mf_papi_init(conf_data->keys, conf_data->size);
+    mf_papi_init(conf_data->keys, conf_data->size, num_cores);
 
     char* value = mfp_get_value("timings", "mf_plugin_papi");
     long timing = atoi(value);

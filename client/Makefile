@@ -22,6 +22,13 @@ $(CORE_INC)
 
 LFLAGS =  -lm $(CURL) $(PAPI) $(APR) $(PARSER) $(PUBLISHER)
 
+# PRODUCTION = 0, DEVELOPMENT WITH DEBUG = 1
+DEBUG ?= 1
+ifeq ($(DEBUG), 1)
+    CFLAGS += -DDEBUG -g
+else
+	CFLAGS += -DNDEBUG
+endif
 
 ## List of source files
 FILES  = $(shell find . -name "*.c")
@@ -66,8 +73,8 @@ lib: prepare libmf.so
 
 prepare:
 	@mkdir -p $(PLUGIN_DEST)
-	$(MAKE) -C contrib/parser
-	$(MAKE) -C contrib/publisher
+	$(MAKE) -C contrib/parser DEBUG=$(DEBUG)
+	$(MAKE) -C contrib/publisher DEBUG=$(DEBUG)
 	@mkdir -p lib/
 	cp -f contrib/parser/libparser.so lib/
 	cp -f contrib/publisher/libpublisher.so lib/
@@ -89,8 +96,8 @@ libmf.so: mf_api.o excess_main.o thread_handler.o util.o plugin_discover.o plugi
 # plugins
 #
 plugins:
-	$(MAKE) -C $(PLUGIN_DIR)/papi
-	$(MAKE) -C $(PLUGIN_DIR)/likwid
+	$(MAKE) -C $(PLUGIN_DIR)/papi DEBUG=$(DEBUG)
+	$(MAKE) -C $(PLUGIN_DIR)/likwid DEBUG=$(DEBUG)
 
 copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
