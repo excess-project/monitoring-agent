@@ -79,7 +79,7 @@ APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
 all: prepare excess_main copy_plugins
 
-lib: all libmf.so
+lib: libmf.so
 
 $(SRC)/%.o: %.c $(HEADER)
 		$(CC) -c $< $(CFLAGS) -fpic
@@ -95,19 +95,16 @@ prepare:
 excess_main: $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(SRC)/plugin_discover.o $(SRC)/plugin_manager.o
 	$(CC) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
-#libagent.so: excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
-#	$(CC) -shared -o $@ $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
-
 mf_api.o:
 	$(CC) -c $(MF_API_SRC)/mf_api.c -o $@ $(COPT_SO) -I. $(MF_API_INC) $(CFLAGS) $(EXCESS_INC) $(MF) $(LFLAGS)
 
-libmf.so: mf_api.o excess_main.o thread_handler.o util.o plugin_discover.o plugin_manager.o
+libmf.so: mf_api.o $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(SRC)/plugin_discover.o $(SRC)/plugin_manager.o
 	$(CC) -shared -o lib/libmf.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(MF) $(LFLAGS)
+	rm -f mf_api.o
 
 #
 # INSTALL
 install: prepare-install copy_tasks
-
 
 prepare-install: clean-install
 	@mkdir -p $(INSTALL_DIR)
@@ -165,7 +162,7 @@ copy_plugins: plugins
 # CLEAN-UP
 #
 clean:
-	rm -rf *.o *.a *.so $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so lib
+	rm -rf *.o *.a *.so $(SRC)/*.o $(OUTPUT) plugins/*.o $(PLUGIN_DEST)/*.so lib
 
 clean-all:
 	$(MAKE) -C contrib/parser clean
