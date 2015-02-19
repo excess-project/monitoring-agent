@@ -5,18 +5,18 @@ OUTPUT_CSV="mf_overhead"
 #RANDOM=cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1
 OUTPUT_CSV="${OUTPUT_CSV}-${RANDOM}.csv"
 
-#MESSAGES=$HOME/cel_job/mv/messages/*
-mkdir -p $HOME/mf_test/messages
-cp 60476* $HOME/mf_test/messages/
-MESSAGES_DIR=$HOME/mf_test/messages/*
+DATA_BASE="${HOME}/cel_job/mv/data"
+MESSAGES_DIR=${HOME}/cel_job/mv/messages/*.err
 
 DOMAIN=".fe.excess-project.eu"
 
 echo "plugins","frequency_in_ms","execution_time_in_ms" > $OUTPUT_CSV
 
-for FILE in "$MESSAGES_DIR"; do
+for FILE in $MESSAGES_DIR; do
+  echo "Parse:"$FILE
+
   ## Read JobID
-  JOBID=$(basename $FILE)
+  JOBID=$( basename "${FILE}" )
   JOBID=${JOBID%.*}
   JOBID=${JOBID%${DOMAIN}}
 
@@ -27,11 +27,12 @@ for FILE in "$MESSAGES_DIR"; do
   ## Find performance file with execution times
   PERFORMANCE_FILE=$(grep -w "profile_filename" ${FILE}| awk -F"-profile_filename" '{print $2}'|head -n 1 )
   PERFORMANCE_FILEPATH=$(echo ${PERFORMANCE_FILE} | awk -F" -" '{print $1}')
-  PERFORMANCE_FILE="$(basename ${PERFORMANCE_FILEPATH})"
 
   ## Extract configuration from performance filename
-  CONFIGURATION=$PERFORMANCE_FILE
+  PERFORMANCE_FILE="$(basename ${PERFORMANCE_FILEPATH})"
+  CONFIGURATION=${PERFORMANCE_FILE}
   CONFIGURATION=${CONFIGURATION%%XXX*}
+  PERFORMANCE_FILE=$( echo "${DATA_BASE}/$(basename "$PERFORMANCE_FILE")" )
 
   ## Get plugins used, and the set update frequency
   PLUGINS=()
@@ -74,10 +75,10 @@ for FILE in "$MESSAGES_DIR"; do
   done < $PERFORMANCE_FILE
 
   #echo $JOBID
-  echo $PERFORMANCE_FILE
+  #echo $PERFORMANCE_FILE
   #echo $DBKEY
   #echo "Frequency:"$FREQUENCY
-  echo $COMBINATION
+  #echo $COMBINATION
   #echo "Cores:"$CORES
   #echo "Execution time:"$EXECUTION_TIME
 

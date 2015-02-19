@@ -340,23 +340,25 @@ sed -i "${sed_string}" ${do_gnu_file}
      sed -i "${sed_string}" ${job_file_name}
 
      DOMAIN=".fe.excess-project.eu"
-     JOBID=${SUBMIT_COMM} ${job_file_name}
-     JOBID=${JOBID%${DOMAIN}}
-     echo $JOBID
+     PBS_JOBID=$( ${SUBMIT_COMM} ${job_file_name} )
+     PBS_JOBID=${PBS_JOBID%${DOMAIN}}
+     echo "PBS_JOBID:"${PBS_JOBID}
 
      # update configuration
-     echo "Configuration file "${}" will be updated"
      CONFIG_FILE=USER_CONFIG_FILE
+     HOME_USER=/nas_home/${USER}
      MF_USER_TOP_PATH=${HOME_USER}/.mf
      MF_AGENT_USER_CONFIGFILE=${MF_USER_TOP_PATH}/${PBS_JOBID}.ini
+     echo "Copy new configuration to "${MF_AGENT_USER_CONFIGFILE}
+     echo "Config file is: "${CONFIG_FILE}
      cp -f ${CONFIG_FILE} ${MF_AGENT_USER_CONFIGFILE}
 
-     while [ $? -ne 0 ]; do
-       echo "could not submit the job" ${job_file_name}
-       echo "will try in ${QSUB_REJECT_SLEEP} minutes"
-       sleep ${QSUB_REJECT_SLEEP}
-       ${SUBMIT_COMM} ${job_file_name}
-     done
+     #while [ $? -ne 0 ]; do
+     #  echo "could not submit the job" ${job_file_name}
+     #  echo "will try in ${QSUB_REJECT_SLEEP} minutes"
+     #  sleep ${QSUB_REJECT_SLEEP}
+     #  ${SUBMIT_COMM} ${job_file_name}
+     #done
      echo "job submitted: " ${job_file_name}
 
 
