@@ -46,23 +46,27 @@ fi
 REMOVE_PREFIX="mf_config-"
 for FILE in $CONFIGURATIONS_DIR; do
   if [ -e "$FILE" ]; then
-    ## Use generated configuration as mf_config.ini
-    cp $FILE $JOBS_DIR/configurations
-    mv $FILE $MF_CONFIG_FILE
-
     ## Execute benchmark with current configuration
     cp $BENCHMARK_TEMPLATE ${TOP_PATH}/$BENCHMARK_SH
+
     NEW_PREFIX=$(basename $FILE)
     NEW_PREFIX="MF_overhead_${HW_POWER}${MONITORING}${NEW_PREFIX#${REMOVE_PREFIX}}"
     NEW_PREFIX="${NEW_PREFIX%.*}XXX_"
+
     SED_STRING="s/PREFIX=/PREFIX=\"$NEW_PREFIX\"/g"
     sed -i "${SED_STRING}" ${BENCHMARK_SH}
+
+    SED_STRING="s/USER_JOBS_DIR/${JOBS_DIR}/g"
+    sed -i "${SED_STRING}" ${BENCHMARK_SH}
+
+    SED_STRING="/USER_CONFIG_FILE/${FILE}/g"
+    sed -i "${SED_STRING}" ${BENCHMARK_SH}
+
     echo  "Initialize job submission for ${NEW_PREFIX}"
-    #cd ${TOP_PATH} && ./$BENCHMARK_SH
+    cd ${TOP_PATH} && ./$BENCHMARK_SH
 
     cp ${TOP_PATH}/$BENCHMARK_SH "${JOBS_DIR}/scripts/${NEW_PREFIX}.sh"
     TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
     echo $TIMESTAMP,$USER,$(basename $FILE) >> $JOBS_DONE
-
   fi
 done

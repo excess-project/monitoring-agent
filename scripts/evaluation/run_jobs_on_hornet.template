@@ -339,27 +339,36 @@ sed -i "${sed_string}" ${do_gnu_file}
      sed_string="s/USER_PROF_FILE/${prof_file}/g"
      sed -i "${sed_string}" ${job_file_name}
 
+     DOMAIN=".fe.excess-project.eu"
+     JOBID=${SUBMIT_COMM} ${job_file_name}
+     JOBID=${JOBID%${DOMAIN}}
+     echo $JOBID
 
-    ${SUBMIT_COMM} ${job_file_name}
-    while [ $? -ne 0 ]; do
+     # update configuration
+     echo "Configuration file "${}" will be updated"
+     CONFIG_FILE=USER_CONFIG_FILE
+     MF_USER_TOP_PATH=${HOME_USER}/.mf
+     MF_AGENT_USER_CONFIGFILE=${MF_USER_TOP_PATH}/${PBS_JOBID}.ini
+     cp -f ${CONFIG_FILE} ${MF_AGENT_USER_CONFIGFILE}
+
+     while [ $? -ne 0 ]; do
        echo "could not submit the job" ${job_file_name}
        echo "will try in ${QSUB_REJECT_SLEEP} minutes"
        sleep ${QSUB_REJECT_SLEEP}
        ${SUBMIT_COMM} ${job_file_name}
      done
-    echo "job submitted: " ${job_file_name}
+     echo "job submitted: " ${job_file_name}
 
 
-    sleep 1
+     sleep 1
    done
    echo "sleep ${MAIN_SLEEP} seconds"
    sleep ${MAIN_SLEEP}
-#  done
  done
 done
- echo "cat ${LUSTRE_DIR}/${perf_file} >> ${result_file}" >> ${concatenate_file}
- echo "source ${do_gnu_file}">>${concatenate_file}
- echo "gnuplot ${PROJ_DIR}/scripts/${gnu_file}" >>${concatenate_file}
+  echo "cat ${LUSTRE_DIR}/${perf_file} >> ${result_file}" >> ${concatenate_file}
+  echo "source ${do_gnu_file}">>${concatenate_file}
+  echo "gnuplot ${PROJ_DIR}/scripts/${gnu_file}" >>${concatenate_file}
 done
 done
 done
