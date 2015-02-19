@@ -51,6 +51,6 @@ int printHelp();
 
 int createLogFile();
 
-int prepare(const char* conf_file);
+int prepare();
 
 #endif /* EXCESS_MAIN_H_ */

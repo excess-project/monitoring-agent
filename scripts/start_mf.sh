@@ -6,15 +6,23 @@
 DBKEY=$1
 NODE=$2
 PBS_JOBID=$3
+PBS_USER=$4
 LOG_FILE=/var/log/hpcmeasure/mf_service_prologue_${NODE}.log
 
+
+
+HOME_USER=/nas_home/${PBS_USER}
 MF_REVISION=$(cat /opt/mf/revision)
 MF_TOP_PATH=/opt/mf/${MF_REVISION}
 MF_BIN_PATH=${MF_TOP_PATH}/bin
 MF_SCRIPT_PATH=${MF_TOP_PATH}/scripts
 MF_AGENT_PIDFILE_TOP_PATH=/ext/mf/plugins/${NODE}
 MF_AGENT_PIDFILE=${MF_AGENT_PIDFILE_TOP_PATH}/${PBS_JOBID}
-
+MF_USER_TOP_PATH=${HOME_USER}/.mf
+DOMAIN=".fe.excess-project.eu"
+JOBID=${PBS_JOBID%${DOMAIN}}
+MF_AGENT_USER_CONFIGFILE=${MF_USER_TOP_PATH}/${JOBID}.ini
+MF_AGENT_STD_CONFIGFILE=${MF_TOP_PATH}/mf_config.ini
 #pre-check
 DATE="$( date +'%c'  )"
 echo $DATE":--start initializing part of start_mf.sh---" >> $LOG_FILE
@@ -36,9 +44,17 @@ echo $DATE":MF_AGENT_PIDFILE:"$MF_AGENT_PIDFILE >>$LOG_FILE
 echo $DATE":DBKEY:"$DBKEY >>$LOG_FILE
 
 
-#start converter and save the process id
+#start mf_agent and save the process id
 source ${MF_SCRIPT_PATH}/setenv.sh
-${MF_BIN_PATH}/mf_agent -id=${DBKEY} &
+#check user config file
+echo $DATE":Check for file ${MF_AGENT_USER_CONFIGFILE}" >> $LOG_FILE
+if [ -e "${MF_AGENT_USER_CONFIGFILE}" ]; then
+   echo $DATE":Using ${MF_AGENT_USER_CONFIGFILE} as configuration file" >> $LOG_FILE
+   ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_USER_CONFIGFILE} &
+else
+   echo	$DATE":Using ${MF_AGENT_STD_CONFIGFILE} as configuration file"	>> $LOG_FILE
+   ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_STD_CONFIGFILE} &
+fi
 MF_SERVICE_PID=$!
 echo $MF_SERVICE_PID>${MF_AGENT_PIDFILE}
 
