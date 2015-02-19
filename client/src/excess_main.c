@@ -19,7 +19,7 @@
 #include <publisher.h>
 
 // configuration
-char *confFile;
+char* confFile;
 
 /**
  * @brief timestamp for config file
@@ -63,10 +63,12 @@ char* cutPwd(char *pwd) {
 	return help;
 }
 
-int prepare(const char* conf_file) {
+int prepare() {
 	if (!pwd_is_set) {
 		set_pwd();
 	}
+
+	/*
 	confFile = malloc(strlen(pwd) + strlen(conf_file) + 2);
 	if (confFile == NULL) {
 		fprintf(stderr, "prepare() failed: cannot allocate memory for fullpath");
@@ -74,6 +76,8 @@ int prepare(const char* conf_file) {
 	}
 	sprintf(confFile, "%s/%s", pwd, conf_file);
 	fprintf(logFile, "confFile is: %s \n", confFile);
+	*/
+
 	mfp_parse(confFile);
 
 	char timeArr[80];
@@ -187,6 +191,11 @@ int main(int argc, const char* argv[]) {
 	fprintf(stderr, "PID is: %d\n", pid);
 	fprintf(logFile, "PID is: %d\n", pid);
 
+    /* set default config file */
+    confFile = malloc(sizeof(char) * 256);
+	sprintf(confFile, "%s/%s", pwd, "../mf_config.ini");
+	fprintf(logFile, "Standard configuration set to: %s \n", confFile);
+
 	if (argc > 1) {
 		for (int iter = 0; iter < argc; iter++) {
 			char *pos;
@@ -203,6 +212,10 @@ int main(int argc, const char* argv[]) {
 				strcpy(server_name, pos + strlen("-hostname="));
 				hostChanged = 1;
 			}
+			if ((pos = strstr(argv[iter], "-config="))) {
+				strcpy(confFile, pos + strlen("-config="));
+				fprintf(logFile, "using configuration file at: %s\n", confFile);
+			}
 			if ((pos = strstr(argv[iter], "-h"))
 					|| (pos = strstr(argv[iter], "-?"))
 					|| (pos = strstr(argv[iter], "--help"))) {
@@ -210,7 +223,8 @@ int main(int argc, const char* argv[]) {
 		}
 	}
 
-	prepare("../mf_config.ini");
+	prepare();
+
 	if (!startThreads()) {
 		fprintf(stderr, "Couldn't start the threads!\n");
 		fprintf(logFile, "Couldn't start the threads!\n");
