@@ -8,7 +8,7 @@ rm -rf configurations
 mkdir -p configurations
 
 ## Configuration
-declare -a PLUGINS=("mf_plugin_papi" "mf_plugin_rapl" "mf_plugin_likwid" "mf_plugin_meminfo" '')
+declare -a PLUGINS=("mf_plugin_papi" "mf_plugin_rapl" "mf_plugin_likwid" "mf_plugin_meminfo")
 declare -a UPDATE_FREQUENCIES=(10 25 50 100 200 300 400 500 1000)
 
 
