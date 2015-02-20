@@ -42,3 +42,4 @@
 /*.save
 /client/plugins/rapl/lib/mf_plugin_rapl.so
 /client/plugins/likwid/liblikwid.so
+/scripts/evaluation/

@@ -41,8 +41,6 @@ for UPDATE_FREQUENCY in "${UPDATE_FREQUENCIES[@]}"; do
     done
 done
 
-unset PLUGINS[${#PLUGINS[@]}-1]
-
 ## Generate configuration files [PAPI+OTHER]
 ITERATIONS=$((${#PLUGINS[@]} - 1))
 for UPDATE_FREQUENCY in "${UPDATE_FREQUENCIES[@]}"; do
