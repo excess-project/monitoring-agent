@@ -24,7 +24,6 @@
  *
  * @author Dennis Hoppe <hoppe@hrls.de>
  */
-
 #ifndef MF_PARSER_H_
 #define MF_PARSER_H_
 

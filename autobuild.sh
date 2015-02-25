@@ -1,8 +1,10 @@
 #!/bin/bash
-#This file is used for building all needed libraries in jenkins
+
+# Build Script for Jenkins
+
 Default_path=`pwd`
 
-# Downloading and building papi
+# PAPI-C
 wget http://icl.cs.utk.edu/projects/papi/downloads/papi-5.4.0.tar.gz
 tar zxvf papi-5.4.0.tar.gz
 cd papi-5.4.0/src
@@ -11,7 +13,7 @@ make
 make install all
 cd $Default_path
 
-# Downloading and build likwid (build both *.a and *.so)
+# Likwid
 wget http://ftp.fau.de/pub/likwid/likwid-3.1.3.tar.gz
 tar zxvf likwid-3.1.3.tar.gz
 cd likwid-3.1.3
@@ -23,27 +25,27 @@ make
 make install
 cd $Default_path
 
-# Downloading and building curl
+# CURL
 wget http://curl.haxx.se/download/curl-7.37.0.tar.gz
 tar zxvf curl-7.37.0.tar.gz
 cd curl-7.37.0
 ./configure --prefix=`pwd`/../binaries/curl
-make 
+make
 make install
 make install all
 cd $Default_path
 
-# Downloading and building apr
+# Apache APR
 wget http://mirror.23media.de/apache//apr/apr-1.5.1.tar.gz
 tar zxvf apr-1.5.1.tar.gz
 cd apr-1.5.1
 ./configure --prefix=`pwd`/../binaries/apr
-make 
+make
 make install
-make install all  
+make install all
 cd $Default_path
 
-#Downloading and building apr-util
+# Apache APR-Util
 wget http://mirror.23media.de/apache//apr/apr-util-1.5.3.tar.gz
 tar zxvf apr-util-1.5.3.tar.gz
 cd apr-util-1.5.3
@@ -53,5 +55,5 @@ make install
 make install all
 cd $Default_path
 
-# Clean up downloaded files
+# Clean-up
 rm -f *.tar.gz

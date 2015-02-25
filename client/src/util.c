@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * util.c
- *
- *  Created on: 17.07.2014
- *      Author: hpcneich
- */
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <netdb.h>

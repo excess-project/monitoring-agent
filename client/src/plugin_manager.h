@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * plugin_manager.h
- *
- *  Created on: 16.07.2014
- *      Author: hpcneich
- */
-
 #ifndef PLUGIN_MANAGER_H_
 #define PLUGIN_MANAGER_H_
 
@@ -28,40 +21,40 @@
 #include "util.h"
 
 /**
- * @brief entry function of plugin
+ * @brief Entry function of a plug-in
  */
 typedef metric (*PluginHook)();
 
 /**
- * @brief structure which contains the plugins
+ * @brief C struct to maintain plug-ins
  */
 typedef struct PluginManager_t PluginManager;
 
 /**
- * @brief initializing function for the plugin manager
+ * @brief Initializing the plug-in manager
  */
 PluginManager* PluginManager_new();
 
 /**
- * @brief functions which deallocates the memeory used
+ * @brief Functions to deallocate the memory used at run-time
  */
 void PluginManager_free(PluginManager *pm);
 
 /**
- * @brief registers hooks / entry functions of plugins
+ * @brief Registers hooks, i.e. entry functions, for each plug-in
  */
-void PluginManager_register_hook(PluginManager *pm, const char *name,
-		PluginHook hook);
-/**
- * @brief function which applies an entry function
- * @deprecated { not needed }
- */
-metric PluginManager_apply_hook(PluginManager *pm);
+void PluginManager_register_hook(
+    PluginManager *pm,
+    const char *name,
+	PluginHook hook
+);
 
 /**
- * @brief returns an entry function from the plugin manager structure
+ * @brief Return the hook function associated with the given plug-in
  *
- * hooks / entry functions are stored in a FIFO queue
+ * It should be noted that hooks are stored in a FIFO queue.
+ *
+ * @returns a hook function
  */
 PluginHook PluginManager_get_hook(PluginManager *pm);
 

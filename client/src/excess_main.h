@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * excess_main.h
- *
- *  Created on: 17.07.2014
- *      Author: hpcneich
- */
-
 #ifndef EXCESS_MAIN_H_
 #define EXCESS_MAIN_H_
 
@@ -31,42 +24,52 @@
 
 int NUM_THREADS;
 
-/** @brief Array containing the timings of the plugins.
+/**
+ * @brief Array containing the timings of the plug-ins.
  *
- * 		The array containing the timings of the plugins allows to store the timing
- * 		for up to 254 plugins, the first two values are reserved for the timing
- * 		of the threads which manage the re-read of the config file and the sending
- * 		of the gathered data.
+ * The array containing the timings of the plug-ins allows to store the timing
+ * for up to 254 plug-ins, the first two values are reserved for the timing
+ * of the threads which manage the re-read of the configuration file and then
+ * sending the gathered data to the server.
  *
  */
 extern long timings[256];
 
+/**
+ * @brief The server name
+ */
 extern char server_name[256];
 
-/** @brief adress of the server which will receive the data
- *
+/**
+ * @brief Address of the server which will receive the data
  */
 extern char addr[100];
 
-/** @brief location of the config file
- *
+/**
+ * @brief Location of the configuration file
  */
 extern char *confFile;
 
-/** @brief log file which will contain message by the program
- *
+/**
+ * @brief Log file
  */
 extern FILE *logFile;
 
-/** @brief function printing information about the tool
+/**
+ * @brief Initializes and creates the log files
  *
- * TODO has to be finished
- *
+ * @returns 1 on success; 0 otherwise.
  */
-int printHelp();
-
 int createLogFile();
 
+/**
+ * @brief Initializes all variables prior to starting the MFAgent
+ *
+ * This function parses the configuration file, sets the host name, user name,
+ * and the server name for further communication.
+ *
+ * @returns 1 on success; 0 otherwise.
+ */
 int prepare();
 
 #endif /* EXCESS_MAIN_H_ */

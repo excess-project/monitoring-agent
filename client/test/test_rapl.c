@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 #include <papi.h>
 #include <stdlib.h>
 

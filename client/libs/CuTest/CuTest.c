@@ -1,19 +1,3 @@
-/*
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 #include <assert.h>
 #include <setjmp.h>
 #include <stdlib.h>
@@ -178,7 +162,7 @@ void CuFail_Line(CuTest* tc, const char* file, int line, const char* message2, c
 	CuString string;
 
 	CuStringInit(&string);
-	if (message2 != NULL) 
+	if (message2 != NULL)
 	{
 		CuStringAppend(&string, message2);
 		CuStringAppend(&string, ": ");
@@ -193,7 +177,7 @@ void CuAssert_Line(CuTest* tc, const char* file, int line, const char* message, 
 	CuFail_Line(tc, file, line, NULL, message);
 }
 
-void CuAssertStrEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message, 
+void CuAssertStrEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
 	const char* expected, const char* actual)
 {
 	CuString string;
@@ -205,7 +189,7 @@ void CuAssertStrEquals_LineMsg(CuTest* tc, const char* file, int line, const cha
 	}
 
 	CuStringInit(&string);
-	if (message != NULL) 
+	if (message != NULL)
 	{
 		CuStringAppend(&string, message);
 		CuStringAppend(&string, ": ");
@@ -218,7 +202,7 @@ void CuAssertStrEquals_LineMsg(CuTest* tc, const char* file, int line, const cha
 	CuFailInternal(tc, file, line, &string);
 }
 
-void CuAssertIntEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message, 
+void CuAssertIntEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
 	int expected, int actual)
 {
 	char buf[STRING_MAX];
@@ -227,17 +211,17 @@ void CuAssertIntEquals_LineMsg(CuTest* tc, const char* file, int line, const cha
 	CuFail_Line(tc, file, line, message, buf);
 }
 
-void CuAssertDblEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message, 
+void CuAssertDblEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
 	double expected, double actual, double delta)
 {
 	char buf[STRING_MAX];
 	if (fabs(expected - actual) <= delta) return;
-	sprintf(buf, "expected <%f> but was <%f>", expected, actual); 
+	sprintf(buf, "expected <%f> but was <%f>", expected, actual);
 
 	CuFail_Line(tc, file, line, message, buf);
 }
 
-void CuAssertPtrEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message, 
+void CuAssertPtrEquals_LineMsg(CuTest* tc, const char* file, int line, const char* message,
 	void* expected, void* actual)
 {
 	char buf[STRING_MAX];

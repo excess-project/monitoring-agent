@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * excess_main.c
- *
- *  Created on: 17.07.2014
- *      Author: hpcneich
- */
-
 #include <pthread.h>
 #include <stdlib.h>
 
@@ -83,16 +76,6 @@ int prepare() {
 	if (!pwd_is_set) {
 		set_pwd();
 	}
-
-	/*
-	confFile = malloc(strlen(pwd) + strlen(conf_file) + 2);
-	if (confFile == NULL) {
-		fprintf(stderr, "prepare() failed: cannot allocate memory for fullpath");
-		return 0;
-	}
-	sprintf(confFile, "%s/%s", pwd, conf_file);
-	fprintf(logFile, "confFile is: %s \n", confFile);
-	*/
 
 	mfp_parse(confFile);
 
@@ -182,7 +165,7 @@ set_pwd()
 	char *buf = malloc(300 * sizeof(char));
 	memset(buf, '\0', 300 * sizeof(char));
 
-	readlink("/proc/self/exe", buf, 200); // obtain full path of executable
+	readlink("/proc/self/exe", buf, 200);
 
 	pwd = malloc(300 * sizeof(char));
 	memset(pwd, '\0', 300 * sizeof(char));

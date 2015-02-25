@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * thread_handler.h
- *
- *  Created on: 17.07.2014
- *      Author: hpcneich
- */
-
 #ifndef THREAD_HANDLER_H_
 #define THREAD_HANDLER_H_
 
@@ -35,30 +28,34 @@
 
 struct apr_queue_t *data_queue;
 struct apr_pool_t *data_pool;
+
 /**
- * @brief check if config at a specific frequency
+ * @brief Check for changes in the configuration file at a given time interval
  */
 int checkConf();
 
 /**
- * @brief start the different threads of the tool
+ * @brief Starts all threads registered (e.g. for sending data to the server)
  */
 int startThreads();
+
 /**
- * @brief entry function for threads, purpose of each thread is defined here
+ * @brief Hook function defined individually for each plug-in (i.e. thread)
  */
 void *entryThreads(void *arg);
+
 /**
- * @brief gather a metric, use the hook of the plugin
+ * @brief Gathering the registered metrics using the hook function of a plug-in
  */
 int gatherMetric(int num);
+
 /**
- * @brief pop from queue and send data, hook for sending thread
+ * @brief Pops new data from the stack in order to send it to the server
  */
 int startSending();
 
 /**
- * @brief prepare for sending data
+ * @brief Convenience method to prepare the data before sending.
  */
 int prepSend(metric data);
 

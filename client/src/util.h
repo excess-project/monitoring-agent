@@ -32,17 +32,19 @@
 #define STOP 0
 
 /**
- * @brief flags which indicates whether gathering cycle is running or not
+ * @brief Flag, which indicates whether monitoring is activated
  */
 extern int running;
 
 /**
- * @brief directory where the binary is located
+ * @brief Directory, where the binaries are maintained
  */
 extern char *pwd;
 
 /**
- * @brief get fully-qualified domain name
+ * @brief Gets the fully-qualified domain name
+ *
+ * @returns a fully-qualified domain name
  */
 int getFQDN(char *fqdn);
 

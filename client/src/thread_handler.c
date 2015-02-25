@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * thread_handler.c
- *
- *  Created on: 17.07.2014
- *      Author: hpcneich
- */
-
 #include <pthread.h>
 #include <stdlib.h>
 #include <unistd.h>

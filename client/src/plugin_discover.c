@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * plugin_discover.c
- *
- *  Created on: 16.07.2014
- *      Author: hpcneich
- */
 #include <dlfcn.h>
 #include <dirent.h>
 #include <mf_parser.h>
@@ -49,9 +43,6 @@ int pluginCount = 0;
 
 char* plugin_name[256];
 
-/**
- * @brief load plugin, register hook and return handle to its library
- */
 void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 	char* slashed_path = strdup(fullpath);
 

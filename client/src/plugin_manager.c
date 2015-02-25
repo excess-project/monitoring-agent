@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * plugin_manager.c
- *
- *  Created on: 16.07.2014
- *      Author: hpcneich
- */
-
 #include <stdlib.h>
 #include <pthread.h>
 #include <apr_queue.h>
@@ -73,13 +66,6 @@ void PluginManager_register_hook(PluginManager *pm, const char *name,
 		fprintf(logFile, "Failed queue push");
 	}
 	pluginCount++;
-}
-
-// Don't actually need this function
-metric PluginManager_apply_hook(PluginManager *pm) {
-	metric retMetric = malloc(sizeof(metric_t));
-
-	return retMetric;
 }
 
 PluginHook PluginManager_get_hook(PluginManager *pm) {

@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * mem_info.c example of a plugin
- *
- *  Created on: 16.07.2014
- *      Author: hpcneich
- */
 #include <time.h>
 #include <unistd.h>
 #include <stdio.h>

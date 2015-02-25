@@ -1,19 +1,3 @@
-/*
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 #ifndef CU_TEST_H
 #define CU_TEST_H
 
@@ -74,17 +58,17 @@ void CuTestDelete(CuTest *t);
 /* Internal versions of assert functions -- use the public versions */
 void CuFail_Line(CuTest* tc, const char* file, int line, const char* message2, const char* message);
 void CuAssert_Line(CuTest* tc, const char* file, int line, const char* message, int condition);
-void CuAssertStrEquals_LineMsg(CuTest* tc, 
-	const char* file, int line, const char* message, 
+void CuAssertStrEquals_LineMsg(CuTest* tc,
+	const char* file, int line, const char* message,
 	const char* expected, const char* actual);
-void CuAssertIntEquals_LineMsg(CuTest* tc, 
-	const char* file, int line, const char* message, 
+void CuAssertIntEquals_LineMsg(CuTest* tc,
+	const char* file, int line, const char* message,
 	int expected, int actual);
-void CuAssertDblEquals_LineMsg(CuTest* tc, 
-	const char* file, int line, const char* message, 
+void CuAssertDblEquals_LineMsg(CuTest* tc,
+	const char* file, int line, const char* message,
 	double expected, double actual, double delta);
-void CuAssertPtrEquals_LineMsg(CuTest* tc, 
-	const char* file, int line, const char* message, 
+void CuAssertPtrEquals_LineMsg(CuTest* tc,
+	const char* file, int line, const char* message,
 	void* expected, void* actual);
 
 /* public assert functions */

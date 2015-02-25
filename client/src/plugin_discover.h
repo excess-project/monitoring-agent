@@ -14,37 +14,33 @@
  * limitations under the License.
  */
 
-/*
- * plugin_discover.h
- *
- *  Created on: 16.07.2014
- *      Author: hpcneich
- */
-
 #ifndef PLUGIN_DISCOVER_H_
 #define PLUGIN_DISCOVER_H_
 
 #include "plugin_manager.h"
 
-/** @brief number of found plugins
- *
+/**
+ * @brief Number of plug-ins found at run-time
  */
 extern int pluginCount;
 
+/**
+ * @brief Name of a given plug-in
+ */
 extern char* plugin_name[256];
 
-/** @brief searches for plugins
- *
+/**
+ * @brief Discovers available plug-ins, and registers them to the MFAgent
  */
 void* discover_plugins(const char *dirname, PluginManager *pm);
 
-/** @brief parses the plugin name from the name of the .so file
- *
+/**
+ * @brief Gets the plug-in name from the given filename
  */
 char* get_plugin_name(char filename[256]);
 
-/** @brief cleanup
- *
+/**
+ * @brief Clean-up plug-ins after execution
  */
 void cleanup_plugins(void*);
 
