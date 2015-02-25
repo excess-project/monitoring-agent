@@ -5,11 +5,42 @@ This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
 
-========================================================================
+================================================================================
 GNU GENERAL PUBLIC LICENSE 3
-========================================================================
+================================================================================
 
 The following components are provided under the GNU General Public License 3.
 See project link for details.
 
      (GNU General Public License 3) Likwid (likwid:3.1.3 - https://code.google.com/p/likwid/)
+
+
+================================================================================
+The zlib/libpng License (Zlib)
+================================================================================
+
+The following components are provided under the zlib/libpng License (Zlib).
+See project link for details.
+
+     (zlib/libpng License) CuTest (cutest:1.5 - http://cutest.sourceforge.net/)
+
+
+================================================================================
+The BSD 3-Clause License
+================================================================================
+
+The following components are provided under the BSD 3-Clause License.
+See project link for details.
+
+     (BSD 3-Clause License) inih (inih:r29 - https://code.google.com/p/inih/)
+
+
+================================================================================
+Other
+================================================================================
+
+The following components are provided under their individual license.
+See project link for details.
+
+     (Zed A. Shaw) mf_debug (debug.h - https://github.com/zedshaw/liblcthw)
+
