@@ -1,5 +1,0 @@
-[0.1.2]
- - PAPI support for monitoring all processes running on CPUs (third-person).
- - Fixed parser implementation.
- - Parser reads values for the PAPI plugin.
- - Fixed numSockets error caused by the Likwid plugin.
