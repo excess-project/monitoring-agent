@@ -1,22 +1,26 @@
 CC = /usr/bin/gcc
 
-CFLAGS = -std=gnu99 -pedantic -Wall $(MF_INC)
+CFLAGS = -std=gnu99 -pedantic -Wall $(INC) $(CORE_INC)
 
-LFLAGS = $(MF_LIB) -Wl,-rpath-link,lib
+LFLAGS = $(MF_LIB) $(PARSER_LIB) $(PUBLISHER_LIB) -Wl,-rpath-link,lib
 
-BASE = .
-SRC = $(BASE)
-LIB = $(BASE)/lib
-INC = $(BASE)/include
-
-MF_LIB = -L$(LIB) -lmf
-MF_INC = -I$(INC)
+BASE=.
+INC=-I$(BASE)/../src
+CORE=$(BASE)/../..
+CORE_INC=-I$(CORE)/src
+CORE_LIBS=$(CORE)/lib
+MF_LIB=-L$(CORE_LIBS) -lmf
+PARSER_LIB=-L$(CORE_LIBS) -lparser
+PUBLISHER_LIB=-L$(CORE_LIBS) -lpublisher
 
 .PHONY: mf_test
 
 all: mf_test
 
-mf_test:
+prepare:
+	$(MAKE) -C $(BASE)/../.. lib
+
+mf_test: prepare
 	$(CC) mf_test.c -o $@ $(CFLAGS) $(LFLAGS)
 
 clean:
