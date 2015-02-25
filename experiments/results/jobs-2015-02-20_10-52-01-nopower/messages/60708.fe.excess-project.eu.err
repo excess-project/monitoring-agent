@@ -1,0 +1,2906 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0   299      0   586k --:--:-- --:--:-- --:--:--  586k  0    22    0    22    0   299   4080  55462 --:--:-- --:--:-- --:--:--     0
+using logfile: /opt/mf/0.1.3/bin/log/log-2015-02-20-11:10:38
+PID is: 209365
+Standard configuration set to: /opt/mf/0.1.3/bin/../mf_config.ini 
+arg #0 is: /opt/mf/0.1.3/bin/mf_agent
+arg #1 is: -id=VVA_KfleRiOeO21bk-5oWg
+using executing id: VVA_KfleRiOeO21bk-5oWg
+arg #2 is: -config=/nas_home/hpcdhopp/.mf/60708.ini
+using configuration file at: /nas_home/hpcdhopp/.mf/60708.ini
+[INFO] (src/mf_parser.c:50) mfp_set_value(..) -- Created new hash_table for section: job
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <username,hpcdhopp>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <description,This is a test configuration file>
+[INFO] (src/mf_parser.c:50) mfp_set_value(..) -- Created new hash_table for section: generic
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <server,http://192.168.0.2:3000/executions/>
+[INFO] (src/mf_parser.c:50) mfp_set_value(..) -- Created new hash_table for section: mf_plugin_likwid
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PKG,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <DRAM,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PP0,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PP1,on>
+[INFO] (src/mf_parser.c:50) mfp_set_value(..) -- Created new hash_table for section: mf_plugin_papi
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <MAX_CPU_CORES,8>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_L1_DCM,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_L2_DCM,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_L3_DCM,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_FLOPS,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_TOT_CYC,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_STL_ICY,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_TLB_TL,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_TLB_DM,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_FP_INS,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_VEC_INS,on>
+[INFO] (src/mf_parser.c:50) mfp_set_value(..) -- Created new hash_table for section: mf_plugin_rapl
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PP0_ENERGY:PACKAGE0,on>
+[INFO] (src/mf_parser.c:50) mfp_set_value(..) -- Created new hash_table for section: mf_plugin_meminfo
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mem_used,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mem_avail,on>
+[INFO] (src/mf_parser.c:50) mfp_set_value(..) -- Created new hash_table for section: plugins
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_papi,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_rapl,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_likwid,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_meminfo,off>
+[INFO] (src/mf_parser.c:50) mfp_set_value(..) -- Created new hash_table for section: timings
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <default,1000000000>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <publish_data_interval,0>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <update_configuration,360>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_papi,700000000>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_rapl,700000000>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_likwid,700000000>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_meminfo,700000000>
++ PROJ_DIR=/nas_home/hpcdhopp/cel_job/mv
++ BIN=/nas_home/hpcdhopp/cel_job/mv/bin/cel_benchmark
++ BIN_PAT=/nas_home/hpcdhopp/cel_job/mv/bin/cel_benchmark_PAT
++ LUSTRE_DIR=/nas_home/hpcdhopp/cel_job/mv/data
++ RUN_ATTEMPTS=50000
++ RUN_APRUN_PARM_1=' -f /nas_home/hpcdhopp/cel_job/mv/nodefile '
++ RUN_APRUN_PARM_2=' -f /nas_home/hpcdhopp/cel_job/mv/nodefile '
++ RUN_APRUN_PARM_N=' -f /nas_home/hpcdhopp/cel_job/mv/nodefile '
++ TOL_EP=1.0E-16
++ VERBOSITY=0
++ WRITE_COMM_GRAPH=0
++ USE_CRAYPAT=0
++ RUN_TEST=1
++ NUM_MASTERS_PER_NODE=2
++ NUM_MASTERS_PER_2NODES=2
++ XX=("0" "32" "64" "64" "64" "96" "128" "128" "192" "128" "192" "256" "384" "256" "384" "256" "384" "512" "768" "512")
++ YY=("0" "32" "32" "64" "64" "64" "64" "128" "128" "128" "128" "128" "128" "256" "256" "256" "256" "256" "256" "512")
++ ZZ=("0" "32" "32" "32" "64" "64" "64" "64" "64" "128" "128" "128" "128" "128" "128" "256" "256" "256" "256" "256")
++ PROCS_ARRAY=("0" "1" "2" "4" "8" "12" "16" "32" "48" "64" "96" "128" "192" "256" "384" "512" "768" "1024" "1536" "2048")
++ DX=("0" "1" "2" "2" "2" "3" "4" "4" "6" "4" "6" "8" "12" "8" "12" "8" "12" "16" "24" "16")
++ DY=("0" "1" "1" "2" "2" "2" "2" "4" "4" "4" "4" "4" "4" "8" "8" "8" "8" "8" "8" "16")
++ DZ=("0" "1" "1" "1" "2" "2" "2" "2" "2" "4" "4" "4" "4" "4" "4" "8" "8" "8" "8" "8")
++ ITER_MAX=100
++ SIZE_MUL_X=2
++ SIZE_DIV_X=1
++ SIZE_MUL_Y=2
++ SIZE_DIV_Y=1
++ SIZE_MUL_Z=2
++ SIZE_DIV_Z=1
++ RUN_CHECK_RESULT=0
++ FREQ_MODE=1
++ FREQ_IDX_START=0
++ FREQ_IDX_END=0
++ write_performance=1
++ write_profile=1
++ PREFIX=MF_overhead_mf_mf_plugin_papi-700msXXX_18116
++ SIZE_START=1
++ SIZE_END=1
++ PROCS_START=2
++ PROCS_END=2
++ PERF_NEW=0
++ MV_ALGORITHM_ID=1
++ MV_COMMUNICATOR_ID=5
++ BENCHMARK_ID=1
++ CORE_START=10
++ CORE_END=10
++ PERF_FILE=MF_overhead_mf_mf_plugin_papi-700msXXX_18116_MV_JACOBI_MATRIX-SCALER-DIAGONAL_mv_comm_5_mv_alg_MV_CSR_MV_COO_size_64_64x64_64x64_64_procs_2_2_freqmode_1_freq_0-0_core_10_10.dat
++ matrix_scaler=1
++ preconditioner=1
++ mv_algorithm_off_diag=3
++ PROF_FILE=MF_overhead_mf_mf_plugin_papi-700msXXX_18116_MV_JACOBI_MATRIX-SCALER-DIAGONAL_mv_comm_5_mv_alg_MV_CSR_MV_COO_size_64_64x64_64x64_64_procs_2_2_freqmode_1_freq_0-0_core_10_10_prof.dat
++ echo 'size XX: 32 - 32'
++ echo 'size YY: 32 - 32'
++ echo 'size ZZ: 32 - 32'
++ echo procs: 2 - 2
++ cd /nas_home/hpcdhopp/cel_job/mv
++ module load mpi/mvapich2/2.2.1-gnu-4.9.2
+++ /usr/bin/modulecmd bash load mpi/mvapich2/2.2.1-gnu-4.9.2
++ eval HOSTFILE=/opt/mpi/mvapich2/2.2.1-gnu-4.9.2/hostfile_mvapich ';export' 'HOSTFILE;INCLUDE=/opt/mpi/mvapich2/2.2.1-gnu-4.9.2/include' ';export' 'INCLUDE;LD_LIBRARY_PATH=/opt/mpi/mvapich2/2.2.1-gnu-4.9.2/lib:/opt/compiler/gnu/4.9.2/lib64:/opt/compiler/gnu/4.9.2/lib' ';export' 'LD_LIBRARY_PATH;LIBRARY_PATH=/opt/compiler/gnu/4.9.2/lib64:/opt/compiler/gnu/4.9.2/lib' ';export' 'LIBRARY_PATH;LOADEDMODULES=power/mf_shared/20:compiler/gnu/4.9.2:mpi/mvapich2/2.2.1-gnu-4.9.2' ';export' 'LOADEDMODULES;MANPATH=/opt/mpi/mvapich2/2.2.1-gnu-4.9.2/share/man:/opt/compiler/gnu/4.9.2/share/man:/usr/share/man' ';export' 'MANPATH;PATH=/opt/mpi/mvapich2/2.2.1-gnu-4.9.2/bin:/opt/compiler/gnu/4.9.2/bin:/opt/power/mf_shared//20/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/ibutils/bin:/nas_home//hpcdhopp/bin' ';export' 'PATH;_LMFILES_=/opt/modulefiles/power/mf_shared/20:/opt/modulefiles/compiler/gnu/4.9.2:/opt/modulefiles/mpi/mvapich2/2.2.1-gnu-4.9.2' ';export' '_LMFILES_;'
+++ HOSTFILE=/opt/mpi/mvapich2/2.2.1-gnu-4.9.2/hostfile_mvapich
+++ export HOSTFILE
+++ INCLUDE=/opt/mpi/mvapich2/2.2.1-gnu-4.9.2/include
+++ export INCLUDE
+++ LD_LIBRARY_PATH=/opt/mpi/mvapich2/2.2.1-gnu-4.9.2/lib:/opt/compiler/gnu/4.9.2/lib64:/opt/compiler/gnu/4.9.2/lib
+++ export LD_LIBRARY_PATH
+++ LIBRARY_PATH=/opt/compiler/gnu/4.9.2/lib64:/opt/compiler/gnu/4.9.2/lib
+++ export LIBRARY_PATH
+++ LOADEDMODULES=power/mf_shared/20:compiler/gnu/4.9.2:mpi/mvapich2/2.2.1-gnu-4.9.2
+++ export LOADEDMODULES
+++ MANPATH=/opt/mpi/mvapich2/2.2.1-gnu-4.9.2/share/man:/opt/compiler/gnu/4.9.2/share/man:/usr/share/man
+++ export MANPATH
+++ PATH=/opt/mpi/mvapich2/2.2.1-gnu-4.9.2/bin:/opt/compiler/gnu/4.9.2/bin:/opt/power/mf_shared//20/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/ibutils/bin:/nas_home//hpcdhopp/bin
+++ export PATH
+++ _LMFILES_=/opt/modulefiles/power/mf_shared/20:/opt/modulefiles/compiler/gnu/4.9.2:/opt/modulefiles/mpi/mvapich2/2.2.1-gnu-4.9.2
+++ export _LMFILES_
++ perf_file_path=/nas_home/hpcdhopp/cel_job/mv/data/MF_overhead_mf_mf_plugin_papi-700msXXX_18116_MV_JACOBI_MATRIX-SCALER-DIAGONAL_mv_comm_5_mv_alg_MV_CSR_MV_COO_size_64_64x64_64x64_64_procs_2_2_freqmode_1_freq_0-0_core_10_10.dat
++ prof_file_path=/nas_home/hpcdhopp/cel_job/mv/data/MF_overhead_mf_mf_plugin_papi-700msXXX_18116_MV_JACOBI_MATRIX-SCALER-DIAGONAL_mv_comm_5_mv_alg_MV_CSR_MV_COO_size_64_64x64_64x64_64_procs_2_2_freqmode_1_freq_0-0_core_10_10_prof.dat
++ '[' 0 -ge 1 ']'
+++ seq 1 1
++ for j in '`seq ${SIZE_START} ${SIZE_END}`'
+++ seq 2 2
++ for p in '`seq ${PROCS_START} ${PROCS_END}`'
+++ seq 10 10
++ for i in '`seq ${CORE_START} ${CORE_END}`'
+++ seq 0 0
++ for freq in '`seq ${FREQ_IDX_START} ${FREQ_IDX_END}`'
++ XX1=64
++ YY1=64
++ ZZ1=64
++ echo procs: 2 'threads per proc:' 10 'test id:' 1
++ echo DX: 2 DY: 1 DZ: 1 XX: 64 YY: 64 ZZ: 64 ATTEMPTS: 50000
++ echo cores: 10 - 10
++ '[' 1 -ge 1 ']'
++ sleep 3
+getaddrinfo: Name or service not known,
+ using regular hostname
+[INFO] (src/mf_papi_connector.c:124) get_max_cpus() - max_cpus = 40
+DEBUG src/mf_papi_connector.c:199: EventSet created for CPU0
+DEBUG src/mf_papi_connector.c:199: EventSet created for CPU1
+DEBUG src/mf_papi_connector.c:199: EventSet created for CPU2
+DEBUG src/mf_papi_connector.c:199: EventSet created for CPU3
+DEBUG src/mf_papi_connector.c:199: EventSet created for CPU4
+DEBUG src/mf_papi_connector.c:199: EventSet created for CPU5
+DEBUG src/mf_papi_connector.c:199: EventSet created for CPU6
+DEBUG src/mf_papi_connector.c:199: EventSet created for CPU7
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_VEC_INS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_FP_INS to CPU0
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_FLOPS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_TOT_CYC to CPU0
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_VEC_INS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_FP_INS to CPU1
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_FLOPS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_TOT_CYC to CPU1
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_VEC_INS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_FP_INS to CPU2
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_FLOPS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_TOT_CYC to CPU2
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_VEC_INS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_FP_INS to CPU3
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_FLOPS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_TOT_CYC to CPU3
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_VEC_INS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_FP_INS to CPU4
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_FLOPS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_TOT_CYC to CPU4
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_VEC_INS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_FP_INS to CPU5
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_FLOPS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_TOT_CYC to CPU5
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_VEC_INS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_FP_INS to CPU6
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_FLOPS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_TOT_CYC to CPU6
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_VEC_INS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_FP_INS to CPU7
+[WARN] (src/mf_papi_connector.c:231: errno: No such file or directory) bind_events_to_all_cores() - PAPI_add_named_event (PAPI_FLOPS): Event does not exist
+[INFO] (src/mf_papi_connector.c:235) bind_events_to_all_cores() - Added event PAPI_TOT_CYC to CPU7
+using Plugin mf_plugin_papi 
+gather metric mf_plugin_papi (#2) with update interval of 700000000 ns
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <username,hpcdhopp>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <description,This is a test configuration file>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <server,http://192.168.0.2:3000/executions/>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PKG,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <DRAM,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PP0,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PP1,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <MAX_CPU_CORES,8>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_L1_DCM,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_L2_DCM,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_L3_DCM,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_FLOPS,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_TOT_CYC,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_STL_ICY,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_TLB_TL,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_TLB_DM,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_FP_INS,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PAPI_VEC_INS,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <PP0_ENERGY:PACKAGE0,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mem_used,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mem_avail,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_papi,on>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_rapl,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_likwid,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_meminfo,off>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <default,1000000000>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <publish_data_interval,0>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <update_configuration,360>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_papi,700000000>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_rapl,700000000>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_likwid,700000000>
+[INFO] (src/mf_parser.c:54) mfp_set_value(..) -- Set new values <mf_plugin_meminfo,700000000>
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=100
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=737816
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=87
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=139571
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=85
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=183531
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=83
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=184280
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=93
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=155820
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=123
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=296449
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=36
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=243351
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=1388
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=2399789
+getaddrinfo: Name or service not known,
+ using regular hostname
+* About to connect() to 192.168.0.2 port 3000 (#0)
+*   Trying 192.168.0.2... * connected
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 506
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AHH2uHNktn2swKlH83MFXSUTk.hr5xPzy8uJ7MNbuyMsXOTwlG2O0hMYpo1IgcDNgt2LQ; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:12 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=123
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=558495
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=120
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=323239
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=110
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=266640
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=123
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=288290
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=123
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=238962
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=114
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=244165
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=111
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=276493
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=338
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=876067
++ case ${PROCS_ARRAY[p]} in
++ mpirun -n 2 -f /nas_home/hpcdhopp/cel_job/mv/nodefile /nas_home/hpcdhopp/cel_job/mv/bin/cel_benchmark -verbosity 0 -nx 64 -ny 64 -nz 64 -dx 2 -dy 1 -dz 1 -prefetcher 0 -increase_factor 1.1 -tests_num 1 -generatematrix 1 -iter_max 100 -eps 1.0e-12 -attempts 50000 -check_result 0 -write_matrix 0 -write_performance 1 -performance_filename /nas_home/hpcdhopp/cel_job/mv/data/MF_overhead_mf_mf_plugin_papi-700msXXX_18116_MV_JACOBI_MATRIX-SCALER-DIAGONAL_mv_comm_5_mv_alg_MV_CSR_MV_COO_size_64_64x64_64x64_64_procs_2_2_freqmode_1_freq_0-0_core_10_10.dat -threads 10 -write_profile 1 -mv_algorithm 1 -mv_communicator 5 -benchmark_id 1 -memory_level 1 -comm_graph_dir /nas_home/hpcdhopp/cel_job/mv/data/graph/comm_group_procs_ -write_comm_graph 0 -num_masters_per_node 2 -core_offset 1 -check_result 0 -frequency_index 0 -freq_mode 1 -profile_filename /nas_home/hpcdhopp/cel_job/mv/data/MF_overhead_mf_mf_plugin_papi-700msXXX_18116_MV_JACOBI_MATRIX-SCALER-DIAGONAL_mv_comm_5_mv_alg_MV_CSR_MV_COO_size_64_64x64_64x64_64_procs_2_2_freqmode_1_freq_0-0_core_10_10_prof.dat -mv_algorithm_off_diag 3 -preconditioner 1 -matrix_scaler 1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=221468500
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1254023130
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=789
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=20009947
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=694
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=10338173
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=308
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=10096002
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=808
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=10277450
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=283
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=10047532
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=288
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=10097957
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=1103
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=11813705
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 509
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AQscbXryZYAzJ0Kke5H1bAvir.JvheAr7hQirNUCBI%2FFLFiRvm6pm3tdneKr3Obh1loNE; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:15 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12261
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153319920
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241208722
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153444955
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252238762
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153463711
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252281118
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153475844
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252230044
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153509875
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252318983
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153528880
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252187967
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153538075
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252201280
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153527963
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 534
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3A3YaW5mLBuHo7R1ENFK7yCzVf.asL3DR335%2F1PmhHOIIvy7Ncc7%2F192wDRciguIb6x%2FZg; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:16 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12184
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153239963
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241147221
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153302698
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252191199
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153313715
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252232191
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153322168
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252210930
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153334943
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252212223
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153335486
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252242488
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153351360
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252267056
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153362721
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3A29n70qciJOjGfI46Skk4NXkR.sJYwpKfXUApyylyKCn0fQxrUNp3%2FMnk8GUo17alNFlo; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:17 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=2944325
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1149711672
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=239712773
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1151098805
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=250701535
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1151159728
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=250689880
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151193106
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=250590533
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151120647
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=250740652
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151259722
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=250693221
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151251747
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=250493186
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153407508
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=16997486
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1150219298
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=240090678
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1151276406
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=251045108
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1151324441
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=251149287
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151355776
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=251042071
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151292560
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=251102488
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151383144
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=251051298
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151429064
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=251070831
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153541102
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AuxSBvPnqlfGBk4YsnX36tc8p.xK9KR5244JhZO7CAYy6a7BzvcSTd2XCyUefmtliIPEI; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:18 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=25420803
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153099875
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241752884
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153174886
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252818426
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153196946
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252816383
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153234433
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252858215
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153267130
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252960640
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153306767
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252959272
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153338226
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252850247
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153377897
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 587
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AD7MoGPcHYYX4xA8HPX7QAULX.kNnByWjhjtWW%2FNv5uw6PQjXYHygMyS5tIbtR7K2wENg; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:20 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=25424968
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153306878
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=242107525
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153425420
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=253083496
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153445681
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=253241391
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153443675
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=253153430
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153442042
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253192775
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153481403
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=253141972
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153502123
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=253280467
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153542630
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3A5NtDHQ2rh1EB4p0ic36dY49i.BRPMCDzSapubrGJgGuNA9scbFJ3V1B2OHAdoeGTvhfA; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:21 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=23496796
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153075328
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241659321
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153186211
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252845228
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153226812
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252899286
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153260366
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252885511
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153287595
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252912169
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153317331
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252912259
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153333091
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252915813
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153363363
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3ADTyEGORy4zq1W9soj0x1UXVD.cBPr5ZOba6pydWydjxTkM3HM%2BQfwsKUEzOaJuj62ejQ; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:23 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12567990
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1150083037
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=240275351
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1151277068
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=251226727
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1151518245
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=251246032
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151389978
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=251156773
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151383610
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=251166030
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151382794
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=251123308
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151404932
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=251279162
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153466446
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=10535893
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153118323
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241951564
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153167878
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252890709
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153182610
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=253029065
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153212441
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=253050887
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153233559
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253064523
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153255236
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252998993
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153275741
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=253120699
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153300020
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AAoy4wneiuHitTZJipG2BmaiJ.L3YqlE7KWTS1PCa8pp8u%2BaSE4TlPqmxOARBIOG9%2F9%2Bo; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:24 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=20000721
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153298383
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=239823262
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153374197
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=251161783
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153395606
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=251337116
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153387607
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=251232207
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153494864
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=251309438
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153500896
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=251279832
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153515343
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=251308195
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153518231
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AmDCHhDQzqtZ9Yt7yK1WxFEFt.ZI0Eupn1NHbeutiPFTXq8PKHRwknDafprhkbM%2FhPKC0; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:25 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12058
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153113534
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241638376
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153223926
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252639955
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153261110
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252768464
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153286950
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252800970
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153327379
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252839344
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153371283
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252818005
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153395628
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252760131
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153435262
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3A6EKS59RPB5Zuo9LwZeqj9nu7.2EH41v206cHCMOl8bMAIe7%2B68dFZqJeI1jv3h55HVqI; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:26 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=2257615
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1150003021
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=239923359
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1151180919
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=250903141
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1151225614
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=250971325
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151253684
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=250890254
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151202339
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=250985557
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151266809
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=250931254
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151341378
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=250982739
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153403279
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AFFHMEbjCTJFTXvFaREyOgdpq.W%2BMnJe%2BUfAuJgh9wXKnIRF2dT7%2BFk9v%2Fhi7B%2Fxov5hs; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:28 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12688
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1140826078
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=235466161
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1147547672
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=246704234
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1147568893
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=246660323
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1147595922
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=246627938
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1147577209
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=246675748
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1147598672
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=246640282
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1147589892
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=246910650
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1149603768
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=25367779
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1152905894
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241950434
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1152940782
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=253033666
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1152953641
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252990086
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1152963199
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252961482
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1152976123
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253117074
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1152987152
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=253113643
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1152996037
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=253140435
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153009970
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=25424168
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153021644
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241917247
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153100466
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252964611
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153140934
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=253028065
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153155582
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252971174
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153168379
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253100144
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153177892
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=253047402
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153189321
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=253089298
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153199539
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AmWWliJDWWsdTcVrxviZ559At.NC827dwxEiBcilFIZNxPDmJNwsiQnFJOhEqWgQ8%2FMQw; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:31 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=696586
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153260833
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=238513724
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153271292
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=249967700
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153299123
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=249957309
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153311060
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=249921733
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153326018
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=249958185
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153335141
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=249988097
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153348105
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=250075305
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153366565
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3Ao9OkpayrimBBsUEze8xqwhyf.aVEiVJWlkdAf6vOkA9znNdtbSLwe%2FS7bFYZXc9CHf0I; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:32 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=14236921
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1149896435
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=239976353
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1151048082
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=250927888
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1151056732
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=250997953
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151159334
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=250975245
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151144486
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=250983352
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151247441
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=250956746
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151263725
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=251016427
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153561668
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=25088887
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153197665
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241608903
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153240425
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252594299
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153246986
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252776093
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153255070
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252654191
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153278922
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252741241
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153298858
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252741260
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153287878
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252779655
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153291632
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 587
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3A3gjUg3p80iKFGiKxCLv6LVU2.rZpODV%2B0eq%2FREJVtZOzCt%2F0X9shDkRmeBtqeC9YcnTA; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:33 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=21740806
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153303395
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241765029
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153377376
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252811085
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153397787
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252798994
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153392886
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252796349
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153426335
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252863535
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153445335
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252819213
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153470908
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252963112
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153484284
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AJIbeT2EMNAnnVjguQokB4PRi.TYPoeEwK2dFWtPkYOcGIx5QbMrWDTQ9GTP0EtaPMszc; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:34 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12314951
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153197381
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241793871
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153230444
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252795051
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153219408
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252775881
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153202011
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252728599
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153197267
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252707656
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153189051
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252736659
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153183359
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252978789
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153176962
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AwFaRohK2HlDAEChU4yVHQw08.23yMf4er%2F5E7Vsm8rENQ31yEtu%2FvlHAxFYPi6%2Fsu7Do; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:36 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=4140043
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1154009390
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=238708708
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1143339577
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=249570863
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1143357584
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=249725007
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1143386813
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=249573680
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1143421944
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=249656799
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1143394481
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=249683535
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1143456375
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=249635628
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1143492940
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AdXCARw0F6gbJUEh1Sl0EXkUq.5UEz8bcK7uTe1mG3Krhef4Wolc9NBYYBL14LbhJFg%2Bk; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:37 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=13435
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1148473097
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=239333755
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1150999603
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=250169935
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1151045714
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=250329436
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151081132
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=250170982
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151049075
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=250240819
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151052008
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=250099248
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151059339
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=250365970
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153126588
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12067
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1152984359
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241161645
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153023490
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252230698
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153038099
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252226621
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153047808
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252178903
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153064152
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252313947
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153132109
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252135351
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153147548
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252159666
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153162249
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 586
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3Ae0xBa6pxE4OgsoiwRNnHG02Z.Mv7iHf4i1MRWczavleWoj7OfMYzez5bXRzw6hJivZbQ; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:38 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12145
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153258365
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241204088
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153332896
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252252815
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153355302
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252268664
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153375181
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252191701
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153369982
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252355005
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153387744
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252254617
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153401355
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252346415
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153420323
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3ARBsHyHVWtDkKOkPaHCJ6LQo6.nwXNFB3eB8IRAFOGL3eMxLud97%2FzlnUcQx4lK4O9eP0; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:40 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12871
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153129714
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241453657
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153204582
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252502137
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153239725
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252599818
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153268017
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252483947
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153296234
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252586845
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153330755
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252535625
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153362371
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252471206
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153399437
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AZvjCOck4OktyR0elTZZmXxER.TAzILulKnV3MGo2fN3E34D1T1bTVW6E%2FabdMcyY2Guk; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:41 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12261
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153282646
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241459957
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153304027
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252515486
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153292696
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252462571
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153271373
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252420998
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153258074
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252465483
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153232881
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252378551
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153220471
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252693456
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153212779
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AYAe8WcPn6IySDEuhsan1NAwQ.TcTP3rURj3Hv7z3SFE8sqcChelbp9zIJRY116N%2BdS9I; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:42 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=227326
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1149082104
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=239711711
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1150805948
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=250687374
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1150845720
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=250701918
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1150864142
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=250638756
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1150949832
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=250684070
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1150894329
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=250640166
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1150976350
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=250843317
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153144123
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3ArONJksnILCfAPQ0ucfeVrZCo.GmcLlR5ihwMNtrGpeH50YF3arlQEz1lHGuAMWHRGqO8; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:43 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=14111654
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1149775678
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=240087983
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1151056551
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=251016158
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1151110814
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=251122466
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151198501
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=251096485
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151297516
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=251189850
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151212736
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=251209777
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151297196
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=250986377
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153498965
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=25411043
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153176293
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=242019624
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153242962
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=253075327
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153255170
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=253061953
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153272646
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=253039746
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153298219
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253229437
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153328156
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=253112013
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153344384
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=253112129
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153362182
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 587
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3A1uTyCwARbbRQJT5x9njktHRt.AfwEmvaBX%2BdXzFQZDTQhCi2aD90fwwlo9V3puMd2Zx4; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:45 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=11998
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1152978870
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241958472
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153026647
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=253024101
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153033718
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=253144181
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153095464
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252980849
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153103779
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253129843
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153110971
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=253031918
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153117399
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=253213518
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153126504
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3Aj7Ipr3pWmpKB5fF53n6V8DgE.M5%2F9euL%2BcBAH9xM8FRrkYEpJ%2Buz2Oo58CDJxeUfxdh0; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:46 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=15196889
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153159567
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241595449
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153258698
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252622283
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153298330
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252781823
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153340209
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252695688
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153390546
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252761673
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153439756
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252828858
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153472919
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252594143
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153526548
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AD7RTQXaqOXJvYxfinb6VrARC.zvpBsxiZznVlWX4LZvzobkAgeJuBeDrEkJ7bTXBqcww; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:47 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=1755651
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153218593
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=238901680
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153321058
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=249785911
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153339806
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=249850372
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153346383
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=249760140
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153355570
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=249860002
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153365205
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=249906953
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153378347
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=249893765
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153388760
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AZmkKwEfa2FMWy8HemQXn90Eo.R%2FHcTcmvrzB%2FvJw%2BeZjhuZFNARIu7RoAwlgV%2BJoEjNU; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:49 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=945743
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1148677135
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=239985106
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1151455088
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=251035954
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1151504716
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=251033182
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151543189
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=250973483
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151562899
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=251100537
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151622332
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=250965799
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151619702
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=250988759
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153418960
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12094
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1151478926
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=239496194
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1151589249
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=250503811
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1151616363
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=250574788
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151642755
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=250511968
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151731352
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=250609311
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151698919
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=250608231
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151740273
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=250607761
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153479002
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AYzMCiaa3y1avixvkz9VoZe3f.7k%2BMQ7xGyoB1mo9cxi2TotXOCtdKPoEgs3XO%2FifPgqg; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:50 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=25584515
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1152963251
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=240860448
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153009188
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=251884873
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153016758
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=251933705
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153012355
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=251825691
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153009918
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=251944846
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153020941
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=251889930
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153011188
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252089391
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153011580
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3Ao6tjF02rF9uTyhfMB2WLIhxw.R9aDevFKIES531FT29NuGG9ul5w7jqxpqQVSrrngtWQ; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:51 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12465
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153169493
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=238801424
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153255757
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=250264677
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153275716
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=250326656
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153314712
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=250336137
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153346579
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=250423846
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153403589
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=250374441
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153422848
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=250446429
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153446080
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 586
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AOtA6WkmWyAvpLzOEJjiEMx2K.wvVf6QCION2wXj3w0B3Zmj8zmD%2FvcNWwIZ8KjWo6Xqo; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:53 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12081
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153298017
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241288077
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153388671
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252367114
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153414772
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252388883
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153435190
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252348644
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153460920
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252428532
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153484192
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252316801
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153497065
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252434929
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153518823
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AufgU57f4guGgTUlPdKIoK1dO.jjwPHiC8cN3hTNLw4TZCKDmIhNUykFZdGIRP6rz5wVI; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:54 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=4640022
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1149838995
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=239219104
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1150950420
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=250143847
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1150953369
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=250179961
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151012730
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=250088270
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151040187
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=250160960
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151018743
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=250102485
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151004344
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=250355471
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153124874
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AH7a3z8XUsAcWP6wHcoVljrst.GjR5HZ8rs2DZhWjJMxWuv%2FdOOci%2Fj1ZP%2BtzJLfu6Y7M; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:55 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=11627943
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1148666056
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=237075163
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1151278470
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=248326234
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1151347022
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=248410381
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151382711
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=248384122
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151411122
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=248452812
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151448719
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=248399150
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151482517
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=248415086
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153598897
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=25201608
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153318770
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241829069
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153380269
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252841077
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153388253
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252882361
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153403414
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252815820
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153332048
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252898549
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153350153
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252860731
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153355993
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252971889
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153365655
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3A3CQo4TGMZa0boHyfMREggiq6.6k05aVGlBfaU3mUz81yoCbTX%2Br9yyE4ihRIgFLNUTqQ; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:56 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=21787440
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153130372
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=242102137
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153149255
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=253094852
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153129032
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=253149007
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153109775
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=253061978
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153107006
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253136149
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153109547
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=253147386
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153110931
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=253391112
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153111757
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3Az6nzZGQGO9JpNYoCacH5VDwC.eHCp276XtGV2uItNveUyHwBHhMtCkfqgUiJlIpgjaJs; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:57 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12784
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153124458
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=239002855
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153244113
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=250361478
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153291854
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=250427163
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153332986
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=250454943
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153366625
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=250517884
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153408240
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=250528864
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153457042
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=250442739
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153481859
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 587
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AujOu3u4BQEwjnYgtVOkRhykg.64HJldnk%2BxSMkHc%2FVpedgDSjCMenwWybNg1OTBU4Sz4; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:07:59 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=9857494
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153123584
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241917043
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153204083
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252986241
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153225754
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=253071725
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153266520
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252984387
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153294915
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253107833
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153313170
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=253003322
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153329056
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252949714
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153337987
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 586
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AcNp3wsgvXDUlXfadsXpGS6sZ.%2BLRgao4mX26m2UfPsuu57lNFXdXLQ%2FHf9IqTFikFgl8; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:08:00 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=2939827
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153190429
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241907249
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153292740
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252950746
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153312468
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=253057269
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153331576
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252968658
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153355746
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253117953
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153374400
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=253055078
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153359235
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=253069094
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153390008
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3ANIjtzrXjLD308W9LxNzxzAKu.mWrQiye3X81YP0zUP1Yz4K3JTHaEonGbLNdmPWekij4; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:08:01 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12188
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1148522287
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=239637934
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1151068710
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=250628379
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1151139160
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=250716660
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151118616
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=250676142
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151132509
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=250723994
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151151993
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=250662452
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151144941
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=250684668
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153147682
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=25408766
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153242350
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241895136
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153378148
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=253004548
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153393054
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=253129290
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153418175
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=253012808
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153439753
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253053812
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153459297
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=253044735
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153478157
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=253059508
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153491658
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3ALn9rIlz0V4lXeCiseB1KUmeB.t6F2EqP%2BFqV7BbA5EUWOa9A7Hw%2FjugKDYpWahg64uR0; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:08:03 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=25361247
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153143660
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=242005879
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153236036
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252964182
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153178735
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=253083328
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153186568
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252978670
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153198040
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253017450
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153208740
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=253052869
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153219315
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=253210951
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153228727
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AJEuOmVNIN0L17KIeQLguMN9n.miRKmLsRZdm1v7cMcxCwk3r7dZmXwyS8imNubLeqQ30; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:08:04 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12133
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153124474
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241635999
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153227371
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252712103
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153271614
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252789959
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153296882
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252696674
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153335188
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252791791
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153360101
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252824122
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153401353
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252812370
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153422613
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 585
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AFZl8IaEuSZ9PCsDo6cl1uGTQ.N%2B%2Fa%2FfCWZIl%2BC5eOXLPA2LfgzXpxOexobqF91WrLDIA; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:08:05 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12176
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153140125
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241562009
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153280276
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252636549
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153320041
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252771102
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153335522
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252688893
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153349178
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252797215
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153368185
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252751084
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153399558
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252623205
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153437153
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 587
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3A8HmTFBSlhXmdx96roIcSUMkX.pQcmnEnpbqtNrtGp7rdQfyMs%2FyIR7bD2ezp6bxzQjkg; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:08:06 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12085
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153157518
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241797223
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153257460
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=252829100
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153293387
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=252909848
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153315896
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252818655
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153353152
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=252929525
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153378093
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=252926812
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153417156
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=252825930
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153448864
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AJiB7KLNWhA7xzRjwUlXCFpHq.Fzm%2Fk1XRVgCMm2U2Eco9Xg2DQg7UIbH4dwP5386%2FRgg; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:08:08 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=12335872
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1150140090
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=237350097
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1151171711
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=248237031
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1151297598
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=248199022
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1151382576
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=248168246
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1151354902
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=248284917
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1151464374
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=248238904
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1151395907
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=248261826
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153540144
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=25364338
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153019314
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=241900205
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153060386
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=253023656
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153077146
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=253055116
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153087618
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=252943859
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153100228
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253043621
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153114410
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=253050167
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153126642
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=253145610
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153138788
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3AEK1A6Bt30eAFZSAASmRZGHFY.oG3tG6WlSkO2CaGrMFESlFgfp5UmD%2Bk3YpU2Ub9KtK4; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:08:09 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:277: Stop PAPI Monitoring for CPU7
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_VEC_INS=20646553
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU0::PAPI_FP_INS=1153206122
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_VEC_INS=242120814
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU1::PAPI_FP_INS=1153261382
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_VEC_INS=253170799
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU2::PAPI_FP_INS=1153264168
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_VEC_INS=253237144
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU3::PAPI_FP_INS=1153245417
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_VEC_INS=253174509
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU4::PAPI_FP_INS=1153240843
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_VEC_INS=253243430
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU5::PAPI_FP_INS=1153234975
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_VEC_INS=253140582
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU6::PAPI_FP_INS=1153217941
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_VEC_INS=253388456
+DEBUG src/mf_papi_connector.c:313: mf_papi_read() - CPU7::PAPI_FP_INS=1153210759
+getaddrinfo: Name or service not known,
+ using regular hostname
+* Re-using existing connection! (#0) with host 192.168.0.2
+* Connected to 192.168.0.2 (192.168.0.2) port 3000 (#0)
+> POST /executions/VVA_KfleRiOeO21bk-5oWg HTTP/1.1
+Host: 192.168.0.2:3000
+Accept: application/json
+Content-Type: application/json
+charsets: utf-8
+Content-Length: 588
+
+< HTTP/1.1 200 OK
+< X-Powered-By: Express
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 129
+< Set-Cookie: connect.sid=s%3A0K2qBwHACX8vhFRY54jeFXpU.1uHgTRM3wr1qkJXPtILAHpsYWya2%2F8ClWx9gMStPYDA; Path=/; HttpOnly
+< Date: Fri, 20 Feb 2015 10:08:10 GMT
+< Connection: keep-alive
+< 
+* Connection #0 to host 192.168.0.2 left intact
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU0
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU1
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU2
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU3
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU4
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU5
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU6
+DEBUG src/mf_papi_connector.c:266: Start PAPI Monitoring for CPU7
+kthxbye!

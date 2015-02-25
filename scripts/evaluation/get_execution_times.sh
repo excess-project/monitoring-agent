@@ -1,8 +1,10 @@
 #!/bin/bash
 
+# Reference value for computing the overhead in execution time
+REFERENCE_VALUE=$1
+
 ## OUTPUT
 OUTPUT_CSV="mf_overhead"
-#RANDOM=cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1
 OUTPUT_CSV="${OUTPUT_CSV}-${RANDOM}.csv"
 
 DATA_BASE="${HOME}/cel_job/mv/data"
@@ -10,7 +12,7 @@ MESSAGES_DIR=${HOME}/cel_job/mv/messages/*.err
 
 DOMAIN=".fe.excess-project.eu"
 
-echo "plugins","frequency_in_ms","execution_time_in_ms" > $OUTPUT_CSV
+echo "plugins","frequency_in_ms","execution_time_in_ms","overhead" > $OUTPUT_CSV
 
 for FILE in $MESSAGES_DIR; do
   echo "Parse:"$FILE
@@ -82,5 +84,8 @@ for FILE in $MESSAGES_DIR; do
   #echo "Cores:"$CORES
   #echo "Execution time:"$EXECUTION_TIME
 
-  echo "${COMBINATION}",${FREQUENCY},${EXECUTION_TIME} >> $OUTPUT_CSV
+  REFERENCE_VALUE=$(( $REFERENCE_VALUE - 1000 ))
+  OVERHEAD=
+
+  echo "${COMBINATION}",${FREQUENCY},${EXECUTION_TIME},${OVERHEAD} >> $OUTPUT_CSV
 done
