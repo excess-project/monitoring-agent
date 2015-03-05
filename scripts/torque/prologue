@@ -103,6 +103,7 @@ do
   MF_WORKFLOW_SWITCH_ON_PATH=${MF_USER_SERVICE_PATH}/${NODE}/${MF_WORKFLOW_SWITCH}
   echo "MF_WORKFLOW_SWITCH_ON_PATH=${MF_USER_SERVICE_PATH}/${NODE}/${MF_WORKFLOW_SWITCH}"
   if [ -f "${MF_WORKFLOW_SWITCH_ON_PATH}" ]; then
+     echo ${DATE}"-activating workflow support"
      MF_WORKFLOW_SWITCH_ON=1
   else
      MF_WORKFLOW_SWITCH_ON=0
@@ -125,7 +126,6 @@ do
       echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Warning!!! in /var/spool/torque/mom_priv/prologue: DBKEY could not be obtained" >> $LOG_FILE
       DBKEY=$RANDOM
     fi
-    echo ${DATE}-${PBS_USER}-${PBS_JOBID}": CUSTOM_VARIABLE is "$MF_INDEX >> $LOG_FILE
 
     #write db key in the file
     ${set_unique_dbkey_exec}  -d ${DBKEY_PATH} -f ${PBS_JOBID} -k ${DBKEY} >> $LOG_FILE
@@ -155,12 +155,12 @@ do
 
   if [ ${MF_SERVICE_SWITCH_ON} -eq 1 ]; then
     echo "start monitoring framework service"
-    if [ ${MF_WORKFLOW_SWITCH_ON} -eq 1]; then
+    if [ ${MF_WORKFLOW_SWITCH_ON} -eq 1 ]; then
       echo ${DATE}-${PBS_USER}-${PBS_JOBID}":start the script ${MF_START_SCRIPT} on the node ${NODE} with workflow support" >> $LOG_FILE
-      ${MF_START_SCRIPT} 1 ${DBKEY} ${NODE} ${PBS_JOBID} ${PBS_USER} ${mf_start_date} ${mf_description}
+      ${MF_START_SCRIPT} 1 ${DBKEY} ${NODE} ${PBS_JOBID} ${PBS_USER}
     else
       echo ${DATE}-${PBS_USER}-${PBS_JOBID}":start the script ${MF_START_SCRIPT} on the node ${NODE} with DBKEY ${MF_DBKEY}" >> $LOG_FILE
-      ${MF_START_SCRIPT} 0 ${DBKEY} ${NODE} ${PBS_JOBID} ${PBS_USER} ${mf_start_date} ${mf_description}
+      ${MF_START_SCRIPT} 0 ${DBKEY} ${NODE} ${PBS_JOBID} ${PBS_USER}
     fi
   fi
 

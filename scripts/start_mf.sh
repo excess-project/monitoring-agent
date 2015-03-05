@@ -3,7 +3,7 @@
 #start an mf agent on each of the computational nodes allocated in the pbs job
 #!warning the script will be executed under root
 
-WORKFLOW=$1
+WORKFLOW_SUPPORT=$1
 DBKEY=$2
 NODE=$3
 PBS_JOBID=$4
@@ -25,18 +25,22 @@ MF_AGENT_USER_CONFIGFILE=${MF_USER_TOP_PATH}/${JOBID}.ini
 MF_AGENT_STD_CONFIGFILE=${MF_TOP_PATH}/mf_config.ini
 
 ## Workflow support: overwrite DBKEY, set TASK and WORKFLOW
-WORKFLOW_DBKEY_FILE=$MF_WORKFLOW_PATH/${JOBID}.dbkey
-WORKFLOW_TASK_FILE=$MF_WORKFLOW_PATH/${JOBID}.task
-WORKFLOW_FLOW_FILE=$MF_WORKFLOW_PATH/${JOBID}.flow
-if [ ${WORKFLOW} -eq 1 ]; then
+WORKFLOW_DBKEY_FILE=${MF_WORKFLOW_PATH}/${JOBID}.dbkey
+WORKFLOW_TASK_FILE=${MF_WORKFLOW_PATH}/${JOBID}.task
+WORKFLOW_FLOW_FILE=${MF_WORKFLOW_PATH}/${JOBID}.flow
+echo ${DATE}"-WORKFLOW_FLAG:"$WORKFLOW_SUPPORT >> $LOG_FILE
+if [ ${WORKFLOW_SUPPORT} -eq 1 ]; then
   if [ -e "${WORKFLOW_DBKEY_FILE}" ]; then
     DBKEY=$( cat $WORKFLOW_DBKEY_FILE )
+    echo ${DATE}"-Set DBKey to:"$DBKEY
   fi
   if [ -e "${WORKFLOW_TASK_FILE}" ]; then
     TASK=$( cat $WORKFLOW_TASK_FILE )
+    echo ${DATE}"-Set task to:"$TASK
   fi
   if [ -e "${WORKFLOW_FLOW_FILE}" ]; then
     WORKFLOW=$( cat $WORKFLOW_FLOW_FILE )
+    echo ${DATE}"-Set workflow to:"$WORKFLOW
   fi
 fi
 
@@ -57,8 +61,8 @@ if [ ! -d "${MF_AGENT_PIDFILE_TOP_PATH}" ]; then
 fi
 #log details about the job
 echo $DATE":MF_AGENT_PIDFILE:"$MF_AGENT_PIDFILE >> $LOG_FILE
-echo $DATE":WORKFLOW_SUPPORT?:"$WORKFLOW >> $LOG_FILE
-if [ ${WORKFLOW} -eq 1 ]; then
+echo $DATE":WORKFLOW_SUPPORT?:"$WORKFLOW_SUPPORT >> $LOG_FILE
+if [ ${WORKFLOW_SUPPORT} -eq 1 ]; then
   echo $DATE":WORKFLOW::TASK >> "$WORKFLOW"::"$TASK >> $LOG_FILE
 fi
 echo $DATE":DBKEY:"$DBKEY >> $LOG_FILE
