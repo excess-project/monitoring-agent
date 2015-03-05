@@ -1,0 +1,240 @@
+#!/bin/sh
+#Mother Superior
+#execute as root
+#Readable and executable by root and NOT writable by anyone but root (e.g., -r-x-----)
+# Epilogue script arguments:
+export PBS_JOBID=$1
+export PBS_USER=$2
+export PBS_GROUP=$3
+export PBS_JOBNAME=$4
+export PBS_SESSION_ID=$5
+export PBS_LIMITS=$6
+export PBS_RESSOURCES=$7
+export PBS_QUEUE=$8
+export PBS_ACCOUNT=$9
+
+#echo  Epilogue PBS_JOBID:$PBS_JOBID
+#echo  Epilogue PBS_USER:$PBS_USER
+#echo  Epilogue PBS_GROUP:$PBS_GROUP
+#echo  Epilogue PBS_JOBNAME:$PBS_JOBNAME
+#echo  Epilogue PBS_SESSION_ID:$PBS_SESSION_ID
+#echo  Epilogue PBS_LIMITS:$PBS_LIMITS
+#echo  Epilogue PBS_RESSOURCES:$PBS_RESSOURCES
+#echo  Epilogue PBS_QUEUE:$PBS_QUEUE
+#echo  Epilogue PBS_ACCOUNT:$PBS_ACCOUNT
+
+DATE="$( date +'%c' )"
+
+#echo ${DATE}-${PBS_USER}-${PBS_JOBID}":---------start epilogue---------" >> /var/log/hpcmeasure/epilogue.log
+#check the node
+HOST="$( hostname )"
+if [ -z "$HOST" ]; then
+  echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in epilogue: Variable HOST is not initialized" >> /var/log/hpcmeasure/epilogue.log
+  exit 7
+fi
+
+ii=0
+echo "PBS_NODEFILE:"$PBS_NODEFILE
+NODE_LIST=$(cat $PBS_NODEFILE|uniq)
+for HOST in $NODE_LIST
+do
+((ii = ii + 1))
+case "$HOST" in
+ "node01.excess-project.eu" ) NODE=node01
+ ;;
+ "node02.excess-project.eu" ) NODE=node02
+ ;;
+esac
+
+HPC_REVISION=""
+HPCMEASURE_PATH=""
+HPC_COMP_STOP_SCRIPT=""
+LOG_FILE=""
+POWER_LOG_PATH=""
+HOME_USER=""
+DBKEY_TOP_PATH=""
+DBKEY_PATH=""
+DBKEY_FILE_PATH=""
+PWM_PATH=""
+PWM_RAW_DATA_SWITCH=""
+PWM_RAW_DATA_MFSWITCH=""
+PWM_RAW_DATA_SWITCH_ON_PATH=""
+PWM_RAW_DATA_MFSWITCH_ON_PATH=""
+
+HPC_REVISION=$(cat /opt/power/hpcmeasure/revision)
+HPCMEASURE_PATH=/opt/power/hpcmeasure/${HPC_REVISION}/
+HPC_COMP_STOP_SCRIPT=$HPCMEASURE_PATH/stop_hpcmeasure_compnode.sh
+LOG_FILE=/var/log/hpcmeasure/epilogue.log
+POWER_LOG_PATH=/ext/${NODE}/
+POWER_AC_LOG_PATH=/ext/ac/${NODE}/
+POWER_AC_RAW_PATH=/raw_data/ac/${NODE}/
+POWER_RAW_PATH=/raw_data/${NODE}/
+HOME_USER=/nas_home/${PBS_USER}
+CONFIG_AC_INI=$HPCMEASURE_PATH/profiles/config_${NODE}_ac.ini
+
+MF_USER_TOP_PATH=${HOME_USER}/.mf
+DBKEY_PATH=${MF_USER_TOP_PATH}/dbkey
+DBKEY_FILE_PATH=${DBKEY_PATH}/${PBS_JOBID}
+PWM_PATH=${HOME_USER}/.pwm/
+PWM_RAW_DATA_SWITCH=copy_raw_data
+PWM_RAW_DATA_MFSWITCH=send_data_to_mf
+
+MF_USER_SERVICE_PATH=${MF_USER_TOP_PATH}/service
+MF_USER_SERVICE_SWITCH=start_monitoring
+
+MF_REVISION=$(cat /opt/mf/revision)
+MF_TOP_PATH=/opt/mf/${MF_REVISION}
+MF_SCRIPTS_TOP_PATH=${MF_TOP_PATH}/scripts
+MF_STOP_SCRIPT=${MF_SCRIPTS_TOP_PATH}/stop_mf.sh
+
+PWM_RAW_DATA_MFSWITCH_ON=0
+PWM_RAW_DATA_SWITCH_ON=0
+MF_SERVICE_SWITCH_ON=0
+
+
+PWM_RAW_DATA_SWITCH_ON_PATH=${PWM_PATH}/${NODE}/${PWM_RAW_DATA_SWITCH}
+PWM_RAW_DATA_MFSWITCH_ON_PATH=${PWM_PATH}/${NODE}/${PWM_RAW_DATA_MFSWITCH}
+#check whether the power emasurement is on
+if [ -f "${PWM_RAW_DATA_SWITCH_ON_PATH}" ]; then
+   PWM_RAW_DATA_SWITCH_ON=1
+else
+   PWM_RAW_DATA_SWITCH_ON=0
+fi
+#check monitoring framework
+MF_USER_SERVICE_SWITCH_ON_PATH=${MF_USER_SERVICE_PATH}/${NODE}/${MF_USER_SERVICE_SWITCH}
+#check whether the monitoring framework is running
+if [ -f "${MF_USER_SERVICE_SWITCH_ON_PATH}" ]; then
+  MF_SERVICE_SWITCH_ON=1
+else
+  MF_SERVICE_SWITCH_ON=0
+fi
+#check if power data has to be send to the monitoring system
+if [ -f "${PWM_RAW_DATA_MFSWITCH_ON_PATH}" ]; then
+  PWM_RAW_DATA_MFSWITCH_ON=1
+else
+  PWM_RAW_DATA_MFSWITCH_ON=0
+fi
+
+if [ $ii -eq 1 ]; then
+  DBKEY=$(cat ${DBKEY_FILE_PATH})
+  if [ ${#DBKEY} -eq 0  ]; then
+  # echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Warning!!! in /var/spool/torque/mom_priv/epilogue: DBKEY could not be obtained" >> $LOG_FILE
+    DBKEY=0
+  fi
+
+  #delete file with the unique dbkey
+  if [ -f "$DBKEY_FILE_PATH" ]; then
+    rm ${DBKEY_FILE_PATH} -f
+  fi
+fi
+
+if [ -z "$HPC_COMP_STOP_SCRIPT" ]; then
+  echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in /var/spool/torque/mom_priv/epilogue: variable HPC_COMP_STOP_SCRIPT is not initialized" >> $LOG_FILE
+  exit 11
+fi
+if [ ! -f "$HPC_COMP_STOP_SCRIPT" ]; then
+  echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in /var/spool/torque/mom_priv/epilogue: file $HPC_COMP_STOP_SCRIPT is not present" >> $LOG_FILE
+  exit 10
+fi
+
+
+if [ ! -f "$MF_STOP_SCRIPT" ]; then
+  echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in /var/spool/torque/mom_priv/epilogue: file $MF_STOP_SCRIPT is not present" >> $LOG_FILE 
+  exit 10
+fi
+if [ ${MF_SERVICE_SWITCH_ON} -eq 1 ]; then
+  echo ${DATE}-${PBS_USER}-${PBS_JOBID}":run the script ${MF_STOP_SCRIPT} on node ${NODE} with DBKEY ${DBKEY} and job id ${PBS_JOBID}" >> $LOG_FILE
+  ${MF_STOP_SCRIPT} ${DBKEY} ${NODE} ${PBS_JOBID}
+fi
+
+
+
+if [ ${PWM_RAW_DATA_SWITCH_ON} -eq 1 ]; then
+ echo "stop power measurement on the node ${NODE}" 
+ #wait one second and go further
+ if [ $ii -eq 1 ]; then 
+   sleep 1.1
+ fi
+ echo ${DATE}-${PBS_USER}-${PBS_JOBID}"start script  ${HPC_COMP_STOP_SCRIPT} ${DBKEY} ${NODE}">> $LOG_FILE
+ 
+ ${HPC_COMP_STOP_SCRIPT} ${DBKEY} ${NODE}
+
+ echo ${DATE}-${PBS_USER}-${PBS_JOBID}"script  ${HPC_COMP_STOP_SCRIPT} ${DBKEY} ${NODE} was executed with the result(0- no errors):" $? >> $LOG_FILE
+ 
+  if [ -z "$PBS_USER" ]; then
+    echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in /var/spool/torque/mom_priv/epilogue: variable PBS_USER is not initialized" >> $LOG_FILE
+    exit 1
+  fi
+
+  PWM_PATH=/nas_home/${PBS_USER}/pwm/
+  if [ ! -d "$PWM_PATH" ]; then
+    mkdir ${PWM_PATH}
+    chown ${PBS_USER}:${PBS_USER} ${PWM_PATH}
+  fi
+  PWM_NODE_PATH=${PWM_PATH}/${NODE}
+  if [ ! -d "$PWM_NODE_PATH" ]; then
+    mkdir ${PWM_NODE_PATH}
+    chown ${PBS_USER}:${PBS_USER} ${PWM_NODE_PATH}
+  fi
+  PWM_USER_PATH=${PWM_NODE_PATH}/${PBS_JOBID}
+  if [ -z "$PWM_USER_PATH" ]; then
+    echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in /var/spool/torque/mom_priv/epilogue variable PWM_USER_PATH is not defined: " >> $LOG_FILE
+    exit 11
+  fi
+
+  mkdir ${PWM_USER_PATH}
+  chown ${PBS_USER}:${PBS_USER} ${PWM_NODE_PATH}
+  chown -R ${PBS_USER}:${PBS_USER} ${PWM_USER_PATH}
+# >&2 echo "start scp addi"
+  if [ -f "$CONFIG_AC_INI" ]; then
+#    echo ${DATE}-${PBS_USER}-${PBS_JOBID}":COPY AC POWER DATA:"  {POWER_AC_LOG_PATH} " -> " ${PWM_USER_PATH}/ 
+    scp addi:${POWER_AC_LOG_PATH}/* ${PWM_USER_PATH}/
+    ssh addi "rm ${POWER_AC_LOG_PATH}/* -f"
+    ssh addi "rm ${POWER_AC_RAW_PATH}/* -f"
+  fi
+  scp addi:${POWER_LOG_PATH}/* ${PWM_USER_PATH}/
+
+#   scp addi:${POWER_RAW_PATH}/* ${PWM_USER_PATH}/
+# >&2 echo "end scp addi"
+  chown -R ${PBS_USER}:${PBS_USER} ${PWM_USER_PATH}
+
+  PWM_ARCH=${NODE}_${PBS_JOBID}.tar.gz
+  tar -czf ${PWM_NODE_PATH}/${PWM_ARCH} -C ${PWM_NODE_PATH} ./${PBS_JOBID}
+  chown  ${PBS_USER}:${PBS_USER} ${PWM_NODE_PATH}/${PWM_ARCH}
+  rm ${PWM_USER_PATH} -rf
+  if [ -z "$POWER_LOG_PATH" ]; then
+    echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in /var/spool/torque/mom_priv/epilogue variable POWER_LOG_PATH is not defined: " >> $LOG_FILE
+    exit 11
+  fi
+
+  ssh addi "rm ${POWER_LOG_PATH}/* -f"
+  ssh addi "rm ${POWER_RAW_PATH}/* -f"
+  echo "Use the following command to unpack the raw power data:"
+  echo "tar xfz  ${PWM_NODE_PATH}/${PWM_ARCH}"
+  echo "To deactivate the power measurement on node $NODE run the following command:"
+  echo "rm ${PWM_RAW_DATA_SWITCH_ON_PATH}"
+
+else
+  echo "To activate the power measurement on the node $NODE  run the following command: touch ${PWM_RAW_DATA_SWITCH_ON_PATH}"
+fi
+if [ ${MF_SERVICE_SWITCH_ON} -eq 1 ]; then
+   echo "To deactivate the monitoring framework client on node $NODE run the following command:"
+   echo "rm "${MF_USER_SERVICE_SWITCH_ON_PATH}
+else
+   echo "To activate the monitoring framework client on node $NODE  run the following command:"
+   echo "touch ${MF_USER_SERVICE_SWITCH_ON_PATH}"
+fi
+
+if [ ${PWM_RAW_DATA_MFSWITCH_ON} -eq 1 ]; then
+   echo "To deactivate the transfer of the power measurement of node $NODE to the MF server run the following command:"
+   echo "rm ${PWM_RAW_DATA_MFSWITCH_ON_PATH}"
+else
+   echo "To send the power measurement of node $NODE to the MF server run the following command:"
+   echo "touch ${PWM_RAW_DATA_MFSWITCH_ON_PATH}"
+fi
+
+done
+
+
+echo ${DATE}-${PBS_USER}-${PBS_JOBID}":the script ${HPC_COMP_STOP_SCRIPT} has been executed on the node $NODE" >> $LOG_FILE
+

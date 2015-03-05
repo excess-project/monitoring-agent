@@ -3,13 +3,12 @@
 #start an mf agent on each of the computational nodes allocated in the pbs job
 #!warning the script will be executed under root
 
-DBKEY=$1
-NODE=$2
-PBS_JOBID=$3
-PBS_USER=$4
+WORKFLOW=$1
+DBKEY=$2
+NODE=$3
+PBS_JOBID=$4
+PBS_USER=$5
 LOG_FILE=/var/log/hpcmeasure/mf_service_prologue_${NODE}.log
-
-
 
 HOME_USER=/nas_home/${PBS_USER}
 MF_REVISION=$(cat /opt/mf/revision)
@@ -21,12 +20,29 @@ MF_AGENT_PIDFILE=${MF_AGENT_PIDFILE_TOP_PATH}/${PBS_JOBID}
 MF_USER_TOP_PATH=${HOME_USER}/.mf
 DOMAIN=".fe.excess-project.eu"
 JOBID=${PBS_JOBID%${DOMAIN}}
+MF_WORKFLOW_PATH=${MF_USER_TOP_PATH}/workflows
 MF_AGENT_USER_CONFIGFILE=${MF_USER_TOP_PATH}/${JOBID}.ini
 MF_AGENT_STD_CONFIGFILE=${MF_TOP_PATH}/mf_config.ini
+
+## Workflow support: overwrite DBKEY, set TASK and WORKFLOW
+WORKFLOW_DBKEY_FILE=$MF_WORKFLOW_PATH/${JOBID}.dbkey
+WORKFLOW_TASK_FILE=$MF_WORKFLOW_PATH/${JOBID}.task
+WORKFLOW_FLOW_FILE=$MF_WORKFLOW_PATH/${JOBID}.flow
+if [ ${WORKFLOW} -eq 1 ]; then
+  if [ -e "${WORKFLOW_DBKEY_FILE}" ]; then
+    DBKEY=$( cat $WORKFLOW_DBKEY_FILE )
+  fi
+  if [ -e "${WORKFLOW_TASK_FILE}" ]; then
+    TASK=$( cat $WORKFLOW_TASK_FILE )
+  fi
+  if [ -e "${WORKFLOW_FLOW_FILE}" ]; then
+    WORKFLOW=$( cat $WORKFLOW_FLOW_FILE )
+  fi
+fi
+
 #pre-check
 DATE="$( date +'%c'  )"
 echo $DATE":--start initializing part of start_mf.sh---" >> $LOG_FILE
-
 
 if [ -z "${MF_AGENT_PIDFILE_TOP_PATH}" ]; then
   echo $DATE":Error in start_mf.sh: variable MF_AGENT_PIDFILE_TOP_PATH is not initialized" >> $LOG_FILE
@@ -40,8 +56,12 @@ if [ ! -d "${MF_AGENT_PIDFILE_TOP_PATH}" ]; then
   mkdir ${MF_AGENT_PIDFILE_TOP_PATH} -p
 fi
 #log details about the job
-echo $DATE":MF_AGENT_PIDFILE:"$MF_AGENT_PIDFILE >>$LOG_FILE
-echo $DATE":DBKEY:"$DBKEY >>$LOG_FILE
+echo $DATE":MF_AGENT_PIDFILE:"$MF_AGENT_PIDFILE >> $LOG_FILE
+echo $DATE":WORKFLOW_SUPPORT?:"$WORKFLOW >> $LOG_FILE
+if [ ${WORKFLOW} -eq 1 ]; then
+  echo $DATE":WORKFLOW::TASK >> "$WORKFLOW"::"$TASK >> $LOG_FILE
+fi
+echo $DATE":DBKEY:"$DBKEY >> $LOG_FILE
 
 
 #start mf_agent and save the process id
@@ -49,11 +69,20 @@ source ${MF_SCRIPT_PATH}/setenv.sh
 #check user config file
 echo $DATE":Check for file ${MF_AGENT_USER_CONFIGFILE}" >> $LOG_FILE
 if [ -e "${MF_AGENT_USER_CONFIGFILE}" ]; then
-   echo $DATE":Using ${MF_AGENT_USER_CONFIGFILE} as configuration file" >> $LOG_FILE
-   ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_USER_CONFIGFILE} &
+  echo $DATE":Using ${MF_AGENT_USER_CONFIGFILE} as configuration file" >> $LOG_FILE
+  if [ -e "${WORKFLOW_DBKEY_FILE}" ]; then
+    ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_USER_CONFIGFILE} -task=${TASK} -workflow=${WORKFLOW} &
+  else
+    ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_USER_CONFIGFILE} &
+  fi
 else
-   echo	$DATE":Using ${MF_AGENT_STD_CONFIGFILE} as configuration file"	>> $LOG_FILE
-   ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_STD_CONFIGFILE} &
+  echo	$DATE":Using ${MF_AGENT_STD_CONFIGFILE} as configuration file"	>> $LOG_FILE
+  ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_STD_CONFIGFILE} &
+  if [ -e "${WORKFLOW_DBKEY_FILE}" ]; then
+    ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_STD_CONFIGFILE} -task=${TASK} -workflow=${WORKFLOW} &
+  else
+    ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_STD_CONFIGFILE} &
+  fi
 fi
 MF_SERVICE_PID=$!
 echo $MF_SERVICE_PID>${MF_AGENT_PIDFILE}

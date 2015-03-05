@@ -15,13 +15,16 @@ PUBLISHER_LIB=-L$(CORE_LIBS) -lpublisher
 
 .PHONY: mf_test
 
-all: mf_test
+all: mf_test mf_response
 
 prepare:
 	$(MAKE) -C $(BASE)/../.. lib
 
 mf_test: prepare
 	$(CC) mf_test.c -o $@ $(CFLAGS) $(LFLAGS)
+
+mf_response: prepare
+	$(CC) mf_response_times.c -o $@ $(CFLAGS) $(LFLAGS)
 
 clean:
 	rm -rf mf_test

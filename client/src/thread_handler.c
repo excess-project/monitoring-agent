@@ -158,7 +158,11 @@ int prepSend(metric data) {
 	getFQDN(hostname);
 	hostname[strlen(hostname) - 1] = '\0';
 
-	sprintf(msg, "{\"Timestamp\":%.9Lf,\"hostname\":\"%s\"%s}", timeStamp, hostname, data->msg);
+	if (workflow_support) {
+		sprintf(msg, "{\"Timestamp\":%.9Lf,\"hostname\":\"%s\",\"task\":\"%s\",\"workflow\":\"%s\"%s}", timeStamp, hostname, active_task, active_workflow, data->msg);
+	} else {
+		sprintf(msg, "{\"Timestamp\":%.9Lf,\"hostname\":\"%s\"%s}", timeStamp, hostname, data->msg);
+	}
 	publish_json(server_name, msg);
 	free(hostname);
 

@@ -41,6 +41,21 @@ extern long timings[256];
 extern char server_name[256];
 
 /**
+ * @brief The active task name
+ */
+extern char active_task[128];
+
+/**
+ * @brief The current workflow
+ */
+extern char active_workflow[128];
+
+/**
+ * @brief Is workflow-based monitoring available?
+ */
+extern int workflow_support;
+
+/**
  * @brief Address of the server which will receive the data
  */
 extern char addr[100];

@@ -36,12 +36,15 @@ char* confFile;
 struct timespec timeStampFile = { 0, 0 };
 
 int hostChanged = 0;
+int workflow_support = 0;
 int pwd_is_set = 0;
 
 char *pwd;
 struct tm *time_info;
 FILE *logFile;
 char server_name[256];
+char active_task[128];
+char active_workflow[128];
 char name[300];
 
 static void set_pwd();
@@ -214,6 +217,14 @@ int main(int argc, const char* argv[]) {
 			if ((pos = strstr(argv[iter], "-config="))) {
 				strcpy(confFile, pos + strlen("-config="));
 				fprintf(logFile, "using configuration file at: %s\n", confFile);
+			}
+			if ((pos = strstr(argv[iter], "-task="))) {
+				strcpy(active_task, pos + strlen("-task="));
+				workflow_support = 1;
+			}
+			if ((pos = strstr(argv[iter], "-workflow="))) {
+				strcpy(active_workflow, pos + strlen("-workflow="));
+				workflow_support = 1;
 			}
 			if ((pos = strstr(argv[iter], "-h"))
 					|| (pos = strstr(argv[iter], "-?"))

@@ -1,0 +1,169 @@
+#!/bin/sh
+
+# Prologue script arguments:
+export PBS_JOBID=$1
+export PBS_USER=$2
+export PBS_GROUP=$3
+export PBS_JOBNAME=$4
+export PBS_SESSION_ID=$5
+export PBS_LIMITS=$6
+export PBS_RESSOURCES=$7
+export PBS_QUEUE=$8
+export PBS_ACCOUNT=$9
+
+#echo  Prologue PBS_JOBID:$PBS_JOBID
+#echo  Prologue PBS_USER:$PBS_USER
+#echo  Prologue PBS_GROUP:$PBS_GROUP
+#echo  Prologue PBS_JOBNAME:$PBS_JOBNAME
+#echo  Prologue PBS_SESSION_ID:$PBS_SESSION_ID
+#echo  Prologue PBS_LIMITS:$PBS_LIMITS
+#echo  Prologue PBS_RESSOURCES:$PBS_RESSOURCES
+#echo  Prologue PBS_QUEUE:$PBS_QUEUE
+#echo  Prologue PBS_ACCOUNT:$PBS_ACCOUNT
+
+HPC_REVISION=$(cat /opt/power/hpcmeasure/revision)
+HPCMEASURE_PATH=/opt/power/hpcmeasure/${HPC_REVISION}/
+HPC_COMP_SCRIPT=$HPCMEASURE_PATH/start_hpcmeasure_compnode.sh
+LOG_FILE=/var/log/hpcmeasure/prologue.log
+
+HOME_USER=/nas_home/${PBS_USER}
+
+MF_USER_TOP_PATH=${HOME_USER}/.mf
+DBKEY_PATH=${MF_USER_TOP_PATH}/dbkey
+DBKEY_FILE_PATH=${DBKEY_PATH}/${PBS_JOBID}
+
+PWM_PATH=${HOME_USER}/.pwm/
+PWM_RAW_DATA_SWITCH=copy_raw_data
+PWM_RAW_DATA_MFSWITCH=send_data_to_mf
+
+MF_USER_SERVICE_PATH=${MF_USER_TOP_PATH}/service
+MF_USER_SERVICE_SWITCH=start_monitoring
+
+MF_REVISION=$(cat /opt/mf/revision)
+MF_TOP_PATH=/opt/mf/${MF_REVISION}
+MF_SCRIPTS_TOP_PATH=${MF_TOP_PATH}/scripts
+MF_START_SCRIPT=${MF_SCRIPTS_TOP_PATH}/start_mf.sh
+MF_SERVICE_SWITCH_ON=0
+
+MF_WORKFLOW_SWITCH=workflow_support
+MF_WORKFLOW_SWITCH_ON=0
+
+DATE="$( date +'%c' )"
+set_unique_dbkey_exec=/opt/power/mf_shared/20/bin/set_unique_dbkey
+
+#check the node
+HOST="$( hostname )"
+if [ -z "$HOST" ]; then
+  echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in prologue: Variable HOST is not initialized" >> $LOG_FILE
+  exit 12
+fi
+
+ii=0
+echo ${DATE}-${PBS_USER}-${PBS_JOBID}"PBS_NODEFILE:"$PBS_NODEFILE  >> $LOG_FILE
+NODE_LIST=$(cat $PBS_NODEFILE|uniq)
+for HOST in $NODE_LIST
+do
+  ((ii = ii + 1))
+
+  case "$HOST" in
+   "node01.excess-project.eu" ) NODE=node01
+   ;;
+   "node02.excess-project.eu" ) NODE=node02
+   ;;
+  esac
+  if [ -z "$NODE" ]; then
+    echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in /var/spool/torque/mom_priv/prologue: variable NODE is not initialized" >> $LOG_FILE
+    exit 1
+  fi
+  PWM_RAW_DATA_SWITCH_ON_PATH=${PWM_PATH}/${NODE}/${PWM_RAW_DATA_SWITCH}
+  PWM_RAW_DATA_MFSWITCH_ON_PATH=${PWM_PATH}/${NODE}/${PWM_RAW_DATA_MFSWITCH}
+  #echo "PWM_RAW_DATA_SWITCH_ON_PATH=${PWM_RAW_DATA_SWITCH_ON_PATH}"
+  #check whether the power emasurement is on
+  if [ -f "${PWM_RAW_DATA_SWITCH_ON_PATH}" ]; then
+     PWM_RAW_DATA_SWITCH_ON=1
+  else
+     PWM_RAW_DATA_SWITCH_ON=0
+     PWM_RAW_DATA_MFSWITCH_ON=0
+  fi
+  MF_SERVICE_SWITCH_ON_PATH=${MF_USER_SERVICE_PATH}/${NODE}/${MF_USER_SERVICE_SWITCH}
+  #echo	"MF_SERVICE_SWITCH_ON_PATH=${MF_USER_SERVICE_PATH}/${NODE}/${MF_USER_SERVICE_SWITCH}"
+  #check whether the mf service should be started
+  if [ -f "${MF_SERVICE_SWITCH_ON_PATH}" ]; then
+     MF_SERVICE_SWITCH_ON=1
+     if [ -f "${PWM_RAW_DATA_MFSWITCH_ON_PATH}" ]; then
+       PWM_RAW_DATA_MFSWITCH_ON=1
+     else
+      PWM_RAW_DATA_MFSWITCH_ON=0
+    fi
+  else
+     MF_SERVICE_SWITCH_ON=0
+     PWM_RAW_DATA_MFSWITCH_ON=0
+  fi
+  ## WORKFLOW SUPPORT
+  MF_WORKFLOW_SWITCH_ON_PATH=${MF_USER_SERVICE_PATH}/${NODE}/${MF_WORKFLOW_SWITCH}
+  echo "MF_WORKFLOW_SWITCH_ON_PATH=${MF_USER_SERVICE_PATH}/${NODE}/${MF_WORKFLOW_SWITCH}"
+  if [ -f "${MF_WORKFLOW_SWITCH_ON_PATH}" ]; then
+     MF_WORKFLOW_SWITCH_ON=1
+  else
+     MF_WORKFLOW_SWITCH_ON=0
+  fi
+  #echo "PWM_RAW_DATA_SWITCH_ON=${PWM_RAW_DATA_SWITCH_ON}"
+  echo ${DATE}-${PBS_USER}-${PBS_JOBID}"INFO MF SERVICE:  MF_SERVICE_SWITCH_ON=${MF_SERVICE_SWITCH_ON}">> $LOG_FILE
+  echo ${DATE}-${PBS_USER}-${PBS_JOBID}"INFO MF SERVICE:  PWM_RAW_DATA_MFSWITCH_ON=${PWM_RAW_DATA_MFSWITCH_ON=0}">> $LOG_FILE
+  #read and write dbkey for monitoring framework
+  #get unique dbkey
+  if [ $ii -eq 1 ]; then
+    mf_start_date="\"${DATE}\""
+    mf_name="\"${PBS_JOBID}\""
+    mf_description="\"${PBS_JOBNAME}\""
+    mf_username="\"${PBS_USER}\""
+    mf_content="Content-Type: application/json"
+    mf_string="{\"Name\": ${mf_name}, \"Description\": ${mf_description}, \"Start_date\": ${mf_start_date}, \"Username\": ${mf_username} }"
+    command="curl -i -X POST  -H '$mf_content'  -d '$mf_string' http://192.168.0.2:3000/executions  | tail -1 2>>/dev/null"
+    DBKEY=$(bash -c  "$command")
+    if [ ${#DBKEY} -eq 0  ]; then
+      echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Warning!!! in /var/spool/torque/mom_priv/prologue: DBKEY could not be obtained" >> $LOG_FILE
+      DBKEY=$RANDOM
+    fi
+    echo ${DATE}-${PBS_USER}-${PBS_JOBID}": CUSTOM_VARIABLE is "$MF_INDEX >> $LOG_FILE
+
+    #write db key in the file
+    ${set_unique_dbkey_exec}  -d ${DBKEY_PATH} -f ${PBS_JOBID} -k ${DBKEY} >> $LOG_FILE
+    chown -R ${PBS_USER}:${PBS_USER} ${DBKEY_PATH}
+    echo ${DATE}-${PBS_USER}-${PBS_JOBID}": obtained DBKEY is " $DBKEY  ${DBKEY_PATH}  ${PBS_JOBID} ${DBKEY} >> $LOG_FILE
+  fi
+  if [ -z "$HPC_COMP_SCRIPT" ]; then
+    echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in /var/spool/torque/mom_priv/prologue: variable HPC_COMP_SCRIPT is not initialized" >> $LOG_FILE
+    exit 1
+  fi
+  if [ ! -f "$HPC_COMP_SCRIPT" ]; then
+    echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in /var/spool/torque/mom_priv/prologue: file HPC_COMP_SCRIPT  is not present" >> $LOG_FILE
+    break
+  fi
+  #check whether to send the data, if not MF_DBKEY=0
+  if [ ${PWM_RAW_DATA_MFSWITCH_ON} -eq 1 ]; then
+    MF_DBKEY=${DBKEY}
+  else
+    MF_DBKEY="0"
+  fi
+  if [ ${PWM_RAW_DATA_SWITCH_ON} -eq 1 ]; then
+    echo "start power measurement"
+    echo ${DATE}-${PBS_USER}-${PBS_JOBID}":start the script ${HPC_COMP_SCRIPT} on the node ${NODE} with DBKEY ${DBKEY}" >> $LOG_FILE
+    ${HPC_COMP_SCRIPT} ${MF_DBKEY} ${NODE}
+   echo " ${HPC_COMP_SCRIPT} ${MF_DBKEY} ${NODE} "
+  fi
+
+  if [ ${MF_SERVICE_SWITCH_ON} -eq 1 ]; then
+    echo "start monitoring framework service"
+    if [ ${MF_WORKFLOW_SWITCH_ON} -eq 1]; then
+      echo ${DATE}-${PBS_USER}-${PBS_JOBID}":start the script ${MF_START_SCRIPT} on the node ${NODE} with workflow support" >> $LOG_FILE
+      ${MF_START_SCRIPT} 1 ${DBKEY} ${NODE} ${PBS_JOBID} ${PBS_USER} ${mf_start_date} ${mf_description}
+    else
+      echo ${DATE}-${PBS_USER}-${PBS_JOBID}":start the script ${MF_START_SCRIPT} on the node ${NODE} with DBKEY ${MF_DBKEY}" >> $LOG_FILE
+      ${MF_START_SCRIPT} 0 ${DBKEY} ${NODE} ${PBS_JOBID} ${PBS_USER} ${mf_start_date} ${mf_description}
+    fi
+  fi
+
+done
+echo ${DATE}-${PBS_USER}-${PBS_JOBID}":the script ${HPC_COMP_SCRIPT} has been executed on computational node ${NODE}" >> $LOG_FILE
+
