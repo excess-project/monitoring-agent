@@ -37,14 +37,14 @@ fi
 
 #kill the mf agent
 if [ -f "${MF_AGENT_PIDFILE}" ]; then
-  KILL_SIGNAL_OK="$( kill -SIGINT  $MF_AGENT_PID )"
-  if [[ "${KILL_SIGNAL_OK}" -ne "0" ]]; then
-    echo $DATE":Error in stop_mf.sh: KILL_SIGNAL for mf agent is not handled" >> $LOG_FILE
-  fi
-  #echo $DATE":stop_mf.sh: The mf agent process will be stopped:"$KILL_SIGNAL_OK >> $LOG_FILE
-  #wait
+  KILL_SIGNAL=$( kill -SIGINT $MF_AGENT_PID )
   wait $MF_AGENT_PID &>> /dev/null
-  echo $DATE":stop_mf.sh: The mf agent process is stopped" >> $LOG_FILE
+  if [ "${KILL_SIGNAL}" -neq 0 ]; then
+    echo $DATE":Error in stop_mf.sh: KILL_SIGNAL for mf agent is not handled" >> $LOG_FILE
+  else
+    echo $KILL_SIGNAL >> $LOG_FILE
+  fi
+  echo $DATE":stop_mf.sh: The mf agent process is stopped (PID="$MF_AGENT_PID")" >> $LOG_FILE
 fi
 
 echo $DATE":---end ---" >> $LOG_FILE

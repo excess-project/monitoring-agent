@@ -3,11 +3,10 @@
 #start an mf agent on each of the computational nodes allocated in the pbs job
 #!warning the script will be executed under root
 
-WORKFLOW_SUPPORT=$1
-DBKEY=$2
-NODE=$3
-PBS_JOBID=$4
-PBS_USER=$5
+DBKEY=$1
+NODE=$2
+PBS_JOBID=$3
+PBS_USER=$4
 LOG_FILE=/var/log/hpcmeasure/mf_service_prologue_${NODE}.log
 
 HOME_USER=/nas_home/${PBS_USER}
@@ -28,20 +27,32 @@ MF_AGENT_STD_CONFIGFILE=${MF_TOP_PATH}/mf_config.ini
 WORKFLOW_DBKEY_FILE=${MF_WORKFLOW_PATH}/${JOBID}.dbkey
 WORKFLOW_TASK_FILE=${MF_WORKFLOW_PATH}/${JOBID}.task
 WORKFLOW_FLOW_FILE=${MF_WORKFLOW_PATH}/${JOBID}.flow
-echo ${DATE}"-WORKFLOW_FLAG:"$WORKFLOW_SUPPORT >> $LOG_FILE
+echo ${DATE}"- Checking for a workflow-based application" >> $LOG_FILE
+WORKFLOW_SUPPORT=1
+if [ -e "${WORKFLOW_DBKEY_FILE}" ]; then
+  DBKEY=$( cat $WORKFLOW_DBKEY_FILE )
+  echo ${DATE}"- Set DBKey to:"$DBKEY >> $LOG_FILE
+else
+  echo ${DATE}"- Could not detect a workflow-based file: "$WORKFLOW_DBKEY_FILE >> $LOG_FILE
+  WORKFLOW_SUPPORT=0
+fi
+if [ -e "${WORKFLOW_TASK_FILE}" ]; then
+  TASK=$( cat $WORKFLOW_TASK_FILE )
+  echo ${DATE}"- Set task to:"$TASK >> $LOG_FILE
+else
+  echo ${DATE}"- Could not detect a workflow-based file: "$WORKFLOW_TASK_FILE >> $LOG_FILE
+  WORKFLOW_SUPPORT=0
+fi
+if [ -e "${WORKFLOW_FLOW_FILE}" ]; then
+  WORKFLOW=$( cat $WORKFLOW_FLOW_FILE )
+  echo ${DATE}"- Set workflow to:"$WORKFLOW >> $LOG_FILE
+else
+  echo ${DATE}"- Could not detect a workflow-based file: "$WORKFLOW_FLOW_FILE >> $LOG_FILE
+  WORKLFOW_SUPPORT=0
+fi
+
 if [ ${WORKFLOW_SUPPORT} -eq 1 ]; then
-  if [ -e "${WORKFLOW_DBKEY_FILE}" ]; then
-    DBKEY=$( cat $WORKFLOW_DBKEY_FILE )
-    echo ${DATE}"-Set DBKey to:"$DBKEY
-  fi
-  if [ -e "${WORKFLOW_TASK_FILE}" ]; then
-    TASK=$( cat $WORKFLOW_TASK_FILE )
-    echo ${DATE}"-Set task to:"$TASK
-  fi
-  if [ -e "${WORKFLOW_FLOW_FILE}" ]; then
-    WORKFLOW=$( cat $WORKFLOW_FLOW_FILE )
-    echo ${DATE}"-Set workflow to:"$WORKFLOW
-  fi
+  echo ${DATE}"- A workflow-based application was detected; switch to worklfow mode" >> $LOG_FILE
 fi
 
 #pre-check
@@ -61,7 +72,6 @@ if [ ! -d "${MF_AGENT_PIDFILE_TOP_PATH}" ]; then
 fi
 #log details about the job
 echo $DATE":MF_AGENT_PIDFILE:"$MF_AGENT_PIDFILE >> $LOG_FILE
-echo $DATE":WORKFLOW_SUPPORT?:"$WORKFLOW_SUPPORT >> $LOG_FILE
 if [ ${WORKFLOW_SUPPORT} -eq 1 ]; then
   echo $DATE":WORKFLOW::TASK >> "$WORKFLOW"::"$TASK >> $LOG_FILE
 fi
@@ -74,15 +84,14 @@ source ${MF_SCRIPT_PATH}/setenv.sh
 echo $DATE":Check for file ${MF_AGENT_USER_CONFIGFILE}" >> $LOG_FILE
 if [ -e "${MF_AGENT_USER_CONFIGFILE}" ]; then
   echo $DATE":Using ${MF_AGENT_USER_CONFIGFILE} as configuration file" >> $LOG_FILE
-  if [ -e "${WORKFLOW_DBKEY_FILE}" ]; then
+  if [ ${WORKFLOW_SUPPORT} -eq 1 ]; then
     ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_USER_CONFIGFILE} -task=${TASK} -workflow=${WORKFLOW} &
   else
     ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_USER_CONFIGFILE} &
   fi
 else
   echo	$DATE":Using ${MF_AGENT_STD_CONFIGFILE} as configuration file"	>> $LOG_FILE
-  ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_STD_CONFIGFILE} &
-  if [ -e "${WORKFLOW_DBKEY_FILE}" ]; then
+  if [ ${WORKFLOW_SUPPORT} -eq 1 ]; then
     ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_STD_CONFIGFILE} -task=${TASK} -workflow=${WORKFLOW} &
   else
     ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_STD_CONFIGFILE} &
