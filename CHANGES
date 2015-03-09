@@ -1,6 +1,18 @@
 # RELEASE NOTES
 
 
+## 0.2.0 (03/09/2015)
+
+### Features
+- Primarily support for workflow-based applications such as MS2 (developed by Thomas Baumann)
+- Updated start and stop scripts for the monitoring framework
+
+
+### Remarks
+- Workflow-based applications use the same execution ID for all tasks, meaning that the data sent to server cannot be viewed using the default Web interface. Instead, please open a browser, and locate the address to http://mf.excess-project.eu/executions/<experiment_id>.
+- For each task of a workflow, three additional files are created in <pre>$HOME/.mf/workflows</pre>: JOBID.dbkey, JOBID.flow, and JOBID.task.
+
+
 
 ## 0.1.4 (02/25/2015)
 
