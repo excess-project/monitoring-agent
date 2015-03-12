@@ -104,14 +104,10 @@ static void
 tokenize_values(char* line, Iostat_Plugin *iostat)
 {
     int i = 0;
-    char* snippet;
     char* token = strtok(line, " ");
     while (token != NULL) {
-        iostat->values[i] = malloc(sizeof(char) * 32);
-        if ((snippet = strchr(token, '\n')) != NULL) {
-            *snippet = '\0';
-        }
-        strcpy(iostat->values[i], token);
+        float val = strtof(token, NULL);
+        iostat->values[i] = val;
         token = strtok(NULL, " ");
         i++;
     }
@@ -160,14 +156,14 @@ tokenize_disk_mode(char* command, Iostat_Plugin *iostat)
                         continue;
                     }
                     iostat->events[iostat->num_events] = malloc(sizeof(char) * 32);
-                    iostat->values[iostat->num_events] = malloc(sizeof(char) * 32);
                     char *name = malloc(sizeof(char) * 32);
                     sprintf(name, "iostat:%s:%s", device, units[i-1]);
                     strcpy(iostat->events[iostat->num_events], name);
                     if ((snippet = strchr(token, '\n')) != NULL) {
                        *snippet = '\0';
                     }
-                    strcpy(iostat->values[iostat->num_events], token);
+                    float val = strtof(token, NULL);
+                    iostat->values[iostat->num_events] = val;
                     token = strtok(NULL, " ");
                     i++;
                     iostat->num_events++;
@@ -228,14 +224,14 @@ tokenize_all(char* command, Iostat_Plugin *iostat)
                         continue;
                     }
                     iostat->events[iostat->num_events] = malloc(sizeof(char) * 32);
-                    iostat->values[iostat->num_events] = malloc(sizeof(char) * 32);
                     char *name = malloc(sizeof(char) * 32);
                     sprintf(name, "iostat:%s:%s", device, units[i-1]);
                     strcpy(iostat->events[iostat->num_events], name);
                     if ((snippet = strchr(token, '\n')) != NULL) {
                        *snippet = '\0';
                     }
-                    strcpy(iostat->values[iostat->num_events], token);
+                    float val = strtof(token, NULL);
+                    iostat->values[iostat->num_events] = val;
                     token = strtok(NULL, " ");
                     i++;
                     iostat->num_events++;

@@ -22,7 +22,7 @@ typedef struct Iostat_Plugin_t Iostat_Plugin;
 struct Iostat_Plugin_t
 {
     char* events[32];
-    char* values[32];
+    float values[32];
     int num_events;
 };
 

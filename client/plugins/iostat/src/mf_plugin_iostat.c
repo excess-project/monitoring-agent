@@ -25,7 +25,6 @@
 #include "plugin_manager.h"
 #include "util.h"
 
-
 char*
 to_JSON(Iostat_Plugin *iostat)
 {
@@ -35,7 +34,7 @@ to_JSON(Iostat_Plugin *iostat)
 
     char *single_metric = malloc(512 * sizeof(char));
     for (i = 0; i < iostat->num_events; ++i) {
-        sprintf(single_metric, ",\"%s\":\"%s\"", iostat->events[i], iostat->values[i]);
+        sprintf(single_metric, ",\"%s\":%f", iostat->events[i], iostat->values[i]);
         strcat(json, single_metric);
     }
     free(single_metric);

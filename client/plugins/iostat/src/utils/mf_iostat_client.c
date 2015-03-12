@@ -94,7 +94,7 @@ to_csv(Iostat_Plugin *iostat)
     memset(csv, 0, 4096 * sizeof(char));
     row = malloc(256 * sizeof(char));
     for (i = 0; i < iostat->num_events; ++i) {
-        sprintf(row, "\"%s\",%s\n", iostat->events[i], iostat->values[i]);
+        sprintf(row, "\"%s\",%f\n", iostat->events[i], iostat->values[i]);
         strcat(csv, row);
     }
     free(row);
