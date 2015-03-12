@@ -102,6 +102,11 @@ hasPP1(void)
 void
 check_processor(Likwid_Plugin *likwid, char** named_events, size_t num_events)
 {
+    likwid->hasPKG = 0;
+    likwid->hasDRAM = 0;
+    likwid->hasPP0 = 0;
+    likwid->hasPP1 = 0;
+
     int i;
     for (i = 0; i != num_events; ++i) {
         if (strcmp(named_events[i], "PKG") == 0) {
