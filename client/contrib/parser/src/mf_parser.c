@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#if __GNUC__
+#if __x86_64__ || __ppc64__
+#else
+#define _LARGEFILE64_SOURCE
+#endif
+#endif
 
 #include <apr.h>
 #include <apr_hash.h>
