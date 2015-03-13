@@ -69,11 +69,11 @@ mfp_set_value(const char* section, const char* key, const char* value)
 
     apr_hash_t *ht_values = apr_hash_get(ht_config, section, APR_HASH_KEY_STRING);
     if (ht_values == NULL) {
-        log_info("mfp_set_value(..) -- Created new hash_table for section: %s", section);
+        debug("mfp_set_value(..) -- Created new hash_table for section: %s", section);
         ht_values = apr_hash_make(mp);
     }
 
-    log_info("mfp_set_value(..) -- Set new values <%s,%s>", key, value);
+    debug("mfp_set_value(..) -- Set new values <%s,%s>", key, value);
     apr_hash_set(ht_values, MAKE_DUP(key), APR_HASH_KEY_STRING, MAKE_DUP(value));
     apr_hash_set(ht_config, MAKE_DUP(section), APR_HASH_KEY_STRING, ht_values);
 }

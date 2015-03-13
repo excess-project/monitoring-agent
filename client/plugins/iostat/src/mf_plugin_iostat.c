@@ -30,7 +30,7 @@ to_JSON(Iostat_Plugin *iostat)
 {
     int i;
     char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"performance\"");
+    strcpy(json, ",\"type\":\"io\"");
 
     char *single_metric = malloc(512 * sizeof(char));
     for (i = 0; i < iostat->num_events; ++i) {

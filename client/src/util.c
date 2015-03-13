@@ -40,8 +40,8 @@ int getFQDN(char *fqdn) {
     hints.ai_flags = AI_CANONNAME;
 
     if ((gai_result = getaddrinfo(hostname, "http", &hints, &info)) != 1) {
-        fprintf(stderr, "getaddrinfo: %s,\n using regular hostname\n",
-                gai_strerror(gai_result));
+        //fprintf(stderr, "getaddrinfo: %s,\n using regular hostname\n",
+        //        gai_strerror(gai_result));
         FILE *tmp = NULL;
         if ((tmp = popen("hostname", "r")) == NULL ) {
             perror("popen");

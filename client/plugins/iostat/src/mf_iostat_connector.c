@@ -93,6 +93,7 @@ tokenize_events(char* line, Iostat_Plugin *iostat)
             *snippet = '\0';
         }
         char* name = malloc(sizeof(char) * 32);
+        token++;
         sprintf(name, "iostat:avg-cpu:%s", token);
         strcpy(iostat->events[iostat->num_events], name);
         iostat->num_events++;
@@ -142,7 +143,6 @@ tokenize_disk_mode(char* command, Iostat_Plugin *iostat)
                 token = strtok(NULL, " ");
                 i++;
             }
-
 
             while (fgets(path, sizeof(path), fp) != NULL) {
                 i = 0;
@@ -267,6 +267,8 @@ mf_iostat_read(Iostat_Plugin *iostat)
         printf("Failed to run command\n" );
         exit(1);
     }
+
+    puts(command);
 
     if (strcmp(IOSTAT_MODE, "-c") == 0) {
         while (fgets(path, sizeof(path), fp) != NULL) {
