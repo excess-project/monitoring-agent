@@ -10,6 +10,8 @@ LFLAGS =  -lm $(CURL)
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
     CFLAGS += -DDEBUG -g
+else
+	CFLAGS += -DNDEBUG
 endif
 
 COMMON = ../..

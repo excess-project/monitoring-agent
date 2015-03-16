@@ -18,6 +18,8 @@ APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
     CFLAGS += -DDEBUG -g
+else
+	CFLAGS += -DNDEBUG
 endif
 
 all: clean-all libparser.so libparser.a
