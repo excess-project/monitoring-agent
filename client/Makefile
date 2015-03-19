@@ -125,7 +125,7 @@ copy_plugins_to_install:
 	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(INSTALL_PLUGINS_DIR)/
-	cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/iostat/* $(INSTALL_PLUGINS_DIR)/
 
 copy_agent:
 	cp -f $(OUTPUT) $(INSTALL_DIR)/bin
@@ -152,14 +152,13 @@ plugins:
 	$(MAKE) -C $(PLUGIN_DIR)/likwid DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/rapl DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo DEBUG=$(DEBUG)
-	$(MAKE) -C $(PLUGIN_DIR)/iostat DEBUG=$(DEBUG)
 
 copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(PLUGIN_DEST)/
-	cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/iostat/* $(PLUGIN_DEST)/
 
 #
 # CLEAN-UP
@@ -174,7 +173,6 @@ clean-all:
 	$(MAKE) -C $(PLUGIN_DIR)/likwid clean
 	$(MAKE) -C $(PLUGIN_DIR)/rapl clean
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo clean
-	$(MAKE) -C $(PLUGIN_DIR)/iostat clean
 
 clean-install:
 	rm -rf $(INSTALL_DIR)
