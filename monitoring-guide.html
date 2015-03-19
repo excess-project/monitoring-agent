@@ -1,0 +1,587 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+  /*
+      Buttondown
+      A Markdown/MultiMarkdown/Pandoc HTML output CSS stylesheet
+      Author: Ryan Gray
+      Date: 15 Feb 2011
+      Revised: 21 Feb 2012
+  
+      General style is clean, with minimal re-definition of the defaults or
+      overrides of user font settings. The body text and header styles are
+      left alone except title, author and date classes are centered. A Pandoc TOC
+      is not printed, URLs are printed after hyperlinks in parentheses.
+      Block quotes are italicized. Tables are lightly styled with lines above
+      and below the table and below the header with a boldface header. Code
+      blocks are line wrapped.
+  
+      All elements that Pandoc and MultiMarkdown use should be listed here, even
+      if the style is empty so you can easily add styling to anything.
+  
+      There are some elements in here for HTML5 output of Pandoc, but I have not
+      gotten around to testing that yet.
+  */
+  
+  /* NOTES:
+  
+      Stuff tried and failed:
+  
+      It seems that specifying font-family:serif in Safari will always use
+      Times New Roman rather than the user's preferences setting.
+  
+      Making the font size different or a fixed value for print in case the screen
+      font size is making the print font too big: Making font-size different for
+      print than for screen causes horizontal lines to disappear in math when using
+      MathJax under Safari.
+  */
+  
+  /* ---- Front Matter ---- */
+  
+  /* Pandoc header DIV. Contains .title, .author and .date. Comes before div#TOC.
+     Only appears if one of those three are in the document.
+  */
+  
+  div#header, header
+      {
+      /* Put border on bottom. Separates it from TOC or body that comes after it. */
+      border-bottom: 1px solid #aaa;
+      margin-bottom: 0.5em;
+      }
+  
+  .title /* Pandoc title header (h1.title) */
+      {
+      text-align: center;
+      }
+  
+  .author, .date /* Pandoc author(s) and date headers (h2.author and h3.date) */
+      {
+      text-align: center;
+      }
+  
+  /* Pandoc table of contents DIV when using the --toc option.
+     NOTE: this doesn't support Pandoc's --id-prefix option for #TOC and #header.
+     Probably would need to use div[id$='TOC'] and div[id$='header'] as selectors.
+  */
+  
+  div#TOC, nav#TOC
+      {
+      /* Put border on bottom to separate it from body. */
+      border-bottom: 1px solid #aaa;
+      margin-bottom: 0.5em;
+      }
+  
+  @media print
+      {
+      div#TOC, nav#TOC
+          {
+          /* Don't display TOC in print */
+          display: none;
+          }
+      }
+  
+  /* ---- Headers and sections ---- */
+  
+  h1, h2, h3, h4, h5, h6
+  {
+      font-family: "Helvetica Neue", Helvetica, "Liberation Sans", Calibri, Arial, sans-serif; /* Sans-serif headers */
+  
+      /* font-family: "Liberation Serif", "Georgia", "Times New Roman", serif; /* Serif headers */
+  
+      page-break-after: avoid; /* Firefox, Chrome, and Safari do not support the property value "avoid" */
+  }
+  
+  /* Pandoc with --section-divs option */
+  
+  div div, section section /* Nested sections */
+      {
+      margin-left: 2em; /* This will increasingly indent nested header sections */
+      }
+  
+  p {}
+  
+  blockquote
+      {
+      font-style: italic;
+      }
+  
+  li /* All list items */
+      {
+      }
+  
+  li > p /* Loosely spaced list item */
+      {
+      margin-top: 1em; /* IE: lack of space above a <li> when the item is inside a <p> */
+      }
+  
+  ul /* Whole unordered list */
+      {
+      }
+  
+  ul li /* Unordered list item */
+      {
+      }
+  
+  ol /* Whole ordered list */
+      {
+      }
+  
+  ol li /* Ordered list item */
+      {
+      }
+  
+  hr {}
+  
+  /* ---- Some span elements --- */
+  
+  sub /* Subscripts. Pandoc: H~2~O */
+      {
+      }
+  
+  sup /* Superscripts. Pandoc: The 2^nd^ try. */
+      {
+      }
+  
+  em /* Emphasis. Markdown: *emphasis* or _emphasis_ */
+      {
+      }
+  
+  em > em /* Emphasis within emphasis: *This is all *emphasized* except that* */
+      {
+      font-style: normal;
+      }
+  
+  strong /* Markdown **strong** or __strong__ */
+      {
+      }
+  
+  /* ---- Links (anchors) ---- */
+  
+  a /* All links */
+      {
+      /* Keep links clean. On screen, they are colored; in print, they do nothing anyway. */
+      text-decoration: none;
+      }
+  
+  @media screen
+      {
+      a:hover
+          {
+          /* On hover, we indicate a bit more that it is a link. */
+          text-decoration: underline;
+          }
+      }
+  
+  @media print
+      {
+      a   {
+          /* In print, a colored link is useless, so un-style it. */
+          color: black;
+          background: transparent;
+          }
+  
+      a[href^="http://"]:after, a[href^="https://"]:after
+          {
+          /* However, links that go somewhere else, might be useful to the reader,
+             so for http and https links, print the URL after what was the link
+             text in parens
+          */
+          content: " (" attr(href) ") ";
+          font-size: 90%;
+          }
+      }
+  
+  /* ---- Images ---- */
+  
+  img
+      {
+      /* Let it be inline left/right where it wants to be, but verticality make
+         it in the middle to look nicer, but opinions differ, and if in a multi-line
+         paragraph, it might not be so great.
+      */
+      vertical-align: middle;
+      }
+  
+  div.figure /* Pandoc figure-style image */
+      {
+      /* Center the image and caption */
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      font-style: italic;
+      }
+  
+  p.caption /* Pandoc figure-style caption within div.figure */
+      {
+      /* Inherits div.figure props by default */
+      }
+  
+  /* ---- Code blocks and spans ---- */
+  
+  pre, code
+      {
+      background-color: #fdf7ee;
+      /* BEGIN word wrap */
+      /* Need all the following to word wrap instead of scroll box */
+      /* This will override the overflow:auto if present */
+      white-space: pre-wrap; /* css-3 */
+      white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+      white-space: -pre-wrap; /* Opera 4-6 */
+      white-space: -o-pre-wrap; /* Opera 7 */
+      word-wrap: break-word; /* Internet Explorer 5.5+ */
+      /* END word wrap */
+      }
+  
+  pre /* Code blocks */
+      {
+      /* Distinguish pre blocks from other text by more than the font with a background tint. */
+      padding: 0.5em; /* Since we have a background color */
+      border-radius: 5px; /* Softens it */
+      /* Give it a some definition */
+      border: 1px solid #aaa;
+      /* Set it off left and right, seems to look a bit nicer when we have a background */
+      margin-left:  0.5em;
+      margin-right: 0.5em;
+      }
+  
+  @media screen
+      {
+      pre
+          {
+          /* On screen, use an auto scroll box for long lines, unless word-wrap is enabled */
+          white-space: pre;
+          overflow: auto;
+          /* Dotted looks better on screen and solid seems to print better. */
+          border: 1px dotted #777;
+          }
+      }
+  
+  code /* All inline code spans */
+      {
+      }
+  
+  p > code, li > code /* Code spans in paragraphs and tight lists */
+      {
+      /* Pad a little from adjacent text */
+      padding-left:  2px;
+      padding-right: 2px;
+      }
+  
+  li > p code /* Code span in a loose list */
+      {
+      /* We have room for some more background color above and below */
+      padding: 2px;
+      }
+  
+  /* ---- Math ---- */
+  
+  span.math /* Pandoc inline math default and --jsmath inline math */
+      {
+      /* Tried font-style:italic here, and it messed up MathJax rendering in some browsers. Maybe don't mess with at all. */
+      }
+  
+  div.math /* Pandoc --jsmath display math */
+      {
+      }
+  
+  span.LaTeX /* Pandoc --latexmathml math */
+      {
+      }
+  
+  eq /* Pandoc --gladtex math */
+      {
+      }
+  
+  /* ---- Tables ---- */
+  
+  /*  A clean textbook-like style with horizontal lines above and below and under
+      the header. Rows highlight on hover to help scanning the table on screen.
+  */
+  
+  table
+      {
+      border-collapse: collapse;
+      border-spacing: 0; /* IE 6 */
+  
+      border-bottom: 2pt solid #000;
+      border-top: 2pt solid #000; /* The caption on top will not have a bottom-border */
+  
+      /* Center */
+      margin-left: auto;
+      margin-right: auto;
+      }
+  
+  thead /* Entire table header */
+      {
+      border-bottom: 1pt solid #000;
+      background-color: #eee; /* Does this BG print well? */
+      }
+  
+  tr.header /* Each header row */
+      {
+      }
+  
+  tbody /* Entire table  body */
+      {
+      }
+  
+  /* Table body rows */
+  
+  tr  {
+      }
+  tr.odd:hover, tr.even:hover /* Use .odd and .even classes to avoid styling rows in other tables */
+      {
+      background-color: #eee;
+      }
+  
+  /* Odd and even rows */
+  tr.odd {}
+  tr.even {}
+  
+  td, th /* Table cells and table header cells */
+      {
+      vertical-align: top; /* Word */
+      vertical-align: baseline; /* Others */
+      padding-left:   0.5em;
+      padding-right:  0.5em;
+      padding-top:    0.2em;
+      padding-bottom: 0.2em;
+      }
+  
+  /* Removes padding on left and right of table for a tight look. Good if thead has no background color*/
+  /*
+  tr td:last-child, tr th:last-child
+      {
+      padding-right: 0;
+      }
+  tr td:first-child, tr th:first-child
+      {
+      padding-left: 0;
+      }
+  */
+  
+  th /* Table header cells */
+      {
+      font-weight: bold;
+      }
+  
+  tfoot /* Table footer (what appears here if caption is on top?) */
+      {
+      }
+  
+  caption /* This is for a table caption tag, not the p.caption Pandoc uses in a div.figure */
+      {
+      caption-side: top;
+      border: none;
+      font-size: 0.9em;
+      font-style: italic;
+      text-align: center;
+      margin-bottom: 0.3em; /* Good for when on top */
+      padding-bottom: 0.2em;
+      }
+  
+  /* ---- Definition lists ---- */
+  
+  dl /* The whole list */
+      {
+      border-top: 2pt solid black;
+      padding-top: 0.5em;
+      border-bottom: 2pt solid black;
+      }
+  
+  dt /* Definition term */
+      {
+      font-weight: bold;
+      }
+  
+  dd+dt /* 2nd or greater term in the list */
+      {
+      border-top: 1pt solid black;
+      padding-top: 0.5em;
+      }
+  
+  dd /* A definition */
+      {
+      margin-bottom: 0.5em;
+      }
+  
+  dd+dd /* 2nd or greater definition of a term */
+      {
+      border-top: 1px solid black; /* To separate multiple definitions */
+      }
+  
+  /* ---- Footnotes ---- */
+  
+  a.footnote, a.footnoteRef { /* Pandoc, MultiMarkdown footnote links */
+      font-size: small;
+      vertical-align: text-top;
+  }
+  
+  a[href^="#fnref"], a.reversefootnote /* Pandoc, MultiMarkdown, ?? footnote back links */
+      {
+      }
+  
+  @media print
+      {
+      a[href^="#fnref"], a.reversefootnote /* Pandoc, MultiMarkdown */
+          {
+          /* Don't display these at all in print since the arrow is only something to click on */
+          display: none;
+          }
+      }
+  
+  div.footnotes /* Pandoc footnotes div at end of the document */
+      {
+      }
+  
+  div.footnotes li[id^="fn"] /* A footnote item within that div */
+      {
+      }
+  
+  /* You can class stuff as "noprint" to not print.
+     Useful since you can't set this media conditional inside an HTML element's
+     style attribute (I think), and you don't want to make another stylesheet that
+     imports this one and adds a class just to do this.
+  */
+  
+  @media print
+      {
+      .noprint
+          {
+          display:none;
+          }
+      }
+  </style>
+</head>
+<body>
+<h1 id="getting-started-with-the-monitoring-framework">Getting Started with the Monitoring Framework</h1>
+<h2 id="how-to-install-the-monitoring-framework-onto-your-system">How to install the monitoring framework onto your system</h2>
+<p>The monitoring framework has no specific software and hardware requirements. The framework is currently only tested and supported for Linux, and thus we cannot guarantee that the framework will also work with Windows.</p>
+<p>Please read the general installation steps below in order to:</p>
+<ul>
+<li>install the required dependencies (i.e. Elasticsearch, Node.js, git),</li>
+<li>install the monitoring framework server (MFServer), and</li>
+<li>install at least one monitoring agent (MFAgent) onto the system to be monitored.</li>
+</ul>
+<h3 id="install-dependencies">Install dependencies</h3>
+<p>Requirements:</p>
+<ul>
+<li>Node.js (&gt;= 0.9)</li>
+<li>Elasticsearch (&gt;= 1.2.4)</li>
+<li>git</li>
+</ul>
+<h4 id="elasticsearch-1.4.4">Elasticsearch (1.4.4)</h4>
+<pre><code>mkdir $HOME/tmp
+cd tmp
+wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.4.tar.gz
+tar -xf elasticsearch-1.4.4.tar.gz
+sudo mv elasticsearch-1.4.4 /usr/local/elasticsearch</code></pre>
+<h4 id="node.js-0.12">Node.js (0.12)</h4>
+<pre><code>mkdir $HOME/tmp
+cd tmp
+wget http://nodejs.org/dist/v0.12.0/node-v0.12.0-linux-x64.tar.gz
+tar -xf node-v0.12.0-linux-x64.tar.gz
+sudo mv node-v0.12.0-linux-x64 /usr/local/nodejs</code></pre>
+<h4 id="install-git">Install git</h4>
+<pre><code>sudo apt-get install git</code></pre>
+<p>or</p>
+<pre><code>yum install git</code></pre>
+<h3 id="install-mfserver">Install MFServer</h3>
+<pre><code>mkdir $HOME/tmp
+cd tmp
+git clone http://gitlab.excess-project.eu/hlrs/monitoring-framework-server.git
+sudo mv monitoring-framework-server /usr/local/mf-server</code></pre>
+<p>Please provide the following credentials when asked:</p>
+<ul>
+<li>Username: guest</li>
+<li>Password: anonymous</li>
+</ul>
+<h3 id="install-mfagent-v0.1.4">Install MFAgent (v0.1.4)</h3>
+<pre><code>mkdir $HOME/tmp
+cd tmp
+git clone http://gitlab.excess-project.eu/hlrs/monitoring-framework-client.git
+cd monitoring-framework-client
+git checkout release/0.1.4</code></pre>
+<p>Please provide the following credentials when asked:</p>
+<ul>
+<li>Username: guest</li>
+<li>Password: anonymous</li>
+</ul>
+<h4 id="compilation">Compilation</h4>
+<p>Edit <strong>$HOME/tmp/monitoring-framework-client/client/Makefile</strong> in order to reflect the following lines:</p>
+<pre><code>REVISION = 0.1.4
+INSTALL_DIR = /usr/local/mf/$(REVISION)</code></pre>
+<p>Then proceed with building the MFAgent:</p>
+<pre><code>cd $HOME/tmp/monitoring-framework-client
+apt-get install gfortran
+./autobuild.sh
+cd client
+make
+sudo make install</code></pre>
+<p>The MFAgent is now installed at /usr/local/mf/0.1.4</p>
+<h2 id="configuration">Configuration</h2>
+<p>The default configuration file is located at:</p>
+<pre><code>/usr/local/mf/0.1.4/mf_config.ini</code></pre>
+<p>For more information on the specific parameters, see the next section on how to profile applications.</p>
+<h2 id="how-to-profile-an-application">How to profile an application?</h2>
+<p>Follow the following steps in order to start the MFServer:</p>
+<pre><code>/usr/local/elasticsearch/bin/elasticsearch &amp;
+export PATH=/usr/local/nodejs/bin:$PATH
+node /usr/local/mf-server/elasticnodetest1/app.js</code></pre>
+<p>Follow the following steps in order to start the MFAgent.</p>
+<pre><code>nano /usr/local/mf/0.1.4/scripts/setenv.sh</code></pre>
+<p>Change the library path to the following:</p>
+<pre><code>libs=/usr/local/mf/0.1.4/lib</code></pre>
+<p>Then, you can set the environment variables and start the MFAgent:</p>
+<pre><code>source /usr/local/mf/0.1.4/scripts/setenv.sh
+/usr/local/mf/0.1.4/bin/mf_agent</code></pre>
+<p>Starting the MFAgent will then profile by default the memory usage of the system the MFAgent was started on. In order to profile, for example, some PAPI-C counters for specific CPU cores, follow the steps listed below:</p>
+<h3 id="profiling-an-application-using-papi-c">Profiling an application using PAPI-C</h3>
+<h4 id="example-application-prime-number-generator">Example application (Prime Number Generator)</h4>
+<pre><code>mkdir $HOME/tmp
+cd $HOME/tmp
+wget http://dl.bintray.com/kimwalisch/primesieve/primesieve-5.4-linux-x64.tar.gz
+tar -xf primesieve-5.4-linux-x64.tar.gz
+sudo apt-get install libjpeg62</code></pre>
+<h4 id="configure-the-monitoring-framework-to-profile-papi-c-counters">Configure the monitoring framework to profile PAPI-C counters</h4>
+<p>First, you have to enable the PAPI plugin of the monitoring framework by altering the configuration file (/usr/local/mf/0.1.4/mf_config.ini) as follows:</p>
+<p>Enable the PAPI-C plugin:</p>
+<pre><code>[plugins]
+mf_plugin_likwid  = off
+mf_plugin_papi    = off
+mf_plugin_meminfo = on
+mf_plugin_rapl    = off</code></pre>
+<p>Enable the following PAPI-C counters:</p>
+<pre><code>[mf_plugin_papi]
+MAX_CPU_CORES   = 2
+PAPI_TOT_INS    = on</code></pre>
+<p>With PAPI-C enabled, you have to start the MFAgent with root permissions, because the plug-in needs global access to profile the system from a so called third-person perspective:</p>
+<pre><code>sudo env LD_LIBRARY_PATH=/usr/local/mf/0.1.4/lib:$LD_LIBRARY_PATH ./mf_agent</code></pre>
+<p>Finally, start the application of interest</p>
+<p>$HOME/tmp/primesieve</p>
+<p>and choose a very high upper bound (e.g. 1000000000000), set the thread size to 1, and set the sieve size of 2048 KBytes. The prime number generator should run for a while to compute prime numbers within the given range.</p>
+<p>We will now pin the process to various CPU cores in order to validate that the PAPI-C counters are actually profile on a core level. For pinning, we need the following application:</p>
+<pre><code>sudo apt-get install taskset</code></pre>
+<p>After getting the current PID of the <strong>primesieves</strong> process, we can pin the process to either CPU core 0 or 1 as follows:</p>
+<pre><code>taskset -cp 0 &lt;PID&gt;
+
+taskset -cp 1 &lt;PID&gt;</code></pre>
+<h2 id="accessing-the-web-interface">Accessing the Web interface</h2>
+<p>Per default, the Web interface is located at</p>
+<pre><code>http://localhost:3000</code></pre>
+<h2 id="known-issues">Known Issues</h2>
+<h3 id="elasticsearch-unable-to-revive-connection">Elasticsearch: Unable to revive connection</h3>
+<p>Please add the following line (keepAlive) to /usr/local/mf-server/elasticnodetest1/app.js</p>
+<pre><code>var client = new elasticsearch.Client({
+  host: &#39;localhost:9200&#39;,
+  log: &#39;trace&#39;,
+  keepAlive: false
+});</code></pre>
+</body>
+</html>
