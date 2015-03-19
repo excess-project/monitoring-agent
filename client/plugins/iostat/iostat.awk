@@ -23,12 +23,9 @@ BEGIN {
     JSON=JSON"\"iostat:avgcpu:steal\":"$5", "
     JSON=JSON"\"iostat:avgcpu:idle\":"$6" "
     JSON=JSON"}"
-    print JSON
 
-    #URL=server"/"tolower(workflow)"_"tolower(task)"_"current_time"/"id;
-    URL=server"/"id
-    "curl -i -H 'Accept: application/json' -H 'Content-Type:application/json' -X POST "URL " --data '"JSON"'" |& getline results
-    print results
+    URL=server""id
+    "curl -i -s -H 'Accept: application/json' -H 'Content-Type:application/json' -X POST "URL " --data '"JSON"'" |& getline results
 }
 END {
     print "Done."

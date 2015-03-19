@@ -15,7 +15,7 @@ HOME_USER=/nas_home/${PBS_USER}
 MF_REVISION=$(cat /opt/mf/revision)
 MF_TOP_PATH=/opt/mf/${MF_REVISION}
 MF_BIN_PATH=${MF_TOP_PATH}/bin
-MF_PLUGIN_PATH=${MF_TOP_PATH}/plugins
+MF_PLUGIN_PATH=${MF_BIN_PATH}/plugins
 MF_SCRIPT_PATH=${MF_TOP_PATH}/scripts
 MF_AGENT_PIDFILE_TOP_PATH=/ext/mf/plugins/${NODE}
 MF_AGENT_PIDFILE=${MF_AGENT_PIDFILE_TOP_PATH}/${PBS_JOBID}
@@ -64,8 +64,8 @@ echo $MF_SERVICE_PID>${MF_AGENT_PIDFILE}
 
 # start iostat
 SERVER=$( cat ${MF_CONFIG_FILE} | grep server | awk -F" " '{ print $3 }' )
-${MF_PLUGIN_PATH}/iostat.sh ${DBKEY} ${SERVER} &
-#iostat -k 1 | awk -v server=${SERVER} -v id=${DBKEY} -f ${MF_PLUGIN_PATH}/iostat.awk &
+#${MF_PLUGIN_PATH}/iostat.sh ${DBKEY} ${SERVER} &
+iostat -k 1 | awk -v server=${SERVER} -v id=${DBKEY} -f ${MF_PLUGIN_PATH}/iostat.awk &
 echo $DATE":iostat plug-in started for server "$SERVER" with "$DBKEY >> $LOG_FILE
 
 MF_IOSTAT_PID=$!

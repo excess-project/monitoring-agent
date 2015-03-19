@@ -60,7 +60,7 @@ fi
 if [ -f "${MF_IOSTAT_PIDFILE}" ]; then
   KILL_SIGNAL=$( kill $MF_IOSTAT_PID )
   wait $MF_IOSTAT_PID &>> /dev/null
-  if [ "${KILL_SIGNAL}" -neq 0 ]; then
+  if [[ "${KILL_SIGNAL}" -ne "0" ]]; then
     echo $DATE":Error in stop_mf.sh: KILL_SIGNAL for iostat plug-in is not handled" >> $LOG_FILE
   else
     echo $KILL_SIGNAL >> $LOG_FILE
