@@ -65,6 +65,7 @@ if [ -f "${MF_IOSTAT_PIDFILE}" ]; then
   else
     echo $KILL_SIGNAL >> $LOG_FILE
   fi
+  killall iostat
   echo $DATE":stop_mf.sh: The iostat process is stopped (PID="$MF_IOSTAT_PID")" >> $LOG_FILE
 fi
 
