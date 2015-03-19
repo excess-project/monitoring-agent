@@ -18,6 +18,7 @@ MF_BIN_PATH=${MF_TOP_PATH}/bin
 MF_SCRIPT_PATH=${MF_TOP_PATH}/scripts
 MF_AGENT_PIDFILE_TOP_PATH=/ext/mf/plugins/${NODE}
 MF_AGENT_PIDFILE=${MF_AGENT_PIDFILE_TOP_PATH}/${PBS_JOBID}
+MF_IOSTAT_PIDFILE=${MF_AGENT_PIDFILE_TOP_PATH}/${PBS_JOBID}.iostat
 MF_USER_TOP_PATH=${HOME_USER}/.mf
 DOMAIN=".fe.excess-project.eu"
 JOBID=${PBS_JOBID%${DOMAIN}}
@@ -51,12 +52,24 @@ echo $DATE":Check for file ${MF_AGENT_USER_CONFIGFILE}" >> $LOG_FILE
 if [ -e "${MF_AGENT_USER_CONFIGFILE}" ]; then
    echo $DATE":Using ${MF_AGENT_USER_CONFIGFILE} as configuration file" >> $LOG_FILE
    ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_USER_CONFIGFILE} &
+   MF_CONFIG_FILE=${MF_AGENT_USER_CONFIGFILE}
 else
    echo	$DATE":Using ${MF_AGENT_STD_CONFIGFILE} as configuration file"	>> $LOG_FILE
    ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_STD_CONFIGFILE} &
+   MF_CONFIG_FILE=${MF_AGENT_STD_CONFIGFILE}
 fi
 MF_SERVICE_PID=$!
 echo $MF_SERVICE_PID>${MF_AGENT_PIDFILE}
+
+# start iostat
+SERVER=$( cat ${MF_CONFIG_FILE} | grep server | awk -F" " '{ print $3 }' )
+#${MF_BIN_PATH}/iostat.sh ${DBKEY} ${SERVER} &
+iostat -k 1 | awk -v server=${SERVER} -v id=${DBKEY} -f ${MF_BIN_PATH}/iostat.awk &
+echo $DATE":iostat plug-in started for server "$SERVER" with "$DBKEY >> $LOG_FILE
+
+MF_IOSTAT_PID=$!
+echo $MF_IOSTAT_PID>${MF_IOSTAT_PIDFILE}
+echo $DATE":MF_IOSTAT_PIDFILE:"$MF_IOSTAT_PIDFILE >> $LOG_FILE
 
 if [ ! -f "${MF_AGENT_PIDFILE}" ]; then
   echo $DATE":Error in start_mf.sh: file $MF_AGENT_PIDFILE is not written to disk. Abort." >> $LOG_FILE
