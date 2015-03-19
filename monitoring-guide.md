@@ -45,10 +45,12 @@ or
     sudo yum install git
 
 
+
 ### Install MFServer
 
     git clone http://gitlab.excess-project.eu/hlrs/monitoring-framework-server.git
     sudo mv monitoring-framework-server /usr/local/mf-server
+
 
 Please provide the following credentials when asked:
 
