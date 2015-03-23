@@ -4,7 +4,7 @@ BEGIN {
 }
 (NF==6 && !/Device/ && !/d/) {
     current_time=""
-    "date +'%Y-%m-%d'" |& getline current_time".123";
+    "date +'%Y-%m-%dT%T.%3N'" |& getline current_time;
     close("date +'%Y-%m-%d'")
 
     epoch_time=""
@@ -29,7 +29,7 @@ BEGIN {
 }
 (NF==6 && !/Device/ && /d/) {
     current_time=""
-    "date +'%Y-%m-%d'" |& getline current_time".123";
+    "date +'%Y-%m-%dT%T.%3N'" |& getline current_time;
     close("date +'%Y-%m-%d'")
 
     epoch_time=""
