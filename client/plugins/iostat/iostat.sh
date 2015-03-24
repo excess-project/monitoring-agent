@@ -5,13 +5,10 @@ MF_SERVER=$2
 ### check URL ###
 MF_SERVER=${MF_SERVER%/}
 URL=$MF_SERVER"/"$EXECUTION_ID
-CURL_CMD=$( curl -s -S -XGET $URL )
-echo $CURL_CMD
-if [[ "curl" == ${CURL_CMD}* ]]; then
-    exit 1
+curl -s --head $URL | head -n 1 | grep "HTTP/1.[01] [23].." > /dev/null
+if [[ $? -eq "1" ]]; then
+  echo "Error: Given URL ${URL} not reachable."
+  exit 1
 fi
-case "$CURL_CMD" in
-  *Cannot*     ) exit 1 ;;
-esac
 
 iostat -m 1 | awk -v server=$2 -v id=$1 -f iostat.awk
