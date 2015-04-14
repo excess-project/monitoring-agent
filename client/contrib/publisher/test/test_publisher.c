@@ -21,7 +21,7 @@
 #include "../../../libs/CuTest/CuTest.h"
 #include "../src/publisher.h"
 
-static const char *SERVER = "http://141.58.0.8:3000/executions";
+static const char *SERVER = "http://localhost:3000/executions";
 
 static char *URL;
 
@@ -57,12 +57,12 @@ void Test_complex_message(CuTest *tc)
     message->data[0].value = "50";
     message->data[1].key = "mem_used";
     message->data[1].value = "80";
-    
+
     CuAssertStrEquals(tc, "mem_avail", message->data[0].key);
     CuAssertStrEquals(tc, "50", message->data[0].value);
     CuAssertStrEquals(tc, "mem_used", message->data[1].key);
     CuAssertStrEquals(tc, "80", message->data[1].value);
-    
+
     free(message->data);
     free(message);
 }
@@ -80,7 +80,7 @@ void Test_publish_json_with_empty_URL(CuTest *tc)
     char *message = "{ \"Start_date\":123, \"Username\":\"hopped\" }";
     int retval = publish_json(null_URL, message);
     CuAssertTrue(tc, retval == 0);
-    
+
     char *empty_URL = "";
     retval = publish_json(empty_URL, message);
     CuAssertTrue(tc, retval == 0);
@@ -91,7 +91,7 @@ void Test_publish_json_with_empty_message(CuTest *tc)
     char *null_message = NULL;
     int retval = publish_json(URL, null_message);
     CuAssertTrue(tc, retval == 0);
-    
+
     char *empty_message = "";
     retval = publish_json(URL, empty_message);
     CuAssertTrue(tc, retval == 0);
@@ -111,7 +111,7 @@ void set_default_query(char *query)
     char *hostname = "localhost";
     char *description = "test";
     char *start_date = "Tu 18 Nov 2014 13:08:47 CET";
-    char *username = "hpcmfagent";    
+    char *username = "hpcmfagent";
 	sprintf(query,
 	    "{\"Name\":\"%s\", \"Description\":\"%s\", \"Start_date\":\"%s\", \"Username\":\"%s\"}",
 	    hostname, description, start_date, username
@@ -123,7 +123,7 @@ void Test_get_execution_id(CuTest *tc)
     char *query = malloc(sizeof(char) * 256);
     set_default_query(query);
     char *id = get_execution_id(SERVER, query);
-    CuAssertTrue(tc, id != NULL && strlen(id) == 22);
+    CuAssertTrue(tc, id != NULL && strlen(id) == 20);
     free(query);
 }
 
