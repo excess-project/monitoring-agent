@@ -1,6 +1,6 @@
 CC = /usr/bin/gcc
 
-CFLAGS = -std=gnu99 -pedantic -Wall $(APR_INC) $(CORE_INC)
+CFLAGS = -std=gnu99 -pedantic -Wall $(APR_INC) $(CORE_INC) -I../src
 LFLAGS = -lm $(APR)
 
 SRC = ../src
