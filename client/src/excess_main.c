@@ -79,13 +79,9 @@ int prepare() {
 
 	mfp_parse(confFile);
 
-	//char timeArr[80];
-	int clk_id = CLOCK_REALTIME;
-	struct timespec date;
-    clock_gettime(clk_id, &date);
+	char timeArr[80];
 
-	//strftime(timeArr, 80, "%c", time_info);
-
+	strftime(timeArr, 80, "%c", time_info);
 
 	char str[1000] = ""; /* storing the execution ID -- UUID is 36 chars */
 	char msg[1000] = "";
@@ -101,8 +97,8 @@ int prepare() {
 	getFQDN(hostname);
 	hostname[strlen(hostname) - 1] = '\0';
 	sprintf(msg,
-	    "{\"Name\":\"%s\", \"Description\":\"%s\", \"Start_date\":%ld, \"Username\":\"%s\"}",
-	    hostname, description, date.tv_sec, username
+	    "{\"Name\":\"%s\", \"Description\":\"%s\", \"Start_date\":\"%s\", \"Username\":\"%s\"}",
+	    hostname, description, timeArr, username
 	);
 
 	strcpy(server_name, mfp_get_value("generic", "server"));
