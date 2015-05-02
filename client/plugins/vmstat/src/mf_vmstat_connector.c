@@ -1,5 +1,4 @@
 #include "mf_vmstat_connector.h"
-#include "mf_debug.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -27,7 +26,6 @@ mf_vmstat_read(vmstat_plugin* vmstat, char **named_events, size_t num_events)
     while (fscanf(fp, "%s %lld", key, &value) == 2) {
         int i;
         for (i = 0; i != num_events; ++i) {
-            debug("Key: %s and event %s", key, named_events[i]);
             if (strcmp(key, named_events[i]) == 0) {
                 vmstat->events[vmstat->num_events] = malloc(sizeof(char) * 256);
                 strcpy(vmstat->events[vmstat->num_events], key);

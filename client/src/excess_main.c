@@ -101,7 +101,7 @@ int prepare() {
 	getFQDN(hostname);
 	hostname[strlen(hostname) - 1] = '\0';
 	sprintf(msg,
-	    "{\"Name\":\"%s\", \"Description\":\"%s\", \"Start_date\":\"%ld\", \"Username\":\"%s\"}",
+	    "{\"Name\":\"%s\", \"Description\":\"%s\", \"Start_date\":%ld, \"Username\":\"%s\"}",
 	    hostname, description, date.tv_sec, username
 	);
 

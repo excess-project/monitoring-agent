@@ -4,7 +4,7 @@ BEGIN {
 }
 (NF==6 && !/Device/ && !/d/) {
     current_time=""
-    "date +'%Y-%m-%dT%T.%3N'" |& getline current_time;
+    "date +'%Y-%m-%d'" |& getline current_time".123";
     close("date +'%Y-%m-%d'")
 
     epoch_time=""
@@ -23,33 +23,12 @@ BEGIN {
     JSON=JSON"\"iostat:avgcpu:steal\":"$5", "
     JSON=JSON"\"iostat:avgcpu:idle\":"$6" "
     JSON=JSON"}"
+    print JSON
 
-    URL=server""id
-    "curl -i -s -H 'Accept: application/json' -H 'Content-Type:application/json' -X POST "URL " --data '"JSON"'" |& getline results
-}
-(NF==6 && !/Device/ && /d/) {
-    current_time=""
-    "date +'%Y-%m-%dT%T.%3N'" |& getline current_time;
-    close("date +'%Y-%m-%d'")
-
-    epoch_time=""
-    "date +'%s'" |& getline epoch_time
-    close("date +'%s'")
-
-    "hostname" |& getline hostname
-
-    JSON="{\"Timestamp\":\""epoch_time"\", "
-    JSON=JSON"\"type\":\"iostat:"$1"\", "
-    JSON=JSON"\"hostname\":\""hostname"\", "
-    JSON=JSON"\"iostat:"$1":tps\":"$2", "
-    JSON=JSON"\"iostat:"$1":MS_reads\":"$3", "
-    JSON=JSON"\"iostat:"$1":MB_wrtns\":"$4", "
-    JSON=JSON"\"iostat:"S1":MB_read\":"$5", "
-    JSON=JSON"\"iostat:"$1":MS_wrtn\":"$6" "
-    JSON=JSON"}"
-
-    URL=server""id
-    "curl -i -s -H 'Accept: application/json' -H 'Content-Type:application/json' -X POST "URL " --data '"JSON"'" |& getline results
+    #URL=server"/"tolower(workflow)"_"tolower(task)"_"current_time"/"id;
+    URL=server"/"id
+    "curl -i -H 'Accept: application/json' -H 'Content-Type:application/json' -X POST "URL " --data '"JSON"'" |& getline results
+    print results
 }
 END {
     print "Done."

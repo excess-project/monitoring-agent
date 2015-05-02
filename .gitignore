@@ -50,3 +50,5 @@
 /client/plugins/rapl/mf_rapl_client
 /client/plugins/vmstat/lib/mf_plugin_vmstat.so
 /client/plugins/vmstat/mf_vmstat_client
+/client/plugins/iostat/lib/mf_plugin_iostat.so
+/client/plugins/iostat/mf_iostat_client
