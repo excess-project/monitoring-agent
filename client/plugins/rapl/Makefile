@@ -35,7 +35,7 @@ PARSER_INC = -I$(COMMON)/contrib/parser/src
 FILES = $(shell find src -name '*.c')
 HEADER = $(shell find src -name '*.h')
 
-all: clean prepare mf_plugin_rapl.so
+all: clean prepare mf_rapl_client mf_plugin_rapl.so
 
 mf_plugin_rapl.so: mf_plugin_rapl.o mf_rapl_connector.o
 	$(CC) -o $(LIB)/mf_plugin_rapl.so $^ -shared $(BINARIES)/papi/lib/libpapi.so
@@ -46,11 +46,15 @@ mf_rapl_connector.o: $(SRC)/mf_rapl_connector.c $(HEADER)
 mf_plugin_rapl.o: $(SRC)/mf_plugin_rapl.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
 
+mf_rapl_client: $(UTILS)/mf_rapl_client.c $(SRC)/mf_rapl_connector.c
+	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)
+
 prepare:
 	@mkdir -p lib
 
 clean:
 	rm -rf *.o
+	rm -f mf_rapl_client
 	rm -rf lib
 
 doc: $(FILES)

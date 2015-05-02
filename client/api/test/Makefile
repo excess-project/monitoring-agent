@@ -1,13 +1,12 @@
 CC = /usr/bin/gcc
 
-CFLAGS = -std=gnu99 -pedantic -Wall $(INC) $(CORE_INC)
+CFLAGS = -std=gnu99 -pedantic -Wall $(INC)
 
 LFLAGS = $(MF_LIB) $(PARSER_LIB) $(PUBLISHER_LIB) -Wl,-rpath-link,lib
 
 BASE=.
-INC=-I$(BASE)/../src
-CORE=$(BASE)/../..
-CORE_INC=-I$(CORE)/src
+INC=-I$(BASE)/inc
+CORE=$(BASE)
 CORE_LIBS=$(CORE)/lib
 MF_LIB=-L$(CORE_LIBS) -lmf
 PARSER_LIB=-L$(CORE_LIBS) -lparser

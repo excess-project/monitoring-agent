@@ -50,7 +50,7 @@ mf_plugin_rapl_hook()
         int clk_id = CLOCK_REALTIME;
         clock_gettime(clk_id, &resMetric->timestamp);
         RAPL_Plugin *rapl = malloc(sizeof(RAPL_Plugin));
-        get_available_events(rapl, profile_time);
+        get_available_events(rapl, profile_time,conf_data->keys, conf_data->size);
         strcpy(resMetric->msg, to_JSON(rapl));
         free(rapl);
 
@@ -64,10 +64,9 @@ extern int
 init_mf_plugin_rapl(PluginManager *pm)
 {
     PluginManager_register_hook(pm, "mf_plugin_rapl", mf_plugin_rapl_hook);
+    conf_data =  malloc(sizeof(mfp_data));
 
-    // NOT YET IMPLEMENTED
-    //conf_data = malloc(sizeof(mfp_data));
-    //mfp_get_data_filtered_by_value("mf_plugin_rapl", conf_data, "on");
+    mfp_get_data_filtered_by_value("mf_plugin_rapl", conf_data, "on");
 
     char* value = mfp_get_value("timings", "mf_plugin_rapl");
     long timing = atoi(value);

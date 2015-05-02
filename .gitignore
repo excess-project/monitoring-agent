@@ -43,3 +43,10 @@
 /client/plugins/rapl/lib/mf_plugin_rapl.so
 /client/plugins/likwid/liblikwid.so
 /scripts/evaluation/
+/client/api/test/lib/libmf.so
+/client/api/test/lib/libparser.so
+/client/api/test/lib/libpublisher.so
+/client/api/test/mf_test
+/client/plugins/rapl/mf_rapl_client
+/client/plugins/vmstat/lib/mf_plugin_vmstat.so
+/client/plugins/vmstat/mf_vmstat_client

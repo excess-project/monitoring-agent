@@ -178,6 +178,8 @@ int publish_json(const char *URL, char *message)
 
     #ifndef DEBUG
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_non_data);
+    #else
+    puts(message);
 	#endif
 
 	CURLcode response = curl_easy_perform(curl);

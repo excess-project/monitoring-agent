@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+#include <ctype.h>
+#include <malloc.h>
+#include <papi.h>
+#include <pthread.h>
+#include <sched.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,10 +28,19 @@
 #include "mf_debug.h"
 #include "mf_rapl_connector.h"
 
+
+#define SUCCESS 1
+#define FAILURE 0
+
+static int is_initialized;
+static int is_rapl_initialized();
+static void initialize_PAPI();
+
+
 void
 initialize_PAPI()
 {
-    if (PAPI_is_initialized()) {
+    if (is_rapl_initialized()) {
         return;
     }
 
@@ -36,14 +51,20 @@ initialize_PAPI()
     }
 }
 
+static int
+is_rapl_initialized()
+{
+    return is_initialized;
+}
+
 
 int
-get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval)
+get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char **named_events, size_t num_events)
 {
     long long before_time, after_time;
     double elapsed_time;
     int EventSet = PAPI_NULL;
-    int num_events = 0;
+    int j;
 
     initialize_PAPI();
 
@@ -52,36 +73,20 @@ get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval)
         return -1;
     }
 
-    int code = PAPI_NATIVE_MASK;
-    int rapl_cid = get_rapl_component_id();
-    int r = PAPI_enum_cmp_event(&code, PAPI_ENUM_FIRST, rapl_cid);
-    PAPI_event_info_t evinfo;
-
-    while (r == PAPI_OK) {
-        retval = PAPI_event_code_to_name(code, rapl->events[num_events]);
+    for (j = 0; j != num_events; ++j) {
+        retval = PAPI_add_named_event(EventSet, named_events[j]);
         if (retval != PAPI_OK) {
-            printf("Error translating %#x\n", code);
-            return -1;
+            char *error = PAPI_strerror(retval);
+            log_warn("bind_events_to_all_cores() - PAPI_add_named_event (%s): %s",
+              named_events[j], error);
+        } else {
+            log_info("bind_events_to_all_cores() - Added event %s", named_events[j]);
+            rapl->events[j] = malloc(PAPI_MAX_STR_LEN + 1);
+            strcpy(rapl->events[j], named_events[j]);
         }
-
-        retval = PAPI_get_event_info(code, &evinfo);
-        if (retval != PAPI_OK) {
-            printf("Error getting event info: %d\n", retval);
-            return -1;
-        }
-
-        rapl->data_types[num_events] = evinfo.data_type;
-
-        retval = PAPI_add_event(EventSet, code);
-        if (retval != PAPI_OK) {
-            break;
-        }
-        num_events++;
-
-        r = PAPI_enum_cmp_event(&code, PAPI_ENUM_EVENTS, rapl_cid);
     }
 
-    rapl->values = calloc(num_events, sizeof(long long));
+    //rapl->values = calloc(num_events, sizeof(long long));
     long long *values = calloc(num_events, sizeof(long long));
     if (values == NULL) {
         return -1;
@@ -121,39 +126,8 @@ get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval)
 
     return num_events;
 }
-
-
-int
-get_rapl_component_id()
+void
+mf_rapl_shutdown()
 {
-    int cid;
-    int numcmp;
-    int rapl_cid;
-    const PAPI_component_info_t *cmpinfo = NULL;
-
-    initialize_PAPI();
-    numcmp = PAPI_num_components();
-    for (cid = 0; cid < numcmp; ++cid) {
-        if ((cmpinfo = PAPI_get_component_info(cid)) == NULL) {
-            printf("%s", "RAPL: cannot call component info");
-            return 0;
-        }
-
-        if (strstr(cmpinfo->name, "rapl")) {
-            rapl_cid = cid;
-
-            if (cmpinfo->disabled) {
-                printf("%s", "RAPL: component is disabled");
-                return 0;
-            }
-            break;
-        }
-    }
-
-    if (cid == numcmp) {
-        printf("%s", "RAPL: component not found");
-        return 0;
-    }
-
-    return rapl_cid;
+    PAPI_shutdown();
 }

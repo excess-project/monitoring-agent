@@ -23,13 +23,14 @@
 
 typedef struct RAPL_Plugin_t RAPL_Plugin;
 
+
 struct RAPL_Plugin_t
 {
-    char events[MAX_RAPL_EVENTS][PAPI_MAX_STR_LEN];
-    float *values;
-    int data_types[MAX_RAPL_EVENTS];
+    char *events[PAPI_MAX_PRESET_EVENTS];
+    float values[PAPI_MAX_PRESET_EVENTS];
     int num_events;
 };
+
 
 /**
  * @brief Gets all available events
@@ -41,7 +42,7 @@ struct RAPL_Plugin_t
  *
  * @return number of events available
  */
-int get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval);
+int get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char **named_events, size_t num_events);
 
 /**
  * @brief Gets the RAPL component ID
@@ -54,3 +55,4 @@ int get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval);
 int get_rapl_component_id();
 
 #endif
+void mf_rapl_shutdown();
