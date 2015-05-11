@@ -64,9 +64,18 @@ echo $MF_SERVICE_PID>${MF_AGENT_PIDFILE}
 
 # start iostat
 SERVER=$( cat ${MF_CONFIG_FILE} | grep server | awk -F" " '{ print $3 }' )
-#${MF_PLUGIN_PATH}/iostat.sh ${DBKEY} ${SERVER} &
-iostat -k 1 | awk -v server=${SERVER} -v id=${DBKEY} -f ${MF_PLUGIN_PATH}/iostat.awk &
-echo $DATE":iostat plug-in started for server "$SERVER" with "$DBKEY >> $LOG_FILE
+CPU=$( cat ${MF_CONFIG_FILE} | grep IOSTAT_CPU | awk -F" " '{ print $3 }' )
+DISK=$( cat ${MF_CONFIG_FILE} | grep IOSTAT_DISK | awk -F" " '{ print $3 }' )
+if [[ $CPU = "on" && $DISK = "on" ]]; then
+  iostat -k 1 | awk -v server=${SERVER} -v id=${DBKEY} -f ${MF_PLUGIN_PATH}/iostat.awk &
+  echo $DATE":iostat plug-in "${MF_PLUGIN_PATH}/" started for server "$SERVER" with "$DBKEY >> $LOG_FILE
+elif [[ $CPU == "on" ]]; then
+  iostat -c -k 1 | awk -v server=${SERVER} -v id=${DBKEY} -f ${MF_PLUGIN_PATH}/iostat.awk &
+  echo $DATE":iostat plug-in "${MF_PLUGIN_PATH}/" started for server "$SERVER" with "$DBKEY >> $LOG_FILE
+elif [[ $DISK == "on" ]]; then
+  iostat -d -k 1 | awk -v server=${SERVER} -v id=${DBKEY} -f ${MF_PLUGIN_PATH}/iostat.awk &
+  echo $DATE":iostat plug-in "${MF_PLUGIN_PATH}/" started for server "$SERVER" with "$DBKEY >> $LOG_FILE
+fi
 
 MF_IOSTAT_PID=$!
 echo $MF_IOSTAT_PID>${MF_IOSTAT_PIDFILE}
