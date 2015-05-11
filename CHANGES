@@ -1,5 +1,15 @@
 # RELEASE NOTES
 
+
+## 0.1.6 (05/11/2015)
+
+### Features
+- Both plug-in types (Shell & C) are now available for iostat
+- Updated scripts (e.g. start_mf.sh) to read mf_config for iostat
+- RAPL plug-in reads selected metrics from mf_config.ini
+
+
+
 ## 0.1.5 (03/19/2015)
 
 ### Features
