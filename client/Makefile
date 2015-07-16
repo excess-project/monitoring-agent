@@ -128,8 +128,10 @@ copy_plugins_to_install:
 	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(INSTALL_PLUGINS_DIR)/
-	cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	#cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/iostat-shell/* $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(INSTALL_PLUGINS_DIR)/
 
 copy_includes:
 	cp -f api/src/mf_api.h $(INSTALL_INCLUDES_DIR)
@@ -160,15 +162,18 @@ plugins:
 	$(MAKE) -C $(PLUGIN_DIR)/rapl DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat DEBUG=$(DEBUG)
-	$(MAKE) -C $(PLUGIN_DIR)/iostat DEBUG=$(DEBUG)
+	#$(MAKE) -C $(PLUGIN_DIR)/iostat DEBUG=$(DEBUG)
+	$(MAKE) -C $(PLUGIN_DIR)/infiniband DEBUG=$(DEBUG)
 
 copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(PLUGIN_DEST)/
-	cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(PLUGIN_DEST)/
+	#cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/iostat-shell/* $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(PLUGIN_DEST)/
 
 #
 # CLEAN-UP
@@ -184,7 +189,8 @@ clean-all:
 	$(MAKE) -C $(PLUGIN_DIR)/rapl clean
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo clean
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat clean
-	$(MAKE) -C $(PLUGIN_DIR)/iostat clean
+	#$(MAKE) -C $(PLUGIN_DIR)/iostat clean
+	$(MAKE) -C $(PLUGIN_DIR)/infiniband clean
 
 clean-install:
 	rm -rf $(INSTALL_DIR)
