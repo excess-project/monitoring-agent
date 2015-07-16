@@ -52,3 +52,6 @@
 /client/plugins/vmstat/mf_vmstat_client
 /client/plugins/iostat/lib/mf_plugin_iostat.so
 /client/plugins/iostat/mf_iostat_client
+/documentation/www/monitoring-guide-cluster.html
+/documentation/www/monitoring-guide-plugin-tutorial.html
+/documentation/www/monitoring-guide.html
