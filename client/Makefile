@@ -130,6 +130,7 @@ copy_plugins_to_install:
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	#cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/iostat-shell/* $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/nvidia-shell/* $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(INSTALL_PLUGINS_DIR)/
 
@@ -173,6 +174,7 @@ copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(PLUGIN_DEST)/
 	#cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/iostat-shell/* $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/nvidia-shell/* $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(PLUGIN_DEST)/
 
 #

@@ -28,5 +28,5 @@ if [[ $? -eq "1" ]]; then
 fi
 
 while sleep 1; do
-    (date '+%s.%N'; nvidia-smi -q) | awk -v server=$URL -f nvidia.awk;
+    (date '+%s.%N'; nvidia-smi -q) | awk -v server=$MF_SERVER -v id=$EXECUTION_ID -f nvidia.awk;
 done

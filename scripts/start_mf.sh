@@ -9,8 +9,6 @@ PBS_JOBID=$3
 PBS_USER=$4
 LOG_FILE=/var/log/hpcmeasure/mf_service_prologue_${NODE}.log
 
-
-
 HOME_USER=/nas_home/${PBS_USER}
 MF_REVISION=$(cat /opt/mf/revision)
 MF_TOP_PATH=/opt/mf/${MF_REVISION}
@@ -20,6 +18,7 @@ MF_SCRIPT_PATH=${MF_TOP_PATH}/scripts
 MF_AGENT_PIDFILE_TOP_PATH=/ext/mf/plugins/${NODE}
 MF_AGENT_PIDFILE=${MF_AGENT_PIDFILE_TOP_PATH}/${PBS_JOBID}
 MF_IOSTAT_PIDFILE=${MF_AGENT_PIDFILE_TOP_PATH}/${PBS_JOBID}.iostat
+MF_NVIDIA_PIDFILE=${MF_AGENT_PIDFILE_TOP_PATH}/${PBS_JOBID}.nvidia
 MF_USER_TOP_PATH=${HOME_USER}/.mf
 DOMAIN=".fe.excess-project.eu"
 JOBID=${PBS_JOBID%${DOMAIN}}
@@ -80,6 +79,21 @@ fi
 MF_IOSTAT_PID=$!
 echo $MF_IOSTAT_PID>${MF_IOSTAT_PIDFILE}
 echo $DATE":MF_IOSTAT_PIDFILE:"$MF_IOSTAT_PIDFILE >> $LOG_FILE
+
+
+# start nvidia
+if [[ $NODE = "node01" ]];then
+  SERVER=$( cat ${MF_CONFIG_FILE} | grep server | awk -F" " '{ print $3 }' )
+  ACTIVE=$( cat ${MF_CONFIG_FILE} | grep NODE01 | awk -F" " '{ print $3 }' )
+  if [[ $ACTIVE = "on" ]]; then
+    (date '+%s.%N'; nvidia-smi -q) | awk -v server=${SERVER} -v id=${DBKEY} -f ${MF_PLUGIN_PATH}/nvidia.awk &
+    echo $DATE":NVIDIA plug-in "${MF_PLUGIN_PATH}/" started for server "$SERVER" with "$DBKEY >> $LOG_FILE
+  fi
+
+  MF_NVIDIA_PID=$!
+  echo $MF_NVIDIA_PID>${MF_NVIDIA_PIDFILE}
+  echo $DATE":MF_IOSTAT_PIDFILE:"$MF_NVIDIA_PIDFILE >> $LOG_FILE
+fi
 
 if [ ! -f "${MF_AGENT_PIDFILE}" ]; then
   echo $DATE":Error in start_mf.sh: file $MF_AGENT_PIDFILE is not written to disk. Abort." >> $LOG_FILE

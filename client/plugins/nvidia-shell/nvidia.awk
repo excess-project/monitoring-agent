@@ -55,7 +55,8 @@ END {
         JSON=JSON", \"GPU"i":GPUutilization\":"GPU[i, "GPUutilization"]""
     }
     JSON=JSON"}"
-    "curl -i -s -H 'Accept: application/json' -H 'Content-Type:application/json' -X POST "server " --data '"JSON"'" |& getline results
+    URL=server"/"id
+    "curl -i -s -H 'Accept: application/json' -H 'Content-Type:application/json' -X POST "URL " --data '"JSON"'" |& getline results
 
     print "Done with result:" results
 }
