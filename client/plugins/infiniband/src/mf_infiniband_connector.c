@@ -34,7 +34,7 @@
 #define SUCCESS 1
 #define FAILURE 0
 
-static int event_set = NULL;
+static int EventSet = PAPI_NULL;
 static int num_events_counted;
 static long long *values;
 static int is_initialized;
@@ -53,7 +53,7 @@ mf_infiniband_init(char **named_events, size_t num_events)
     }
 
     load_papi();
-    PAPI_create_eventset(&event_set);
+    PAPI_create_eventset(&EventSet);
     bind_events(named_events, num_events);
 
     is_initialized = 1;
@@ -93,7 +93,7 @@ bind_events(char **named_events, size_t num_events)
     num_events_counted = 0;
 
     for (i = 0; i != num_events; ++i) {
-        retval = PAPI_add_named_event(event_set, named_events[i]);
+        retval = PAPI_add_named_event(EventSet, named_events[i]);
         if (retval != PAPI_OK) {
             char *error = PAPI_strerror(retval);
             log_warn("bind_events() - PAPI_add_named_event (%s): %s",
@@ -111,7 +111,7 @@ void
 mf_infiniband_profile(struct timespec profile_interval)
 {
     debug("Start INFINIBAND Monitoring %d", 0);
-    int retval = PAPI_start(event_set);
+    int retval = PAPI_start(EventSet);
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
         log_error("mf_infiniband_profile() - PAPI_start: %s", error);
@@ -120,7 +120,7 @@ mf_infiniband_profile(struct timespec profile_interval)
     nanosleep(&profile_interval, NULL);
 
     debug("Stop INFINIBAND Monitoring %d", 0);
-    retval = PAPI_stop(event_set, values);
+    retval = PAPI_stop(EventSet, values);
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
         log_error("mf_infiniband_profile() - PAPI_stop: %s", error);
