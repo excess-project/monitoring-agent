@@ -15,8 +15,8 @@
 #  limitations under the License.
 #
 
-EXECUTION_ID=$1
-MF_SERVER=$2
+EXECUTION_ID=$2
+MF_SERVER=$1
 
 ### check URL ###
 MF_SERVER=${MF_SERVER%/}
@@ -28,5 +28,5 @@ if [[ $? -eq "1" ]]; then
 fi
 
 while sleep 1; do
-    (date '+%s.%N'; nvidia-smi -q) | awk -v server=$MF_SERVER -v id=$EXECUTION_ID -f nvidia.awk;
+    (date '+%s.%N'; nvidia-smi -q) | awk -v server=$MF_SERVER -v id=$EXECUTION_ID -f /opt/mf/0.1.7/bin/plugins/nvidia.awk;
 done

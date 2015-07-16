@@ -50,11 +50,13 @@ END {
 
     for (i=0; i <= gpu_id; i++) {
         #JSON=JSON", \"GPU"i":UUID\":\""GPU[i, "UUID"]"\""
-        JSON=JSON", \"GPU"i":power\":\""GPU[i, "power"]""
+        JSON=JSON", \"GPU"i":power\":"GPU[i, "power"]""
         JSON=JSON", \"GPU"i":temperature\":"GPU[i, "temperature"]""
         JSON=JSON", \"GPU"i":GPUutilization\":"GPU[i, "GPUutilization"]""
     }
     JSON=JSON"}"
+    print JSON
+
     URL=server"/"id
     "curl -i -s -H 'Accept: application/json' -H 'Content-Type:application/json' -X POST "URL " --data '"JSON"'" |& getline results
 
