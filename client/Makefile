@@ -8,6 +8,8 @@ COPT_SO = $(CFLAGS) -fpic
 REVISION = 0.1.6
 INSTALL_DIR = ../mf/$(REVISION)
 INSTALL_PLUGINS_DIR = $(INSTALL_DIR)/bin/plugins
+INSTALL_INCLUDES_DIR = $(INSTALL_DIR)/include
+INSTALL_LIB_DIR = $(INSTALL_DIR)/lib
 
 BINARIES = ../binaries
 PLUGIN_DIR = plugins
@@ -108,10 +110,11 @@ install: prepare-install copy_tasks
 
 prepare-install: clean-install
 	@mkdir -p $(INSTALL_DIR)
-	@mkdir -p $(INSTALL_DIR)/bin/plugins
+	@mkdir -p $(INSTALL_PLUGINS_DIR)
 	@mkdir -p $(INSTALL_DIR)/lib
+	@mkdir -p $(INSTALL_INCLUDES_DIR)
 
-copy_tasks: copy_ini copy_scripts copy_plugins_to_install copy_agent copy_likwid copy_libs
+copy_tasks: copy_ini copy_scripts copy_plugins_to_install copy_agent copy_likwid copy_libs copy_includes
 
 copy_ini:
 	cp -f ../mf_config.ini $(INSTALL_DIR)
@@ -121,12 +124,15 @@ copy_scripts:
 	sed -i "s/REV/${REVISION}/g" $(INSTALL_DIR)/scripts/setenv.sh
 
 copy_plugins_to_install:
-	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(INSTALL_PLUGINS_DIR)
+	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(INSTALL_PLUGINS_DIR)/
+
+copy_includes:
+	cp -f api/src/mf_api.h $(INSTALL_INCLUDES_DIR)
 
 copy_agent:
 	cp -f $(OUTPUT) $(INSTALL_DIR)/bin
