@@ -184,7 +184,7 @@ static void init_timings()
 			continue;
 		}
 		char* value = mfp_get_value("timings", current_plugin_name);
-		if (value[0] == '\0') {
+		if (!value || (value[0] == '\0')) {
 			timings[i] = default_timing;
 		} else {
 			timings[i] = atoi(value);
