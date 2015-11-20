@@ -36,6 +36,7 @@ static char *create_JSON_msg();
 
 static mfp_data *nvidia_conf_data;
 static handle_t nvidia_handle;
+static unsigned int max_msg_length = 128;
 
 static metric mf_plugin_nvidia_hook()
 {
@@ -103,9 +104,9 @@ static char *append_formatted(char *buf, char *end, const char *format, ...)
 
 static char *create_JSON_msg()
 {
-  char *msg = malloc(100 * sizeof(char));
+  char *msg = malloc(max_msg_length * sizeof(char));
   char *buf = msg;
-  char *end = buf + 100;
+  char *end = buf + max_msg_length;
 
   buf = append(buf, end, ",\"type\":\"GPU\"");
   buf = mf_nvml_append_power(nvidia_handle, buf, end);
@@ -114,6 +115,9 @@ static char *create_JSON_msg()
   buf = mf_nvml_append_fan_speed(nvidia_handle, buf, end);
   if (buf == end) {
     fprintf(stderr, "mf_plugin_nvidia(): message length overflow!\n");
+    free(msg);
+    max_msg_length *= 2;
+    msg = create_JSON_msg();
   }
   return msg;
 }

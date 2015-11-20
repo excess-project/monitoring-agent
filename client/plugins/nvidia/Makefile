@@ -26,10 +26,9 @@ EXCESS_INC = -I$(COMMON)/src
 PARSER = -L$(COMMON)/contrib/parser/ -lparser
 PARSER_INC = -I$(COMMON)/contrib/parser/src
 
-# Custom installation of nvml.h.
-NVML_INC = -I/opt/EXCESS/install/NVML/include
-# Only tested on Debian/testing with the libnvidia-ml1 package.
-NVML = -L/usr/lib/x86_64-linux-gnu/nvidia/current -lnvidia-ml
+# Custom installation of the NVML library.
+NVML_INC = -I/opt/tdk_5.319.85/nvml/include/
+NVML = -L/opt/tdk_5.319.85/nvml/include/ -lnvidia-ml
 
 all: clean prepare mf_plugin_nvidia.so
 
