@@ -27,8 +27,8 @@ PARSER = -L$(COMMON)/contrib/parser/ -lparser
 PARSER_INC = -I$(COMMON)/contrib/parser/src
 
 # Custom installation of the NVML library.
-NVML_INC = -I/opt/tdk_5.319.85/nvml/include/
-NVML = -L/opt/tdk_5.319.85/nvml/include/ -lnvidia-ml
+NVML_INC = -I$(GDK_DIR)/usr/include/nvidia/gdk
+NVML = -L$(GDK_DIR)/usr/src/gdk/nvml/lib/ -lnvidia-ml
 
 all: clean prepare mf_plugin_nvidia.so
 
