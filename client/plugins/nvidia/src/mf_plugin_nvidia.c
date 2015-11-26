@@ -109,10 +109,25 @@ static char *create_JSON_msg()
   char *end = buf + max_msg_length;
 
   buf = append(buf, end, ",\"type\":\"GPU\"");
-  buf = mf_nvml_append_power(nvidia_handle, buf, end);
+  buf = mf_nvml_append_perf_state(nvidia_handle, buf, end);
+  buf = mf_nvml_append_power_usage(nvidia_handle, buf, end);
+  buf = mf_nvml_append_power_limit(nvidia_handle, buf, end);
   buf = mf_nvml_append_utilization(nvidia_handle, buf, end);
+  buf = mf_nvml_append_encoder_utilization(nvidia_handle, buf, end);
+  buf = mf_nvml_append_decoder_utilization(nvidia_handle, buf, end);
+  buf = mf_nvml_append_clock_freqs(nvidia_handle, buf, end);
+  buf = mf_nvml_append_clock_throttle_reasons(nvidia_handle, buf, end);
+  buf = mf_nvml_append_mem(nvidia_handle, buf, end);
+  buf = mf_nvml_append_mem_BAR1(nvidia_handle, buf, end);
+  buf = mf_nvml_append_mem_L1_ECC_errors(nvidia_handle, buf, end);
+  buf = mf_nvml_append_mem_L2_ECC_errors(nvidia_handle, buf, end);
+  buf = mf_nvml_append_mem_device_ECC_errors(nvidia_handle, buf, end);
+  buf = mf_nvml_append_mem_register_ECC_errors(nvidia_handle, buf, end);
+  buf = mf_nvml_append_mem_texture_ECC_errors(nvidia_handle, buf, end);
+  buf = mf_nvml_append_PCIe_throughput(nvidia_handle, buf, end);
   buf = mf_nvml_append_temperature(nvidia_handle, buf, end);
   buf = mf_nvml_append_fan_speed(nvidia_handle, buf, end);
+  buf = mf_nvml_append_throttled_time(nvidia_handle, buf, end);
   if (buf == end) {
     fprintf(stderr, "mf_plugin_nvidia(): message length overflow!\n");
     free(msg);
