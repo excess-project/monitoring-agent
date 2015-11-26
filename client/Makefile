@@ -133,6 +133,7 @@ copy_plugins_to_install:
 	cp -f $(PLUGIN_DIR)/nvidia-shell/* $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/nvidia/lib/*.so $(INSTALL_PLUGINS_DIR)/
 
 copy_includes:
 	cp -f api/src/mf_api.h $(INSTALL_INCLUDES_DIR)
@@ -165,6 +166,7 @@ plugins:
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat DEBUG=$(DEBUG)
 	#$(MAKE) -C $(PLUGIN_DIR)/iostat DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/infiniband DEBUG=$(DEBUG)
+	$(MAKE) -C $(PLUGIN_DIR)/nvidia DEBUG=$(DEBUG)
 
 copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
@@ -176,6 +178,7 @@ copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/iostat-shell/* $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/nvidia-shell/* $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/nvidia/lib/*.so $(PLUGIN_DEST)/
 
 #
 # CLEAN-UP
@@ -193,6 +196,7 @@ clean-all:
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat clean
 	#$(MAKE) -C $(PLUGIN_DIR)/iostat clean
 	$(MAKE) -C $(PLUGIN_DIR)/infiniband clean
+	$(MAKE) -C $(PLUGIN_DIR)/nvidia clean
 
 clean-install:
 	rm -rf $(INSTALL_DIR)
