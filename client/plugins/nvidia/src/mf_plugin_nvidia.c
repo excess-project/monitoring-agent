@@ -31,9 +31,11 @@
 static char *append(char *buf, char *end, const char *msg);
 static char *append_formatted(char *buf, char *end, const char *format, ...);
 static char *create_JSON_msg();
+static int is_enabled(const char *key);
 
 #include "mf_nvml_connector.c"
 
+/* Plugin global data. */
 static mfp_data *nvidia_conf_data;
 static handle_t nvidia_handle;
 static unsigned int max_msg_length = 128;
@@ -109,25 +111,63 @@ static char *create_JSON_msg()
   char *end = buf + max_msg_length;
 
   buf = append(buf, end, ",\"type\":\"GPU\"");
-  buf = mf_nvml_append_perf_state(nvidia_handle, buf, end);
-  buf = mf_nvml_append_power_usage(nvidia_handle, buf, end);
-  buf = mf_nvml_append_power_limit(nvidia_handle, buf, end);
-  buf = mf_nvml_append_utilization(nvidia_handle, buf, end);
-  buf = mf_nvml_append_encoder_utilization(nvidia_handle, buf, end);
-  buf = mf_nvml_append_decoder_utilization(nvidia_handle, buf, end);
-  buf = mf_nvml_append_clock_freqs(nvidia_handle, buf, end);
-  buf = mf_nvml_append_clock_throttle_reasons(nvidia_handle, buf, end);
-  buf = mf_nvml_append_mem(nvidia_handle, buf, end);
-  buf = mf_nvml_append_mem_BAR1(nvidia_handle, buf, end);
-  buf = mf_nvml_append_mem_L1_ECC_errors(nvidia_handle, buf, end);
-  buf = mf_nvml_append_mem_L2_ECC_errors(nvidia_handle, buf, end);
-  buf = mf_nvml_append_mem_device_ECC_errors(nvidia_handle, buf, end);
-  buf = mf_nvml_append_mem_register_ECC_errors(nvidia_handle, buf, end);
-  buf = mf_nvml_append_mem_texture_ECC_errors(nvidia_handle, buf, end);
-  buf = mf_nvml_append_PCIe_throughput(nvidia_handle, buf, end);
-  buf = mf_nvml_append_temperature(nvidia_handle, buf, end);
-  buf = mf_nvml_append_fan_speed(nvidia_handle, buf, end);
-  buf = mf_nvml_append_throttled_time(nvidia_handle, buf, end);
+  if (is_enabled("performance_state")) {
+    buf = mf_nvml_append_perf_state(nvidia_handle, buf, end);
+  }
+  if (is_enabled("power_usage")) {
+    buf = mf_nvml_append_power_usage(nvidia_handle, buf, end);
+  }
+  if (is_enabled("power_limit")) {
+    buf = mf_nvml_append_power_limit(nvidia_handle, buf, end);
+  }
+  if (is_enabled("utilization")) {
+    buf = mf_nvml_append_utilization(nvidia_handle, buf, end);
+  }
+  if (is_enabled("encoder_utilization")) {
+    buf = mf_nvml_append_encoder_utilization(nvidia_handle, buf, end);
+  }
+  if (is_enabled("decoder_utilization")) {
+    buf = mf_nvml_append_decoder_utilization(nvidia_handle, buf, end);
+  }
+  if (is_enabled("clock_frequencies")) {
+    buf = mf_nvml_append_clock_freqs(nvidia_handle, buf, end);
+  }
+  if (is_enabled("clock_throttle_reasons")) {
+    buf = mf_nvml_append_clock_throttle_reasons(nvidia_handle, buf, end);
+  }
+  if (is_enabled("memory")) {
+    buf = mf_nvml_append_mem(nvidia_handle, buf, end);
+  }
+  if (is_enabled("memory_BAR1")) {
+    buf = mf_nvml_append_mem_BAR1(nvidia_handle, buf, end);
+  }
+  if (is_enabled("L1_cache_ECC_errors")) {
+    buf = mf_nvml_append_mem_L1_ECC_errors(nvidia_handle, buf, end);
+  }
+  if (is_enabled("L2_cache_ECC_errors")) {
+    buf = mf_nvml_append_mem_L2_ECC_errors(nvidia_handle, buf, end);
+  }
+  if (is_enabled("memory_ECC_errors")) {
+    buf = mf_nvml_append_mem_device_ECC_errors(nvidia_handle, buf, end);
+  }
+  if (is_enabled("register_file_ECC_errors")) {
+    buf = mf_nvml_append_mem_register_ECC_errors(nvidia_handle, buf, end);
+  }
+  if (is_enabled("texture_memory_ECC_errors")) {
+    buf = mf_nvml_append_mem_texture_ECC_errors(nvidia_handle, buf, end);
+  }
+  if (is_enabled("PCIe_throughput")) {
+    buf = mf_nvml_append_PCIe_throughput(nvidia_handle, buf, end);
+  }
+  if (is_enabled("temperature")) {
+    buf = mf_nvml_append_temperature(nvidia_handle, buf, end);
+  }
+  if (is_enabled("fan_speed")) {
+    buf = mf_nvml_append_fan_speed(nvidia_handle, buf, end);
+  }
+  if (is_enabled("time_throttled")) {
+    buf = mf_nvml_append_throttled_time(nvidia_handle, buf, end);
+  }
   if (buf == end) {
     fprintf(stderr, "mf_plugin_nvidia(): message length overflow!\n");
     free(msg);
@@ -135,4 +175,10 @@ static char *create_JSON_msg()
     msg = create_JSON_msg();
   }
   return msg;
+}
+
+static int is_enabled(const char *key)
+{
+  char *value = mfp_get_value("mf_plugin_nvidia", key);
+  return value != NULL && !strcmp(value, "on");
 }
