@@ -55,7 +55,7 @@ static metric mf_plugin_nvidia_hook()
     fprintf(stderr,
             "{\"Timestamp\":\"%Lf\"%s}\n",
             resMetric->timestamp.tv_sec +
-            ((long double)resMetric->timestamp.tv_nsec)/10e9,
+            1.0e-9 * (long double)resMetric->timestamp.tv_nsec,
             resMetric->msg);
 
     return resMetric;
