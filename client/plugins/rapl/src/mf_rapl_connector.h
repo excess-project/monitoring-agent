@@ -42,7 +42,7 @@ struct RAPL_Plugin_t
  *
  * @return number of events available
  */
-int get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char **named_events, size_t num_events);
+int get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char **named_events, size_t num_events, int cpu_model);
 
 /**
  * @brief Gets the RAPL component ID

@@ -88,6 +88,7 @@ int prepare() {
 
 	char *hostname = (char*) malloc(sizeof(char) * 256);
     char *username = getenv("USER");
+    
     if (username == NULL) {
         username = malloc(sizeof(char) * 12);
         strcpy(username, "default");
