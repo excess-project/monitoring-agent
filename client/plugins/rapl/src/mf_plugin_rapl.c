@@ -23,6 +23,7 @@
 
 struct timespec profile_time = { 0, 0 };
 mfp_data *conf_data;
+int model; //fangli, this is cpu_model
 
 char* to_JSON(RAPL_Plugin *rapl)
 {
@@ -50,7 +51,7 @@ mf_plugin_rapl_hook()
         int clk_id = CLOCK_REALTIME;
         clock_gettime(clk_id, &resMetric->timestamp);
         RAPL_Plugin *rapl = malloc(sizeof(RAPL_Plugin));
-        get_available_events(rapl, profile_time,conf_data->keys, conf_data->size);
+        get_available_events(rapl, profile_time,conf_data->keys, conf_data->size, model);
         strcpy(resMetric->msg, to_JSON(rapl));
         free(rapl);
 
@@ -63,6 +64,15 @@ mf_plugin_rapl_hook()
 extern int
 init_mf_plugin_rapl(PluginManager *pm)
 {
+    //fangli
+    unsigned eax, ebx, ecx, edx;
+    eax = 1; /* processor info and feature bits */
+    native_cpuid(&eax, &ebx, &ecx, &edx);
+    model = (eax >> 4) & 0xF;
+    printf("model %d\n", model);
+    //if model=14, it is node01, node02
+    //if model=15, it is node03
+    //fangli
     PluginManager_register_hook(pm, "mf_plugin_rapl", mf_plugin_rapl_hook);
     conf_data =  malloc(sizeof(mfp_data));
 
