@@ -64,8 +64,15 @@ main(int argc, char** argv)
      * Initialize API and send custom data to the server
      **************************************************************************/
 
-    mf_api_initialize(URL);
+    mf_api_initialize(URL, NULL);
 
+    char* EXE_ID = mf_api_get_execution_id();
+
+    printf("EXE_ID generated is :%s.\n", EXE_ID);
+
+    mf_api_initialize(URL, EXE_ID);
+
+    //mf_api_initialize(URL);
     start_time = mf_api_start_profiling("fcnt1");
 
     char* mem_info = malloc(256 * sizeof(char));
