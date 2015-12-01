@@ -41,7 +41,7 @@ static char* get_data_by_query();
 static char* retrieve_execution_id();
 
 char*
-mf_api_initialize(const char* URL)
+mf_api_initialize(const char* URL, char* exe_id)
 {
     if (URL == NULL || strlen(URL) == 0) {
         log_error("mf_api_initialize() - URL is not set: %s", URL);
@@ -49,9 +49,17 @@ mf_api_initialize(const char* URL)
     }
     strcpy(exec_url, URL);
     strcat(exec_url, "/executions");
-    char* db_key = retrieve_execution_id(exec_url);
+    if (exe_id == NULL || strlen(exe_id) == 0) {
+        printf("execution id is not given.\n");
+        char* db_key = retrieve_execution_id(exec_url);
+        exe_id = db_key;
+        printf("get execution id by publisher.c.\n");
+    }
+    else {
+        printf("execution id is given as: %s\n", exe_id);
+    }
 
-    strcpy(execution_id, db_key);  // execution_id is defined in publisher.h
+    strcpy(execution_id, exe_id);  // execution_id is defined in publisher.h
     strcpy(server_name, URL);      // server_name is defined in excess_main.h
     strcat(server_name, "/executions/");
     strcat(server_name, execution_id);
