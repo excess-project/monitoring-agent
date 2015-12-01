@@ -25,7 +25,7 @@ export PBS_ACCOUNT=$9
 
 DATE="$( date +'%c' )"
 
-#echo ${DATE}-${PBS_USER}-${PBS_JOBID}":---------start epilogue---------" >> /var/log/hpcmeasure/epilogue.log
+echo ${DATE}-${PBS_USER}-${PBS_JOBID} ":---------start epilogue---------" >> /var/log/hpcmeasure/epilogue.log
 #check the node
 HOST="$( hostname )"
 if [ -z "$HOST" ]; then
@@ -34,7 +34,7 @@ if [ -z "$HOST" ]; then
 fi
 
 ii=0
-echo "PBS_NODEFILE:"$PBS_NODEFILE
+echo "PBS_NODEFILE:"$PBS_NODEFILE >> /var/log/hpcmeasure/epilogue.log
 NODE_LIST=$(cat $PBS_NODEFILE|uniq)
 for HOST in $NODE_LIST
 do
@@ -43,6 +43,8 @@ case "$HOST" in
  "node01.excess-project.eu" ) NODE=node01
  ;;
  "node02.excess-project.eu" ) NODE=node02
+ ;;
+ "node03.excess-project.eu" ) NODE=node03
  ;;
 esac
 
@@ -71,11 +73,13 @@ POWER_AC_RAW_PATH=/raw_data/ac/${NODE}/
 POWER_RAW_PATH=/raw_data/${NODE}/
 HOME_USER=/nas_home/${PBS_USER}
 CONFIG_AC_INI=$HPCMEASURE_PATH/profiles/config_${NODE}_ac.ini
+HPC_CONFIG_DIR=$HPCMEASURE_PATH/profiles
 
 MF_USER_TOP_PATH=${HOME_USER}/.mf
 DBKEY_PATH=${MF_USER_TOP_PATH}/dbkey
 DBKEY_FILE_PATH=${DBKEY_PATH}/${PBS_JOBID}
 PWM_PATH=${HOME_USER}/.pwm/
+PWM_SAVE_DATA_SWITCH=save_raw_data
 PWM_RAW_DATA_SWITCH=copy_raw_data
 PWM_RAW_DATA_MFSWITCH=send_data_to_mf
 
@@ -91,7 +95,32 @@ PWM_RAW_DATA_MFSWITCH_ON=0
 PWM_RAW_DATA_SWITCH_ON=0
 MF_SERVICE_SWITCH_ON=0
 
+if [ ! -z "$POWER_LOG_PATH" ]; then
+  ssh addi "mkdir ${POWER_LOG_PATH} -p"
+  ssh addi "chown -R power:ws ${POWER_LOG_PATH} "
+  ssh addi "chmod ug+rwx -R ${POWER_LOG_PATH} "
+  ssh addi "chmod g+s -R ${POWER_LOG_PATH} "
+fi
+if [ ! -z "$POWER_RAW_PATH" ]; then
+  ssh addi "mkdir ${POWER_RAW_PATH} -p"
+  ssh addi "chown -R power:ws ${POWER_RAW_PATH} "
+  ssh addi "chmod ug+rwx -R ${POWER_RAW_PATH} "
+  ssh addi "chmod g+s -R ${POWER_RAW_PATH} "
+fi
+if [ ! -z "$POWER_AC_LOG_PATH" ]; then
+ ssh addi "mkdir ${POWER_AC_LOG_PATH} -p"
+ ssh addi "chown -R power:ws ${POWER_AC_LOG_PATH} "
+ ssh addi "chmod ug+rwx -R ${POWER_AC_LOG_PATH} "
+ ssh addi "chmod g+s -R ${POWER_AC_LOG_PATH} "
+fi
+if [ ! -z "$POWER_AC_RAW_PATH" ]; then
+ ssh addi "mkdir ${POWER_AC_RAW_PATH} -p"
+ ssh addi "chown -R power:ws ${POWER_AC_RAW_PATH} "
+ ssh addi "chmod ug+rwx -R ${POWER_AC_RAW_PATH} "
+ ssh addi "chmod g+s -R ${POWER_AC_RAW_PATH} "
+fi
 
+PWM_SAVE_DATA_SWITCH_ON_PATH=${PWM_PATH}/${NODE}/${PWM_SAVE_DATA_SWITCH}
 PWM_RAW_DATA_SWITCH_ON_PATH=${PWM_PATH}/${NODE}/${PWM_RAW_DATA_SWITCH}
 PWM_RAW_DATA_MFSWITCH_ON_PATH=${PWM_PATH}/${NODE}/${PWM_RAW_DATA_MFSWITCH}
 #check whether the power emasurement is on
@@ -114,17 +143,24 @@ if [ -f "${PWM_RAW_DATA_MFSWITCH_ON_PATH}" ]; then
 else
   PWM_RAW_DATA_MFSWITCH_ON=0
 fi
+if [ -f "${PWM_SAVE_DATA_SWITCH_ON_PATH}" ]; then
+     PWM_SAVE_DATA_SWITCH_ON=1
+  else
+     PWM_SAVE_DATA_SWITCH_ON=0
+fi
+
 
 if [ $ii -eq 1 ]; then
   DBKEY=$(cat ${DBKEY_FILE_PATH})
   if [ ${#DBKEY} -eq 0  ]; then
-  # echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Warning!!! in /var/spool/torque/mom_priv/epilogue: DBKEY could not be obtained" >> $LOG_FILE
+    echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Warning!!! in /var/spool/torque/mom_priv/epilogue: DBKEY could not be obtained" >> $LOG_FILE
     DBKEY=0
   fi
-
-  #delete file with the unique dbkey
-  if [ -f "$DBKEY_FILE_PATH" ]; then
-    rm ${DBKEY_FILE_PATH} -f
+  if [ ${MF_SERVICE_SWITCH_ON} -eq 1  ]; then
+    #delete file with the unique dbkey
+    if [ -f "$DBKEY_FILE_PATH" ]; then
+      rm ${DBKEY_FILE_PATH} -f
+    fi
   fi
 fi
 
@@ -138,18 +174,21 @@ if [ ! -f "$HPC_COMP_STOP_SCRIPT" ]; then
 fi
 
 
-if [ ! -f "$MF_STOP_SCRIPT" ]; then
-  echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in /var/spool/torque/mom_priv/epilogue: file $MF_STOP_SCRIPT is not present" >> $LOG_FILE 
-  exit 10
-fi
 if [ ${MF_SERVICE_SWITCH_ON} -eq 1 ]; then
-  echo ${DATE}-${PBS_USER}-${PBS_JOBID}":run the script ${MF_STOP_SCRIPT} on node ${NODE} with DBKEY ${DBKEY} and job id ${PBS_JOBID}" >> $LOG_FILE
-  ${MF_STOP_SCRIPT} ${DBKEY} ${NODE} ${PBS_JOBID}
+   if [ ! -f "$MF_STOP_SCRIPT" ]; then
+     echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in /var/spool/torque/mom_priv/epilogue: file $MF_STOP_SCRIPT is not present" >> $LOG_FILE 
+   else
+     echo ${DATE}-${PBS_USER}-${PBS_JOBID}":run the script ${MF_STOP_SCRIPT} on node ${NODE} with DBKEY ${DBKEY} and job id ${PBS_JOBID}" >> $LOG_FILE
+     ssh ${NODE}  "${MF_STOP_SCRIPT} ${DBKEY} ${NODE} ${PBS_JOBID} &"
+     echo ${DATE}-${PBS_USER}-${PBS_JOBID}": script ${MF_STOP_SCRIPT} is stoped on node ${NODE} with DBKEY ${DBKEY} and job id ${PBS_JOBID}" >> $LOG_FILE
+   fi
 fi
 
 
 
 if [ ${PWM_RAW_DATA_SWITCH_ON} -eq 1 ]; then
+
+
  echo "stop power measurement on the node ${NODE}" 
  #wait one second and go further
  if [ $ii -eq 1 ]; then 
@@ -166,14 +205,15 @@ if [ ${PWM_RAW_DATA_SWITCH_ON} -eq 1 ]; then
     exit 1
   fi
 
+if [ ${PWM_SAVE_DATA_SWITCH_ON} -eq 1 ]; then
   PWM_PATH=/nas_home/${PBS_USER}/pwm/
   if [ ! -d "$PWM_PATH" ]; then
-    mkdir ${PWM_PATH}
+    mkdir ${PWM_PATH} -p
     chown ${PBS_USER}:${PBS_USER} ${PWM_PATH}
   fi
   PWM_NODE_PATH=${PWM_PATH}/${NODE}
   if [ ! -d "$PWM_NODE_PATH" ]; then
-    mkdir ${PWM_NODE_PATH}
+    mkdir ${PWM_NODE_PATH} -p
     chown ${PBS_USER}:${PBS_USER} ${PWM_NODE_PATH}
   fi
   PWM_USER_PATH=${PWM_NODE_PATH}/${PBS_JOBID}
@@ -182,17 +222,26 @@ if [ ${PWM_RAW_DATA_SWITCH_ON} -eq 1 ]; then
     exit 11
   fi
 
-  mkdir ${PWM_USER_PATH}
+  mkdir ${PWM_USER_PATH} -p
   chown ${PBS_USER}:${PBS_USER} ${PWM_NODE_PATH}
   chown -R ${PBS_USER}:${PBS_USER} ${PWM_USER_PATH}
 # >&2 echo "start scp addi"
   if [ -f "$CONFIG_AC_INI" ]; then
-#    echo ${DATE}-${PBS_USER}-${PBS_JOBID}":COPY AC POWER DATA:"  {POWER_AC_LOG_PATH} " -> " ${PWM_USER_PATH}/ 
-    scp addi:${POWER_AC_LOG_PATH}/* ${PWM_USER_PATH}/
-    ssh addi "rm ${POWER_AC_LOG_PATH}/* -f"
-    ssh addi "rm ${POWER_AC_RAW_PATH}/* -f"
-  fi
-  scp addi:${POWER_LOG_PATH}/* ${PWM_USER_PATH}/
+#    echo ${DATE}-${PBS_USER}-${PBS_JOBID}":COPY AC POWER DATA:"  {POWER_AC_LOG_PATH} " -> " ${PWM_USER_PATH}/
+    for ch_num in `seq 24 31`;do
+      scp addi:${POWER_AC_LOG_PATH}/PChannel_${ch_num}_*.dat ${PWM_USER_PATH}/ &> /dev/null
+      ssh addi "rm ${POWER_AC_LOG_PATH}/PChannel_${ch_num}_*.dat"  &> /dev/null 
+    done
+    scp addi:${POWER_AC_LOG_PATH}/Time_*.dat ${PWM_USER_PATH}/ &> /dev/null
+    ssh addi "rm ${POWER_AC_LOG_PATH}/Time_*.dat" &> /dev/null
+ fi
+  for ch_num in `seq 0 23`;do
+    scp addi:${POWER_LOG_PATH}/Channel_${ch_num}_*.dat ${PWM_USER_PATH}/  &> /dev/null 
+    ssh addi "rm ${POWER_LOG_PATH}/Channel_${ch_num}_*.dat"  &> /dev/null 
+  done
+  scp addi:${POWER_LOG_PATH}/Time_*.dat ${PWM_USER_PATH}/ &> /dev/null
+  ssh addi "rm ${POWER_LOG_PATH}/Time_*.dat"  &> /dev/null 
+  cp -r ${HPC_CONFIG_DIR} ${PWM_USER_PATH}/
 
 #   scp addi:${POWER_RAW_PATH}/* ${PWM_USER_PATH}/
 # >&2 echo "end scp addi"
@@ -206,16 +255,24 @@ if [ ${PWM_RAW_DATA_SWITCH_ON} -eq 1 ]; then
     echo ${DATE}-${PBS_USER}-${PBS_JOBID}":Error in /var/spool/torque/mom_priv/epilogue variable POWER_LOG_PATH is not defined: " >> $LOG_FILE
     exit 11
   fi
-
-  ssh addi "rm ${POWER_LOG_PATH}/* -f"
-  ssh addi "rm ${POWER_RAW_PATH}/* -f"
   echo "Use the following command to unpack the raw power data:"
   echo "tar xfz  ${PWM_NODE_PATH}/${PWM_ARCH}"
+  echo "To deactivate the storage of the power results for node $NODE on the disk run the following command:"
+  echo "rm ${PWM_SAVE_DATA_SWITCH_ON_PATH}"
+
+else
+  echo "To activate the storage of the power results for node $NODE on the disk run the following command:"
+  echo "touch ${PWM_SAVE_DATA_SWITCH_ON_PATH}"
+  echo "To deactivate the power measurement on node $NODE run the following command:"
+  echo "rm ${PWM_RAW_DATA_SWITCH_ON_PATH}"
+fi
+
   echo "To deactivate the power measurement on node $NODE run the following command:"
   echo "rm ${PWM_RAW_DATA_SWITCH_ON_PATH}"
 
 else
-  echo "To activate the power measurement on the node $NODE  run the following command: touch ${PWM_RAW_DATA_SWITCH_ON_PATH}"
+  echo "To activate the power measurement on the node $NODE  run the following command:"
+  echo "touch ${PWM_RAW_DATA_SWITCH_ON_PATH}"
 fi
 if [ ${MF_SERVICE_SWITCH_ON} -eq 1 ]; then
    echo "To deactivate the monitoring framework client on node $NODE run the following command:"
@@ -233,6 +290,8 @@ else
    echo "touch ${PWM_RAW_DATA_MFSWITCH_ON_PATH}"
 fi
 
+#set ondemand governor
+/sbin/use_cpufreq -c 3
 done
 
 
