@@ -48,4 +48,10 @@ extern char *pwd;
  */
 int getFQDN(char *fqdn);
 
+/**
+ * @get the cpuinfo, fangli
+ *
+ */
+void native_cpuid(unsigned int *eax, unsigned int *ebx, unsigned int *ecx, unsigned int *edx);
+
 #endif /* EXCESS_H_ */

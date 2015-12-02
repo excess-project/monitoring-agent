@@ -17,8 +17,9 @@ PUBLISHER_LIB=-L$(CORE_LIBS) -lpublisher
 all: mf_test
 
 prepare:
-	$(MAKE) -C $(BASE)/../.. lib
-
+	$(MAKE) -C $(BASE)/../../ lib
+	cp -rf $(BASE)/../../lib $(BASE)/
+ 
 mf_test: prepare
 	$(CC) mf_test.c -o $@ $(CFLAGS) $(LFLAGS)
 

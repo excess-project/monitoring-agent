@@ -24,6 +24,7 @@
 
 int NUM_THREADS;
 
+
 /**
  * @brief Array containing the timings of the plug-ins.
  *

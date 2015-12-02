@@ -40,6 +40,10 @@ static char *csv;
 
 static char* to_csv();
 static void my_exit_handler();
+//fangli
+void native_cpuid(unsigned int *eax, unsigned int *ebx, unsigned int *ecx, unsigned int *edx);
+int model; //this is cpu_model
+//fangli
 
 int
 main(int argc, char** argv)
@@ -59,6 +63,16 @@ main(int argc, char** argv)
     sigIntHandler.sa_flags = 0;
     sigaction(SIGINT, &sigIntHandler, NULL);
 
+    //fangli
+    unsigned eax, ebx, ecx, edx;
+    eax = 1; /* processor info and feature bits */
+    native_cpuid(&eax, &ebx, &ecx, &edx);
+    model = (eax >> 4) & 0xF;
+    printf("model %d\n", model);
+    //if model=14, it is node01, node02
+    //if model=15, it is node03
+
+    //fangli
     /***************************************************************************
      * Monitoring
      **************************************************************************/
@@ -70,7 +84,7 @@ main(int argc, char** argv)
     ++argv;
     --argc;
     do {
-	   get_available_events(rapl, profile_time, argv, argc);
+        get_available_events(rapl, profile_time, argv, argc, model);
         puts(to_csv(rapl));
     } while (1);
 
@@ -106,3 +120,14 @@ to_csv(RAPL_Plugin *rapl)
 
     return csv;
 }
+//fangli
+void native_cpuid(unsigned int *eax, unsigned int *ebx, unsigned int *ecx, unsigned int *edx)
+{
+        asm volatile("cpuid"
+            : "=a" (*eax),
+              "=b" (*ebx),
+              "=c" (*ecx),
+              "=d" (*edx)
+            : "0" (*eax), "2" (*ecx));
+}
+//fangli

@@ -27,7 +27,7 @@
  * @brief Initializes the monitoring; has to be called in advance. On success,
  *        the function call returns the current execution id.
  */
-char* mf_api_initialize(const char* URL);
+char* mf_api_initialize(const char* URL, char* exe_id);
 
 /**
  * @brief Starts the monitoring of given external function.

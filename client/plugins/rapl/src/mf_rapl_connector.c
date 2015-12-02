@@ -57,9 +57,9 @@ is_rapl_initialized()
     return is_initialized;
 }
 
-
+//fangli changed get_available_events
 int
-get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char **named_events, size_t num_events)
+get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char **named_events, size_t num_events, int cpu_model)
 {
     long long before_time, after_time;
     double elapsed_time;
@@ -114,6 +114,20 @@ get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char *
         rapl->values[i] = ((double) values[i] / 1.0e9) / elapsed_time;
     }
 
+    /* fangli
+    if model=14, it is node01, node02 (Ivy bridge processor)
+    if model=15, it is node03 (Hasswel processor)
+    for Hasswel processor, DRAM_ENERGY need to be divided by 15.3 (for unit difference) */
+    for (i = 0; i < num_events; ++i) {
+        if (strcmp (rapl->events[i], "DRAM_ENERGY:PACKAGE0")== 0 || strcmp (rapl->events[i], "DRAM_ENERGY:PACKAGE1")== 0) {
+            if(cpu_model == 15) {
+                rapl->values[i] = ((double) rapl->values[i] / 15.3);
+            }
+            else {
+                printf("cpu_model is not Hasswel\n");
+            }
+        }
+    } //fangli
     retval = PAPI_cleanup_eventset(EventSet);
     if (retval != PAPI_OK) {
         return -1;
