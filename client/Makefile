@@ -5,7 +5,7 @@ CC = /usr/bin/gcc
 
 COPT_SO = $(CFLAGS) -fpic
 
-REVISION = 0.1.6
+REVISION = 0.1.7
 INSTALL_DIR = ../mf/$(REVISION)
 INSTALL_PLUGINS_DIR = $(INSTALL_DIR)/bin/plugins
 INSTALL_INCLUDES_DIR = $(INSTALL_DIR)/include
