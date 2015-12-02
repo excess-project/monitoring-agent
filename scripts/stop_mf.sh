@@ -69,9 +69,23 @@ if [ -f "${MF_IOSTAT_PIDFILE}" ]; then
   echo $DATE":stop_mf.sh: The iostat process is stopped (PID="$MF_IOSTAT_PID")" >> $LOG_FILE
 fi
 
+#kill the NVIDIA plugin
+if [ -f "${MF_NVIDIA_PIDFILE}" ]; then
+  KILL_SIGNAL=$( kill $MF_NVIDIA_PID )
+  wait $MF_NVIDIA_PID &>> /dev/null
+  if [[ "${KILL_SIGNAL}" -ne "0" ]]; then
+    echo $DATE":Error in stop_mf.sh: KILL_SIGNAL for nvidia plug-in is not handled" >> $LOG_FILE
+  else
+    echo $KILL_SIGNAL >> $LOG_FILE
+  fi
+  killall nvidia-smi
+  echo $DATE":stop_mf.sh: The nvidia process is stopped (PID="$MF_NVIDIA_PID")" >> $LOG_FILE
+fi
+
 echo $DATE":---end ---" >> $LOG_FILE
 
 rm ${MF_AGENT_PIDFILE} -rf
 rm ${MF_IOSTAT_PIDFILE} -rf
+rm ${MF_NVIDIA_PIDFILE} -rf
 
 exit 0

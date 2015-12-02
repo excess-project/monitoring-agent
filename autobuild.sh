@@ -8,7 +8,7 @@ Default_path=`pwd`
 wget http://icl.cs.utk.edu/projects/papi/downloads/papi-5.4.0.tar.gz
 tar zxvf papi-5.4.0.tar.gz
 cd papi-5.4.0/src
-./configure --prefix=`pwd`/../../binaries/papi --with-components="rapl coretemp"
+./configure --prefix=`pwd`/../../binaries/papi --with-components="rapl coretemp infiniband"
 make
 make install all
 cd $Default_path

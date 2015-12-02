@@ -1,6 +1,6 @@
-## Copyright 2014 University of Stuttgart
+## Copyright 2014,2015 University of Stuttgart
 ## Authors: Anthony Sulistio, Nico Eichhorn, Dennis Hoppe
-## Last Update: 17/02/2015
+
 CC = /usr/bin/gcc
 
 COPT_SO = $(CFLAGS) -fpic
@@ -8,6 +8,8 @@ COPT_SO = $(CFLAGS) -fpic
 REVISION = 0.1.6
 INSTALL_DIR = ../mf/$(REVISION)
 INSTALL_PLUGINS_DIR = $(INSTALL_DIR)/bin/plugins
+INSTALL_INCLUDES_DIR = $(INSTALL_DIR)/include
+INSTALL_LIB_DIR = $(INSTALL_DIR)/lib
 
 BINARIES = ../binaries
 PLUGIN_DIR = plugins
@@ -108,10 +110,11 @@ install: prepare-install copy_tasks
 
 prepare-install: clean-install
 	@mkdir -p $(INSTALL_DIR)
-	@mkdir -p $(INSTALL_DIR)/bin/plugins
+	@mkdir -p $(INSTALL_PLUGINS_DIR)
 	@mkdir -p $(INSTALL_DIR)/lib
+	@mkdir -p $(INSTALL_INCLUDES_DIR)
 
-copy_tasks: copy_ini copy_scripts copy_plugins_to_install copy_agent copy_likwid copy_libs
+copy_tasks: copy_ini copy_scripts copy_plugins_to_install copy_agent copy_likwid copy_libs copy_includes
 
 copy_ini:
 	cp -f ../mf_config.ini $(INSTALL_DIR)
@@ -121,12 +124,18 @@ copy_scripts:
 	sed -i "s/REV/${REVISION}/g" $(INSTALL_DIR)/scripts/setenv.sh
 
 copy_plugins_to_install:
-	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(INSTALL_PLUGINS_DIR)
+	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(INSTALL_PLUGINS_DIR)/
-	cp -f $(PLUGIN_DIR)/iostat/iostat.* $(INSTALL_PLUGINS_DIR)/
+	#cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/iostat-shell/* $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/nvidia-shell/* $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(INSTALL_PLUGINS_DIR)/
+
+copy_includes:
+	cp -f api/src/mf_api.h $(INSTALL_INCLUDES_DIR)
 
 copy_agent:
 	cp -f $(OUTPUT) $(INSTALL_DIR)/bin
@@ -142,6 +151,8 @@ copy_libs:
 copy_likwid:
 	cp -r $(LIKWID_DIR) $(INSTALL_DIR)/likwid
 
+# libs=/home/hopped/hlrs/codebase/excess/gitlab/monitoring-framework-client/mf/0.1.3/lib
+
 #
 #
 # PLUG-IN MANAGEMENT
@@ -153,14 +164,18 @@ plugins:
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat DEBUG=$(DEBUG)
 	#$(MAKE) -C $(PLUGIN_DIR)/iostat DEBUG=$(DEBUG)
+	$(MAKE) -C $(PLUGIN_DIR)/infiniband DEBUG=$(DEBUG)
 
 copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(PLUGIN_DEST)/
-	cp -f $(PLUGIN_DIR)/iostat/iostat.* $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(PLUGIN_DEST)/
+	#cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/iostat-shell/* $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/nvidia-shell/* $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(PLUGIN_DEST)/
 
 #
 # CLEAN-UP
@@ -177,6 +192,7 @@ clean-all:
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo clean
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat clean
 	#$(MAKE) -C $(PLUGIN_DIR)/iostat clean
+	$(MAKE) -C $(PLUGIN_DIR)/infiniband clean
 
 clean-install:
 	rm -rf $(INSTALL_DIR)
