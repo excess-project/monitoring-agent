@@ -1,38 +1,23 @@
 /*
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
+ * Copyright (C) 2014-2015 University of Stuttgart
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
-#include <pthread.h>
-#include <stdlib.h>
-
-#include <sys/stat.h>
 #include <netdb.h>
+#include <pthread.h>
+#include <publisher.h>
+#include <stdlib.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
-#include "util.h"
-#include "thread_handler.h"
 #include "excess_main.h"
+#include "thread_handler.h"
+#include "util.h"
 
-#include <publisher.h>
 
-// configuration
 char* confFile;
-
-/**
- * @brief timestamp for config file
- */
 struct timespec timeStampFile = { 0, 0 };
 
 int hostChanged = 0;
@@ -88,7 +73,7 @@ int prepare() {
 
 	char *hostname = (char*) malloc(sizeof(char) * 256);
     char *username = getenv("USER");
-    
+
     if (username == NULL) {
         username = malloc(sizeof(char) * 12);
         strcpy(username, "default");
