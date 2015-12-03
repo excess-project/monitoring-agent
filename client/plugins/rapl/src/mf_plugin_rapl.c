@@ -23,7 +23,8 @@
 
 struct timespec profile_time = { 0, 0 };
 mfp_data *conf_data;
-int model; //fangli, this is cpu_model
+int cpu_model;
+int is_available = 0;
 
 char* to_JSON(RAPL_Plugin *rapl)
 {
@@ -44,14 +45,14 @@ char* to_JSON(RAPL_Plugin *rapl)
 static metric
 mf_plugin_rapl_hook()
 {
-    if (running) {
+    if (running && (is_available == 1)) {
         metric resMetric = malloc(sizeof(metric_t));
         resMetric->msg = malloc(4096 * sizeof(char));
 
         int clk_id = CLOCK_REALTIME;
         clock_gettime(clk_id, &resMetric->timestamp);
         RAPL_Plugin *rapl = malloc(sizeof(RAPL_Plugin));
-        get_available_events(rapl, profile_time,conf_data->keys, conf_data->size, model);
+        get_available_events(rapl, profile_time,conf_data->keys, conf_data->size, cpu_model);
         strcpy(resMetric->msg, to_JSON(rapl));
         free(rapl);
 
@@ -64,15 +65,26 @@ mf_plugin_rapl_hook()
 extern int
 init_mf_plugin_rapl(PluginManager *pm)
 {
-    //fangli
+    is_available = get_rapl_component_id();
+
+    /*
+     * processor info and feature bits
+     */
     unsigned eax, ebx, ecx, edx;
-    eax = 1; /* processor info and feature bits */
+    eax = 1;
     native_cpuid(&eax, &ebx, &ecx, &edx);
-    model = (eax >> 4) & 0xF;
-    printf("model %d\n", model);
-    //if model=14, it is node01, node02
-    //if model=15, it is node03
-    //fangli
+
+    /*
+     * if (cpu_model == 14) {
+     *   then we have detected either node01 or node02
+     * }
+     *
+     * if (cpu_model ==15) {
+     *   then it is EXCESS cluster node node03
+     * }
+     */
+    cpu_model = (eax >> 4) & 0xF;
+
     PluginManager_register_hook(pm, "mf_plugin_rapl", mf_plugin_rapl_hook);
     conf_data =  malloc(sizeof(mfp_data));
 

@@ -149,6 +149,9 @@ void removeSpace(char *str) {
 }
 
 int prepSend(metric data) {
+	if (!data) {
+		return 0;
+	}
 
 	char msg[4096] = "";
 	long double timeStamp = data->timestamp.tv_sec

@@ -32,7 +32,8 @@
 #define SUCCESS 1
 #define FAILURE 0
 
-static int is_initialized;
+static int is_initialized = 0;
+static int is_available = -1;
 static int is_rapl_initialized();
 static void initialize_PAPI();
 
@@ -48,7 +49,43 @@ initialize_PAPI()
     if (retval != PAPI_VER_CURRENT) {
         char *error = PAPI_strerror(retval);
         log_error("RAPL:: - PAPI_library_init: %s", error);
+        is_initialized = 0;
     }
+
+    is_initialized = 1;
+}
+
+int
+get_rapl_component_id()
+{
+    int numcmp, cid;
+    const PAPI_component_info_t *cmpinfo = NULL;
+
+    if (!is_rapl_initialized()) {
+        initialize_PAPI();
+    }
+
+    if (is_available > -1) {
+        return is_available;
+    }
+
+    numcmp = PAPI_num_components();
+    for (cid = 0; cid < numcmp; cid++) {
+        cmpinfo = PAPI_get_component_info(cid);
+        if (strstr(cmpinfo->name, "rapl")) {
+            if (cmpinfo->disabled) {
+                is_available = 0;
+                log_info("RAPL >> component is DISABLED for this CPU (%s)", cmpinfo->name);
+            } else {
+                is_available = 1;
+                log_info("RAPL >> component is ENABLED on this the CPU (%s)", cmpinfo->name);
+            }
+            return is_available;
+        }
+    }
+
+    is_available = 0;
+    return is_available;
 }
 
 static int
@@ -140,6 +177,7 @@ get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char *
 
     return num_events;
 }
+
 void
 mf_rapl_shutdown()
 {
