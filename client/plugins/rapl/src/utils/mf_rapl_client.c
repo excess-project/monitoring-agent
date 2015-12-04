@@ -33,9 +33,7 @@ static void my_exit_handler();
 int
 main(int argc, char** argv)
 {
-    RAPL_Plugin *rapl = malloc(sizeof(RAPL_Plugin));
     csv = malloc(4096 * sizeof(char));
-    //int model = mf_rapl_get_cpu_model();
 
     if (argc <= 1) {
         log_warn("No events given to measure: %d", argc);
@@ -58,10 +56,24 @@ main(int argc, char** argv)
 
     ++argv;
     --argc;
-    do {
-        //mf_rapl_get_available_events(rapl, argv, argc, model);
-        puts(to_csv(rapl));
 
+    /*
+     * initialize RAPL plugin
+     */
+    RAPL_Plugin *monitoring_data = malloc(sizeof(RAPL_Plugin));
+    mf_rapl_init(monitoring_data, argv, argc);
+
+    do {
+        /*
+         * sampling
+         */
+        mf_rapl_sample(monitoring_data);
+
+        puts(to_csv(monitoring_data));
+
+        /*
+         * sleep for a given time until next sample
+         */
         nanosleep(&profile_time, NULL);
     } while (1);
 
