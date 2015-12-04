@@ -44,6 +44,10 @@ struct RAPL_Plugin_t
     int num_events;
 };
 
+int mf_rapl_init(RAPL_Plugin *data, char **rapl_events, size_t num_events);
+int mf_rapl_sample(RAPL_Plugin *data);
+char* mf_rapl_to_json(RAPL_Plugin *data);
+
 /** @brief Gets all available events
  *
  * This function profiles the system for the given time interval (cf. parameter
@@ -59,13 +63,14 @@ struct RAPL_Plugin_t
  *
  * @return number of events available.
  */
-int get_available_events(
+ /*
+int mf_rapl_get_available_events(
     RAPL_Plugin *rapl,
-    struct timespec profile_interval,
     char **named_events,
     size_t num_events,
     int cpu_model
 );
+*/
 
 /** @brief Checks if the RAPL component is available and enabled
  *
@@ -74,7 +79,7 @@ int get_available_events(
  *
  * @return 1 if RAPL component is enabled; 0 otherwise.
  */
-int is_component_enabled();
+int mf_rapl_is_enabled();
 
 /** @brief [brief description]
  *
@@ -83,7 +88,7 @@ int is_component_enabled();
  *
  * @return CPU model id, e.g. 15 (= Haswell)
  */
-int get_cpu_model();
+//int mf_rapl_get_cpu_model();
 
 /** @brief Shuts down RAPL
  *

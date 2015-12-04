@@ -10,6 +10,7 @@
 #define _GNU_SOURCE
 #endif
 
+#include <pthread.h> /* nanosleep */
 #include <stdlib.h> /* malloc, exit, free, ... */
 
 /* monitoring-related includes */
@@ -34,7 +35,7 @@ main(int argc, char** argv)
 {
     RAPL_Plugin *rapl = malloc(sizeof(RAPL_Plugin));
     csv = malloc(4096 * sizeof(char));
-    int model = get_cpu_model();
+    //int model = mf_rapl_get_cpu_model();
 
     if (argc <= 1) {
         log_warn("No events given to measure: %d", argc);
@@ -58,8 +59,10 @@ main(int argc, char** argv)
     ++argv;
     --argc;
     do {
-        get_available_events(rapl, profile_time, argv, argc, model);
+        //mf_rapl_get_available_events(rapl, argv, argc, model);
         puts(to_csv(rapl));
+
+        nanosleep(&profile_time, NULL);
     } while (1);
 
     free(csv);

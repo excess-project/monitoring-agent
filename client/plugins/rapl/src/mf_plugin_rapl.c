@@ -12,30 +12,51 @@
 #include "mf_rapl_connector.h" /* i.a. RAPL_Plugin */
 #include "plugin_manager.h" /* mf_plugin_rapl_hook */
 
-struct timespec profile_time = { 0, 0 };
-mfp_data *conf_data;
-int cpu_model;
-int is_available = 0;
-
 /*******************************************************************************
- * to_JSON
+ * Variable Declarations
  ******************************************************************************/
 
-char* to_JSON(RAPL_Plugin *rapl)
+mfp_data *conf_data;
+int is_available = 0;
+RAPL_Plugin *monitoring_data = NULL;
+
+/*******************************************************************************
+ * Forward Declarations
+ ******************************************************************************/
+
+static metric mf_plugin_rapl_hook();
+
+/*******************************************************************************
+ * init_mf_plugin_rapl
+ ******************************************************************************/
+
+extern int
+init_mf_plugin_rapl(PluginManager *pm)
 {
-    int i;
-    char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"energy\"");
-
-    char *single_metric = malloc(512 * sizeof(char));
-    for (i = 0; i < rapl->num_events; ++i) {
-        sprintf(single_metric, ",\"%s\":%.4f", rapl->events[i], rapl->values[i]);
-        strcat(json, single_metric);
+    /*
+     * check if RAPL component is enabled
+     */
+    is_available = mf_rapl_is_enabled();
+    if (is_available == 0) {
+        return 0;
     }
-    free(single_metric);
 
-    return json;
+    /*
+     * read configuration parameters related to RAPL (i.e., mf_config.ini)
+     */
+    PluginManager_register_hook(pm, "mf_plugin_rapl", mf_plugin_rapl_hook);
+    conf_data =  malloc(sizeof(mfp_data));
+    mfp_get_data_filtered_by_value("mf_plugin_rapl", conf_data, "on");
+
+    /*
+     * initialize RAPL plug-in including registering metrics
+     */
+    monitoring_data = malloc(sizeof(RAPL_Plugin));
+    mf_rapl_init(monitoring_data, conf_data->keys, conf_data->size);
+
+    return 1;
 }
+
 
 /*******************************************************************************
  * mf_plugin_rapl_hook
@@ -50,48 +71,13 @@ mf_plugin_rapl_hook()
 
         int clk_id = CLOCK_REALTIME;
         clock_gettime(clk_id, &resMetric->timestamp);
-        RAPL_Plugin *rapl = malloc(sizeof(RAPL_Plugin));
-        get_available_events(rapl, profile_time,conf_data->keys, conf_data->size, cpu_model);
-        strcpy(resMetric->msg, to_JSON(rapl));
-        free(rapl);
+
+        mf_rapl_sample(monitoring_data);
+
+        strcpy(resMetric->msg, mf_rapl_to_json(monitoring_data));
 
         return resMetric;
     } else {
         return NULL;
     }
-}
-
-/*******************************************************************************
- * init_mf_plugin_rapl
- ******************************************************************************/
-
-extern int
-init_mf_plugin_rapl(PluginManager *pm)
-{
-    is_available = is_component_enabled();
-    cpu_model = get_cpu_model();
-
-    /*
-     * read configuration parameters related to RAPL (i.e., mf_config.ini)
-     */
-    PluginManager_register_hook(pm, "mf_plugin_rapl", mf_plugin_rapl_hook);
-    conf_data =  malloc(sizeof(mfp_data));
-    mfp_get_data_filtered_by_value("mf_plugin_rapl", conf_data, "on");
-
-    /*
-     * set interval for measuring data
-     */
-    char* value = mfp_get_value("timings", "mf_plugin_rapl");
-    long timing = atoi(value);
-    timing = timing / 2.0;
-
-    if (timing >= 10e8) {
-        profile_time.tv_sec = timing / 10e8;
-        profile_time.tv_nsec = timing % (long) 10e8;
-    } else {
-        profile_time.tv_sec = 0;
-        profile_time.tv_nsec = timing;
-    }
-
-    return 1;
 }
