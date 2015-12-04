@@ -1,17 +1,9 @@
 /*
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
+ * Copyright (C) 2014-2015 University of Stuttgart
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 #ifndef _GNU_SOURCE
@@ -29,8 +21,9 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "mf_rapl_connector.h"
+/* monitoring-related includes */
 #include "mf_debug.h"
+#include "mf_rapl_connector.h"
 
 static char *csv;
 
@@ -40,17 +33,13 @@ static char *csv;
 
 static char* to_csv();
 static void my_exit_handler();
-//fangli
-void native_cpuid(unsigned int *eax, unsigned int *ebx, unsigned int *ecx, unsigned int *edx);
-int model; //this is cpu_model
-//fangli
 
 int
 main(int argc, char** argv)
 {
     RAPL_Plugin *rapl = malloc(sizeof(RAPL_Plugin));
     csv = malloc(4096 * sizeof(char));
-
+    int model = get_cpu_model();
 
     if (argc <= 1) {
         log_warn("No events given to measure: %d", argc);
@@ -63,16 +52,6 @@ main(int argc, char** argv)
     sigIntHandler.sa_flags = 0;
     sigaction(SIGINT, &sigIntHandler, NULL);
 
-    //fangli
-    unsigned eax, ebx, ecx, edx;
-    eax = 1; /* processor info and feature bits */
-    native_cpuid(&eax, &ebx, &ecx, &edx);
-    model = (eax >> 4) & 0xF;
-    printf("model %d\n", model);
-    //if model=14, it is node01, node02
-    //if model=15, it is node03
-
-    //fangli
     /***************************************************************************
      * Monitoring
      **************************************************************************/
@@ -120,14 +99,3 @@ to_csv(RAPL_Plugin *rapl)
 
     return csv;
 }
-//fangli
-void native_cpuid(unsigned int *eax, unsigned int *ebx, unsigned int *ecx, unsigned int *edx)
-{
-        asm volatile("cpuid"
-            : "=a" (*eax),
-              "=b" (*ebx),
-              "=c" (*ecx),
-              "=d" (*edx)
-            : "0" (*eax), "2" (*ecx));
-}
-//fangli

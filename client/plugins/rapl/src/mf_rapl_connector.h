@@ -1,29 +1,33 @@
 /*
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
+ * Copyright (C) 2014-2015 University of Stuttgart
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-#ifndef RAPL_PLUGIN_H_
-#define RAPL_PLUGIN_H_
+
+#ifndef _RAPL_PLUGIN_H
+#define _RAPL_PLUGIN_H
 
 #include <papi.h>
 #include <time.h>
 
+/*
+ * @brief defines the maximum number of available RAPL events.
+ *
+ * The variable is used to initialize the RAPL data structure.
+ */
 #define MAX_RAPL_EVENTS 64
 
+/** @brief data structure to store RAPL monitoring data
+ */
 typedef struct RAPL_Plugin_t RAPL_Plugin;
 
-
+/** @brief data structure to store RAPL monitoring data
+ *
+ * The data structure holds the metric names including the correspond
+ * measured values. Moreover, the number of events measured is stored.
+ */
 struct RAPL_Plugin_t
 {
     char *events[PAPI_MAX_PRESET_EVENTS];
@@ -31,28 +35,52 @@ struct RAPL_Plugin_t
     int num_events;
 };
 
-
 /**
  * @brief Gets all available events
  *
- * This function profiles the system for the given time interval (cf. second
- * parameter). Then, the counter values are written to the respective fields
- * of the RAPL_Plugin struct. On success, the return value equals the number
- * of events fetched.
+ * This function profiles the system for the given time interval (cf. parameter
+ * @p timespec). Then, the counter values are written to the respective fields
+ * of the RAPL_Plugin representation. On success, the return value equals the
+ * number of events fetched.
  *
- * @return number of events available
+ * @param rapl RAPL data structure
+ * @param timespec interval used for measuring
+ * @param named_events array of metric names to be measured
+ * @param num_events size of the array named_events
+ * @param cpu_model the given CPU model, i.e., 15 equals Haswell
+ *
+ * @return number of events available.
  */
-int get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char **named_events, size_t num_events, int cpu_model);
+int get_available_events(
+    RAPL_Plugin *rapl,
+    struct timespec profile_interval,
+    char **named_events,
+    size_t num_events,
+    int cpu_model
+);
 
-/**
- * @brief Gets the RAPL component ID
+/** @brief Checks if the RAPL component is available and enabled
  *
- * While trying to retrieve the RAPL component ID, a developer can check if the
- * RAPL component is available on the system in question.
+ * This function checks if the RAPL component is compiled within the given
+ * PAPI library, and that the RAPL features are enabled.
  *
- * @return 1 if RAPL component is available; 0 otherwise.
+ * @return 1 if RAPL component is enabled; 0 otherwise.
  */
-int get_rapl_component_id();
+int is_component_enabled();
 
-#endif
+/** @brief [brief description]
+ *
+ * This function returns the detected CPU model. The CPU model is encoded via
+ * a corresponding integer as follows: 14 (Ivy Bridge), 15 (Haswell).
+ *
+ * @return CPU model id, e.g. 15 (= Haswell)
+ */
+int get_cpu_model();
+
+/** @brief Shuts down RAPL
+ *
+ * This method calls internally the PAPI library to shut down gracefully.
+ */
 void mf_rapl_shutdown();
+
+#endif /* _RAPL_PLUGIN_H */

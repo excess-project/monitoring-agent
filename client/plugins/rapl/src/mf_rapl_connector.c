@@ -1,17 +1,9 @@
 /*
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
+ * Copyright (C) 2014-2015 University of Stuttgart
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 #include <ctype.h>
@@ -25,18 +17,30 @@
 #include <string.h>
 #include <unistd.h>
 
+/* monitoring-related includes */
 #include "mf_debug.h"
 #include "mf_rapl_connector.h"
-
 
 #define SUCCESS 1
 #define FAILURE 0
 
+/*
+ * declares if the plug-in (i.e., RAPL) is already initialized
+ */
 static int is_initialized = 0;
+
+/*
+ * declares if the RAPL component is enabled to be used for monitoring
+ *
+ * states: (-1) not initialized, (0) disabled, (1) enabled
+ */
 static int is_available = -1;
+
+/*
+ * forward declarations
+ */
 static int is_rapl_initialized();
 static void initialize_PAPI();
-
 
 void
 initialize_PAPI()
@@ -56,7 +60,7 @@ initialize_PAPI()
 }
 
 int
-get_rapl_component_id()
+is_component_enabled()
 {
     int numcmp, cid;
     const PAPI_component_info_t *cmpinfo = NULL;
@@ -94,9 +98,13 @@ is_rapl_initialized()
     return is_initialized;
 }
 
-//fangli changed get_available_events
 int
-get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char **named_events, size_t num_events, int cpu_model)
+get_available_events(
+    RAPL_Plugin *rapl,
+    struct timespec profile_interval,
+    char **named_events,
+    size_t num_events,
+    int cpu_model)
 {
     long long before_time, after_time;
     double elapsed_time;
@@ -123,7 +131,6 @@ get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char *
         }
     }
 
-    //rapl->values = calloc(num_events, sizeof(long long));
     long long *values = calloc(num_events, sizeof(long long));
     if (values == NULL) {
         return -1;
@@ -151,20 +158,14 @@ get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char *
         rapl->values[i] = ((double) values[i] / 1.0e9) / elapsed_time;
     }
 
-    /* fangli
-    if model=14, it is node01, node02 (Ivy bridge processor)
-    if model=15, it is node03 (Hasswel processor)
-    for Hasswel processor, DRAM_ENERGY need to be divided by 15.3 (for unit difference) */
     for (i = 0; i < num_events; ++i) {
-        if (strcmp (rapl->events[i], "DRAM_ENERGY:PACKAGE0")== 0 || strcmp (rapl->events[i], "DRAM_ENERGY:PACKAGE1")== 0) {
-            if(cpu_model == 15) {
+        if (strcmp(rapl->events[i], "DRAM_ENERGY:PACKAGE0") == 0 ||
+            strcmp(rapl->events[i], "DRAM_ENERGY:PACKAGE1") == 0) {
+            if(cpu_model == 15) { /* Haswell */
                 rapl->values[i] = ((double) rapl->values[i] / 15.3);
             }
-            else {
-                printf("cpu_model is not Hasswel\n");
-            }
         }
-    } //fangli
+    }
     retval = PAPI_cleanup_eventset(EventSet);
     if (retval != PAPI_OK) {
         return -1;
@@ -176,6 +177,31 @@ get_available_events(RAPL_Plugin *rapl, struct timespec profile_interval, char *
     }
 
     return num_events;
+}
+
+void
+native_cpuid(
+    unsigned int *eax,
+    unsigned int *ebx,
+    unsigned int *ecx,
+    unsigned int *edx)
+{
+    asm volatile("cpuid"
+        : "=a" (*eax),
+          "=b" (*ebx),
+          "=c" (*ecx),
+          "=d" (*edx)
+        : "0" (*eax), "2" (*ecx)
+    );
+}
+
+int
+get_cpu_model()
+{
+    unsigned eax, ebx, ecx, edx;
+    eax = 1; /* set processor info and feature bits */
+    native_cpuid(&eax, &ebx, &ecx, &edx);
+    return (eax >> 4) & 0xF;
 }
 
 void

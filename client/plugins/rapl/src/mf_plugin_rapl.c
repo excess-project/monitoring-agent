@@ -1,17 +1,9 @@
 /*
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
+ * Copyright (C) 2014-2015 University of Stuttgart
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 #include <mf_parser.h>
@@ -65,31 +57,19 @@ mf_plugin_rapl_hook()
 extern int
 init_mf_plugin_rapl(PluginManager *pm)
 {
-    is_available = get_rapl_component_id();
+    is_available = is_component_enabled();
+    cpu_model = get_cpu_model();
 
     /*
-     * processor info and feature bits
+     * read configuration parameters related to RAPL (i.e., mf_config.ini)
      */
-    unsigned eax, ebx, ecx, edx;
-    eax = 1;
-    native_cpuid(&eax, &ebx, &ecx, &edx);
-
-    /*
-     * if (cpu_model == 14) {
-     *   then we have detected either node01 or node02
-     * }
-     *
-     * if (cpu_model ==15) {
-     *   then it is EXCESS cluster node node03
-     * }
-     */
-    cpu_model = (eax >> 4) & 0xF;
-
     PluginManager_register_hook(pm, "mf_plugin_rapl", mf_plugin_rapl_hook);
     conf_data =  malloc(sizeof(mfp_data));
-
     mfp_get_data_filtered_by_value("mf_plugin_rapl", conf_data, "on");
 
+    /*
+     * set interval for measuring data
+     */
     char* value = mfp_get_value("timings", "mf_plugin_rapl");
     long timing = atoi(value);
     timing = timing / 2.0;
