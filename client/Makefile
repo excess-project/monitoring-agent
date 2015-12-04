@@ -202,7 +202,7 @@ clean-install:
 	rm -rf $(INSTALL_DIR)
 
 #
-# JAVADOC
+# Generate the documentation of the monitoring client through Doxygen
 #
-doc : $(FILES)
+doc:
 	doxygen Doxyfile
