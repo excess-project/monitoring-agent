@@ -163,7 +163,6 @@ get_available_events(
             strcmp(rapl->events[i], "DRAM_ENERGY:PACKAGE1") == 0) {
             if (cpu_model == 15) { /* Haswell */
                 rapl->values[i] = ((double) rapl->values[i] / 15.3);
-                log_debug("DRAM values adapted, because Haswell processor was detected");
             }
         }
     }
