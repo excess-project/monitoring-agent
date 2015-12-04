@@ -6,17 +6,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <mf_parser.h>
-#include <stdlib.h>
+#include <mf_parser.h> /* mfp_data */
+#include <stdlib.h> /* malloc etc */
 
-#include "mf_rapl_connector.h"
-#include "plugin_manager.h"
-#include "util.h"
+#include "mf_rapl_connector.h" /* i.a. RAPL_Plugin */
+#include "plugin_manager.h" /* mf_plugin_rapl_hook */
 
 struct timespec profile_time = { 0, 0 };
 mfp_data *conf_data;
 int cpu_model;
 int is_available = 0;
+
+/*******************************************************************************
+ * to_JSON
+ ******************************************************************************/
 
 char* to_JSON(RAPL_Plugin *rapl)
 {
@@ -33,6 +36,10 @@ char* to_JSON(RAPL_Plugin *rapl)
 
     return json;
 }
+
+/*******************************************************************************
+ * mf_plugin_rapl_hook
+ ******************************************************************************/
 
 static metric
 mf_plugin_rapl_hook()
@@ -53,6 +60,10 @@ mf_plugin_rapl_hook()
         return NULL;
     }
 }
+
+/*******************************************************************************
+ * init_mf_plugin_rapl
+ ******************************************************************************/
 
 extern int
 init_mf_plugin_rapl(PluginManager *pm)

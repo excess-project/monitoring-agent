@@ -6,16 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <ctype.h>
-#include <malloc.h>
-#include <papi.h>
-#include <pthread.h>
-#include <sched.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include <pthread.h> /* nanosleep */
+#include <stdlib.h> /* malloc */
 
 /* monitoring-related includes */
 #include "mf_debug.h"
@@ -23,6 +15,10 @@
 
 #define SUCCESS 1
 #define FAILURE 0
+
+/*******************************************************************************
+ * Variable Declarations
+ ******************************************************************************/
 
 /*
  * declares if the plug-in (i.e., RAPL) is already initialized
@@ -36,11 +32,16 @@ static int is_initialized = 0;
  */
 static int is_available = -1;
 
-/*
- * forward declarations
- */
+/*******************************************************************************
+ * Forward Declarations
+ ******************************************************************************/
+
 static int is_rapl_initialized();
 static void initialize_PAPI();
+
+/*******************************************************************************
+ * initialize_PAPI
+ ******************************************************************************/
 
 void
 initialize_PAPI()
@@ -58,6 +59,10 @@ initialize_PAPI()
 
     is_initialized = 1;
 }
+
+/*******************************************************************************
+ * is_component_enabled
+ ******************************************************************************/
 
 int
 is_component_enabled()
@@ -79,10 +84,12 @@ is_component_enabled()
         if (strstr(cmpinfo->name, "rapl")) {
             if (cmpinfo->disabled) {
                 is_available = 0;
-                log_info("RAPL >> component is DISABLED for this CPU (%s)", cmpinfo->name);
+                log_info("RAPL >> component is DISABLED for this CPU (%s)",
+                    cmpinfo->name);
             } else {
                 is_available = 1;
-                log_info("RAPL >> component is ENABLED on this the CPU (%s)", cmpinfo->name);
+                log_info("RAPL >> component is ENABLED on this the CPU (%s)",
+                    cmpinfo->name);
             }
             return is_available;
         }
@@ -92,11 +99,19 @@ is_component_enabled()
     return is_available;
 }
 
+/*******************************************************************************
+ * is_rapl_initialized
+ ******************************************************************************/
+
 static int
 is_rapl_initialized()
 {
     return is_initialized;
 }
+
+/*******************************************************************************
+ * get_available_events
+ ******************************************************************************/
 
 int
 get_available_events(
@@ -122,10 +137,10 @@ get_available_events(
         retval = PAPI_add_named_event(EventSet, named_events[j]);
         if (retval != PAPI_OK) {
             char *error = PAPI_strerror(retval);
-            log_warn("bind_events_to_all_cores() - PAPI_add_named_event (%s): %s",
+            log_warn("RAPL >> PAPI_add_named_event (%s): %s",
               named_events[j], error);
         } else {
-            log_info("bind_events_to_all_cores() - Added event %s", named_events[j]);
+            log_info("RAPL >> Added event %s", named_events[j]);
             rapl->events[j] = malloc(PAPI_MAX_STR_LEN + 1);
             strcpy(rapl->events[j], named_events[j]);
         }
@@ -179,6 +194,10 @@ get_available_events(
     return num_events;
 }
 
+/*******************************************************************************
+ * native_cpuid
+ ******************************************************************************/
+
 void
 native_cpuid(
     unsigned int *eax,
@@ -195,6 +214,10 @@ native_cpuid(
     );
 }
 
+/*******************************************************************************
+ * get_cpu_model
+ ******************************************************************************/
+
 int
 get_cpu_model()
 {
@@ -203,6 +226,10 @@ get_cpu_model()
     native_cpuid(&eax, &ebx, &ecx, &edx);
     return (eax >> 4) & 0xF;
 }
+
+/*******************************************************************************
+ * mf_rapl_shutdown
+ ******************************************************************************/
 
 void
 mf_rapl_shutdown()

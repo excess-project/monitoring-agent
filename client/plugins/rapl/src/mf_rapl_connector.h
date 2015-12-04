@@ -6,14 +6,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/** @file mf_rapl_connector.h
+ *  @brief Interface to the RAPL component of the PAPI library.
+ *
+ *  This interfaces declares a measn to access measurements of the RAPL
+ *  component, which is provided by the PAPI library.
+ *
+ *  @author Dennis Hoppe (hopped)
+ *
+ *  @bug Events are added and removed each time get_available_events is called.
+ */
+
 #ifndef _RAPL_PLUGIN_H
 #define _RAPL_PLUGIN_H
 
-#include <papi.h>
-#include <time.h>
+#include <papi.h> /* PAPI_MAX_PRESET_EVENTS etc */
 
-/*
- * @brief defines the maximum number of available RAPL events.
+/** @brief defines the maximum number of available RAPL events.
  *
  * The variable is used to initialize the RAPL data structure.
  */
@@ -35,8 +44,7 @@ struct RAPL_Plugin_t
     int num_events;
 };
 
-/**
- * @brief Gets all available events
+/** @brief Gets all available events
  *
  * This function profiles the system for the given time interval (cf. parameter
  * @p timespec). Then, the counter values are written to the respective fields

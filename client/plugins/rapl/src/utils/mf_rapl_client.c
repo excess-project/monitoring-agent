@@ -10,20 +10,11 @@
 #define _GNU_SOURCE
 #endif
 
-#include <ctype.h>
-#include <malloc.h>
-#include <papi.h>
-#include <pthread.h>
-#include <sched.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
+#include <stdlib.h> /* malloc, exit, free, ... */
 
 /* monitoring-related includes */
-#include "mf_debug.h"
-#include "mf_rapl_connector.h"
+#include "mf_debug.h" /* log_warn, log_info, ... */
+#include "mf_rapl_connector.h" /* get_available_events */
 
 static char *csv;
 
@@ -33,6 +24,10 @@ static char *csv;
 
 static char* to_csv();
 static void my_exit_handler();
+
+/*******************************************************************************
+ * Main
+ ******************************************************************************/
 
 int
 main(int argc, char** argv)
@@ -70,6 +65,10 @@ main(int argc, char** argv)
     free(csv);
 }
 
+/*******************************************************************************
+ * my_exit_handler
+ ******************************************************************************/
+
 static void
 my_exit_handler(int s)
 {
@@ -77,6 +76,10 @@ my_exit_handler(int s)
     puts("\nBye bye!");
     exit(EXIT_FAILURE);
 }
+
+/*******************************************************************************
+ * to_csv
+ ******************************************************************************/
 
 static char*
 to_csv(RAPL_Plugin *rapl)
