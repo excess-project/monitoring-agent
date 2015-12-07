@@ -110,7 +110,7 @@ to_csv(RAPL_Plugin *rapl)
     memset(csv, 0, 4096 * sizeof(char));
     row = malloc(256 * sizeof(char));
     for (i = 0; i < rapl->num_events; ++i) {
-        sprintf(row, "\"%s\",%.4f\n", rapl->events[i], rapl->values[i]);
+        sprintf(row, "\"%s\",%.4f", rapl->events[i], rapl->values[i]);
         strcat(csv, row);
     }
     free(row);

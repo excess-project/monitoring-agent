@@ -35,6 +35,7 @@ static int is_available = -1;
 int EventSet = PAPI_NULL;
 long long before_time, after_time;
 double denominator;
+long long *values;
 
 /*******************************************************************************
  * Forward Declarations
@@ -122,11 +123,14 @@ mf_rapl_init(RAPL_Plugin *data, char **rapl_events, size_t num_events)
             registered_idx = registered_idx + 1;
         }
     }
+    data->num_events = registered_idx;
 
     /*
      * set denominator for DRAM values based on the current CPU model
      */
     denominator = mf_rapl_get_denominator();
+    values = calloc(registered_idx, sizeof(long long));
+
 
     /*
      * start monitoring registered events
@@ -152,7 +156,6 @@ mf_rapl_sample(RAPL_Plugin *data)
      * initialize array to store monitoring results
      */
     size_t size = data->num_events;
-    long long *values = calloc(size, sizeof(long long));
     if (values == NULL) {
         log_error("Couldn't initialize long long values %s", "NULL");
         return FAILURE;
@@ -171,7 +174,7 @@ mf_rapl_sample(RAPL_Plugin *data)
      * account for time passed between last measurement and now
      */
     int idx;
-    long long elapsed_time = ((double) (after_time - before_time)) / 1.0e9;
+    double elapsed_time = ((double) (after_time - before_time)) / 1.0e9;
     for (idx = 0; idx < size; ++idx) {
         values[idx] = correct_dram_values(data->events[idx], values[idx]);
         data->values[idx] = ((double) values[idx] / 1.0e9) / elapsed_time;
@@ -262,7 +265,13 @@ is_rapl_initialized()
 void
 mf_rapl_shutdown()
 {
-    int retval = PAPI_cleanup_eventset(EventSet);
+    int retval = PAPI_stop(EventSet, NULL);
+    if (retval != PAPI_OK) {
+        char *error = PAPI_strerror(retval);
+        log_error("Couldn't stop PAPI EventSet: %s", error);
+    }
+
+    retval = PAPI_cleanup_eventset(EventSet);
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
         log_error("Couldn't cleanup PAPI EventSet: %s", error);
