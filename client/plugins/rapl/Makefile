@@ -1,4 +1,4 @@
-## Copyright 2014,2015 University of Stuttgart
+## Copyright (C) 2014-2015 University of Stuttgart
 ## Authors: Dennis Hoppe
 
 CC = /usr/bin/gcc
