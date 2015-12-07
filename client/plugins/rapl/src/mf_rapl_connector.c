@@ -131,7 +131,6 @@ mf_rapl_init(RAPL_Plugin *data, char **rapl_events, size_t num_events)
     denominator = mf_rapl_get_denominator();
     values = calloc(registered_idx, sizeof(long long));
 
-
     /*
      * start monitoring registered events
      */
@@ -219,7 +218,7 @@ correct_dram_values(char *event, double value)
 {
     if (strcmp(event, "DRAM_ENERGY:PACKAGE0") == 0 ||
         strcmp(event, "DRAM_ENERGY:PACKAGE1") == 0) {
-        return (double) (value / 15.3);
+        return (double) (value / denominator);
     }
 
     return 1.0;
