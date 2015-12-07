@@ -9,12 +9,17 @@
 /** @file mf_rapl_connector.h
  *  @brief Interface to the RAPL component of the PAPI library.
  *
- *  This interfaces declares a measn to access measurements of the RAPL
- *  component, which is provided by the PAPI library.
+ *  This interface declares a means to access measurements of the RAPL
+ *  component, which is provided by the PAPI library. Please see the
+ *  {@link utils/mf_rapl_client.c mf_rapl_client} for a usage example. Per
+ *  default, a developer should first determine if the RAPL component is enabled
+ *  (#mf_rapl_is_enabled), then initialize the plug-in via calling
+ *  #mf_rapl_init, before doing the actual sampling using #mf_rapl_sample. At
+ *  the end, the plug-in should be cleaned by executing #mf_rapl_shutdown.
  *
  *  @author Dennis Hoppe (hopped)
  *
- *  @bug Events are added and removed each time get_available_events is called.
+ *  @bug Events are added and removed each time #get_available_events is called.
  */
 
 #ifndef _RAPL_PLUGIN_H
@@ -44,34 +49,6 @@ struct RAPL_Plugin_t
     int num_events;
 };
 
-int mf_rapl_init(RAPL_Plugin *data, char **rapl_events, size_t num_events);
-int mf_rapl_sample(RAPL_Plugin *data);
-char* mf_rapl_to_json(RAPL_Plugin *data);
-
-/** @brief Gets all available events
- *
- * This function profiles the system for the given time interval (cf. parameter
- * @p timespec). Then, the counter values are written to the respective fields
- * of the RAPL_Plugin representation. On success, the return value equals the
- * number of events fetched.
- *
- * @param rapl RAPL data structure
- * @param timespec interval used for measuring
- * @param named_events array of metric names to be measured
- * @param num_events size of the array named_events
- * @param cpu_model the given CPU model, i.e., 15 equals Haswell
- *
- * @return number of events available.
- */
- /*
-int mf_rapl_get_available_events(
-    RAPL_Plugin *rapl,
-    char **named_events,
-    size_t num_events,
-    int cpu_model
-);
-*/
-
 /** @brief Checks if the RAPL component is available and enabled
  *
  * This function checks if the RAPL component is compiled within the given
@@ -81,14 +58,39 @@ int mf_rapl_get_available_events(
  */
 int mf_rapl_is_enabled();
 
-/** @brief [brief description]
+/** @brief Initializes RAPL plug-in
  *
- * This function returns the detected CPU model. The CPU model is encoded via
- * a corresponding integer as follows: 14 (Ivy Bridge), 15 (Haswell).
+ * Initialization will be implemented through PAPI library. Moreover, all
+ * required variables are initialized and checked for correctness. For instance,
+ * in case that a metric name given by user is not supported by PAPI/RAPL, then
+ * an error report is given. The return value equals in this case zero.
  *
- * @return CPU model id, e.g. 15 (= Haswell)
+ * @param data structure that keeps track of RAPL related events and values
+ * @param rapl_events user-defined array of metric names to be collected
+ * @param num_events equals the length of the array @p rapl_events
+ * @return 1 on success; 0 otherwise.
  */
-//int mf_rapl_get_cpu_model();
+int mf_rapl_init(RAPL_Plugin *data, char **rapl_events, size_t num_events);
+
+/** @brief Performs the actual sampling of metrics
+ *
+ * This function performs the sampling of RAPL metrics as registered through the
+ * function mf_rapl_init.
+ *
+ * @param data the initialized structure previously passed to mf_rapl_init
+ * @return 1 on success; 0 otherwise.
+ */
+int mf_rapl_sample(RAPL_Plugin *data);
+
+/** @brief Converts the samples data into a JSON object
+ *
+ * Given RAPL events and corresponding values will be converted into a JSON
+ * document, which then can be sent to and processed by the monitoring server.
+ *
+ * @param data collected metric data
+ * @return a string representation (JSON format) of the given @p data
+ */
+char* mf_rapl_to_json(RAPL_Plugin *data);
 
 /** @brief Shuts down RAPL
  *

@@ -6,6 +6,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/** @file mf_rapl_client.c
+ *  @brief Client that demonstrates the usage of the RAPL plug-in.
+ *
+ *  @author Dennis Hoppe (hopped)
+ */
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -16,6 +22,10 @@
 /* monitoring-related includes */
 #include "mf_debug.h" /* log_warn, log_info, ... */
 #include "mf_rapl_connector.h" /* get_available_events */
+
+/*******************************************************************************
+ * Variable Declarations
+ ******************************************************************************/
 
 static char *csv;
 
@@ -68,7 +78,6 @@ main(int argc, char** argv)
          * sampling
          */
         mf_rapl_sample(monitoring_data);
-
         puts(to_csv(monitoring_data));
 
         /*
