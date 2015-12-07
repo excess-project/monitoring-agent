@@ -34,14 +34,14 @@
 #define SUCCESS 1
 #define FAILURE 0
 
-static int cidx;
-static int *event_sets;
-static int num_cores;
-static int domain;
-static int granularity;
-static int *num_events_per_socket;
-static long long **values_per_core;
-static int is_initialized;
+static int DEFAULT_CPU_COMPONENT = 0;
+static int domain = PAPI_DOM_ALL;
+static int *event_sets = NULL;
+static int granularity = PAPI_GRN_SYS;
+static int is_initialized = 0;
+static int maximum_number_of_cores = 0;
+static int *num_events_per_socket = NULL;
+static long long **values_per_core = NULL;
 
 void mf_papi_profile();
 void mf_papi_read();
@@ -57,37 +57,48 @@ static void bind_events_to_all_cores();
 static void check_events();
 #endif
 
-void
-mf_papi_init(char **named_events, size_t num_events, int requested_num_cores)
+
+/*******************************************************************************
+ * mf_papi_init
+ ******************************************************************************/
+
+int
+mf_papi_init(
+    PAPI_Plugin *data,
+    char **papi_events,
+    size_t num_events,
+    size_t num_cores)
 {
     if (is_papi_initialized()) {
-        return;
+        return SUCCESS;
     }
 
-    cidx = 0;
-    num_cores = 0;
-    event_sets = NULL;
-    domain = PAPI_DOM_ALL;
-    granularity = PAPI_GRN_SYS;
-    num_events_per_socket = NULL;
-    values_per_core = NULL;
-
-    load_papi();
-    get_max_cpus(&num_cores);
-    if (requested_num_cores < num_cores) {
-        if (requested_num_cores > 0) {
-            num_cores = requested_num_cores;
-        }
+    if (!load_papi_library()) {
+        return FAILURE;
     }
 
-    create_eventset_for_each_core();
+    /*
+     * determines the maximum number of available cores for monitoring
+     */
+    set_maximum_number_of_cores_for_sampling(&num_cores);
+
+    /*
+     * creates EventSets for each individual core
+     */
+    create_eventset_for(num_cores);
+
     bind_events_to_all_cores(named_events, num_events);
     #ifdef DEBUG
     check_events();
     #endif
 
-    is_initialized = 1;
+    is_initialized = SUCCESS;
+    return is_initialized;
 }
+
+/*******************************************************************************
+ * is_papi_initialized
+ ******************************************************************************/
 
 static int
 is_papi_initialized()
@@ -95,124 +106,209 @@ is_papi_initialized()
     return is_initialized;
 }
 
-static void
-load_papi()
+/*******************************************************************************
+ * load_papi_library
+ ******************************************************************************/
+
+static int
+load_papi_library()
 {
     if (PAPI_is_initialized()) {
-        return;
+        return SUCCESS;
     }
 
     int retval = PAPI_library_init(PAPI_VER_CURRENT);
     if (retval != PAPI_VER_CURRENT) {
         char *error = PAPI_strerror(retval);
-        log_error("load_papi() - PAPI_library_init: %s", error);
+        log_error("PAPI >> Error while loading the library: %s", error);
+        return FAILURE;
     }
+
+    return SUCCESS;
 }
 
-void
-mf_papi_shutdown()
-{
-    PAPI_shutdown();
-}
+/*******************************************************************************
+ * set_maximum_number_of_cores_for_sampling
+ ******************************************************************************/
 
 static void
-create_eventset_for_each_core()
+set_maximum_number_of_cores_for_sampling(int *requested_number_of_cores)
 {
-    init_eventsets();
+    /*
+     * get number of CPUs
+     */
+    int *max_cores = PAPI_get_opt(PAPI_MAX_CPUS,/*@-nullpass@*/ NULL);
 
-    for (int cpu_num = 0; cpu_num != num_cores; ++cpu_num) {
-        (void) create_eventset_systemwide(event_sets+cpu_num, cpu_num);
-    }
-}
-
-static void
-get_max_cpus(int *max_cpus)
-{
-    *max_cpus = PAPI_get_opt(PAPI_MAX_CPUS,/*@-nullpass@*/ NULL);
-
-    if (*max_cpus <= 0) {
-        char itostr[*max_cpus];
-        (void) snprintf(itostr, sizeof(itostr) / sizeof(char), "%d", *max_cpus);
-        log_error("get_max_cpus() - PAPI_get_opt(PAPI_MAX_CPUS): %s", itostr);
+    /*
+     * an error occurred
+     */
+    if (*max_cores <= 0) {
+        char itostr[*max_cores];
+        (void) snprintf(itostr, sizeof(itostr) / sizeof(char), "%d", *max_cores);
+        log_error("PAPI >> Error while reading PAPI_MAX_CPUS: %s", itostr);
         return;
     }
 
-    log_info("get_max_cpus() - max_cpus = %d", *max_cpus);
-}
-
-static void
-init_eventsets()
-{
-    event_sets = malloc(num_cores * sizeof(int));
-    if (event_sets == NULL) {
-        log_error("init_event_sets() - Could not allocate memory for %s", "event_sets");
-        return;
+    /*
+     * reduce the number of requested cores for sampling to the maximum
+     */
+    if (*requested_number_of_cores < *max_cores) {
+        if (*requested_number_of_cores > 0) {
+            *max_cores = *requested_number_of_cores;
+        }
     }
 
-    for (int i = 0; i != num_cores; ++i) {
-        event_sets[i] = PAPI_NULL;
-    }
+    log_info("PAPI >> Number of cores selected for measuring is %d", *max_cores);
 }
+
+/*******************************************************************************
+ * create_eventset_for
+ ******************************************************************************/
 
 static int
-create_eventset_systemwide(int *EventSet, int cpu_num)
+create_eventset_for(int num_cores)
 {
     int retval;
+    int number_of_core;
+
+    event_sets = malloc(num_cores * sizeof(int));
+    if (event_sets == NULL) {
+        log_error(
+            "PAPI >> Couldn't allocate memory for array of %s",
+            "EventSets"
+        );
+        return FAILURE;
+    }
+
+    /*
+     * create EventSets for the given number of cores
+     *
+     * we set the domain to DOM_ALL, and the granularity to system-wide in order
+     * to sample events on a system level. this requires root privileges.
+     */
+    for (number_of_core = 0; number_of_core != num_cores; ++number_of_core) {
+        event_sets[number_of_core] = PAPI_NULL; /* set default EventSet to PAPI_NULL */
+
+        int *EventSet = event_sets + number_of_core;
+        retval = retval && create(EventSet);
+        retval = retval && assign_to_component(EventSet, DEFAULT_CPU_COMPONENT);
+        retval = retval && set_domain_for(EventSet, PAPI_DOM_ALL, DEFAULT_CPU_COMPONENT);
+        retval = retval && set_granularity_for(EventSet, PAPI_GRN_SYS);
+        retval = retval && attach_to_cpu(EventSet, number_of_core);
+
+        log_info("PAPI >> EventSet created for core %d", number_of_core);
+    }
+
+    return retval;
+}
+
+/*******************************************************************************
+ * create_eventset_systemwide
+ ******************************************************************************/
+
+static int
+init_eventset(int *EventSet, int number_of_core)
+{
+    int retval;
+
+
+
+
+    return retval;
+}
+
+/*******************************************************************************
+ * create
+ ******************************************************************************/
+
+static int
+create(int *EventSet)
+{
+    int retval = PAPI_create_eventset(*EventSet);
+    if (retval != PAPI_OK) {
+        char *error = PAPI_strerror(retval);
+        log_error("PAPI >> Error while creating an EventSet: %s", error);
+    }
+
+    return retval;
+}
+
+/*******************************************************************************
+ * assign_to_component
+ ******************************************************************************/
+
+static int
+assign_to_component(int *EventSet, int cpu_component)
+{
+    int retval = PAPI_assign_eventset_component(*EventSet, cpu_component);
+    if (retval != PAPI_OK) {
+        char *error = PAPI_strerror(retval);
+        log_error("PAPI >> Error while assigning EventSet: (%s)", error);
+    }
+
+    return retval;
+}
+
+/*******************************************************************************
+ * set_domain_for
+ ******************************************************************************/
+
+static int
+set_domain_for(int *EventSet, int domain, int cpu_component)
+{
     PAPI_domain_option_t domain_opt;
-    PAPI_granularity_option_t gran_opt;
-    PAPI_cpu_option_t cpu_opt;
-
-    retval = PAPI_create_eventset(EventSet);
-    if (retval != PAPI_OK) {
-        char *error = PAPI_strerror(retval);
-        log_error("create_eventset_systemwide - PAPI_create_eventset: %s", error);
-        return retval;
-    }
-
-    retval = PAPI_assign_eventset_component(*EventSet, cidx);
-    if (retval != PAPI_OK) {
-        char *error = PAPI_strerror(retval);
-        log_error("create_eventset_systemwide - PAPI_assign_eventset_component: (%s)", error);
-        return retval;
-    }
-
-    domain_opt.def_cidx = cidx;
+    domain_opt.def_cidx = cpu_component;
     domain_opt.eventset = *EventSet;
     domain_opt.domain = domain;
-    retval = PAPI_set_opt(PAPI_DOMAIN, (PAPI_option_t*) &domain_opt);
+
+    int retval = PAPI_set_opt(PAPI_DOMAIN, (PAPI_option_t*) &domain_opt);
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
-        log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_DOMAIN): %s", error);
-        return retval;
+        log_error("PAPI >> Error while setting PAPI_DOMAIN: %s", error);
     }
 
+    return retval;
+}
+
+/*******************************************************************************
+ * set_granularity_for
+ ******************************************************************************/
+
+static int
+set_granularity_for(int *EventSet, int granularity)
+{
+    PAPI_granularity_option_t gran_opt;
     gran_opt.eventset = *EventSet;
     gran_opt.granularity = granularity;
-    retval = PAPI_set_opt(PAPI_GRANUL, (PAPI_option_t*) &gran_opt);
+
+    int retval = PAPI_set_opt(PAPI_GRANUL, (PAPI_option_t*) &gran_opt);
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
-        log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_GRANUL): %s", error);
-        return retval;
+        log_error("PAPI >> Error while setting PAPI_GRANUL: %s", error);
     }
 
+    return retval;
+}
+
+/*******************************************************************************
+ * attach_to_cpu
+ ******************************************************************************/
+
+static int
+attach_to_cpu(EventSet, number_of_core)
+{
+    PAPI_cpu_option_t cpu_opt;
     cpu_opt.eventset = *EventSet;
-    cpu_opt.cpu_num = cpu_num;
-    retval = PAPI_set_opt(PAPI_CPU_ATTACH, (PAPI_option_t*) &cpu_opt);
+    cpu_opt.cpu_num = number_of_core;
+
+    int retval = PAPI_set_opt(PAPI_CPU_ATTACH, (PAPI_option_t*) &cpu_opt);
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
-        log_error("create_eventset_systemwide - PAPI_set_opt (PAPI_CPU_ATTACH): %s", error);
-        PAPI_shutdown();
-        exit(EXIT_FAILURE);
+        log_error("PAPI >> Error while attaching to CPU %d: %s",
+            number_of_core,
+            error
+        );
     }
-
-    retval = mf_set_affinity(cpu_num);
-    if (retval != PAPI_OK) {
-        char *error = PAPI_strerror(retval);
-        log_error("create_eventset_systemwide - sched_setaffinity: %s", error);
-        return retval;
-    }
-
-    debug("EventSet created for CPU%d", cpu_num);
 
     return retval;
 }
@@ -331,4 +427,14 @@ mf_papi_read(PAPI_Plugin *papi, char **named_events)
             papi->num_events++;
         }
     }
+}
+
+/*******************************************************************************
+ * mf_papi_shutdown
+ ******************************************************************************/
+
+void
+mf_papi_shutdown()
+{
+    PAPI_shutdown();
 }

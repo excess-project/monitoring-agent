@@ -30,8 +30,8 @@
  *  @bug Events are added and removed each time #get_available_events is called.
  */
 
-#ifndef _RAPL_PLUGIN_H
-#define _RAPL_PLUGIN_H
+#ifndef _RAPL_CONNECTOR_H
+#define _RAPL_CONNECTOR_H
 
 #include <papi.h> /* PAPI_MAX_PRESET_EVENTS etc */
 
@@ -106,4 +106,4 @@ char* mf_rapl_to_json(RAPL_Plugin *data);
  */
 void mf_rapl_shutdown();
 
-#endif /* _RAPL_PLUGIN_H */
+#endif /* _RAPL_CONNECTOR_H */

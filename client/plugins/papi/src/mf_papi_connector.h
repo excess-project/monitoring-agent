@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-#ifndef _MF_PAPI_CONNECTOR_H_
-#define _MF_PAPI_CONNECTOR_H_
+#ifndef _PAPI_CONNECTOR_H
+#define _PAPI_CONNECTOR_H
 
-#include <papi.h>
-#include <time.h>
+#include <papi.h> /* PAPI_MAX_PRESET_EVENTS etc */
 
+/** @brief data structure to store PAPI monitoring data
+ */
 typedef struct PAPI_Plugin_t PAPI_Plugin;
 
+/** @brief data structure to store PAPI monitoring data
+ *
+ * The data structure holds the metric names including the correspond
+ * measured values. Moreover, the number of events measured is stored.
+ */
 struct PAPI_Plugin_t
 {
     char *events[PAPI_MAX_PRESET_EVENTS];
@@ -29,41 +35,47 @@ struct PAPI_Plugin_t
     int num_events;
 };
 
-/**
- * @brief Initializes the PAPI component
+/** @brief [brief description]
  *
- * Initializes the PAPI component with the list of given events
- * (named_events), the size of the list, and the request number of CPU cores
- * that events should be registered to. If the number of cores specified is
- * greater than the available amount of CPU cores, the events will be
- * registered to all available CPU Cores.
+ * @details [long description]
  *
+ * @param data [description]
+ * @param papi_events [description]
+ * @param num_events [description]
+ *
+ * @return [description]
  */
-void mf_papi_init(
-    char **named_events,
+int mf_papi_init(
+    PAPI_Plugin *data,
+    char **papi_events,
     size_t num_events,
-    int requested_num_cores
+    size_t num_cores
 );
 
-/**
- * @brief Profiles the system for the given time interval
+/** @brief [brief description]
  *
- * Values will be collected for the given time interval for each named event
- * that was registered with the mf_papi_init method.
- */
-void mf_papi_profile(struct timespec profile_interval);
-
-/**
- * @brief Reads the counters measured during the profiling phase
+ * @details [long description]
  *
- * Writes both the counter names and their respective value to the PAPI_Plugin
- * struct for further analysis.
+ * @param data [description]
+ *
+ * @return [description]
  */
-void mf_papi_read(PAPI_Plugin *papi, char **events);
+int mf_papi_sample(PAPI_Plugin *data);
 
-/**
- * @brief Shuts down the PAPI component
+/** @brief [brief description]
+ *
+ * @details [long description]
+ *
+ * @param data [description]
+ *
+ * @return [description]
+ */
+char* mf_papi_to_json(PAPI_Plugin *data);
+
+/** @brief [brief description]
+ *
+ * @details [long description]
  */
 void mf_papi_shutdown();
 
-#endif
+#endif /* _PAPI_CONNECTOR_H */
