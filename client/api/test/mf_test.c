@@ -72,6 +72,11 @@ main(int argc, char** argv)
 
     mf_api_initialize(URL, EXE_ID);
 
+    char* EXE_ID_check = mf_api_get_execution_id();
+    
+    printf("EXE_ID check is :%s.\n", EXE_ID_check);
+
+
     //mf_api_initialize(URL);
     start_time = mf_api_start_profiling("fcnt1");
 
