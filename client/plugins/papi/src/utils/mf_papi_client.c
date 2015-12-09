@@ -32,12 +32,6 @@
 #include "mf_papi_connector.h" /* get_available_events */
 
 /*******************************************************************************
- * Variable Declarations
- ******************************************************************************/
-
-static char *csv;
-
-/*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
 
@@ -51,8 +45,6 @@ static void my_exit_handler();
 int
 main(int argc, char** argv)
 {
-    csv = malloc(4096 * sizeof(char));
-
     if (argc <= 1) {
         log_warn("No events given to measure: %d", argc);
         exit(EXIT_FAILURE);
@@ -72,7 +64,6 @@ main(int argc, char** argv)
     profile_time.tv_sec = 0;
     profile_time.tv_nsec = 500000000;
     size_t num_cores = 2;
-    int is_initialized = 0;
 
     ++argv;
     --argc;
@@ -81,10 +72,7 @@ main(int argc, char** argv)
      * initialize PAPI plugin
      */
     PAPI_Plugin **monitoring_data = malloc(num_cores * sizeof(*monitoring_data));
-    is_initialized = mf_papi_init(monitoring_data, argv, argc, num_cores);
-    if (!is_initialized) {
-        exit(1);
-    }
+    mf_papi_init(monitoring_data, argv, argc, num_cores);
 
     do {
         /*
@@ -102,8 +90,6 @@ main(int argc, char** argv)
          */
         nanosleep(&profile_time, NULL);
     } while (1);
-
-    free(csv);
 }
 
 /*******************************************************************************

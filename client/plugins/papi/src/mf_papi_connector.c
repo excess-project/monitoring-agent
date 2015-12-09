@@ -59,7 +59,7 @@ static void bind_events_to_cores(
     size_t num_events,
     size_t num_cores
 );
-static int create();
+static int create_new_eventset();
 static int assign_to_component();
 static int set_domain_for();
 static int set_granularity_for();
@@ -106,7 +106,7 @@ mf_papi_init(
     int core;
     int retval;
     for (core = 0; core != num_cores; ++core) {
-        retval = retval && PAPI_start(event_sets[core]);
+        retval = PAPI_start(event_sets[core]);
         if (retval != PAPI_OK) {
             char *error = PAPI_strerror(retval);
             log_error("PAPI >> Error while trying to start events: %s", error);
@@ -209,12 +209,11 @@ create_eventset_for(int num_cores)
     for (number_of_core = 0; number_of_core != num_cores; ++number_of_core) {
         event_sets[number_of_core] = PAPI_NULL; /* set default EventSet to PAPI_NULL */
 
-        int *EventSet = &event_sets[number_of_core];
-        retval = retval && create(EventSet);
-        retval = retval && assign_to_component(EventSet, DEFAULT_CPU_COMPONENT);
-        retval = retval && set_domain_for(EventSet, PAPI_DOM_ALL, DEFAULT_CPU_COMPONENT);
-        retval = retval && set_granularity_for(EventSet, PAPI_GRN_SYS);
-        retval = retval && attach_to_cpu(EventSet, number_of_core);
+        retval = create_new_eventset(&event_sets[number_of_core]);
+        retval = assign_to_component(event_sets[number_of_core], DEFAULT_CPU_COMPONENT);
+        retval = set_domain_for(event_sets[number_of_core], PAPI_DOM_ALL, DEFAULT_CPU_COMPONENT);
+        retval = set_granularity_for(event_sets[number_of_core], PAPI_GRN_SYS);
+        retval = attach_to_cpu(event_sets[number_of_core], number_of_core);
 
         log_info("PAPI >> EventSet created for core %d", number_of_core);
     }
@@ -227,7 +226,7 @@ create_eventset_for(int num_cores)
  ******************************************************************************/
 
 static int
-create(int *EventSet)
+create_new_eventset(int *EventSet)
 {
     int retval = PAPI_create_eventset(EventSet);
     if (retval != PAPI_OK) {
@@ -243,9 +242,9 @@ create(int *EventSet)
  ******************************************************************************/
 
 static int
-assign_to_component(int *EventSet, int cpu_component)
+assign_to_component(int EventSet, int cpu_component)
 {
-    int retval = PAPI_assign_eventset_component(*EventSet, cpu_component);
+    int retval = PAPI_assign_eventset_component(EventSet, cpu_component);
     if (retval != PAPI_OK) {
         char *error = PAPI_strerror(retval);
         log_error("PAPI >> Error while assigning EventSet: (%s)", error);
@@ -259,11 +258,11 @@ assign_to_component(int *EventSet, int cpu_component)
  ******************************************************************************/
 
 static int
-set_domain_for(int *EventSet, int domain, int cpu_component)
+set_domain_for(int EventSet, int domain, int cpu_component)
 {
     PAPI_domain_option_t domain_opt;
     domain_opt.def_cidx = cpu_component;
-    domain_opt.eventset = *EventSet;
+    domain_opt.eventset = EventSet;
     domain_opt.domain = domain;
 
     int retval = PAPI_set_opt(PAPI_DOMAIN, (PAPI_option_t*) &domain_opt);
@@ -280,10 +279,10 @@ set_domain_for(int *EventSet, int domain, int cpu_component)
  ******************************************************************************/
 
 static int
-set_granularity_for(int *EventSet, int granularity)
+set_granularity_for(int EventSet, int granularity)
 {
     PAPI_granularity_option_t gran_opt;
-    gran_opt.eventset = *EventSet;
+    gran_opt.eventset = EventSet;
     gran_opt.granularity = granularity;
 
     int retval = PAPI_set_opt(PAPI_GRANUL, (PAPI_option_t*) &gran_opt);
@@ -300,10 +299,10 @@ set_granularity_for(int *EventSet, int granularity)
  ******************************************************************************/
 
 static int
-attach_to_cpu(int *EventSet, int number_of_core)
+attach_to_cpu(int EventSet, int number_of_core)
 {
     PAPI_cpu_option_t cpu_opt;
-    cpu_opt.eventset = *EventSet;
+    cpu_opt.eventset = EventSet;
     cpu_opt.cpu_num = number_of_core;
 
     int retval = PAPI_set_opt(PAPI_CPU_ATTACH, (PAPI_option_t*) &cpu_opt);
@@ -387,7 +386,7 @@ mf_papi_sample(PAPI_Plugin **data)
     int retval;
 
     for (core = 0; core != maximum_number_of_cores; ++core) {
-        retval = retval && PAPI_accum(event_sets[core], data[core]->values);
+        retval = PAPI_accum(event_sets[core], data[core]->values);
         if (retval != PAPI_OK) {
             char *error = PAPI_strerror(retval);
             log_error("PAPI >> Error while reading PAPI counter: %s", error);
