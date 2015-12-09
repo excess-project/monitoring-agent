@@ -14,85 +14,80 @@
  * limitations under the License.
  */
 
-#include <mf_parser.h>
-#include <papi.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <mf_parser.h> /* mfp_data */
+#include <stdlib.h> /* malloc etc */
 
-#include "excess_main.h"
-#include "mf_debug.h"
-#include "mf_papi_connector.h"
-#include "plugin_manager.h"
-#include "util.h"
+#include "mf_papi_connector.h" /* i.a. PAPI_Plugin */
+#include "plugin_manager.h" /* mf_plugin_papi_hook */
 
-struct timespec profile_time = { 0, 0 };
+/*******************************************************************************
+ * Variable Declarations
+ ******************************************************************************/
+
 mfp_data *conf_data;
+PAPI_Plugin **monitoring_data = NULL;
+int is_available = 0;
 
+/*******************************************************************************
+ * Forward Declarations
+ ******************************************************************************/
 
-char*
-to_JSON(PAPI_Plugin *papi)
+static metric mf_plugin_papi_hook();
+
+/*******************************************************************************
+ * init_mf_plugin_papi
+ ******************************************************************************/
+
+extern int
+init_mf_plugin_papi(PluginManager *pm)
 {
-    int i;
-    char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"performance\"");
+    /*
+     * read configuration parameters related to RAPL (i.e., mf_config.ini)
+     */
+    PluginManager_register_hook(pm, "mf_plugin_papi", mf_plugin_papi_hook);
+    conf_data =  malloc(sizeof(mfp_data));
+    mfp_get_data_filtered_by_value("mf_plugin_papi", conf_data, "on");
 
-    char *single_metric = malloc(512 * sizeof(char));
-    for (i = 0; i < papi->num_events; ++i) {
-        sprintf(single_metric, ",\"%s\":%lld", papi->events[i], papi->values[i]);
-        strcat(json, single_metric);
+    int num_cores = 1;
+    char* str_num_cores = mfp_get_value("mf_plugin_papi", "MAX_CPU_CORES");
+    if (strcmp(str_num_cores, "MAX") != 0) {
+        num_cores = atoi(str_num_cores);
     }
-    free(single_metric);
 
-    return json;
+    /*
+     * initialize RAPL plug-in including registering metrics
+     */
+    monitoring_data = malloc(num_cores * sizeof(*monitoring_data));
+    is_available = mf_papi_init(
+        monitoring_data,
+        conf_data->keys,
+        conf_data->size,
+        num_cores
+    );
+
+    return is_available;
 }
+
+/*******************************************************************************
+ * mf_plugin_rapl_hook
+ ******************************************************************************/
 
 static metric
 mf_plugin_papi_hook()
 {
-    if (running) {
+    if (running && (is_available == 1)) {
         metric resMetric = malloc(sizeof(metric_t));
         resMetric->msg = malloc(4096 * sizeof(char));
 
         int clk_id = CLOCK_REALTIME;
         clock_gettime(clk_id, &resMetric->timestamp);
-        mf_papi_profile(profile_time);
-        PAPI_Plugin *papi = malloc(sizeof(PAPI_Plugin));
-        mf_papi_read(papi, conf_data->keys);
-        strcpy(resMetric->msg, to_JSON(papi));
-        free(papi);
+
+        mf_papi_sample(monitoring_data);
+
+        strcpy(resMetric->msg, mf_papi_to_json(monitoring_data));
 
         return resMetric;
     } else {
         return NULL;
     }
-}
-
-extern int
-init_mf_plugin_papi(PluginManager *pm)
-{
-    PluginManager_register_hook(pm, "mf_plugin_papi", mf_plugin_papi_hook);
-
-    conf_data = malloc(sizeof(mfp_data));
-    int num_cores = -1;
-    char* str_num_cores = mfp_get_value("mf_plugin_papi", "MAX_CPU_CORES");
-    if (strcmp(str_num_cores, "MAX") != 0) {
-        num_cores = atoi(str_num_cores);
-    }
-    mfp_get_data_filtered_by_value("mf_plugin_papi", conf_data, "on");
-    mf_papi_init(conf_data->keys, conf_data->size, num_cores);
-
-    char* value = mfp_get_value("timings", "mf_plugin_papi");
-    long timing = atoi(value);
-    timing = timing / 2.0;
-
-    if (timing >= 10e8) {
-        profile_time.tv_sec = timing / 10e8;
-        profile_time.tv_nsec = timing % (long) 10e8;
-    } else {
-        profile_time.tv_sec = 0;
-        profile_time.tv_nsec = timing;
-    }
-
-    return 1;
 }

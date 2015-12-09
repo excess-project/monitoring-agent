@@ -41,7 +41,7 @@ static char *csv;
  * Forward Declarations
  ******************************************************************************/
 
-static char* to_csv();
+//static char* to_csv();
 static void my_exit_handler();
 
 /*******************************************************************************
@@ -72,22 +72,30 @@ main(int argc, char** argv)
     profile_time.tv_sec = 0;
     profile_time.tv_nsec = 500000000;
     size_t num_cores = 2;
+    int is_initialized = 0;
 
     ++argv;
     --argc;
 
     /*
-     * initialize papi plugin
+     * initialize PAPI plugin
      */
-    PAPI_Plugin *monitoring_data = malloc(sizeof(PAPI_Plugin));
-    mf_papi_init(monitoring_data, argv, argc, num_cores);
+    PAPI_Plugin **monitoring_data = malloc(num_cores * sizeof(*monitoring_data));
+    is_initialized = mf_papi_init(monitoring_data, argv, argc, num_cores);
+    if (!is_initialized) {
+        exit(1);
+    }
 
     do {
         /*
          * sampling
          */
-        //mf_papi_sample(monitoring_data);
-        //puts(to_csv(monitoring_data));
+        mf_papi_sample(monitoring_data);
+
+        /*
+         * print current values
+         */
+        puts(mf_papi_to_json(monitoring_data));
 
         /*
          * sleep for a given time until next sample
@@ -108,30 +116,4 @@ my_exit_handler(int s)
     mf_papi_shutdown();
     puts("\nBye bye!");
     exit(EXIT_FAILURE);
-}
-
-/*******************************************************************************
- * to_csv
- ******************************************************************************/
-
-static char*
-to_csv(PAPI_Plugin *papi)
-{
-    int i;
-    char *row;
-
-    if (papi == NULL) {
-        log_error("No data fetched during profiling: %s", "NULL");
-        return NULL;
-    }
-
-    memset(csv, 0, 4096 * sizeof(char));
-    row = malloc(256 * sizeof(char));
-    for (i = 0; i < papi->num_events; ++i) {
-        sprintf(row, "\"%s\",%lld", papi->events[i], papi->values[i]);
-        strcat(csv, row);
-    }
-    free(row);
-
-    return csv;
 }

@@ -172,7 +172,7 @@ mf_rapl_sample(RAPL_Plugin *data)
      * read measurements
      */
     after_time = PAPI_get_real_nsec();
-    int retval = PAPI_read(EventSet, values);
+    int retval = PAPI_accum(EventSet, values);
     if (retval != PAPI_OK) {
         return FAILURE;
     }
@@ -314,7 +314,7 @@ native_cpuid(
 }
 
 /*******************************************************************************
- * get_cpu_model
+ * mf_rapl_get_cpu_model
  ******************************************************************************/
 
 static int
@@ -327,7 +327,7 @@ mf_rapl_get_cpu_model()
 }
 
 /*******************************************************************************
- * mf_rapl_set_denominator_by
+ * mf_rapl_get_denominator
  ******************************************************************************/
 
 static double

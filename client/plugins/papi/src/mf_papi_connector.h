@@ -46,7 +46,7 @@ struct PAPI_Plugin_t
  * @return [description]
  */
 int mf_papi_init(
-    PAPI_Plugin *data,
+    PAPI_Plugin **data,
     char **papi_events,
     size_t num_events,
     size_t num_cores
@@ -60,7 +60,7 @@ int mf_papi_init(
  *
  * @return [description]
  */
-int mf_papi_sample(PAPI_Plugin *data);
+int mf_papi_sample(PAPI_Plugin **data);
 
 /** @brief [brief description]
  *
@@ -70,7 +70,7 @@ int mf_papi_sample(PAPI_Plugin *data);
  *
  * @return [description]
  */
-char* mf_papi_to_json(PAPI_Plugin *data);
+char* mf_papi_to_json(PAPI_Plugin **data);
 
 /** @brief [brief description]
  *
