@@ -25,14 +25,14 @@
  ******************************************************************************/
 
 mfp_data *conf_data;
-INFINIBAND_Plugin **monitoring_data = NULL;
+INFINIBAND_Plugin *monitoring_data = NULL;
 int is_available = 0;
 
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
 
-static metric mf_plugin_papi_hook();
+static metric mf_plugin_infiniband_hook();
 
 /*******************************************************************************
  * init_mf_plugin_papi
@@ -59,7 +59,7 @@ init_mf_plugin_infiniband(PluginManager *pm)
     /*
      * initialize INFINIBAND plug-in including registering metrics
      */
-    monitoring_data = malloc(num_cores * sizeof(*monitoring_data));
+    monitoring_data = malloc(sizeof(INFINIBAND_Plugin));
     mf_infiniband_init(monitoring_data, conf_data->keys, conf_data->size);
 
     return 1;

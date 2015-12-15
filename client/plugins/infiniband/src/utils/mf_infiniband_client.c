@@ -62,17 +62,21 @@ main(int argc, char** argv)
     struct timespec profile_time = { 0, 0 };
     profile_time.tv_sec = 0;
     profile_time.tv_nsec = 500000000;
-    size_t num_cores = 2;
 
     ++argv;
     --argc;
 
+    int retval = mf_infiniband_is_enabled();
+    if (retval == 0) {
+        puts("WARNING: Infiniband component is unavailable. Stopping...");
+        exit(1);
+    }
+
     /*
      * initialize Infiniband plugin
      */
-    INFINIBAND_Plugin **monitoring_data =
-        malloc(num_cores * sizeof(*monitoring_data));
-    mf_infiniband_init(monitoring_data, argv, argc, num_cores);
+    INFINIBAND_Plugin *monitoring_data = malloc(sizeof(INFINIBAND_Plugin));
+    mf_infiniband_init(monitoring_data, argv, argc);
 
     do {
         /*
@@ -99,7 +103,7 @@ main(int argc, char** argv)
 static void
 my_exit_handler(int s)
 {
-    mf_inifinband_shutdown();
+    mf_infiniband_shutdown();
     puts("\nBye bye!");
     exit(EXIT_FAILURE);
 }

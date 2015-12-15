@@ -39,17 +39,24 @@ struct INFINIBAND_Plugin_t
  *
  * @details [long description]
  *
+ * @return [description]
+ */
+int mf_infiniband_is_enabled();
+
+/** @brief [brief description]
+ *
+ * @details [long description]
+ *
  * @param data [description]
- * @param papi_events [description]
+ * @param infiniband_events [description]
  * @param num_events [description]
  *
  * @return [description]
  */
 int mf_infiniband_init(
-    INFINIBAND_Plugin **data,
+    INFINIBAND_Plugin *data,
     char **infiniband_events,
-    size_t num_events,
-    size_t num_cores
+    size_t num_events
 );
 
 /** @brief [brief description]
@@ -60,7 +67,7 @@ int mf_infiniband_init(
  *
  * @return [description]
  */
-int mf_infiniband_sample(INFINIBAND_Plugin **data);
+int mf_infiniband_sample(INFINIBAND_Plugin *data);
 
 /** @brief [brief description]
  *
@@ -70,7 +77,7 @@ int mf_infiniband_sample(INFINIBAND_Plugin **data);
  *
  * @return [description]
  */
-char* mf_infiniband_to_json(INFINIBAND_Plugin **data);
+char* mf_infiniband_to_json(INFINIBAND_Plugin *data);
 
 /** @brief [brief description]
  *
