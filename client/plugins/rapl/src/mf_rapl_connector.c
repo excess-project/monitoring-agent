@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-#include <pthread.h> /* nanosleep */
 #include <stdlib.h> /* malloc */
 
 /* monitoring-related includes */
