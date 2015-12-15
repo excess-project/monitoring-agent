@@ -183,7 +183,7 @@ mf_rapl_sample(RAPL_Plugin *data)
     double elapsed_time = ((double) (after_time - before_time)) / 1.0e9;
     for (idx = 0; idx < size; ++idx) {
         values[idx] = correct_dram_values(data->events[idx], values[idx]);
-        data->values[idx] = ((double) values[idx] / 1.0e9) / elapsed_time;
+        data->values[idx] = ((double) values[idx]) / elapsed_time;
     }
 
     /*
@@ -228,7 +228,7 @@ correct_dram_values(char *event, double value)
         return (double) (value / denominator);
     }
 
-    return 1.0;
+    return value;
 }
 
 /*******************************************************************************
