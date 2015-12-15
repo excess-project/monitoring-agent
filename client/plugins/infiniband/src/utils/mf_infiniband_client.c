@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
+ * Copyright (C) 2014-2015 University of Stuttgart
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,40 +14,36 @@
  * limitations under the License.
  */
 
+/** @file mf_infiniband_client.c
+ *  @brief Client that demonstrates the usage of the Infiniband plug-in.
+ *
+ *  @author Dennis Hoppe (hopped)
+ */
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
 
-#include <ctype.h>
-#include <malloc.h>
-#include <papi.h>
-#include <pthread.h>
-#include <sched.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
+#include <pthread.h> /* nanosleep */
+#include <stdlib.h> /* malloc, exit, free, ... */
 
-#include "mf_infiniband_connector.h"
-#include "mf_debug.h"
-
-static char *csv;
+/* monitoring-related includes */
+#include "mf_debug.h" /* log_warn, log_info, ... */
+#include "mf_infiniband_connector.h" /* get_available_events */
 
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
 
-static char* to_csv();
 static void my_exit_handler();
+
+/*******************************************************************************
+ * Main
+ ******************************************************************************/
 
 int
 main(int argc, char** argv)
 {
-    INFINIBAND_Plugin *infiniband = malloc(sizeof(INFINIBAND_Plugin));
-    csv = malloc(4096 * sizeof(char));
-
-
     if (argc <= 1) {
         log_warn("No events given to measure: %d", argc);
         exit(EXIT_FAILURE);
@@ -68,15 +64,41 @@ main(int argc, char** argv)
     profile_time.tv_nsec = 500000000;
 
     ++argv;
-    mf_infiniband_init(argv, --argc);
-    do {
-        mf_infiniband_profile(profile_time);
-        mf_infiniband_read(infiniband, argv);
-        puts(to_csv(infiniband));
-    } while (1);
+    --argc;
 
-    free(csv);
+    int retval = mf_infiniband_is_enabled();
+    if (retval == 0) {
+        puts("WARNING: Infiniband component is unavailable. Stopping...");
+        exit(1);
+    }
+
+    /*
+     * initialize Infiniband plugin
+     */
+    INFINIBAND_Plugin *monitoring_data = malloc(sizeof(INFINIBAND_Plugin));
+    mf_infiniband_init(monitoring_data, argv, argc);
+
+    do {
+        /*
+         * sampling
+         */
+        mf_infiniband_sample(monitoring_data);
+
+        /*
+         * print current values
+         */
+        puts(mf_infiniband_to_json(monitoring_data));
+
+        /*
+         * sleep for a given time until next sample
+         */
+        nanosleep(&profile_time, NULL);
+    } while (1);
 }
+
+/*******************************************************************************
+ * my_exit_handler
+ ******************************************************************************/
 
 static void
 my_exit_handler(int s)
@@ -84,26 +106,4 @@ my_exit_handler(int s)
     mf_infiniband_shutdown();
     puts("\nBye bye!");
     exit(EXIT_FAILURE);
-}
-
-static char*
-to_csv(INFINIBAND_Plugin *infiniband)
-{
-    int i;
-    char *row;
-
-    if (infiniband == NULL) {
-        log_error("No data fetched during profiling: %s", "NULL");
-        return NULL;
-    }
-
-    memset(csv, 0, 4096 * sizeof(char));
-    row = malloc(256 * sizeof(char));
-    for (i = 0; i < infiniband->num_events; ++i) {
-        sprintf(row, "\"%s\",%lld\n", infiniband->events[i], infiniband->values[i]);
-        strcat(csv, row);
-    }
-    free(row);
-
-    return csv;
 }

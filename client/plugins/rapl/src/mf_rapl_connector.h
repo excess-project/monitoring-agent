@@ -1,9 +1,17 @@
 /*
  * Copyright (C) 2014-2015 University of Stuttgart
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 /** @file mf_rapl_connector.h
@@ -22,8 +30,8 @@
  *  @bug Events are added and removed each time #get_available_events is called.
  */
 
-#ifndef _RAPL_PLUGIN_H
-#define _RAPL_PLUGIN_H
+#ifndef _RAPL_CONNECTOR_H
+#define _RAPL_CONNECTOR_H
 
 #include <papi.h> /* PAPI_MAX_PRESET_EVENTS etc */
 
@@ -98,4 +106,4 @@ char* mf_rapl_to_json(RAPL_Plugin *data);
  */
 void mf_rapl_shutdown();
 
-#endif /* _RAPL_PLUGIN_H */
+#endif /* _RAPL_CONNECTOR_H */

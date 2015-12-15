@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-#ifndef _MF_INFINIBAND_CONNECTOR_H_
-#define _MF_INFINIBAND_CONNECTOR_H_
+#ifndef _MF_INFINIBAND_CONNECTOR_H
+#define _MF_INFINIBAND_CONNECTOR_H
 
-#include <papi.h>
-#include <time.h>
+#include <papi.h> /* PAPI_MAX_PRESET_EVENTS etc */
 
+/** @brief data structure to store RAPL monitoring data
+ */
 typedef struct INFINIBAND_Plugin_t INFINIBAND_Plugin;
 
+/** @brief data structure to store INFINIBAND monitoring data
+ *
+ * The data structure holds the metric names including the correspond
+ * measured values. Moreover, the number of events measured is stored.
+ */
 struct INFINIBAND_Plugin_t
 {
     char *events[PAPI_MAX_PRESET_EVENTS];
@@ -29,37 +35,54 @@ struct INFINIBAND_Plugin_t
     int num_events;
 };
 
-/**
- * @brief Initializes the INFINIBAND component
+/** @brief [brief description]
  *
- * Initializes the INFINIBAND component with the list of given events
- * (named_events), the size of the list, and the request number of CPU cores
- * that events should be registered to. If the number of cores specified is
- * greater than the available amount of CPU cores, the events will be
- * registered to all available CPU Cores.
+ * @details [long description]
  *
+ * @return [description]
  */
-void mf_infiniband_init(char **named_events, size_t num_events);
+int mf_infiniband_is_enabled();
 
-/**
- * @brief Profiles the system for the given time interval
+/** @brief [brief description]
  *
- * Values will be collected for the given time interval for each named event
- * that was registered with the mf_papi_init method.
- */
-void mf_infiniband_profile(struct timespec profile_interval);
-
-/**
- * @brief Reads the counters measured during the profiling phase
+ * @details [long description]
  *
- * Writes both the counter names and their respective value to the INFINIBAND_Plugin
- * struct for further analysis.
+ * @param data [description]
+ * @param infiniband_events [description]
+ * @param num_events [description]
+ *
+ * @return [description]
  */
-void mf_infiniband_read(INFINIBAND_Plugin *infiniband, char **events);
+int mf_infiniband_init(
+    INFINIBAND_Plugin *data,
+    char **infiniband_events,
+    size_t num_events
+);
 
-/**
- * @brief Shuts down the INFINIBAND component
+/** @brief [brief description]
+ *
+ * @details [long description]
+ *
+ * @param data [description]
+ *
+ * @return [description]
+ */
+int mf_infiniband_sample(INFINIBAND_Plugin *data);
+
+/** @brief [brief description]
+ *
+ * @details [long description]
+ *
+ * @param data [description]
+ *
+ * @return [description]
+ */
+char* mf_infiniband_to_json(INFINIBAND_Plugin *data);
+
+/** @brief [brief description]
+ *
+ * @details [long description]
  */
 void mf_infiniband_shutdown();
 
-#endif
+#endif /* _MF_INFINIBAND_CONNECTOR_H */

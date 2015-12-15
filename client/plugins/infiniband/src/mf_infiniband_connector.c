@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
+ * Copyright (C) 2014-2015 University of Stuttgart
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,50 +14,231 @@
  * limitations under the License.
  */
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
+#include <stdlib.h> /* malloc */
 
-#include <ctype.h>
-#include <malloc.h>
-#include <papi.h>
-#include <pthread.h>
-#include <sched.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
+/* monitoring-related includes */
 #include "mf_debug.h"
 #include "mf_infiniband_connector.h"
 
 #define SUCCESS 1
 #define FAILURE 0
 
-static int EventSet = PAPI_NULL;
-static int num_events_counted;
-static long long *values;
-static int is_initialized;
+/*******************************************************************************
+ * Variable Declarations
+ ******************************************************************************/
 
-void mf_infiniband_profile();
-void mf_infiniband_read();
+/*
+ * declares if the plug-in (i.e., INFINIBAND) is already initialized
+ */
+static int is_initialized = 0;
+
+/*
+ * declares if the INFINIBAND component is enabled to be used for monitoring
+ *
+ * states: (-1) not initialized, (0) disabled, (1) enabled
+ */
+static int is_available = -1;
+
+int EventSet = PAPI_NULL;
+long long before_time, after_time;
+long long *values;
+
+/*******************************************************************************
+ * Forward Declarations
+ ******************************************************************************/
+
 static int is_infiniband_initialized();
-static void load_papi();
-static void bind_events();
+static int enable_papi_library();
 
-void
-mf_infiniband_init(char **named_events, size_t num_events)
+/*******************************************************************************
+ * mf_infiniband_is_enabled
+ ******************************************************************************/
+
+int
+mf_infiniband_is_enabled()
 {
-    if (is_infiniband_initialized()) {
-        return;
+    int numcmp, cid;
+    const PAPI_component_info_t *cmpinfo = NULL;
+    enable_papi_library();
+
+    if (is_available > -1) {
+        return is_available;
     }
 
-    load_papi();
-    PAPI_create_eventset(&EventSet);
-    bind_events(named_events, num_events);
+    numcmp = PAPI_num_components();
+    for (cid = 0; cid < numcmp; cid++) {
+        cmpinfo = PAPI_get_component_info(cid);
+        if (strstr(cmpinfo->name, "infiniband")) {
+            if (cmpinfo->disabled) {
+                is_available = FAILURE;
+                log_warn("Component is DISABLED for this CPU (%d)", cid);
+                return FAILURE;
+            } else {
+                is_available = SUCCESS;
+                log_info("Component is ENABLED (%s)", cmpinfo->name);
+            }
+            return is_available;
+        }
+    }
 
-    is_initialized = 1;
+    is_available = FAILURE;
+    return is_available;
 }
+
+/*******************************************************************************
+ * mf_infiniband_init
+ ******************************************************************************/
+
+int
+mf_infiniband_init(INFINIBAND_Plugin *data, char **rapl_events, size_t num_events)
+{
+    /*
+     * setup PAPI library
+     */
+    if (enable_papi_library() != SUCCESS) {
+        return FAILURE;
+    }
+
+    /*
+     * create PAPI EventSet
+     */
+    int retval = PAPI_create_eventset(&EventSet);
+    if (retval != PAPI_OK) {
+        log_error("ERROR: Couldn't create EventSet %s", PAPI_strerror(retval));
+        return FAILURE;
+    }
+
+    /*
+     * add user-defined metrics to the EventSet
+     */
+    int idx, registered_idx = 0;
+    for (idx = 0; idx != num_events; ++idx) {
+        retval = PAPI_add_named_event(EventSet, rapl_events[idx]);
+        if (retval != PAPI_OK) {
+            char *err = PAPI_strerror(retval);
+            log_warn("Couldn't add PAPI event (%s): %s", rapl_events[idx], err);
+        } else {
+            log_info("Added PAPI event %s", rapl_events[idx]);
+
+            /*
+             * register added PAPI event at the internal data structure
+             */
+            data->events[registered_idx] = malloc(PAPI_MAX_STR_LEN + 1);
+            strcpy(data->events[registered_idx], rapl_events[idx]);
+            registered_idx = registered_idx + 1;
+        }
+    }
+    data->num_events = registered_idx;
+    values = calloc(registered_idx, sizeof(long long));
+
+    /*
+     * start monitoring registered events
+     */
+    before_time = PAPI_get_real_nsec();
+    retval = PAPI_start(EventSet);
+    if (retval != PAPI_OK) {
+        log_error("ERROR: Couldn't start monitoring %s", PAPI_strerror(retval));
+        return FAILURE;
+    }
+
+    return registered_idx;
+}
+
+/*******************************************************************************
+ * mf_infiniband_sample
+ ******************************************************************************/
+
+int
+mf_infiniband_sample(INFINIBAND_Plugin *data)
+{
+    /*
+     * initialize array to store monitoring results
+     */
+    size_t size = data->num_events;
+    if (values == NULL) {
+        log_error("Couldn't initialize long long values %s", "NULL");
+        return FAILURE;
+    }
+
+    /*
+     * read measurements
+     */
+    after_time = PAPI_get_real_nsec();
+    int retval = PAPI_read(EventSet, values);
+    if (retval != PAPI_OK) {
+        return FAILURE;
+    }
+
+    /*
+     * account for time passed between last measurement and now
+     */
+    int idx;
+    double elapsed_time = ((double) (after_time - before_time)) / 1.0e9;
+    for (idx = 0; idx < size; ++idx) {
+        data->values[idx] = ((double) values[idx]) / elapsed_time;
+    }
+
+    /*
+     * update time interval
+     */
+    before_time = after_time;
+
+    /*
+     * reset counters to zero
+     */
+    PAPI_reset(EventSet);
+
+    return SUCCESS;
+}
+
+/*******************************************************************************
+ * mf_infiniband_to_json
+ ******************************************************************************/
+
+char*
+mf_infiniband_to_json(INFINIBAND_Plugin *data)
+{
+    char *metric = malloc(512 * sizeof(char));
+    char *json = malloc(4096 * sizeof(char));
+    strcpy(json, ",\"type\":\"infiniband\"");
+
+    int idx;
+    size_t size = data->num_events;
+    for (idx = 0; idx < size; ++idx) {
+        sprintf(metric, ",\"%s\":%lld", data->events[idx], data->values[idx]);
+        strcat(json, metric);
+    }
+    free(metric);
+
+    return json;
+}
+
+/*******************************************************************************
+ * enable_papi_library
+ ******************************************************************************/
+
+static int
+enable_papi_library()
+{
+    if (is_infiniband_initialized()) {
+        return is_initialized;
+    }
+
+    int retval = PAPI_library_init(PAPI_VER_CURRENT);
+    if (retval != PAPI_VER_CURRENT) {
+        char *error = PAPI_strerror(retval);
+        log_error("ERROR while initializing PAPI library: %s", error);
+        is_initialized = FAILURE;
+    } else {
+        is_initialized = SUCCESS;
+    }
+
+    return is_initialized;
+}
+
+/*******************************************************************************
+ * is_infiniband_initialized
+ ******************************************************************************/
 
 static int
 is_infiniband_initialized()
@@ -65,89 +246,30 @@ is_infiniband_initialized()
     return is_initialized;
 }
 
-static void
-load_papi()
-{
-    if (PAPI_is_initialized()) {
-        return;
-    }
-
-    int retval = PAPI_library_init(PAPI_VER_CURRENT);
-    if (retval != PAPI_VER_CURRENT) {
-        char *error = PAPI_strerror(retval);
-        log_error("load_papi() - PAPI_library_init: %s", error);
-    }
-}
+/*******************************************************************************
+ * mf_infiniband_shutdown
+ ******************************************************************************/
 
 void
 mf_infiniband_shutdown()
 {
+    int retval = PAPI_stop(EventSet, NULL);
+    if (retval != PAPI_OK) {
+        char *error = PAPI_strerror(retval);
+        log_error("Couldn't stop PAPI EventSet: %s", error);
+    }
+
+    retval = PAPI_cleanup_eventset(EventSet);
+    if (retval != PAPI_OK) {
+        char *error = PAPI_strerror(retval);
+        log_error("Couldn't cleanup PAPI EventSet: %s", error);
+    }
+
+    retval = PAPI_destroy_eventset(&EventSet);
+    if (retval != PAPI_OK) {
+        char *error = PAPI_strerror(retval);
+        log_error("Couldn't destroy PAPI EventSet: %s", error);
+    }
+
     PAPI_shutdown();
-}
-
-static void
-bind_events(char **named_events, size_t num_events)
-{
-    int i;
-    int retval;
-    num_events_counted = 0;
-
-    for (i = 0; i != num_events; ++i) {
-        retval = PAPI_add_named_event(EventSet, named_events[i]);
-        if (retval != PAPI_OK) {
-            char *error = PAPI_strerror(retval);
-            log_warn("bind_events() - PAPI_add_named_event (%s): %s",
-                named_events[i], error);
-        } else {
-            log_info("bind_events() - Added event %s", named_events[i]);
-            num_events_counted++;
-        }
-    }
-
-    values = calloc(num_events, sizeof(long long));
-}
-
-void
-mf_infiniband_profile(struct timespec profile_interval)
-{
-    debug("Start INFINIBAND Monitoring %d", 0);
-    int retval = PAPI_start(EventSet);
-    if (retval != PAPI_OK) {
-        char *error = PAPI_strerror(retval);
-        log_error("mf_infiniband_profile() - PAPI_start: %s", error);
-    }
-
-    nanosleep(&profile_interval, NULL);
-
-    debug("Stop INFINIBAND Monitoring %d", 0);
-    retval = PAPI_stop(EventSet, values);
-    if (retval != PAPI_OK) {
-        char *error = PAPI_strerror(retval);
-        log_error("mf_infiniband_profile() - PAPI_stop: %s", error);
-    }
-}
-
-void
-mf_infiniband_read(INFINIBAND_Plugin *infiniband, char **named_events)
-{
-    int j;
-
-    if (infiniband == NULL) {
-        infiniband = malloc(sizeof(INFINIBAND_Plugin));
-    }
-    memset(infiniband, 0, sizeof(INFINIBAND_Plugin));
-    infiniband->num_events = 0;
-
-    for (j = 0; j != num_events_counted; ++j) {
-        infiniband->events[infiniband->num_events] = malloc(PAPI_MAX_STR_LEN + 1);
-        strcpy(infiniband->events[infiniband->num_events], named_events[j]);
-        infiniband->values[infiniband->num_events] = values[j];
-
-        debug("mf_infiniband_read() - %s=%lld",
-            infiniband->events[infiniband->num_events],
-            infiniband->values[infiniband->num_events]
-        );
-
-        infiniband->num_events++;
-    }
 }
