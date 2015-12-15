@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
+/** @file mf_papi_connector.h
+ *  @brief Interface to the PAPI component of the PAPI-C library.
+ *
+ *  This interface declares a means to access measurements of the PAPI
+ *  component, which is provided by the PAPI-C library. Please see the
+ *  {@link utils/mf_papi_client.c mf_papi_client} for a usage example. Per
+ *  default, a developer should first initialize the plug-in via calling
+ *  #mf_papi_init, before doing the actual sampling using #mf_papi_sample. At
+ *  the end, the plug-in should be gracefully terminated by executing
+ *  #mf_papi_shutdown.
+ *
+ *  @author Dennis Hoppe (hopped)
+ */
+
 #ifndef _PAPI_CONNECTOR_H
 #define _PAPI_CONNECTOR_H
 
