@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
+#include <stdlib.h> /* malloc */
 
-#include <ctype.h>
-#include <malloc.h>
-#include <papi.h>
-#include <pthread.h>
-#include <sched.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
+/* monitoring-related includes */
 #include "mf_debug.h"
 #include "mf_papi_connector.h"
 
@@ -42,6 +31,7 @@ static int DEFAULT_CPU_COMPONENT = 0;
 static int *event_sets = NULL;
 static int is_initialized = 0;
 static int maximum_number_of_cores = 1;
+static long long *before_time, *after_time;
 
 /*******************************************************************************
  * FORWARD DECLARATIONS
@@ -101,19 +91,27 @@ mf_papi_init(
     bind_events_to_cores(data, papi_events, num_events, num_cores);
 
     /*
+     * initialize time measurements
+     */
+    before_time = malloc(sizeof(long long) * num_cores);
+    after_time = malloc(sizeof(long long) * num_cores);
+
+    /*
      * start the PAPI counters
      */
     int core;
     int retval;
     for (core = 0; core != num_cores; ++core) {
+        before_time[core] = PAPI_get_real_nsec();
         retval = PAPI_start(event_sets[core]);
         if (retval != PAPI_OK) {
             char *error = PAPI_strerror(retval);
             log_error("PAPI >> Error while trying to start events: %s", error);
+            return FAILURE;
         }
     }
 
-    return retval;
+    return SUCCESS;
 }
 
 /*******************************************************************************
@@ -210,10 +208,29 @@ create_eventset_for(int num_cores)
         event_sets[number_of_core] = PAPI_NULL; /* set default EventSet to PAPI_NULL */
 
         retval = create_new_eventset(&event_sets[number_of_core]);
+        if (retval != PAPI_OK) {
+            return FAILURE;
+        }
+
         retval = assign_to_component(event_sets[number_of_core], DEFAULT_CPU_COMPONENT);
+        if (retval != PAPI_OK) {
+            return FAILURE;
+        }
+
         retval = set_domain_for(event_sets[number_of_core], PAPI_DOM_ALL, DEFAULT_CPU_COMPONENT);
+        if (retval != PAPI_OK) {
+            return FAILURE;
+        }
+
         retval = set_granularity_for(event_sets[number_of_core], PAPI_GRN_SYS);
+        if (retval != PAPI_OK) {
+            return FAILURE;
+        }
+
         retval = attach_to_cpu(event_sets[number_of_core], number_of_core);
+        if (retval != PAPI_OK) {
+            return FAILURE;
+        }
 
         log_info("PAPI >> EventSet created for core %d", number_of_core);
     }
@@ -382,15 +399,40 @@ bind_events_to_cores(
 int
 mf_papi_sample(PAPI_Plugin **data)
 {
+    int idx;
     int core;
     int retval;
+    double elapsed_time;
 
     for (core = 0; core != maximum_number_of_cores; ++core) {
-        retval = PAPI_accum(event_sets[core], data[core]->values);
+        /*
+         * compute time interval used for sampling
+         */
+        after_time[core] = PAPI_get_real_nsec();
+
+        /*
+         * read, set, and reset counters
+         */
+        retval = PAPI_read(event_sets[core], data[core]->values);
         if (retval != PAPI_OK) {
             char *error = PAPI_strerror(retval);
             log_error("PAPI >> Error while reading PAPI counter: %s", error);
         }
+
+        elapsed_time = ((double) (after_time[core] - before_time[core])) / 1.0e9;
+        for (idx = 0; idx != data[core]->num_events; ++idx) {
+            data[core]->values[idx] = data[core]->values[idx] / elapsed_time;
+        }
+
+        /*
+         * update time interval
+         */
+        before_time[core] = after_time[core];
+
+        /*
+         * reset counters to zero for next sample interval
+         */
+        PAPI_reset(event_sets[core]);
     }
 
     return retval;
@@ -432,20 +474,27 @@ mf_papi_to_json(PAPI_Plugin **data)
 void
 mf_papi_shutdown()
 {
+    int core;
+
+    for (core = 0; core != maximum_number_of_cores; ++core) {
+        int retval = PAPI_stop(event_sets[core], NULL);
+        if (retval != PAPI_OK) {
+            char *error = PAPI_strerror(retval);
+            log_error("Couldn't stop PAPI EventSet: %s", error);
+        }
+
+        retval = PAPI_cleanup_eventset(event_sets[core]);
+        if (retval != PAPI_OK) {
+            char *error = PAPI_strerror(retval);
+            log_error("Couldn't cleanup PAPI EventSet: %s", error);
+        }
+
+        retval = PAPI_destroy_eventset(&event_sets[core]);
+        if (retval != PAPI_OK) {
+            char *error = PAPI_strerror(retval);
+            log_error("Couldn't destroy PAPI EventSet: %s", error);
+        }
+    }
+
     PAPI_shutdown();
 }
-
-/*
-static int
-mf_set_affinity(int thread_id)
-{
-    int retval;
-    cpu_set_t processor_mask;
-
-    CPU_ZERO(&processor_mask);
-    CPU_SET(thread_id,&processor_mask);
-    retval = sched_setaffinity(0, sizeof(cpu_set_t), &processor_mask);
-
-    return retval;
-}
-*/
