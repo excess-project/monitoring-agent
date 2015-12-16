@@ -100,7 +100,7 @@ int mf_rapl_sample(RAPL_Plugin *data);
  */
 char* mf_rapl_to_json(RAPL_Plugin *data);
 
-/** @brief Shuts down RAPL
+/** @brief Stops measuring RAPL events
  *
  * This method calls internally the PAPI library to shut down gracefully.
  */
