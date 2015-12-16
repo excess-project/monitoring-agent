@@ -1,8 +1,15 @@
 # EXCESS ATOM Monitoring Framework: NVIDIA Plug-in
+
+We currently do not provide a client test-suite for the NVIDIA plug-in. The
+plug-in is configurable through the global **mf_config.ini**.
+
+
 ## List of supported events
 
+It follows a list of available events, that can be set in the **mf_config.ini**.
 
-| Generic Metrics           | Showed Metrics                       | Native Events            |
+
+| Available Metrics         | Mapped Metric Names                  | NVML Native Events       |
 |---------------------------|--------------------------------------|--------------------------|
 | performance_state         | performance_state                    |                          |
 |---------------------------|--------------------------------------|--------------------------|
