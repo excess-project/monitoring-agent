@@ -20,10 +20,6 @@
  *  @author Dennis Hoppe (hopped)
  */
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-
 #include <pthread.h> /* nanosleep */
 #include <stdlib.h> /* malloc, exit, free, ... */
 
@@ -35,7 +31,6 @@
  * Forward Declarations
  ******************************************************************************/
 
-//static char* to_csv();
 static void my_exit_handler();
 
 /*******************************************************************************
@@ -101,5 +96,5 @@ my_exit_handler(int s)
 {
     mf_papi_shutdown();
     puts("\nBye bye!");
-    exit(EXIT_FAILURE);
+    exit(EXIT_SUCCESS);
 }

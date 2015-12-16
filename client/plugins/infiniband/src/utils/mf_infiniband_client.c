@@ -105,5 +105,5 @@ my_exit_handler(int s)
 {
     mf_infiniband_shutdown();
     puts("\nBye bye!");
-    exit(EXIT_FAILURE);
+    exit(EXIT_SUCCESS);
 }
