@@ -1,3 +1,6 @@
+## Copyright (C) 2014-2015 University of Stuttgart
+## Authors: Dennis Hoppe
+
 CC = /usr/bin/gcc
 
 COPT_SO = $(CFLAGS) -fpic
@@ -18,7 +21,7 @@ COMMON = ../..
 SRC = src
 LIB = lib
 TESTS = tests
-UTILS = utils
+UTILS = $(SRC)/utils
 BINARIES = $(COMMON)/../binaries
 
 COMMON_INC = -I$(COMMON)
