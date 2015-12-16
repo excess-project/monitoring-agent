@@ -123,8 +123,17 @@ prepare_query(const char* URL)
     return 1;
 }
 
-size_t curl_write( void *ptr, size_t size, size_t nmemb, void *stream)
+size_t curl_write( void *ptr, size_t size, size_t nmemb, struct string *stream)
 {
+ 
+  stream->ptr = realloc(stream->ptr, size*nmemb+1);
+  if (stream->ptr == NULL) {
+    fprintf(stderr, "realloc() failed\n");
+    exit(EXIT_FAILURE);
+  }
+  memcpy(stream->ptr, ptr, size*nmemb);
+  stream->ptr[size*nmemb] = '\0';
+  stream->len = size*nmemb;
     return fwrite(ptr, size, nmemb, stdout);
 }
 
@@ -147,7 +156,7 @@ query(const char* query, char* received_data)
     init_string(&response_message);
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, response_message);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_message);
 
     CURLcode response = curl_easy_perform(curl);
     if (response != CURLE_OK) {
@@ -155,12 +164,13 @@ query(const char* query, char* received_data)
         const char *error_msg = curl_easy_strerror(response);
         log_error("query(const char*, char*) %s", error_msg);
     }
-
     received_data = (char*) realloc (received_data, response_message.len);
     received_data = response_message.ptr;
-
     curl_easy_reset(curl);
 
+    if(strstr(received_data, "Description") == NULL) {
+        return 0;
+    }
     return result;
 }
 
@@ -202,8 +212,18 @@ int publish(const char *URL, Message *messages)
 char* get_execution_id(const char *URL, char *message)
 {
     if (strlen(execution_id) > 0) {
-		return execution_id;
-	}
+        char* resp = malloc(100 * sizeof(char));
+        memset(resp, 100, '\0');
+        char query_url[300] = { '\0' };
+        // e.g. http://localhost:3000/executions/details/:id
+        sprintf(query_url, "%sdetails/%s", URL, execution_id);
+
+        if (query(query_url, resp)) {
+        /* Description message was sent.*/
+            debug("%s is registered under http://localhost:3000/executions/", execution_id);
+            return execution_id;
+        }
+    }
 
     if (!check_URL(URL) || !check_message(message)) {
         return '\0';

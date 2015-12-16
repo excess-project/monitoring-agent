@@ -55,5 +55,12 @@ make install
 make install all
 cd $Default_path
 
+#for Nvidia GDK install
+mkdir nvidia_gdk_download
+cd nvidia_gdk_download
+wget http://developer.download.nvidia.com/compute/cuda/7.5/Prod/gdk/gdk_linux_amd64_352_55_release.run
+chmod +x gdk_linux_amd64_352_55_release.run
+./gdk_linux_amd64_352_55_release.run --silent --installdir=`pwd`/../binaries/nvidia_gdk
+cd $Default_path
 # Clean-up
 rm -f *.tar.gz
