@@ -1,7 +1,5 @@
 /*
- * Copyright 2015 Anders Gidenstam, Chalmers University of Technology, Sweden.
- * Adapted from the meminfo plugin:
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
+ * Copyright (C) 2015 Chalmers University of Technology, Sweden
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

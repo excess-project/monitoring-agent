@@ -35,7 +35,7 @@ int is_available = 0;
 static metric mf_plugin_infiniband_hook();
 
 /*******************************************************************************
- * init_mf_plugin_papi
+ * init_mf_plugin_infiniband
  ******************************************************************************/
 
 extern int
@@ -66,7 +66,7 @@ init_mf_plugin_infiniband(PluginManager *pm)
 }
 
 /*******************************************************************************
- * mf_plugin_rapl_hook
+ * mf_plugin_infiniband_hook
  ******************************************************************************/
 
 static metric

@@ -35,23 +35,28 @@ struct INFINIBAND_Plugin_t
     int num_events;
 };
 
-/** @brief [brief description]
+/** @brief Checks if Infiniband component of the PAPI library is enabled
  *
- * @details [long description]
+ * This function verifies if the Infiniband component of the PAPI-C library
+ * is enabled or disabled. A developer should call this function first, before
+ * continuing with calling #mf_infiniband_init.
  *
- * @return [description]
+ * @return 1 if component is enabled; 0 otherwise.
  */
 int mf_infiniband_is_enabled();
 
-/** @brief [brief description]
+/** @brief Initializes the Infiniband plug-in
  *
- * @details [long description]
+ * This function initializes the Infiniband plug-in when it is enabled for the
+ * given infrastructure. The function internally creates a new event set, and
+ * tries to add given user-defined events. If an event is not available, an
+ * appropriate error message is returned.
  *
- * @param data [description]
- * @param infiniband_events [description]
- * @param num_events [description]
+ * @param data structure that keeps track of Infiniband related events and values
+ * @param infiniband_events user-defined array of metric names to be collected
+ * @param num_events equals the length of the array @p infiniband_events
  *
- * @return [description]
+ * @return 1 if all events were valid; 0 otherwise.
  */
 int mf_infiniband_init(
     INFINIBAND_Plugin *data,
@@ -59,29 +64,35 @@ int mf_infiniband_init(
     size_t num_events
 );
 
-/** @brief [brief description]
+/** @brief Samples the registered Infiniband events
  *
- * @details [long description]
+ * This function samples the Infiniband events registered through the
+ * #mf_infiniband_init function. The function returns the current metric values
+ * at the time of calling it. Then, the counters are reset to zero for the next
+ * measurment.
  *
- * @param data [description]
+ * @param data that holds the sampled Infiniband values
  *
- * @return [description]
+ * @return 1 on success; 0 otherwise.
  */
 int mf_infiniband_sample(INFINIBAND_Plugin *data);
 
-/** @brief [brief description]
+/** @brief Conversion of samples data to a JSON document
  *
- * @details [long description]
+ * This function generates a string representation using the JSON format of the
+ * given Infiniband data structure. The JSON-like structure is already
+ * extended by additional information including a timestamp to be send directly
+ * to the monitoring server.
  *
- * @param data [description]
+ * @param data that holds the sampled Infiniband values
  *
- * @return [description]
+ * @return a JSON document representing the given Infiniband data
  */
 char* mf_infiniband_to_json(INFINIBAND_Plugin *data);
 
-/** @brief [brief description]
+/** @brief Stops sampling Infiniband related events
  *
- * @details [long description]
+ * This method calls internally the PAPI library to shut down gracefully.
  */
 void mf_infiniband_shutdown();
 
