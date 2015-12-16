@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-/** @file mf_rapl_client.c
- *  @brief Client that demonstrates the usage of the RAPL plug-in.
+/** @file mf_vmstat_client.c
+ *  @brief Client that demonstrates the usage of the /proc/vmstat plug-in.
  *
  *  @author Dennis Hoppe (hopped)
  */
@@ -26,7 +26,7 @@
 
 /* monitoring-related includes */
 #include "mf_debug.h" /* log_warn, log_info, ... */
-#include "mf_vmstat_connector.h" /* get_available_events */
+#include "mf_vmstat_connector.h" /* mf_vmstat_init ... */
 
 /*******************************************************************************
  * Forward Declarations
