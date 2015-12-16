@@ -26,8 +26,6 @@
  *  the end, the plug-in should be cleaned by executing #mf_rapl_shutdown.
  *
  *  @author Dennis Hoppe (hopped)
- *
- *  @bug Events are added and removed each time #get_available_events is called.
  */
 
 #ifndef _RAPL_CONNECTOR_H
