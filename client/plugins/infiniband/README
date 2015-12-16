@@ -27,7 +27,7 @@ Data can then be collected via:
 $ ./mf_infiniband_client <LIST_OF_METRICS>
 ```
 
-Replace **<LIST_OF_METRICS>** with a comma-separated list of valid events. It
+Replace **<LIST_OF_METRICS>** with a space-separated list of valid events. It
 follows a list of supported events in the next section.
 
 

@@ -28,7 +28,7 @@ no data can be collected via MSR registers:
 $ ./mf_papi_client <LIST_OF_METRICS>
 ```
 
-Replace **<LIST_OF_METRICS>** with a comma-separated list of valid PAPI events.
+Replace **<LIST_OF_METRICS>** with a space-separated list of valid PAPI events.
 It follows a list of supported events in the next section.
 
 
