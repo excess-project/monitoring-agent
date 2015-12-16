@@ -49,15 +49,22 @@ struct PAPI_Plugin_t
     int num_events;
 };
 
-/** @brief [brief description]
+/** @brief Initializes the PAPI plug-in
  *
- * @details [long description]
+ * This function loads the underlying PAPI-C library, so that in subsequent
+ * steps data can be sampled. In contrast to other initialization functions,
+ * this function has a fourth parameter: @p num_cores. It is required to set
+ * the number of cores to be measured. If the number of given cores exceeds
+ * the amount of available CPU cores, then the physical maximum is taken.
  *
- * @param data [description]
- * @param papi_events [description]
- * @param num_events [description]
+ * Internally, a suitable event set is created, events are bind to CPU cores,
+ * and the given user-defined events are registered.
  *
- * @return [description]
+ * @param data structure that holds sampled PAPI events
+ * @param papi_events user-defined array of metrics to be sampled
+ * @param num_events equals the length of @p papi_events
+ *
+ * @return 1 on success; 0 otherwise.
  */
 int mf_papi_init(
     PAPI_Plugin **data,
@@ -66,29 +73,36 @@ int mf_papi_init(
     size_t num_cores
 );
 
-/** @brief [brief description]
+/** @brief Samples given PAPI events
  *
- * @details [long description]
+ * This function samples given PAPI events provided through the #mf_papi_init
+ * function. After sampling, the values are stored in the data structure passed
+ * to this function, and the corresponding counters are reset to zero. Thus,
+ * each call to #mf_papi_sample returns counter values relative to the last
+ * execution of #mf_papi_sample.
  *
- * @param data [description]
+ * @param data structure that holds sampled PAPI events
  *
- * @return [description]
+ * @return 1 on success; 0 otherwise.
  */
 int mf_papi_sample(PAPI_Plugin **data);
 
-/** @brief [brief description]
+/** @brief String representation of sampled PAPI events
  *
- * @details [long description]
+ * This functions returns a JSON representation of the PAPI events sampled. The
+ * output is compatible with the EXCESS monitoring server, and thus includes
+ * additional information such as timestamp of measurement. Please note that
+ * a single timestamp for all events sampled by calling #mf_papi_sample.
  *
- * @param data [description]
+ * @param data structure that holds sample PAPI events including their values
  *
- * @return [description]
+ * @return JSON document representing the given PAPI data structure
  */
 char* mf_papi_to_json(PAPI_Plugin **data);
 
-/** @brief [brief description]
+/** @brief Stops sampling PAPI events
  *
- * @details [long description]
+ * This methods shuts down gracefully PAPI sampling.
  */
 void mf_papi_shutdown();
 
