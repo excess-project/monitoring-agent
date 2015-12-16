@@ -16,8 +16,8 @@ endif
 
 COMMON = ../..
 CORE_INC = -I$(COMMON)/core/src
-CURL = -L../../../binaries/curl/lib -lcurl
-CURL_INC = -I../../../binaries/curl/include/
+CURL = -L../../../bin/curl/lib -lcurl
+CURL_INC = -I../../../bin/curl/include/
 
 all: clean-all publisher
 

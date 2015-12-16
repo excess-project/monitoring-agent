@@ -9,7 +9,7 @@ LFLAGS =  -lm $(APR)
 
 COMMON = ../..
 CORE_INC = -I$(COMMON)/core/src
-BINARIES = ../../../binaries
+BINARIES = ../../../bin
 APR_CONFIG = $(BINARIES)/apr/bin/apr-1-config
 APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)

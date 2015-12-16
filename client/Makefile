@@ -11,7 +11,7 @@ INSTALL_PLUGINS_DIR = $(INSTALL_DIR)/bin/plugins
 INSTALL_INCLUDES_DIR = $(INSTALL_DIR)/include
 INSTALL_LIB_DIR = $(INSTALL_DIR)/lib
 
-BINARIES = ../binaries
+BINARIES = ../bin
 PLUGIN_DIR = plugins
 PLUGIN_DEST = $(BINARIES)/plugins
 OUTPUT = $(BINARIES)/mf_agent

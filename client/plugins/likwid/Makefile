@@ -19,7 +19,7 @@ SRC = src
 LIB = lib
 TESTS = tests
 UTILS = $(SRC)/utils
-BINARIES = $(COMMON)/../binaries
+BINARIES = $(COMMON)/../bin
 
 LIKWID = -L$(BINARIES)/likwid/lib/
 LIKWID_INC = -I$(BINARIES)/likwid/include/likwid

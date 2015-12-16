@@ -21,7 +21,7 @@ SRC = src
 LIB = lib
 TESTS = tests
 UTILS = $(SRC)/utils
-BINARIES = $(COMMON)/../binaries
+BINARIES = $(COMMON)/../bin
 
 PAPI = -L$(BINARIES)/papi/lib -lpapi
 infiniband_INC = -I$(BINARIES)/papi/include/

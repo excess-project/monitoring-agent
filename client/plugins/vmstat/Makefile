@@ -22,7 +22,7 @@ SRC = src
 LIB = lib
 TESTS = tests
 UTILS = $(SRC)/utils
-BINARIES = $(COMMON)/../binaries
+BINARIES = $(COMMON)/../bin
 
 COMMON_INC = -I$(COMMON)
 CORE_INC = -I$(COMMON)/core/src
