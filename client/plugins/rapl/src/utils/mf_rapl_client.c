@@ -32,16 +32,9 @@
 #include "mf_rapl_connector.h" /* get_available_events */
 
 /*******************************************************************************
- * Variable Declarations
- ******************************************************************************/
-
-static char *csv;
-
-/*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
 
-static char* to_csv();
 static void my_exit_handler();
 
 /*******************************************************************************
@@ -51,8 +44,6 @@ static void my_exit_handler();
 int
 main(int argc, char** argv)
 {
-    csv = malloc(4096 * sizeof(char));
-
     if (argc <= 1) {
         log_warn("No events given to measure: %d", argc);
         exit(EXIT_FAILURE);
@@ -86,15 +77,13 @@ main(int argc, char** argv)
          * sampling
          */
         mf_rapl_sample(monitoring_data);
-        puts(to_csv(monitoring_data));
+        puts(mf_rapl_to_json(monitoring_data));
 
         /*
          * sleep for a given time until next sample
          */
         nanosleep(&profile_time, NULL);
     } while (1);
-
-    free(csv);
 }
 
 /*******************************************************************************
@@ -106,31 +95,5 @@ my_exit_handler(int s)
 {
     mf_rapl_shutdown();
     puts("\nBye bye!");
-    exit(EXIT_FAILURE);
-}
-
-/*******************************************************************************
- * to_csv
- ******************************************************************************/
-
-static char*
-to_csv(RAPL_Plugin *rapl)
-{
-    int i;
-    char *row;
-
-    if (rapl == NULL) {
-        log_error("No data fetched during profiling: %s", "NULL");
-        return NULL;
-    }
-
-    memset(csv, 0, 4096 * sizeof(char));
-    row = malloc(256 * sizeof(char));
-    for (i = 0; i < rapl->num_events; ++i) {
-        sprintf(row, "\"%s\",%.4f", rapl->events[i], rapl->values[i]);
-        strcat(csv, row);
-    }
-    free(row);
-
-    return csv;
+    exit(EXIT_SUCCESS);
 }
