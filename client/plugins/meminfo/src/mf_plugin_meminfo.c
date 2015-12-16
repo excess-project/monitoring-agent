@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
+ * Copyright (C) 2014-2015 University of Stuttgart
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,102 +14,78 @@
  * limitations under the License.
  */
 
-#include <time.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <mf_parser.h> /* mfp_data */
+#include <stdlib.h> /* malloc etc */
 
-#include "util.h"
-#include "plugin_manager.h"
-#include "excess_main.h"
+#include "mf_meminfo_connector.h" /* i.a. MEMINFO_Plugin */
+#include "plugin_manager.h" /* mf_plugin_meminfo_hook */
 
-#define BUFFER_SIZE 64*1000;
+/*******************************************************************************
+ * Variable Declarations
+ ******************************************************************************/
 
 mfp_data *conf_data;
+int is_available = 0;
+MEMINFO_Plugin *monitoring_data = NULL;
 
-void
-getprocmeminfo(unsigned long *restrict mfre, unsigned long *restrict mtot) {
-	char line[100];
-	FILE *fp;
+/*******************************************************************************
+ * Forward Declarations
+ ******************************************************************************/
 
-	fp = fopen("/proc/meminfo", "r");
-	if (!fp) {
-		fprintf(stderr, "/proc/meminfo not found!\n");
-		fprintf(logFile, "/proc/meminfo not found!\n");
-	}
+static metric mf_plugin_meminfo_hook();
 
-	while (fgets(line, sizeof(line), fp) != NULL ) {
-		char *pos;
-		if ((pos = strstr(line, "MemFree: "))) {
-			sscanf(pos, "MemFree: %100lu kB", mfre);
-		}
-		if ((pos = strstr(line, "MemTotal: "))) {
-			sscanf(pos, "MemTotal: %100lu kB", mtot);
-		}
-	}
-
-	fclose(fp);
-}
-
-double
-get_mem_usage() {
-	unsigned long mfre, mtot;
-	getprocmeminfo(&mfre, &mtot);
-	double frac = (double) mfre / (double) mtot;
-
-	return 100.0 - frac * 100.0;
-}
-
-char*
-toMemData(double usage) {
-	char *returnMsg = malloc(250 * sizeof(char));
-	double ram_used = usage;
-	double ram_avail = 100.0 - usage;
-
-	char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"memory\"");
-
-    int i;
-	for (i = 0; i != conf_data->size; ++i) {
-		if (strcmp(conf_data->keys[i], "mem_used") == 0) {
-			sprintf(returnMsg, ",\"mem_used\":%.2f", ram_used);
-			strcat(json, returnMsg);
-		}
-		if (strcmp(conf_data->keys[i], "mem_avail") == 0) {
-			sprintf(returnMsg, ",\"mem_avail\":%.2f", ram_avail);
-			strcat(json, returnMsg);
-		}
-	}
-
-	return json;
-}
-
-static metric
-mf_plugin_meminfo_hook() {
-	if (running) {
-		metric resMetric = malloc(sizeof(metric_t));
-		resMetric->msg = malloc(100 * sizeof(char));
-
-		int clk_id = CLOCK_REALTIME;
-		clock_gettime(clk_id, &resMetric->timestamp);
-
-		double usage = get_mem_usage();
-		strcpy(resMetric->msg, toMemData(usage));
-
-		return resMetric;
-	} else {
-		return NULL ;
-	}
-}
+/*******************************************************************************
+ * init_mf_plugin_meminfo
+ ******************************************************************************/
 
 extern int
-init_mf_plugin_meminfo(PluginManager *pm) {
-	PluginManager_register_hook(pm, "mf_plugin_meminfo", mf_plugin_meminfo_hook);
+init_mf_plugin_meminfo(PluginManager *pm)
+{
+    /*
+     * check if RAPL component is enabled
+     */
+    is_available = mf_meminfo_is_enabled();
+    if (is_available == 0) {
+        return 0;
+    }
 
-	conf_data = malloc(sizeof(mfp_data));
+    /*
+     * read configuration parameters related to /prov/vmstat (i.e., mf_config.ini)
+     */
+    PluginManager_register_hook(pm, "mf_plugin_meminfo", mf_plugin_meminfo_hook);
+    conf_data =  malloc(sizeof(mfp_data));
     mfp_get_data_filtered_by_value("mf_plugin_meminfo", conf_data, "on");
 
-	return 1;
+    /*
+     * initialize RAPL plug-in including registering metrics
+     */
+    monitoring_data = malloc(sizeof(MEMINFO_Plugin));
+    mf_meminfo_init(monitoring_data, conf_data->keys, conf_data->size);
+
+    return 1;
 }
 
+
+/*******************************************************************************
+ * mf_plugin_meminfo_hook
+ ******************************************************************************/
+
+static metric
+mf_plugin_meminfo_hook()
+{
+    if (running && (is_available == 1)) {
+        metric resMetric = malloc(sizeof(metric_t));
+        resMetric->msg = malloc(4096 * sizeof(char));
+
+        int clk_id = CLOCK_REALTIME;
+        clock_gettime(clk_id, &resMetric->timestamp);
+
+        mf_meminfo_sample(monitoring_data);
+
+        strcpy(resMetric->msg, mf_meminfo_to_json(monitoring_data));
+
+        return resMetric;
+    } else {
+        return NULL;
+    }
+}
