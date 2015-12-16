@@ -106,6 +106,7 @@ libmf.so: mf_api.o $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(
 
 #
 # INSTALL
+#
 install: prepare-install copy_tasks
 
 prepare-install: clean-install
@@ -128,7 +129,6 @@ copy_plugins_to_install:
 	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(INSTALL_PLUGINS_DIR)/
-	#cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/iostat-shell/* $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/nvidia-shell/* $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(INSTALL_PLUGINS_DIR)/
@@ -148,11 +148,8 @@ copy_libs:
 	cp -f $(BINARIES)/likwid/sbin/likwid-accessD $(INSTALL_DIR)/lib
 	cp -f lib/* $(INSTALL_DIR)/lib
 
-# work-around for EXCESS cluster
 copy_likwid:
 	cp -r $(LIKWID_DIR) $(INSTALL_DIR)/likwid
-
-# libs=/home/hopped/hlrs/codebase/excess/gitlab/monitoring-framework-client/mf/0.1.3/lib
 
 #
 #
@@ -164,7 +161,6 @@ plugins:
 	$(MAKE) -C $(PLUGIN_DIR)/rapl DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat DEBUG=$(DEBUG)
-	#$(MAKE) -C $(PLUGIN_DIR)/iostat DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/infiniband DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/nvidia DEBUG=$(DEBUG)
 
@@ -174,7 +170,6 @@ copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(PLUGIN_DEST)/
-	#cp -f $(PLUGIN_DIR)/iostat/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/iostat-shell/* $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/nvidia-shell/* $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(PLUGIN_DEST)/
@@ -194,7 +189,6 @@ clean-all:
 	$(MAKE) -C $(PLUGIN_DIR)/rapl clean
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo clean
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat clean
-	#$(MAKE) -C $(PLUGIN_DIR)/iostat clean
 	$(MAKE) -C $(PLUGIN_DIR)/infiniband clean
 	$(MAKE) -C $(PLUGIN_DIR)/nvidia clean
 
