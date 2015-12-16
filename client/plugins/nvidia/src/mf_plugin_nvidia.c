@@ -31,7 +31,7 @@ static char *append_formatted(char *buf, char *end, const char *format, ...);
 static char *create_JSON_msg();
 static int is_enabled(const char *key);
 
-#include "mf_nvml_connector.c"
+#include "mf_nvidia_connector.c"
 
 /* Plugin global data. */
 static mfp_data *nvidia_conf_data;

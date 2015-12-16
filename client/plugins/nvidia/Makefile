@@ -1,3 +1,6 @@
+## Copyright (C) 2015 Chalmers University of Technology, Sweden
+## Authors: Anders Gidenstam
+
 CC = /usr/bin/gcc
 
 COPT_SO = $(CFLAGS) -fpic
