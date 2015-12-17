@@ -126,8 +126,7 @@ copy_ini:
 	cp -f $(BASE)/mf_config.ini $(INSTALL_DIR)
 
 copy_scripts:
-	cp -r scripts $(INSTALL_DIR)
-	sed -i "s/REV/${REVISION}/g" $(INSTALL_DIR)/scripts/setenv.sh
+	cp -r scripts/start.sh $(INSTALL_DIR)
 
 copy_plugins_to_install:
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(INSTALL_PLUGINS_DIR)/
