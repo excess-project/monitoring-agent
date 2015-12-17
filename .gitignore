@@ -2,6 +2,7 @@ bin
 doxygen
 build
 dist
+man/www
 
 **.so
 **.o
