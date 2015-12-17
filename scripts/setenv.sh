@@ -1,3 +1,3 @@
-#!/bin/sh
+#!/bin/bash
 libs=../lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$libs
