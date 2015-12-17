@@ -1,6 +1,4 @@
 #!/bin/bash
-#  Copyright 2015 High Performance Computing Center, Stuttgart
-#  Adapted for nvidia-smi by Anders Gidenstam 2015.
 #  Copyright 2015 Anders Gidenstam, Chalmers University of Technology.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
