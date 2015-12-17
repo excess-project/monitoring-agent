@@ -174,7 +174,7 @@ copy_plugins: plugins
 clean:
 	rm -rf *.o *.a *.so $(SRC)/*.o $(OUTPUT) $(BASE)/plugins/*.o $(PLUGIN_DEST)/*.so lib build
 
-clean-all:
+clean-all: clean clean-install
 	$(MAKE) -C $(BASE)/contrib/parser clean
 	$(MAKE) -C $(BASE)/contrib/publisher clean
 	$(MAKE) -C $(PLUGIN_DIR)/papi clean
@@ -183,6 +183,7 @@ clean-all:
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat clean
 	$(MAKE) -C $(PLUGIN_DIR)/infiniband clean
 	$(MAKE) -C $(PLUGIN_DIR)/nvidia clean
+	rm -rf bin
 
 clean-install:
 	rm -rf $(INSTALL_DIR)
