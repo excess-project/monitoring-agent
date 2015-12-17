@@ -10,9 +10,7 @@ Reducing the energy consumption is a leading design constraint of current and fu
 ## Prerequisites
 
 The monitoring agent requires first a running server and database. In order to install these requirements, please
-checkout the associated [monitoring server][server], first. Please note that the installation and setup steps mentioned
-below assume that you are running a current Linux as operating system. We have tested the monitoring agent with
-Ubuntu 14.04 LTS as well as with Scientific Linux 6 (Carbon).
+checkout the associated [monitoring server][server], first. Please note that the installation and setup steps mentioned below assume that you are running a current Linux as operating system. We have tested the monitoring agent with Ubuntu 14.04 LTS as well as with Scientific Linux 6 (Carbon).
 
 Before you can proceed, please clone the repository:
 
