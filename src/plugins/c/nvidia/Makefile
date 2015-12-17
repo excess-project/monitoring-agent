@@ -30,6 +30,7 @@ PARSER = -L$(COMMON)/contrib/parser/ -lparser
 PARSER_INC = -I$(COMMON)/contrib/parser/src
 
 # Custom installation of the NVML library.
+GDK_DIR = $(COMMON)/../bin/nvidia
 NVML_INC = -I$(GDK_DIR)/usr/include/nvidia/gdk
 NVML = -L$(GDK_DIR)/usr/src/gdk/nvml/lib/ -lnvidia-ml
 
