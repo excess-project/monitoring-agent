@@ -1,0 +1,11 @@
+% EXCESS ATOM Monitoring Agent
+% Copyright (C) 2014, 2015 University of Stuttgart
+
+# List of Dependencies (downloaded via install_dependencies.sh)
+
+| Component         | Homepage                                          | Version   |
+|------------------ |-------------------------------------------------  |---------  |
+| PAPI-C            | http://icl.cs.utk.edu/papi/                       | 5.4.0     |
+| Apache APR        | https://apr.apache.org/                           | 1.5.1     |
+| Apache APR Utils  | https://apr.apache.org/                           | 1.5.3     |
+| Nvidia GDK        | https://developer.nvidia.com/gpu-deployment-kit   | 352.55    |
