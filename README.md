@@ -181,4 +181,4 @@ Copyright (C) 2014,2015 University of Stuttgart
 [server]: https://github.com/excess-project/monitoring-server
 [excess]: http://www.excess-project.eu
 [dreamcloud]: http://www.dreamcloud-project.eu
-[plugin-tutorial]: src/plugins/README
+[plugin-tutorial]: src/plugins/README.md
