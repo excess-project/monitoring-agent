@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 WORKFLOW="ms2_v2"
 
 ## Register Workflow

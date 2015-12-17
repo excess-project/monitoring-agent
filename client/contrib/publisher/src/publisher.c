@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
+ * Copyright (C) 2014-2015 University of Stuttgart
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ prepare_query(const char* URL)
 
 size_t curl_write( void *ptr, size_t size, size_t nmemb, struct string *stream)
 {
- 
+
   stream->ptr = realloc(stream->ptr, size*nmemb+1);
   if (stream->ptr == NULL) {
     fprintf(stderr, "realloc() failed\n");

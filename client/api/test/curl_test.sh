@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 URL="http://localhost:3000"
 EXECUTIONS="${URL}/executions"
 CONTENT_TYPE="-H \"Content-Type: application/json\""

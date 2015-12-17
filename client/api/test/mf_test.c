@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 High Performance Computing Center, Stuttgart
+ * Copyright (C) 2014-2015 University of Stuttgart
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ main(int argc, char** argv)
     mf_api_initialize(URL, EXE_ID);
 
     char* EXE_ID_check = mf_api_get_execution_id();
-    
+
     printf("EXE_ID check is :%s.\n", EXE_ID_check);
 
 
