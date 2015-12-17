@@ -67,8 +67,6 @@ CURL_INC = -I$(BINARIES)/curl/include/
 PAPI = -L$(BINARIES)/papi/lib/
 PAPI_INC =  -I$(BINARIES)/papi/include/
 
-LIKWID_DIR = $(BINARIES)/likwid
-
 APR_CONFIG = $(BINARIES)/apr/bin/apr-1-config
 APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
@@ -115,7 +113,7 @@ prepare-install: clean-install
 	@mkdir -p $(INSTALL_DIR)/lib
 	@mkdir -p $(INSTALL_INCLUDES_DIR)
 
-copy_tasks: copy_ini copy_scripts copy_plugins_to_install copy_agent copy_likwid copy_libs copy_includes
+copy_tasks: copy_ini copy_scripts copy_plugins_to_install copy_agent copy_libs copy_includes
 
 copy_ini:
 	cp -f ../mf_config.ini $(INSTALL_DIR)
@@ -126,7 +124,6 @@ copy_scripts:
 
 copy_plugins_to_install:
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(INSTALL_PLUGINS_DIR)/
-	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/iostat-shell/* $(INSTALL_PLUGINS_DIR)/
@@ -143,12 +140,7 @@ copy_agent:
 copy_libs:
 	cp -f $(BINARIES)/papi/lib/libpapi.so* $(INSTALL_DIR)/lib
 	cp -f $(BINARIES)/papi/lib/libpfm.so* $(INSTALL_DIR)/lib
-	cp -f $(BINARIES)/likwid/lib/liblikwid.so $(INSTALL_DIR)/lib
-	cp -f $(BINARIES)/likwid/sbin/likwid-accessD $(INSTALL_DIR)/lib
 	cp -f lib/* $(INSTALL_DIR)/lib
-
-copy_likwid:
-	cp -r $(LIKWID_DIR) $(INSTALL_DIR)/likwid
 
 #
 #
@@ -156,7 +148,6 @@ copy_likwid:
 #
 plugins:
 	$(MAKE) -C $(PLUGIN_DIR)/papi DEBUG=$(DEBUG)
-	$(MAKE) -C $(PLUGIN_DIR)/likwid DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/rapl DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat DEBUG=$(DEBUG)
@@ -165,7 +156,6 @@ plugins:
 
 copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
-	cp -f $(PLUGIN_DIR)/likwid/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(PLUGIN_DEST)/
@@ -183,7 +173,6 @@ clean-all:
 	$(MAKE) -C contrib/parser clean
 	$(MAKE) -C contrib/publisher clean
 	$(MAKE) -C $(PLUGIN_DIR)/papi clean
-	$(MAKE) -C $(PLUGIN_DIR)/likwid clean
 	$(MAKE) -C $(PLUGIN_DIR)/rapl clean
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo clean
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat clean
