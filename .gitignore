@@ -7,3 +7,5 @@ man/www
 **.so
 **.o
 **.a
+
+**mf_*_client
