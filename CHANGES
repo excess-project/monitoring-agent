@@ -1,5 +1,24 @@
 # RELEASE NOTES
 
+## 1.0.0 (12/18/2015)
+
+### Features
+- Implementation of the /proc/meminfo plug-in anew. The plug-in now supports all available events produced by /proc/meminfo
+- Monitoring API includes are now installed in the same directory while installing the agent
+- Refactoring of PAPI, RAPL, and vmstat plug-ins results in increased performance.
+- Added new Nvidia plug-in provided by Chalmers University of Technology, Sweden. Thanks to Anders Gidenstam!
+
+### Fixes
+- Experiment was not registered at server when a user-defined execution ID was provided.
+- Agents were not correctly deployed on multiple nodes (cf. updated start_mf.sh script).
+- Source directory was not cleaned up after installing dependencies.
+
+### Remarks
+- Removed Likwid plugin due to its GPLv3 license model.
+- Introduced new project structure. Plugins are now clearly separated between C-based and Shell-based ones.
+- Added licensing information, and updated Doxygen documentation
+
+
 
 ## 0.1.6 (05/11/2015)
 
