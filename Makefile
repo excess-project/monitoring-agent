@@ -114,7 +114,7 @@ prepare-install: clean-install
 	@mkdir -p $(INSTALL_PLUGINS_DIR)
 	@mkdir -p $(INSTALL_DIR)/lib
 	@mkdir -p $(INSTALL_INCLUDES_DIR)
-	@mkdir -p $(INSTALL_DIR)/log
+	@mkdir -p $(INSTALL_DIR)/bin/log
 	echo $(REVISION) > $(INSTALL_DIR)/VERSION
 	cp -f LICENSE $(INSTALL_DIR)
 	cp -f NOTICE $(INSTALL_DIR)
