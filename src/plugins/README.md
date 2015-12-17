@@ -179,7 +179,7 @@ Since plug-ins can be activated or deactivated prior to profiling, the section o
 [plugins]
 mf_plugin_papi    = on
 mf_plugin_meminfo = off
-```bash
+```
 
 Aside from adding the plug-in itself, developers can also define some custom parameters that can be set for the plug-in by creating a new section within the configuration file dedicated to the new plugin. For example, the section *mem\_info* holds additional information stating if some specific metric data should actually be profiled at run-time as detailed next.
 
