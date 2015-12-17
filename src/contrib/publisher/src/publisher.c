@@ -214,11 +214,11 @@ char* get_execution_id(const char *URL, char *message)
         char* resp = malloc(100 * sizeof(char));
         memset(resp, 100, '\0');
         char query_url[300] = { '\0' };
-        // e.g. http://localhost:3000/executions/details/:id
-        sprintf(query_url, "%sdetails/%s", URL, execution_id);
+        // e.g. http://localhost:3000/executions/add/:id
+        sprintf(query_url, "%sadd/%s", URL, execution_id);
 
-        if (query(query_url, resp)) {
-        /* Description message was sent.*/
+        if (publish_json(query_url, message)) {
+            /* Description message was sent.*/
             debug("%s is registered under http://localhost:3000/executions/", execution_id);
             return execution_id;
         }
