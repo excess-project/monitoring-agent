@@ -1,19 +1,5 @@
-EXCESS ATOM Monitoring Agent
-Copyright 2014, 2015 University of Stuttgart
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
-
-================================================================================
-GNU GENERAL PUBLIC LICENSE 3
-================================================================================
-
-The following components are provided under the GNU General Public License 3.
-See project link for details.
-
-     (GNU General Public License 3) Likwid (likwid:3.1.3 - https://code.google.com/p/likwid/)
-
+% EXCESS ATOM Monitoring Agent
+% Copyright (C) 2014, 2015 University of Stuttgart
 
 ================================================================================
 The zlib/libpng License (Zlib)
@@ -43,4 +29,3 @@ The following components are provided under their individual license.
 See project link for details.
 
      (Zed A. Shaw) mf_debug (debug.h - https://github.com/zedshaw/liblcthw)
-
