@@ -212,6 +212,8 @@ int main(int argc, const char* argv[]) {
 			if ((pos = strstr(argv[iter], "-h"))
 					|| (pos = strstr(argv[iter], "-?"))
 					|| (pos = strstr(argv[iter], "--help"))) {
+				// print usage
+				exit(EXIT_SUCCESS);
 			}
 		}
 	}
