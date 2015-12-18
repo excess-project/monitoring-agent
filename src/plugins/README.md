@@ -1,5 +1,14 @@
-# Plug-in Development Tutorial
+# Supported Plug-ins
 
+- [Infiniband](c/infiniband/README.md)
+- [/proc/meminfo](c/meminfo/README.md)
+- [/proc/vmstat](c/vmstat/README.md)
+- [Nvidia GPUs](c/nvidia/README.md)
+- [PAPI-C](c/papi/README.md)
+- [RAPL](c/rapl/README.md)
+
+
+# Plug-in Development Tutorial
 
 ## Summary
 
