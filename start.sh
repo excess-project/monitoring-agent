@@ -52,26 +52,41 @@ while getopts ":i:c:h" opt; do
   esac
 done
 
-if [ $OPTIND -eq 1 ]; then
-    echo "Starting agent..." >&2
-    ./bin/mf_agent &
-fi
-
 # set environment variables
 libs=../lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$libs
+
+if [ $OPTIND -eq 1 ]; then
+    echo "Starting agent..." >&2
+    nohup ./bin/mf_agent > mf_agent.log 2>&1&
+    echo $! > mf_agent.pid
+    echo "Done."
+    echo
+    exit 0;
+fi
 
 # start monitoring agent with appropriate parameters
 echo "Starting agent..." >&2
 if [ ! -z "$ID" ]; then
     if [ ! -z "$CONFIG" ]; then
-        ./bin/mf_agent -id=$ID -config=$CONFIG &
+        nohup ./bin/mf_agent -id=$ID -config=$CONFIG > mf_agent.log 2>&1&
+        echo $! > mf_agent.pid
+        echo "Done."
+        echo
+        exit 0;
     fi
-    ./bin/mf_agent -id=$ID &
+    nohup ./bin/mf_agent -id=$ID > mf_agent.log 2>&1&
+    echo $! > mf_agent.pid
+    echo "Done."
+    echo
+    exit 0;
 fi
 
 if [ ! -z "$CONFIG" ]; then
-    ./bin/mf_agent -config=$CONFIG &
+    nohup ./bin/mf_agent -config=$CONFIG > mf_agent.log 2>&1&
+    echo $! > mf_agent.pid
 fi
+echo "Done."
+echo
 
 # end
