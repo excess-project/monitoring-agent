@@ -7,5 +7,8 @@ man/www
 **.so
 **.o
 **.a
+**.tar.gz*
+*.pid
+*.log
 
 **mf_*_client
