@@ -26,6 +26,11 @@ EOF
 
 }
 
+BASE_DIR=`pwd`
+DIST_DIR=${BASE_DIR}/dist
+DIST_BIN_DIR=${DIST_DIR}/bin
+LIB_DIR=${DIST_DIR}/lib
+
 unset ID
 unset CONFIG
 
@@ -53,12 +58,12 @@ while getopts ":i:c:h" opt; do
 done
 
 # set environment variables
-libs=../lib
+libs=${LIB_DIR}
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$libs
 
 if [ $OPTIND -eq 1 ]; then
     echo "Starting agent..." >&2
-    nohup ./bin/mf_agent > mf_agent.log 2>&1&
+    nohup ${DIST_BIN_DIR}/mf_agent > mf_agent.log 2>&1&
     echo $! > mf_agent.pid
     echo "Done."
     echo
@@ -69,13 +74,13 @@ fi
 echo "Starting agent..." >&2
 if [ ! -z "$ID" ]; then
     if [ ! -z "$CONFIG" ]; then
-        nohup ./bin/mf_agent -id=$ID -config=$CONFIG > mf_agent.log 2>&1&
+        nohup ${DIST_BIN_DIR}/mf_agent -id=$ID -config=$CONFIG > mf_agent.log 2>&1&
         echo $! > mf_agent.pid
         echo "Done."
         echo
         exit 0;
     fi
-    nohup ./bin/mf_agent -id=$ID > mf_agent.log 2>&1&
+    nohup ${DIST_BIN_DIR}/mf_agent -id=$ID > mf_agent.log 2>&1&
     echo $! > mf_agent.pid
     echo "Done."
     echo
@@ -83,7 +88,7 @@ if [ ! -z "$ID" ]; then
 fi
 
 if [ ! -z "$CONFIG" ]; then
-    nohup ./bin/mf_agent -config=$CONFIG > mf_agent.log 2>&1&
+    nohup ${DIST_BIN_DIR}/mf_agent -config=$CONFIG > mf_agent.log 2>&1&
     echo $! > mf_agent.pid
 fi
 echo "Done."
