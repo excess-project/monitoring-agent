@@ -65,11 +65,11 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$libs
 echo $DATE":Check for file ${MF_AGENT_USER_CONFIGFILE}" >> $LOG_FILE
 if [ -e "${MF_AGENT_USER_CONFIGFILE}" ]; then
    echo $DATE":Using ${MF_AGENT_USER_CONFIGFILE} as configuration file" >> $LOG_FILE
-   ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_USER_CONFIGFILE} &
+   ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_USER_CONFIGFILE} &> /dev/null &
    MF_CONFIG_FILE=${MF_AGENT_USER_CONFIGFILE}
 else
-   echo $DATE":Using ${MF_AGENT_STD_CONFIGFILE} as configuration file"  >> $LOG_FILE
-   ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_STD_CONFIGFILE} &
+   echo	$DATE":Using ${MF_AGENT_STD_CONFIGFILE} as configuration file"	>> $LOG_FILE
+   ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_STD_CONFIGFILE} &> /dev/null &
    MF_CONFIG_FILE=${MF_AGENT_STD_CONFIGFILE}
 fi
 MF_SERVICE_PID=$!
@@ -86,4 +86,3 @@ if [ ! -f "${MF_AGENT_PIDFILE}" ]; then
 fi
 
 echo $DATE":---end ---" >> $LOG_FILE
-exit 0
