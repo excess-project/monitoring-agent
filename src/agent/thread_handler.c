@@ -86,10 +86,13 @@ int startThreads() {
 		sleep(1);
 
 	/* send the remaining data to the database */
-	while ((apr_queue_trypop(data_queue, &ptr) == APR_SUCCESS)) {
+	/*
+	while ((apr_queue_trypop(data_queue, &ptr) != APR_EAGAIN)) {
 		metric mPtr = ptr;
 		prepSend(mPtr);
+		free(mPtr);
 	}
+	*/
 
 	for (t = 0; t < NUM_THREADS; t++) {
 		pthread_join(threads[t], NULL );
@@ -153,14 +156,11 @@ int prepSend(metric data) {
 	}
 
 	char msg[4096] = "";
-	long double timeStamp = data->timestamp.tv_sec
-			+ (long double) (data->timestamp.tv_nsec / 10e8);
-
 	char *hostname = (char*) malloc(sizeof(char) * 80);
 	getFQDN(hostname);
 	hostname[strlen(hostname) - 1] = '\0';
 
-	sprintf(msg, "{\"Timestamp\":%.9Lf,\"hostname\":\"%s\"%s}", timeStamp, hostname, data->msg);
+	sprintf(msg, "{\"Timestamp\":%lld.%.9ld,\"hostname\":\"%s\"%s}", (long long) data->timestamp.tv_sec, data->timestamp.tv_nsec, hostname, data->msg);
 	publish_json(server_name, msg);
 	free(hostname);
 
