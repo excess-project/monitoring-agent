@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -36,7 +37,7 @@ static char exec_url[128];
 static void check_api();
 static long double get_time_in_ns();
 static long double send_trigger();
-static char* get_data_by_query();
+void get_data_by_query();
 static char* retrieve_execution_id();
 
 char*
@@ -133,8 +134,24 @@ get_time_in_ns(struct timespec date)
     return timestamp;
 }
 
-char*
-get_data_by_interval(long double start_time, long double stop_time)
+
+void stats_data_by_metric(char *Metrics_name, long double start_time, long double stop_time, char *res)
+{
+    char query_url[300] = { '\0' };
+    
+    // <stats_request_url> := http://localhost:3000/execution/stats/<db_key>    
+    // query_url := <stats_request_url>/<metric>/<start_time>/<stop_time>
+    sprintf(query_url, "%s/%s/%.9Lf/%.9Lf",
+            stats_request_url,
+            Metrics_name,
+            start_time,
+            stop_time
+           );
+    
+    get_data_by_query(query_url, res);
+}
+
+void get_data_by_interval(long double start_time, long double stop_time, char *res)
 {
     char query_url[300] = { '\0' };
 
@@ -146,20 +163,13 @@ get_data_by_interval(long double start_time, long double stop_time)
         stop_time
     );
 
-    return get_data_by_query(query_url);
+    get_data_by_query(query_url, res);
 }
 
-static char*
-get_data_by_query(char* query_url)
+void get_data_by_query(char* query_url, char *res)
 {
     check_api();
-
-    char* response = malloc(10000 * sizeof(char));
-    memset(response, 10000, '\0');
-
-    query(query_url, response);
-
-    return response;
+    query(query_url, res);
 }
 
 void
@@ -217,13 +227,11 @@ mf_api_get_execution_id()
     return execution_id;
 }
 
-char*
-mf_api_get_data_by_id(char* execution_id)
+void mf_api_get_data_by_id(char* execution_id, char *res)
 {
     char query_url[300] = { '\0' };
 
     // e.g. http://localhost:3000/executions/:id
     sprintf(query_url, "%s/%s", exec_url, execution_id);
-
-    return get_data_by_query(query_url);
+    get_data_by_query(query_url, res);
 }

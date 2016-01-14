@@ -164,7 +164,7 @@ query(const char* query, char* received_data)
         log_error("query(const char*, char*) %s", error_msg);
     }
     received_data = (char*) realloc (received_data, response_message.len);
-    received_data = response_message.ptr;
+    strcpy(received_data, response_message.ptr);
     curl_easy_reset(curl);
 
     if(strstr(received_data, "Description") == NULL) {
