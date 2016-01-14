@@ -1,5 +1,11 @@
 # RELEASE NOTES
 
+## 1.0.1 (14/01/2016)
+
+### Fixes
+- Issue where already collected metric data is no longer sent to the database after the monitoring agent is stopped.
+
+
 ## 1.0.0 (12/18/2015)
 
 ### Features
