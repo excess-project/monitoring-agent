@@ -42,25 +42,19 @@ echo $DATE":MF_AGENT_PIDFILE:"$MF_AGENT_PIDFILE >>$LOG_FILE
 echo $DATE":DBKEY:"$DBKEY >>$LOG_FILE
 
 
-#read the CONVERTER_PID
+#read the MF_AGENT_PIDFILE
 MF_AGENT_PID="$( cat ${MF_AGENT_PIDFILE} )"
-if [ -z "${MF_AGENT_PID}" ]; then
-  echo $DATE":Error in stop_mf.sh: variable MF_AGENT_PID is not initialized" >> $LOG_FILE
-  exit 12
-fi
-
-#kill the mf agent
-if [ -f "${MF_AGENT_PIDFILE}" ]; then
+if [ ! -z "${MF_AGENT_PID}" ]; then
+  #kill the mf agent
   KILL_SIGNAL_OK="$( kill -SIGINT  $MF_AGENT_PID )"
   if [[ "${KILL_SIGNAL_OK}" -ne "0" ]]; then
     echo $DATE":Error in stop_mf.sh: KILL_SIGNAL for mf agent is not handled" >> $LOG_FILE
   fi
-  #wait
   wait $MF_AGENT_PID &>> /dev/null
   echo $DATE":stop_mf.sh: The mf agent process is stopped" >> $LOG_FILE
+  rm ${MF_AGENT_PIDFILE} -rf
+else #MF_AGENT_PID
+  echo $DATE":Error in stop_mf.sh: variable MF_AGENT_PID is not initialized" >> $LOG_FILE
 fi
 
 echo $DATE":---end ---" >> $LOG_FILE
-
-rm ${MF_AGENT_PIDFILE} -rf
-exit 0
