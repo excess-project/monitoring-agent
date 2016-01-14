@@ -45,6 +45,7 @@ void catcher(int signo) {
 }
 
 int startThreads() {
+	void *ptr;
 	int t;
 	running = 1;
 
@@ -84,6 +85,12 @@ int startThreads() {
 	while (running)
 		sleep(1);
 
+	/* send the remaining data to the database */
+	while ((apr_queue_trypop(data_queue, &ptr) == APR_SUCCESS)) {
+		metric mPtr = ptr;
+		prepSend(mPtr);
+	}
+
 	for (t = 0; t < NUM_THREADS; t++) {
 		pthread_join(threads[t], NULL );
 	}
@@ -99,7 +106,6 @@ int startThreads() {
 }
 
 void *entryThreads(void *arg) {
-
 	int *typeT = (int*) arg;
 	switch (*typeT) {
 	case 0:
@@ -113,31 +119,24 @@ void *entryThreads(void *arg) {
 		break;
 	}
 
-	return NULL ;
+	return NULL;
 }
 
 int startSending() {
-	apr_status_t status;
 	void *ptr;
 
 	char* update_interval = mfp_get_value("timings", "publish_data_interval");
 	while (running) {
 		sleep(atoi(update_interval));
 
-		status = apr_queue_pop(data_queue, &ptr);
-		if (status == APR_SUCCESS) {
+		if (apr_queue_pop(data_queue, &ptr) == APR_SUCCESS) {
 			metric mPtr = ptr;
 			prepSend(mPtr);
 			free(mPtr);
 		}
 	}
-	while ((apr_queue_pop(data_queue, &ptr) == APR_SUCCESS)) {
-		metric mPtr = ptr;
-		prepSend(mPtr);
-		free(mPtr);
-	}
-	return 1;
 
+	return 1;
 }
 
 void removeSpace(char *str) {
@@ -213,7 +212,6 @@ int gatherMetric(int num) {
 		tim.tv_nsec = timings[num];
 	}
 
-	apr_status_t status;
 	PluginHook hook = PluginManager_get_hook(pm);
 	fprintf(stderr,  "\ngather metric %s (#%d) with update interval of %ld ns\n", current_plugin_name, num, timings[num]);
 	fprintf(logFile, "\ngather metric %s (#%d) with update interval of %ld ns\n", current_plugin_name, num, timings[num]);
@@ -221,8 +219,7 @@ int gatherMetric(int num) {
 
 	while (running) {
 		resMetric = hook();
-		status = apr_queue_push(data_queue, resMetric);
-		if (status != APR_SUCCESS) {
+		if (apr_queue_push(data_queue, resMetric) != APR_SUCCESS) {
 			fprintf(stderr, "Failed queue push");
 			fprintf(logFile, "failed queue push");
 		}
