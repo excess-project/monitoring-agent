@@ -40,9 +40,10 @@ static int is_initialized = 0;
 static int is_available = -1;
 
 int EventSet = PAPI_NULL;
-long long before_time, after_time;
+long long before_time, after_time, elapsed_time;
 double denominator;
 long long *values;
+long long *pre_values;
 
 /*******************************************************************************
  * Forward Declarations
@@ -51,7 +52,7 @@ long long *values;
 static int is_rapl_initialized();
 static int enable_papi_library();
 static double mf_rapl_get_denominator();
-static double correct_dram_values(char *event, double value);
+static double correct_dram_values(char *event, double value, double pre_value);
 
 /*******************************************************************************
  * mf_rapl_is_enabled
@@ -137,6 +138,11 @@ mf_rapl_init(RAPL_Plugin *data, char **rapl_events, size_t num_events)
      */
     denominator = mf_rapl_get_denominator();
     values = calloc(registered_idx, sizeof(long long));
+    pre_values = calloc(registered_idx, sizeof(long long));
+    /*initialize pre_values to 0*/
+    for (idx = 0; idx != num_events; ++idx) {
+        pre_values[idx]=0;
+    }
 
     /*
      * start monitoring registered events
@@ -180,17 +186,18 @@ mf_rapl_sample(RAPL_Plugin *data)
      * account for time passed between last measurement and now
      */
     int idx;
-    double elapsed_time = ((double) (after_time - before_time)) / 1.0e9;
+    elapsed_time = ((double) (after_time - before_time)); //in nano second
     for (idx = 0; idx < size; ++idx) {
-        values[idx] = correct_dram_values(data->events[idx], values[idx]);
-        data->values[idx] = ((double) values[idx]) / elapsed_time;
+        data->values[idx] = correct_dram_values(data->events[idx], values[idx], pre_values[idx]);
+        pre_values[idx] = values[idx];
+        values[idx] = 0;
     }
 
     /*
      * update time interval
      */
     before_time = after_time;
-
+    
     return SUCCESS;
 }
 
@@ -210,6 +217,18 @@ mf_rapl_to_json(RAPL_Plugin *data)
     for (idx = 0; idx < size; ++idx) {
         sprintf(metric, ",\"%s\":%.4f", data->events[idx], data->values[idx]);
         strcat(json, metric);
+        //if metric is energy, send also power value
+        char *p = strstr(data->events[idx], "ENERGY");
+        if (p != NULL) {
+            double power_value = (double) data->values[idx] / elapsed_time; 
+            //nano joule / nano second = watt
+            char event[40] = {'\0'};
+            strncpy(event, data->events[idx], (p - data->events[idx]));
+            strcat(event, "POWER");
+            strcat(event, p+6);
+            sprintf(metric, ",\"%s\":%.4f", event, power_value);
+            strcat(json, metric);
+        }
     }
     free(metric);
 
@@ -221,14 +240,17 @@ mf_rapl_to_json(RAPL_Plugin *data)
  ******************************************************************************/
 
 static double
-correct_dram_values(char *event, double value)
+correct_dram_values(char *event, double value, double pre_value)
 {
+    double ret;
     if (strcmp(event, "DRAM_ENERGY:PACKAGE0") == 0 ||
         strcmp(event, "DRAM_ENERGY:PACKAGE1") == 0) {
-        return (double) (value / denominator);
+        ret = (double) (value / denominator);
     }
-
-    return value;
+    if(strstr(event, "ENERGY") != NULL) {
+        ret = value - pre_value;
+    }
+    return ret;
 }
 
 /*******************************************************************************
