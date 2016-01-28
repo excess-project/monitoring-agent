@@ -128,4 +128,4 @@ rm -rf nvidia_gdk_download
 
 cd $ROOT
 make
-sudo make install
+make install
