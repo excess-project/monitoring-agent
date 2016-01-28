@@ -92,8 +92,8 @@ intialize_ht()
     ht_initialized = 1;
 }
 
-char*
-mfp_get_value(const char* section, const char* key)
+void
+mfp_get_value(const char* section, const char* key, char *ret_val)
 {
     intialize_ht();
 
@@ -102,8 +102,8 @@ mfp_get_value(const char* section, const char* key)
         log_error("mfp_get_value(const char*, const char*) Key does not exist: <%s:%s>", section, key);
         return '\0';
     }
-
-    return (char*) apr_hash_get(ht_values, key, APR_HASH_KEY_STRING);
+    strcpy(ret_val, apr_hash_get(ht_values, key, APR_HASH_KEY_STRING));
+    //return (char*) apr_hash_get(ht_values, key, APR_HASH_KEY_STRING);
 }
 
 void

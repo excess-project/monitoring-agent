@@ -128,8 +128,9 @@ void *entryThreads(void *arg) {
 
 int startSending() {
 	void *ptr;
-
-	char* update_interval = mfp_get_value("timings", "publish_data_interval");
+	char update_interval[20] = {'\0'};
+	mfp_get_value("timings", "publish_data_interval", update_interval);
+	//char* update_interval = mfp_get_value("timings", "publish_data_interval");
 	while (running) {
 		sleep(atoi(update_interval));
 
@@ -174,18 +175,29 @@ static void init_timings()
 {
 	mfp_data *mfp_timing_data = malloc(sizeof(mfp_data));
 	mfp_get_data("timings", mfp_timing_data);
-	char* timing = mfp_get_value("timings", "publish_data_interval");
+
+	char timing[20] = {'\0'};
+	mfp_get_value("timings", "publish_data_interval", timing);
+	//char* timing = mfp_get_value("timings", "publish_data_interval");
 	timings[0] = atoi(timing);
-	timing = mfp_get_value("timings", "update_configuration");
+
+	memset(timing, 0, sizeof(timing));
+	mfp_get_value("timings", "update_configuration", timing);
+	//timing = mfp_get_value("timings", "update_configuration");
 	timings[1] = atoi(timing);
 
-	long default_timing = atoi(mfp_get_value("timings", "default"));
+	memset(timing, 0, sizeof(timing));
+	mfp_get_value("timings", "default", timing);
+	long default_timing = atoi(timing);
+
 	for (int i = 2; i < mfp_timing_data->size; ++i) {
 		char* current_plugin_name = plugin_name[i];
 		if (current_plugin_name == NULL) {
 			continue;
 		}
-		char* value = mfp_get_value("timings", current_plugin_name);
+		char value[20] = {'\0'};
+		mfp_get_value("timings", current_plugin_name, value);
+		//char* value = mfp_get_value("timings", current_plugin_name);
 		if (!value || (value[0] == '\0')) {
 			timings[i] = default_timing;
 		} else {
@@ -234,8 +246,10 @@ int gatherMetric(int num) {
 int checkConf() {
 	while (running) {
 		mfp_parse(confFile);
-                init_timings();
-		char *wait_some_seconds = mfp_get_value("timings", "update_configuration");
+        init_timings();
+        char wait_some_seconds[20] = {'\0'};
+        mfp_get_value("timings", "update_configuration", wait_some_seconds);
+		//char *wait_some_seconds = mfp_get_value("timings", "update_configuration");
 		sleep(atoi(wait_some_seconds));
 	}
 	return 1;

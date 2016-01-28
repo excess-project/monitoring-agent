@@ -177,6 +177,8 @@ static char *create_JSON_msg()
 
 static int is_enabled(const char *key)
 {
-  char *value = mfp_get_value("mf_plugin_nvidia", key);
+  char value[20]={'\0'};
+  mfp_get_value("mf_plugin_nvidia", key, value);
+  //char *value = mfp_get_value("mf_plugin_nvidia", key);
   return value != NULL && !strcmp(value, "on");
 }
