@@ -117,13 +117,11 @@ mfp_get_data_filtered_by_value(
     apr_hash_index_t *ht_index;
     apr_hash_t *ht_section;
     data->size = 0;
-
     ht_section = apr_hash_get(ht_config, section, APR_HASH_KEY_STRING);
     if (ht_section == NULL) {
         log_error("mfp_get_data(const char*, mfp_data*) Section does not exist: %s", section);
         return;
     }
-
     for (ht_index = apr_hash_first(NULL, ht_section); ht_index; ht_index = apr_hash_next(ht_index)) {
         const char *key;
         const char *value;

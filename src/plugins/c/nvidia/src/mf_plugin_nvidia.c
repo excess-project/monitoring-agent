@@ -50,11 +50,11 @@ static metric mf_plugin_nvidia_hook()
     resMetric->msg = create_JSON_msg();
 
     /* Debug printout. */
-    fprintf(stderr,
-            "{\"Timestamp\":\"%Lf\"%s}\n",
-            resMetric->timestamp.tv_sec +
-            1.0e-9 * (long double)resMetric->timestamp.tv_nsec,
-            resMetric->msg);
+//    fprintf(stderr,
+//            "{\"Timestamp\":\"%Lf\"%s}\n",
+//            resMetric->timestamp.tv_sec +
+//            1.0e-9 * (long double)resMetric->timestamp.tv_nsec,
+//            resMetric->msg);
 
     return resMetric;
   } else {
