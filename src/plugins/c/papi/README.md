@@ -59,4 +59,4 @@ $ <MONITORING_AGENT>/binaries/papi/bin
 For more information on PAPI, please have a look at the following sites:
 
 - [PAPI](http://icl.cs.utk.edu/projects/papi)
-- [PAPI Standard Events](http://icl.cs.utk.edu/projects/papi/preset.html)
+- [PAPI Standard Events](http://icl.cs.utk.edu/projects/papi/presets.html)

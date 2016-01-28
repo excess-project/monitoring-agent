@@ -1,4 +1,5 @@
 bin
+binaries
 doxygen
 build
 dist
