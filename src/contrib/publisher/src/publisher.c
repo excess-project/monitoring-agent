@@ -211,6 +211,7 @@ int publish(const char *URL, Message *messages)
 char* get_execution_id(const char *URL, char *message)
 {
     if (strlen(execution_id) > 0) {
+	/*
         char* resp = malloc(100 * sizeof(char));
         memset(resp, 100, '\0');
         char query_url[300] = { '\0' };
@@ -218,10 +219,12 @@ char* get_execution_id(const char *URL, char *message)
         sprintf(query_url, "%sadd/%s", URL, execution_id);
 
         if (publish_json(query_url, message)) {
-            /* Description message was sent.*/
+            // Description message was sent.
             debug("%s is registered under http://localhost:3000/executions/", execution_id);
             return execution_id;
         }
+	*/
+	return execution_id;
     }
 
     if (!check_URL(URL) || !check_message(message)) {
