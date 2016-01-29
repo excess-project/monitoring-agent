@@ -58,7 +58,7 @@ echo $DATE":DBKEY:"$DBKEY >>$LOG_FILE
 
 
 #start mf_agent and save the process id
-libs=/opt/mf/1.0.1/lib
+libs=/opt/mf/1.0.2/lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$libs
 
 #check user config file
