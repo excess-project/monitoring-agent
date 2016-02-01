@@ -163,8 +163,11 @@ query(const char* query, char* received_data)
         const char *error_msg = curl_easy_strerror(response);
         log_error("query(const char*, char*) %s", error_msg);
     }
-    received_data = (char*) realloc (received_data, response_message.len);
-    strcpy(received_data, response_message.ptr);
+    if(response_message.len > 0){
+    	strncpy(received_data, response_message.ptr, response_message.len);
+    }
+    //received_data = (char*) realloc (received_data, response_message.len);
+    //strcpy(received_data, response_message.ptr);
     curl_easy_reset(curl);
 
     if(strstr(received_data, "Description") == NULL) {
