@@ -9,12 +9,13 @@ REVISION = 1.0.2
 HOST=$(shell hostname)
 INSTALL_DIR = dist
 
-if [[ $HOST == *"excess"* ]]; then
+ifneq (,$(findstring excess,$(HOST)))
 	INSTALL_DIR = /opt/mf/${REVISION}
-fi
-if [[ $HOST == *"jenkins"* ]]; then
+endif
+
+ifneq (,$(findstring jenkins,$(HOST)))
 	INSTALL_DIR = dist/${REVISION}
-fi
+endif
 
 INSTALL_PLUGINS_DIR = $(INSTALL_DIR)/bin/plugins
 INSTALL_INCLUDES_DIR = $(INSTALL_DIR)/include
@@ -46,7 +47,7 @@ HEADER = $(shell find $(SRC) -name "*.h")
 #
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
-    CFLAGS += -DDEBUG -g
+	CFLAGS += -DDEBUG -g
 else
 	CFLAGS += -DNDEBUG
 endif
@@ -93,7 +94,7 @@ all: prepare excess_main copy_plugins lib
 lib: libmf.so
 
 $(SRC)/%.o: %.c $(HEADER)
-		$(CC) -c $< $(CFLAGS) -fpic
+	$(CC) -c $< $(CFLAGS) -fpic
 
 prepare:
 	@mkdir -p $(PLUGIN_DEST)
@@ -105,6 +106,8 @@ prepare:
 
 excess_main: $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(SRC)/plugin_discover.o $(SRC)/plugin_manager.o
 	$(CC) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+	echo $(HOST)
+	echo $(INSTALL_DIR)
 
 mf_api.o:
 	$(CC) -c $(MF_API_SRC)/mf_api.c -o $@ $(COPT_SO) -I. $(MF_API_INC) $(CFLAGS) $(EXCESS_INC) $(MF) $(LFLAGS)
