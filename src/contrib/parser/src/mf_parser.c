@@ -46,7 +46,6 @@ mfp_parse(const char* filename)
 {
     intialize_ht();
 
-    // apr_hash_clear(ht_config);  // FIXME: concurrency issue
     int error = ini_parse(filename, handle_parser, ht_config);
     if (error < 0) {
         log_error("mfp_parse(const char*) Can't load %s", filename);
@@ -100,10 +99,14 @@ mfp_get_value(const char* section, const char* key, char *ret_val)
     apr_hash_t *ht_values = apr_hash_get(ht_config, section, APR_HASH_KEY_STRING);
     if (ht_values == NULL) {
         log_error("mfp_get_value(const char*, const char*) Key does not exist: <%s:%s>", section, key);
-        return '\0';
+        return;
     }
-    strcpy(ret_val, apr_hash_get(ht_values, key, APR_HASH_KEY_STRING));
-    //return (char*) apr_hash_get(ht_values, key, APR_HASH_KEY_STRING);
+    const char *ht_key = apr_hash_get(ht_values, key, APR_HASH_KEY_STRING);
+    if (ht_key == NULL) {
+        log_error("mfp_get_value(const char*, const char*) Key does not exist: <%s:%s>", section, key);
+        return;
+    }
+    strcpy(ret_val, ht_key);
 }
 
 void
@@ -149,11 +152,3 @@ mfp_get_data(const char* section, mfp_data* data)
 {
     mfp_get_data_filtered_by_value(section, data, NULL);
 }
-
-/*
-void shutdown()
-{
-    apr_pool_destroy(mp);
-    apr_terminate();
-}
-*/
