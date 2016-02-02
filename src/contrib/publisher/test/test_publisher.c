@@ -18,8 +18,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../../../libs/CuTest/CuTest.h"
-#include "../src/publisher.h"
+#include "CuTest.h"
+#include "publisher.h"
 
 static const char *SERVER = "http://localhost:3000/executions";
 
