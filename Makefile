@@ -6,7 +6,16 @@ CC = /usr/bin/gcc
 COPT_SO = $(CFLAGS) -fpic
 
 REVISION = 1.0.2
-INSTALL_DIR = /opt/mf/${REVISION}
+HOST=$(shell hostname)
+INSTALL_DIR = dist
+
+if [[ $HOST == *"excess"* ]]; then
+	INSTALL_DIR = /opt/mf/${REVISION}
+fi
+if [[ $HOST == *"jenkins"* ]]; then
+	INSTALL_DIR = dist/${REVISION}
+fi
+
 INSTALL_PLUGINS_DIR = $(INSTALL_DIR)/bin/plugins
 INSTALL_INCLUDES_DIR = $(INSTALL_DIR)/include
 INSTALL_LIB_DIR = $(INSTALL_DIR)/lib
