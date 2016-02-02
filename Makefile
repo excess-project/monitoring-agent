@@ -14,7 +14,7 @@ ifneq (,$(findstring excess,$(HOST)))
 endif
 
 ifneq (,$(findstring jenkins,$(HOST)))
-	INSTALL_DIR = dist/${REVISION}
+	INSTALL_DIR = dist
 endif
 
 INSTALL_PLUGINS_DIR = $(INSTALL_DIR)/bin/plugins
