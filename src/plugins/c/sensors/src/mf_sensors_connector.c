@@ -26,6 +26,9 @@
 #define SUCCESS 1
 #define FAILURE 0
 
+// https://searchcode.com/codesearch/view/68001947/#l-290
+// http://dev.man-online.org/man3/libsensors/
+
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
