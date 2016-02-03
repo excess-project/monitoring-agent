@@ -30,7 +30,7 @@ fi
 #
 # target
 #
-TARGET_DIR=/opt/mf
+TARGET_DIR=/opt/mf/dev
 TARGET_FOLDER=${VERSION}
 TARGET=${TARGET_DIR}/${TARGET_FOLDER}
 
