@@ -220,7 +220,7 @@ mf_rapl_to_json(RAPL_Plugin *data)
         //if metric is energy, send also power value
         char *p = strstr(data->events[idx], "ENERGY");
         if (p != NULL) {
-            double power_value = (double) data->values[idx] / elapsed_time; 
+            double power_value = (double) data->values[idx] * 1.0e9 / elapsed_time; 
             //nano joule / nano second = watt
             char event[40] = {'\0'};
             strncpy(event, data->events[idx], (p - data->events[idx]));
@@ -248,7 +248,7 @@ correct_dram_values(char *event, double value, double pre_value)
         ret = (double) (value / denominator);
     }
     if(strstr(event, "ENERGY") != NULL) {
-        ret = value - pre_value;
+        ret = (double) (value - pre_value) * 1.0e-9; //change from nJ to J
     }
     return ret;
 }
