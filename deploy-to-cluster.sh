@@ -2,16 +2,7 @@
 
 echo "Deploying a new development version of the monitoring agent to the EXCESS cluster"
 
-#
-# get version
-#
-DISTRIBUTION_DIR=dist
-VERSION_FILE=VERSION
-if [[ ! -f ${DISTRIBUTION_DIR}/${VERSION_FILE} ]]; then
-    echo "ERROR: Could not find VERSION of distribution"
-    exit 1;
-fi
-VERSION=$(cat ${DISTRIBUTION_DIR}/${VERSION_FILE})
+VERSION=$1
 
 #
 # set parameters to retrieve artifact from nexus
