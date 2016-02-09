@@ -39,7 +39,7 @@ static metric mf_plugin_movi_hook();
  ******************************************************************************/
 
 extern int
-init_mf_movi_movi(PluginManager *pm)
+init_mf_plugin_movidius_arduino(PluginManager *pm)
 {
     /*
      * read configuration parameters related to RAPL (i.e., mf_config.ini)
