@@ -17,8 +17,8 @@
 #include <mf_parser.h> /* mfp_data */
 #include <stdlib.h> /* malloc etc */
 
-#include "mf_movidius_arduino_connector.h" /* i.a. PAPI_Plugin */
-#include "plugin_manager.h" /* mf_plugin_papi_hook */
+#include "mf_movidius_arduino_connector.h" /* i.a. MOVI_Plugin */
+#include "plugin_manager.h" /* mf_plugin_movi_hook */
 
 /*******************************************************************************
  * Variable Declarations
@@ -35,7 +35,7 @@ int is_available = 0;
 static metric mf_plugin_movi_hook();
 
 /*******************************************************************************
- * init_mf_plugin_papi
+ * init_mf_plugin_movidius_arduino
  ******************************************************************************/
 
 extern int
@@ -59,7 +59,7 @@ init_mf_plugin_movidius_arduino(PluginManager *pm)
 }
 
 /*******************************************************************************
- * mf_plugin_rapl_hook
+ * mf_plugin_movi_hook
  ******************************************************************************/
 
 static metric
