@@ -68,6 +68,7 @@ mf_movi_init(
     if (is_movi_initialized()) {
         return SUCCESS;
     }
+    num_cores=1;
     maximum_number_of_cores = num_cores; 
     channel_coef = malloc(num_events*sizeof(double));
      /* creates EventSets for each individual core
@@ -127,8 +128,8 @@ create_eventset_for(MOVI_Plugin *data, double* ch_coef1, int num_cores)
     int ii;
     
     retval = SUCCESS;
-    
-    for (number_of_core = 0; number_of_core < num_cores; ++number_of_core) 
+    num_cores = 1;
+    for (number_of_core = 0; number_of_core < num_cores; number_of_core++) 
     {
         for(ii=0;ii<MOVI_MAX_PRESET_EVENTS;ii++)
         {
@@ -441,5 +442,7 @@ void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch
              }
          }
      }
+/*     for(ii=0;ii<MOVI_MAX_PRESET_EVENTS;ii++)
+        printf("%2d CHANNEL:%s; RESULT: %f\n",ii+1,  data[0].events[ii], data[0].values[ii]);*/
           
 }
