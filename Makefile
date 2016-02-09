@@ -2,7 +2,7 @@
 ## Authors: Anthony Sulistio, Nico Eichhorn, Dennis Hoppe
 
 CC = /usr/bin/gcc
-COPT_SO = $(CFLAGS) 
+COPT_SO = $(CFLAGS) -fpic
 
 REVISION = 1.0.2
 HOST=$(shell hostname)
