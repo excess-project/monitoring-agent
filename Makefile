@@ -2,8 +2,7 @@
 ## Authors: Anthony Sulistio, Nico Eichhorn, Dennis Hoppe
 
 CC = /usr/bin/gcc
-
-COPT_SO = $(CFLAGS) -fpic
+COPT_SO = $(CFLAGS) 
 
 REVISION = 1.0.2
 HOST=$(shell hostname)
@@ -144,6 +143,7 @@ copy_scripts:
 
 copy_plugins_to_install:
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/movidius_arduino/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(INSTALL_PLUGINS_DIR)/
@@ -167,6 +167,7 @@ copy_libs:
 #
 plugins:
 	$(MAKE) -C $(PLUGIN_DIR)/papi DEBUG=$(DEBUG)
+	$(MAKE) -C $(PLUGIN_DIR)/movidius_arduino DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/rapl DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat DEBUG=$(DEBUG)
@@ -175,6 +176,7 @@ plugins:
 
 copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/movidius_arduino/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(PLUGIN_DEST)/
@@ -191,6 +193,7 @@ clean-all: clean clean-install
 	$(MAKE) -C $(BASE)/contrib/parser clean
 	$(MAKE) -C $(BASE)/contrib/publisher clean
 	$(MAKE) -C $(PLUGIN_DIR)/papi clean
+	$(MAKE) -C $(PLUGIN_DIR)/movidius_arduino clean
 	$(MAKE) -C $(PLUGIN_DIR)/rapl clean
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo clean
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat clean
