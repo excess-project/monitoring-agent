@@ -50,11 +50,11 @@ static metric mf_plugin_nvidia_hook()
     resMetric->msg = create_JSON_msg();
 
     /* Debug printout. */
-    fprintf(stderr,
-            "{\"Timestamp\":\"%Lf\"%s}\n",
-            resMetric->timestamp.tv_sec +
-            1.0e-9 * (long double)resMetric->timestamp.tv_nsec,
-            resMetric->msg);
+//    fprintf(stderr,
+//            "{\"Timestamp\":\"%Lf\"%s}\n",
+//            resMetric->timestamp.tv_sec +
+//            1.0e-9 * (long double)resMetric->timestamp.tv_nsec,
+//            resMetric->msg);
 
     return resMetric;
   } else {
@@ -177,6 +177,8 @@ static char *create_JSON_msg()
 
 static int is_enabled(const char *key)
 {
-  char *value = mfp_get_value("mf_plugin_nvidia", key);
+  char value[20]={'\0'};
+  mfp_get_value("mf_plugin_nvidia", key, value);
+  //char *value = mfp_get_value("mf_plugin_nvidia", key);
   return value != NULL && !strcmp(value, "on");
 }

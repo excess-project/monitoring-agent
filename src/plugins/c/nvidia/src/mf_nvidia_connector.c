@@ -131,7 +131,7 @@ static char *mf_nvml_append_perf_state(handle_t devices, char *buf, char *end)
     nvmlPstates_t state;
     nvmlReturn_t ret = nvmlDeviceGetPerformanceState(*devices[i], &state);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:performance_state\":\"%d\"",
+                      ",\"GPU%d:performance_state\":%d",
                       i, state,
                       "nvmlDeviceGetPerformanceState()");
   }
@@ -144,7 +144,7 @@ static char *mf_nvml_append_power_usage(handle_t devices, char *buf, char *end)
     unsigned int power_mW;
     nvmlReturn_t ret = nvmlDeviceGetPowerUsage(*devices[i], &power_mW);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:power\":\"%f\"",
+                      ",\"GPU%d:power\":%f",
                       i, power_mW/1000.0,
                       "nvmlDeviceGetPowerUsage()");
   }
@@ -157,7 +157,7 @@ static char *mf_nvml_append_power_limit(handle_t devices, char *buf, char *end)
     unsigned int power_mW;
     nvmlReturn_t ret = nvmlDeviceGetEnforcedPowerLimit(*devices[i], &power_mW);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:power_limit\":\"%f\"",
+                      ",\"GPU%d:power_limit\":%f",
                       i, power_mW/1000.0,
                       "nvmlDeviceGetEnforcedPowerLimit()");
   }
@@ -170,11 +170,11 @@ static char *mf_nvml_append_utilization(handle_t devices, char *buf, char *end)
     nvmlUtilization_t utilization;
     nvmlReturn_t ret = nvmlDeviceGetUtilizationRates(*devices[i], &utilization);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:GPU_utilization\":\"%f\"",
+                      ",\"GPU%d:GPU_utilization\":%f",
                       i, utilization.gpu/100.0,
                       "nvmlDeviceGetUtilizationRates()");
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:MEM_utilization\":\"%f\"",
+                      ",\"GPU%d:MEM_utilization\":%f",
                       i, utilization.memory/100.0,
                       "nvmlDeviceGetUtilizationRates()");
   }
@@ -191,11 +191,11 @@ static char *mf_nvml_append_encoder_utilization(handle_t devices,
       nvmlDeviceGetEncoderUtilization(*devices[i],
                                       &utilization, &sampling_period_us);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:encoder_utilization\":\"%f\"",
+                      ",\"GPU%d:encoder_utilization\":%f",
                       i, utilization/100.0,
                       "nvmlDeviceGetEncoderUtilization()");
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:encoder_sampling_period\":\"%f\"",
+                      ",\"GPU%d:encoder_sampling_period\":%f",
                       i, sampling_period_us/1000000.0,
                       "nvmlDeviceGetEncoderUtilization()");
   }
@@ -212,11 +212,11 @@ static char *mf_nvml_append_decoder_utilization(handle_t devices,
       nvmlDeviceGetDecoderUtilization(*devices[i],
                                       &utilization, &sampling_period_us);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:decoder_utilization\":\"%f\"",
+                      ",\"GPU%d:decoder_utilization\":%f",
                       i, utilization/100.0,
                       "nvmlDeviceGetDecoderUtilization()");
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:decoder_sampling_period\":\"%f\"",
+                      ",\"GPU%d:decoder_sampling_period\":%f",
                       i, sampling_period_us/1000000.0,
                       "nvmlDeviceGetDecoderUtilization()");
   }
@@ -230,19 +230,19 @@ static char *mf_nvml_append_clock_freqs(handle_t devices, char *buf, char *end)
     nvmlReturn_t ret =
       nvmlDeviceGetClockInfo(*devices[i], NVML_CLOCK_GRAPHICS, &clockMHz);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:GRAPHICS_clock\":\"%.1lf\"",
+                      ",\"GPU%d:GRAPHICS_clock\":%.1lf",
                       i, clockMHz*1e6,
                       "nvmlDeviceGetClockInfo()");
 
     ret = nvmlDeviceGetClockInfo(*devices[i], NVML_CLOCK_SM, &clockMHz);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:SM_clock\":\"%.1lf\"",
+                      ",\"GPU%d:SM_clock\":%.1lf",
                       i, clockMHz*1e6,
                       "nvmlDeviceGetClockInfo()");
 
     ret = nvmlDeviceGetClockInfo(*devices[i], NVML_CLOCK_MEM, &clockMHz);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:MEM_clock\":\"%.1lf\"",
+                      ",\"GPU%d:MEM_clock\":%.1lf",
                       i, clockMHz*1e6,
                       "nvmlDeviceGetClockInfo()");
   }
@@ -258,7 +258,7 @@ static char *mf_nvml_append_clock_throttle_reasons(handle_t devices,
       nvmlDeviceGetCurrentClocksThrottleReasons(*devices[i],
                                                 &clocksThrottleReasons);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:clocks_throttle_reasons\":\"%lld\"",
+                      ",\"GPU%d:clocks_throttle_reasons\":%lld",
                       i, clocksThrottleReasons,
                       "nvmlDeviceGetCurrentClocksThrottleReasons()");
   }
@@ -271,11 +271,11 @@ static char *mf_nvml_append_mem(handle_t devices, char *buf, char *end)
     nvmlMemory_t mem_info;
     nvmlReturn_t ret = nvmlDeviceGetMemoryInfo(*devices[i], &mem_info);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:MEM_used\":\"%ld\"",
+                      ",\"GPU%d:MEM_used\":%ld",
                       i, mem_info.used,
                       "nvmlDeviceGetMemoryInfo()");
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:MEM_free\":\"%ld\"",
+                      ",\"GPU%d:MEM_free\":%ld",
                       i, mem_info.free,
                       "nvmlDeviceGetMemoryInfo()");
   }
@@ -288,11 +288,11 @@ static char *mf_nvml_append_mem_BAR1(handle_t devices, char *buf, char *end)
     nvmlBAR1Memory_t mem_info;
     nvmlReturn_t ret = nvmlDeviceGetBAR1MemoryInfo(*devices[i], &mem_info);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:BAR1_MEM_used\":\"%ld\"",
+                      ",\"GPU%d:BAR1_MEM_used\":%ld",
                       i, mem_info.bar1Used,
                       "nvmlDeviceGetBAR1MemoryInfo()");
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:BAR1_MEM_free\":\"%ld\"",
+                      ",\"GPU%d:BAR1_MEM_free\":%ld",
                       i, mem_info.bar1Free,
                       "nvmlDeviceGetBAR1MemoryInfo()");
   }
@@ -311,7 +311,7 @@ static char *mf_nvml_append_mem_L1_ECC_errors(handle_t devices,
                                       NVML_MEMORY_LOCATION_L1_CACHE,
                                       &lifetime_errors);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:ECC_corrected_errors_L1_cache\":\"%ld\"",
+                      ",\"GPU%d:ECC_corrected_errors_L1_cache\":%ld",
                       i, lifetime_errors,
                       "nvmlDeviceGetMemoryErrorCounter()");
     ret =
@@ -321,7 +321,7 @@ static char *mf_nvml_append_mem_L1_ECC_errors(handle_t devices,
                                       NVML_MEMORY_LOCATION_L1_CACHE,
                                       &lifetime_errors);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:ECC_uncorrected_errors_L1_cache\":\"%ld\"",
+                      ",\"GPU%d:ECC_uncorrected_errors_L1_cache\":%ld",
                       i, lifetime_errors,
                       "nvmlDeviceGetMemoryErrorCounter()");
   }
@@ -340,7 +340,7 @@ static char *mf_nvml_append_mem_L2_ECC_errors(handle_t devices,
                                       NVML_MEMORY_LOCATION_L2_CACHE,
                                       &lifetime_errors);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:ECC_corrected_errors_L2_cache\":\"%ld\"",
+                      ",\"GPU%d:ECC_corrected_errors_L2_cache\":%ld",
                       i, lifetime_errors,
                       "nvmlDeviceGetMemoryErrorCounter()");
     ret =
@@ -350,7 +350,7 @@ static char *mf_nvml_append_mem_L2_ECC_errors(handle_t devices,
                                       NVML_MEMORY_LOCATION_L2_CACHE,
                                       &lifetime_errors);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:ECC_uncorrected_errors_L2_cache\":\"%ld\"",
+                      ",\"GPU%d:ECC_uncorrected_errors_L2_cache\":%ld",
                       i, lifetime_errors,
                       "nvmlDeviceGetMemoryErrorCounter()");
   }
@@ -369,7 +369,7 @@ static char *mf_nvml_append_mem_device_ECC_errors(handle_t devices,
                                       NVML_MEMORY_LOCATION_DEVICE_MEMORY,
                                       &lifetime_errors);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:ECC_corrected_errors_device_mem\":\"%ld\"",
+                      ",\"GPU%d:ECC_corrected_errors_device_mem\":%ld",
                       i, lifetime_errors,
                       "nvmlDeviceGetMemoryErrorCounter()");
     ret =
@@ -379,7 +379,7 @@ static char *mf_nvml_append_mem_device_ECC_errors(handle_t devices,
                                       NVML_MEMORY_LOCATION_DEVICE_MEMORY,
                                       &lifetime_errors);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:ECC_uncorrected_errors_device_mem\":\"%ld\"",
+                      ",\"GPU%d:ECC_uncorrected_errors_device_mem\":%ld",
                       i, lifetime_errors,
                       "nvmlDeviceGetMemoryErrorCounter()");
   }
@@ -398,7 +398,7 @@ static char *mf_nvml_append_mem_register_ECC_errors(handle_t devices,
                                       NVML_MEMORY_LOCATION_REGISTER_FILE,
                                       &lifetime_errors);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:ECC_corrected_errors_register_file\":\"%ld\"",
+                      ",\"GPU%d:ECC_corrected_errors_register_file\":%ld",
                       i, lifetime_errors,
                       "nvmlDeviceGetMemoryErrorCounter()");
     ret =
@@ -408,7 +408,7 @@ static char *mf_nvml_append_mem_register_ECC_errors(handle_t devices,
                                       NVML_MEMORY_LOCATION_REGISTER_FILE,
                                       &lifetime_errors);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:ECC_uncorrected_errors_register_file\":\"%ld\"",
+                      ",\"GPU%d:ECC_uncorrected_errors_register_file\":%ld",
                       i, lifetime_errors,
                       "nvmlDeviceGetMemoryErrorCounter()");
   }
@@ -427,7 +427,7 @@ static char *mf_nvml_append_mem_texture_ECC_errors(handle_t devices,
                                       NVML_MEMORY_LOCATION_TEXTURE_MEMORY,
                                       &lifetime_errors);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:ECC_corrected_errors_texture_mem\":\"%ld\"",
+                      ",\"GPU%d:ECC_corrected_errors_texture_mem\":%ld",
                       i, lifetime_errors,
                       "nvmlDeviceGetMemoryErrorCounter()");
     ret =
@@ -437,7 +437,7 @@ static char *mf_nvml_append_mem_texture_ECC_errors(handle_t devices,
                                       NVML_MEMORY_LOCATION_TEXTURE_MEMORY,
                                       &lifetime_errors);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:ECC_uncorrected_errors_texture_mem\":\"%ld\"",
+                      ",\"GPU%d:ECC_uncorrected_errors_texture_mem\":%ld",
                       i, lifetime_errors,
                       "nvmlDeviceGetMemoryErrorCounter()");
   }
@@ -455,14 +455,14 @@ static char *mf_nvml_append_PCIe_throughput(handle_t devices,
                                                    NVML_PCIE_UTIL_TX_BYTES,
                                                    &bytes_per_20ms);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:PCIe_tx_throughput\":\"%.1lf\"",
+                      ",\"GPU%d:PCIe_tx_throughput\":%.1lf",
                       i, bytes_per_20ms/0.020,
                       "nvmlDeviceGetPcieThroughput()");
     ret = nvmlDeviceGetPcieThroughput(*devices[i],
                                       NVML_PCIE_UTIL_RX_BYTES,
                                       &bytes_per_20ms);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:PCIe_rx_throughput\":\"%.1lf\"",
+                      ",\"GPU%d:PCIe_rx_throughput\":%.1lf",
                       i, bytes_per_20ms/0.020,
                       "nvmlDeviceGetPcieThroughput()");
   }
@@ -477,7 +477,7 @@ static char *mf_nvml_append_temperature(handle_t devices, char *buf, char *end)
     nvmlReturn_t ret = nvmlDeviceGetTemperature(*devices[i],
                                                 NVML_TEMPERATURE_GPU, &tempC);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:temperature\":\"%d\"",
+                      ",\"GPU%d:temperature\":%d",
                       i, tempC,
                       "nvmlDeviceGetTemperature()");
   }
@@ -490,7 +490,7 @@ static char *mf_nvml_append_fan_speed(handle_t devices, char *buf, char *end)
     unsigned int fan_speed;
     nvmlReturn_t ret = nvmlDeviceGetFanSpeed(*devices[i], &fan_speed);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:fan_speed\":\"%f\"",
+                      ",\"GPU%d:fan_speed\":%f",
                       i, fan_speed/100.0,
                       "nvmlDeviceGetFanSpeed()");
   }
@@ -506,14 +506,14 @@ static char *mf_nvml_append_throttled_time(handle_t devices,
                                                     NVML_PERF_POLICY_POWER,
                                                     &time);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:time_power_capped\":\"%e\"",
+                      ",\"GPU%d:time_power_capped\":%e",
                       i, time.violationTime/1.0e-9,
                       "nvmlDeviceGetViolationStatus()");
     ret = nvmlDeviceGetViolationStatus(*devices[i],
                                        NVML_PERF_POLICY_THERMAL,
                                        &time);
     APPEND_ON_SUCCESS(ret, buf, end,
-                      ",\"GPU%d:time_thermal_capped\":\"%e\"",
+                      ",\"GPU%d:time_thermal_capped\":%e",
                       i, time.violationTime/1.0e-9,
                       "nvmlDeviceGetViolationStatus()");
   }

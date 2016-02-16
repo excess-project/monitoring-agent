@@ -94,10 +94,15 @@ int prepare() {
 	    "{\"Name\":\"%s\", \"Description\":\"%s\", \"Start_date\":\"%s\", \"Username\":\"%s\"}",
 	    hostname, description, timeArr, username
 	);
+	mfp_get_value("generic", "server", server_name);
+	//strcpy(server_name, mfp_get_value("generic", "server"));
 
-	strcpy(server_name, mfp_get_value("generic", "server"));
-	char *execution_id = get_execution_id(server_name, msg);
-	strcpy(str, execution_id);
+	if (strlen(execution_id) == 0) {
+		char *new_execution_id = get_execution_id(server_name, msg);
+		strcpy(str, new_execution_id);
+	} else {
+		strcpy(str, execution_id);
+	}
 	strcat(server_name, str);
 
 	free(hostname);

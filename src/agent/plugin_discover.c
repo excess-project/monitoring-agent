@@ -102,7 +102,9 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 		}
 
 		/* do not consider plug-ins that are switched off */
-		char* value = mfp_get_value("plugins", name);
+		char value[20] = {'\0'};
+		mfp_get_value("plugins", name, value);
+		//char* value = mfp_get_value("plugins", name);
 		if (strcmp(value, "off") == 0) {
 			continue;
 		}

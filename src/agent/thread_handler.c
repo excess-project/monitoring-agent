@@ -43,19 +43,21 @@ void catcher(int signo) {
 	printf("\nSignal %d catched\n", signo);
 
 }
+static void init_timings();
 
 int startThreads() {
 	void *ptr;
 	int t;
 	running = 1;
 
-	pm = PluginManager_new();
+        pm = PluginManager_new();        
 	const char *dirname = { "/plugins" };
 	char *pluginLocation = malloc(300 * sizeof(char));
 	strcpy(pluginLocation, pwd);
 	strcat(pluginLocation, dirname);
 
 	void* pdstate = discover_plugins(pluginLocation, pm);
+        init_timings();
 
 	int iret[MIN_THREADS + pluginCount];
 
@@ -86,10 +88,13 @@ int startThreads() {
 		sleep(1);
 
 	/* send the remaining data to the database */
-	while ((apr_queue_trypop(data_queue, &ptr) == APR_SUCCESS)) {
+	/*
+	while ((apr_queue_trypop(data_queue, &ptr) != APR_EAGAIN)) {
 		metric mPtr = ptr;
 		prepSend(mPtr);
+		free(mPtr);
 	}
+	*/
 
 	for (t = 0; t < NUM_THREADS; t++) {
 		pthread_join(threads[t], NULL );
@@ -118,14 +123,14 @@ void *entryThreads(void *arg) {
 		gatherMetric(*typeT);
 		break;
 	}
-
 	return NULL;
 }
 
 int startSending() {
 	void *ptr;
-
-	char* update_interval = mfp_get_value("timings", "publish_data_interval");
+	char update_interval[20] = {'\0'};
+	mfp_get_value("timings", "publish_data_interval", update_interval);
+	//char* update_interval = mfp_get_value("timings", "publish_data_interval");
 	while (running) {
 		sleep(atoi(update_interval));
 
@@ -153,14 +158,11 @@ int prepSend(metric data) {
 	}
 
 	char msg[4096] = "";
-	long double timeStamp = data->timestamp.tv_sec
-			+ (long double) (data->timestamp.tv_nsec / 10e8);
-
 	char *hostname = (char*) malloc(sizeof(char) * 80);
 	getFQDN(hostname);
 	hostname[strlen(hostname) - 1] = '\0';
 
-	sprintf(msg, "{\"Timestamp\":%.9Lf,\"hostname\":\"%s\"%s}", timeStamp, hostname, data->msg);
+	sprintf(msg, "{\"Timestamp\":%lld.%.9ld,\"hostname\":\"%s\"%s}", (long long) data->timestamp.tv_sec, data->timestamp.tv_nsec, hostname, data->msg);
 	publish_json(server_name, msg);
 	free(hostname);
 
@@ -172,24 +174,35 @@ long timings[256];
 static void init_timings()
 {
 	mfp_data *mfp_timing_data = malloc(sizeof(mfp_data));
-
 	mfp_get_data("timings", mfp_timing_data);
-	char* timing = mfp_get_value("timings", "publish_data_interval");
+
+	char timing[20] = {'\0'};
+	mfp_get_value("timings", "publish_data_interval", timing);
+	//char* timing = mfp_get_value("timings", "publish_data_interval");
 	timings[0] = atoi(timing);
-	timing = mfp_get_value("timings", "update_configuration");
+
+	memset(timing, 0, sizeof(timing));
+	mfp_get_value("timings", "update_configuration", timing);
+	//timing = mfp_get_value("timings", "update_configuration");
 	timings[1] = atoi(timing);
 
-	long default_timing = atoi(mfp_get_value("timings", "default"));
+	memset(timing, 0, sizeof(timing));
+	mfp_get_value("timings", "default", timing);
+	long default_timing = atoi(timing);
+
 	for (int i = 2; i < mfp_timing_data->size; ++i) {
 		char* current_plugin_name = plugin_name[i];
 		if (current_plugin_name == NULL) {
 			continue;
 		}
-		char* value = mfp_get_value("timings", current_plugin_name);
+		char value[20] = {'\0'};
+		mfp_get_value("timings", current_plugin_name, value);
+		//char* value = mfp_get_value("timings", current_plugin_name);
 		if (!value || (value[0] == '\0')) {
 			timings[i] = default_timing;
 		} else {
 			timings[i] = atoi(value);
+fprintf(stderr,  "\ntiming for plugin %s is %ld\n", current_plugin_name, timings[i]);
 		}
 	}
 
@@ -202,8 +215,6 @@ int gatherMetric(int num) {
 	struct timespec tim = { 0, 0 };
 	struct timespec tim2;
 
-	init_timings();
-
 	if (timings[num] >= 10e8) {
 		tim.tv_sec = timings[num] / 10e8;
 		tim.tv_nsec = timings[num] % (long) 10e8;
@@ -211,7 +222,6 @@ int gatherMetric(int num) {
 		tim.tv_sec = 0;
 		tim.tv_nsec = timings[num];
 	}
-
 	PluginHook hook = PluginManager_get_hook(pm);
 	fprintf(stderr,  "\ngather metric %s (#%d) with update interval of %ld ns\n", current_plugin_name, num, timings[num]);
 	fprintf(logFile, "\ngather metric %s (#%d) with update interval of %ld ns\n", current_plugin_name, num, timings[num]);
@@ -236,8 +246,10 @@ int gatherMetric(int num) {
 int checkConf() {
 	while (running) {
 		mfp_parse(confFile);
-
-		char *wait_some_seconds = mfp_get_value("timings", "update_configuration");
+        init_timings();
+        char wait_some_seconds[20] = {'\0'};
+        mfp_get_value("timings", "update_configuration", wait_some_seconds);
+		//char *wait_some_seconds = mfp_get_value("timings", "update_configuration");
 		sleep(atoi(wait_some_seconds));
 	}
 	return 1;

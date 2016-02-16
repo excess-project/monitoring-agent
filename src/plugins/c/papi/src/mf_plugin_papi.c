@@ -49,7 +49,9 @@ init_mf_plugin_papi(PluginManager *pm)
     mfp_get_data_filtered_by_value("mf_plugin_papi", conf_data, "on");
 
     int num_cores = 1;
-    char* str_num_cores = mfp_get_value("mf_plugin_papi", "MAX_CPU_CORES");
+    char str_num_cores[10]={'\0'};
+    mfp_get_value("mf_plugin_papi", "MAX_CPU_CORES", str_num_cores);
+    //char* str_num_cores = mfp_get_value("mf_plugin_papi", "MAX_CPU_CORES");
     if (strcmp(str_num_cores, "MAX") != 0) {
         num_cores = atoi(str_num_cores);
     }
