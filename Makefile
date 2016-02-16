@@ -126,7 +126,6 @@ copy_ini:
 	cp -f $(BASE)/mf_config.ini $(INSTALL_DIR)
 
 copy_scripts:
-	cp -r scripts $(INSTALL_DIR)
 	cp start.sh $(INSTALL_DIR)
 	cp stop.sh $(INSTALL_DIR)
 
