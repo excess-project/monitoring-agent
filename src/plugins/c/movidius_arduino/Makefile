@@ -24,7 +24,7 @@ TESTS = tests
 UTILS = $(SRC)/utils
 BINARIES = $(COMMON)/../bin
 
-MOVIDIUS_ARDUINO = -L$(BINARIES)/movidius_arduino/lib 
+MOVIDIUS_ARDUINO = -L$(BINARIES)/movidius_arduino/lib
 MOVIDIUS_ARDUINO_INC = -I$(BINARIES)/movidius_arduino/include/
 
 COMMON_INC = -I$(COMMON)
@@ -41,8 +41,7 @@ HEADER = $(shell find src -name '*.h')
 all: clean prepare mf_movidius_arduino_client mf_plugin_movidius_arduino.so
 
 mf_plugin_movidius_arduino.so: mf_plugin_movidius_arduino.o mf_movidius_arduino_connector.o
-	$(CC) -o $(LIB)/mf_plugin_movidius_arduino.so $^ -shared 
-	cp $(LIB)/mf_plugin_movidius_arduino.so $(BINARIES)/movidius_arduino/lib/libmovidius_arduino.so 
+	$(CC) -o $(LIB)/mf_plugin_movidius_arduino.so $^ -shared
 
 mf_movidius_arduino_connector.o: $(SRC)/mf_movidius_arduino_connector.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. $(MOVIDIUS_ARDUINO) -lmovidius_arduino

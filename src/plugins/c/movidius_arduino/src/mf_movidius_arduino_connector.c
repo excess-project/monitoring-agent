@@ -43,16 +43,13 @@ static double* channel_coef=NULL;
 static int arduino_fd = 0;
 static char* arduino_buf = NULL;
 static int arduino_buf_size = 2048;
+
 /*******************************************************************************
  * FORWARD DECLARATIONS
  ******************************************************************************/
 
 static int is_movi_initialized();
 static int create_eventset_for();
-
-
-
-
 
 
 /*******************************************************************************
@@ -69,7 +66,7 @@ mf_movi_init(
         return SUCCESS;
     }
     num_cores=1;
-    maximum_number_of_cores = num_cores; 
+    maximum_number_of_cores = num_cores;
     channel_coef = malloc(num_events*sizeof(double));
      /* creates EventSets for each individual core
      */
@@ -95,14 +92,14 @@ mf_movi_init(
     /*
      * start the MOVI counters
      */
-    
-    int core; 
+
+    int core;
     for (core = 0; core < num_cores; ++core) {
         before_time[core] = timer_get_time();
     }
-    is_initialized = 1; 
-    
-    
+    is_initialized = 1;
+
+
     return SUCCESS;
 }
 
@@ -126,10 +123,10 @@ create_eventset_for(MOVI_Plugin *data, double* ch_coef1, int num_cores)
     int retval;
     int number_of_core;
     int ii;
-    
+
     retval = SUCCESS;
     num_cores = 1;
-    for (number_of_core = 0; number_of_core < num_cores; number_of_core++) 
+    for (number_of_core = 0; number_of_core < num_cores; number_of_core++)
     {
         for(ii=0;ii<MOVI_MAX_PRESET_EVENTS;ii++)
         {
@@ -203,7 +200,7 @@ mf_movi_sample(MOVI_Plugin *data)
         /*
          * reset counters to zero for next sample interval
          */
-        
+
     }
 
     return SUCCESS;
@@ -218,14 +215,14 @@ mf_movi_to_json(MOVI_Plugin *data)
 {
     int core, event_idx;
     size_t num_events;
-    num_events = MOVI_MAX_PRESET_EVENTS;
+    //num_events = MOVI_MAX_PRESET_EVENTS; /* unused */
     char *metric = malloc(512 * sizeof(char));
     char *json = malloc(4096 * sizeof(char));
     strcpy(json, ",\"type\":\"power\"");
 
     for (core = 0; core < maximum_number_of_cores; core++) {
         num_events = data[core].num_events;
-        for (event_idx = 0; event_idx < MOVI_MAX_PRESET_EVENTS; event_idx++) {
+        for (event_idx = 0; event_idx < num_events; event_idx++) {
             sprintf(metric, ",\"%s\":"FORMAT_SCIENTIFIC,  data[core].events[event_idx],data[core].values[event_idx]*channel_coef[event_idx]);
             strcat(json, metric);
         }
@@ -255,7 +252,7 @@ double timer_get_time(void)
 }
 
 int open_interfase(int* fd, const char* port_name)
-{   
+{
     int fd_local = open (port_name, O_RDWR | O_NOCTTY | O_SYNC);
     if (fd_local < 0)
     {
@@ -263,7 +260,7 @@ int open_interfase(int* fd, const char* port_name)
         return FAILURE;
     }
     *fd = fd_local;
-    
+
     return SUCCESS;
 }
 
@@ -326,13 +323,13 @@ void set_blocking (int fd, int should_block)
 
 void read_arduino(int fd, char* arduino_output, size_t* length,  size_t max_length)
 {
-    *length = read (fd, arduino_output, max_length); 
+    *length = read (fd, arduino_output, max_length);
 }
 
 void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch_coef1 )
 {
-    size_t current_pos; 
-    size_t current_numpos, num_length; 
+    size_t current_pos;
+    size_t current_numpos, num_length;
     char cr;
     int found, found2, channel,ii;
     char tmp[128];
@@ -345,12 +342,12 @@ void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch
       data[0].values[ii] = 0.0;
       first_measure[ii] = 0;
     }
-    while(current_pos<length)  
+    while(current_pos<length)
     {
         found=0;
         found2=0;
         channel = 0;
-        while(current_pos<length && found == 0)   
+        while(current_pos<length && found == 0)
         {
             cr=arduino_output[current_pos];
             switch( cr)
@@ -386,7 +383,7 @@ void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch
          found=0;
          current_numpos=0;
          channel = 0;
-         while(current_pos<length && found2 == 0)   
+         while(current_pos<length && found2 == 0)
          {
              cr=arduino_output[current_pos];
              switch( cr)
@@ -422,7 +419,7 @@ void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch
                  }
              }
              if(found == 1)
-             { 
+             {
                  double number = (double)atoi(tmp);
                  if(first_measure[channel]==0)
                  {
@@ -444,5 +441,5 @@ void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch
      }
 /*     for(ii=0;ii<MOVI_MAX_PRESET_EVENTS;ii++)
         printf("%2d CHANNEL:%s; RESULT: %f\n",ii+1,  data[0].events[ii], data[0].values[ii]);*/
-          
+
 }
