@@ -126,8 +126,8 @@ copy_ini:
 	cp -f $(BASE)/mf_config.ini $(INSTALL_DIR)
 
 copy_scripts:
-	cp start.sh $(INSTALL_DIR)
-	cp stop.sh $(INSTALL_DIR)
+	mv start.sh $(INSTALL_DIR)
+	mv stop.sh $(INSTALL_DIR)
 
 copy_plugins_to_install:
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(INSTALL_PLUGINS_DIR)/

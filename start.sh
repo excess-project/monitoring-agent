@@ -27,7 +27,7 @@ EOF
 }
 
 BASE_DIR=`pwd`
-DIST_DIR=${BASE_DIR}/dist
+DIST_DIR=${BASE_DIR}
 DIST_BIN_DIR=${DIST_DIR}/bin
 LIB_DIR=${DIST_DIR}/lib
 
