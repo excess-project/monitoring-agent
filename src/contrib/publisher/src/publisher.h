@@ -69,6 +69,12 @@ struct Message_t {
 char* get_execution_id(const char *URL, char *message);
 
 /**
+ * @brief Creates a new experiment ID based on the given username and message.
+ *
+ */
+char* create_experiment_id(const char* URL, char* message);
+
+/**
  * @brief Queries a server by the given query, and writes the response into
  *        received data.
  *
