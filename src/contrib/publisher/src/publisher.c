@@ -25,7 +25,8 @@ static CURL *curl;
 char execution_id[ID_SIZE] = { 0 };
 struct curl_slist *headers = NULL;
 
-static void init_curl()
+static void
+init_curl()
 {
 	if (curl != NULL ) {
 		return;
@@ -55,7 +56,8 @@ struct string {
     size_t len;
 };
 
-void init_string(struct string *s) {
+void
+init_string(struct string *s) {
     s->len = 0;
     s->ptr = malloc(s->len+1);
     if (s->ptr == NULL) {
@@ -65,14 +67,16 @@ void init_string(struct string *s) {
     s->ptr[0] = '\0';
 }
 
-static size_t get_stream_data(void *buffer, size_t size, size_t nmemb, void *stream) {
+static size_t
+get_stream_data(void *buffer, size_t size, size_t nmemb, void *stream) {
 	size_t total = size * nmemb;
 	memcpy(stream, buffer, total);
 
 	return total;
 }
 
-static int check_URL(const char *URL)
+static int
+check_URL(const char *URL)
 {
     if (URL == NULL || *URL == '\0') {
         const char *error_msg = "URL not set.";
@@ -82,7 +86,8 @@ static int check_URL(const char *URL)
 	return 1;
 }
 
-static int check_message(char *message)
+static int
+check_message(char *message)
 {
 	if (message == NULL || *message == '\0') {
 	    const char *error_msg = "message not set.";
@@ -92,7 +97,8 @@ static int check_message(char *message)
 	return 1;
 }
 
-static int prepare_publish(const char *URL, char *message)
+static int
+prepare_publish(const char *URL, char *message)
 {
     init_curl();
 
@@ -122,7 +128,8 @@ prepare_query(const char* URL)
     return 1;
 }
 
-size_t curl_write( void *ptr, size_t size, size_t nmemb, struct string *stream)
+size_t
+curl_write( void *ptr, size_t size, size_t nmemb, struct string *stream)
 {
 
   stream->ptr = realloc(stream->ptr, size*nmemb+1);
@@ -176,7 +183,8 @@ query(const char* query, char* received_data)
     return result;
 }
 
-int publish_json(const char *URL, char *message)
+int
+publish_json(const char *URL, char *message)
 {
 	int result = SEND_SUCCESS;
 
@@ -206,28 +214,30 @@ int publish_json(const char *URL, char *message)
     return result;
 }
 
-int publish(const char *URL, Message *messages)
+int
+publish(const char *URL, Message *messages)
 {
     return SEND_SUCCESS;
 }
 
-char* get_execution_id(const char *URL, char *message)
+char*
+get_execution_id(const char *URL, char *message)
 {
     if (strlen(execution_id) > 0) {
-	/*
-        char* resp = malloc(100 * sizeof(char));
-        memset(resp, 100, '\0');
-        char query_url[300] = { '\0' };
-        // e.g. http://localhost:3000/executions/add/:id
-        sprintf(query_url, "%sadd/%s", URL, execution_id);
+    	/*
+            char* resp = malloc(100 * sizeof(char));
+            memset(resp, 100, '\0');
+            char query_url[300] = { '\0' };
+            // e.g. http://localhost:3000/executions/add/:id
+            sprintf(query_url, "%sadd/%s", URL, execution_id);
 
-        if (publish_json(query_url, message)) {
-            // Description message was sent.
-            debug("%s is registered under http://localhost:3000/executions/", execution_id);
-            return execution_id;
-        }
-	*/
-	return execution_id;
+            if (publish_json(query_url, message)) {
+                // Description message was sent.
+                debug("%s is registered under http://localhost:3000/executions/", execution_id);
+                return execution_id;
+            }
+    	*/
+	   return execution_id;
     }
 
     if (!check_URL(URL) || !check_message(message)) {
@@ -254,7 +264,35 @@ char* get_execution_id(const char *URL, char *message)
 	return execution_id;
 }
 
-void shutdown_curl()
+char*
+create_experiment_id(const char* URL, char* message)
+{
+    if (!check_URL(URL) || !check_message(message)) {
+        return '\0';
+    }
+
+    if (!prepare_publish(URL, message)) {
+        return '\0';
+    }
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_stream_data);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &execution_id);
+
+    CURLcode response = curl_easy_perform(curl);
+    if (response != CURLE_OK) {
+        const char *error_msg = curl_easy_strerror(response);
+        log_error("publish(const char*, Message) %s", error_msg);
+    }
+
+    debug("create_experiment_id(const char*, char*) Execution_ID = <%s>", execution_id);
+
+    curl_easy_reset(curl);
+
+    return execution_id;
+}
+
+void
+shutdown_curl()
 {
     if (curl == NULL ) {
 		return;
