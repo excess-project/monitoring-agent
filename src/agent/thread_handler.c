@@ -19,45 +19,52 @@
 #include <unistd.h>
 #include <time.h>
 #include <signal.h>
-
+/* start of monitoring-related includes */
 #include <publisher.h>
-
 #include "excess_main.h"
 #include "thread_handler.h"
-
 #include "plugin_manager.h"
 #include "plugin_discover.h"
-
 #include "util.h"
 
-int running;
+/*******************************************************************************
+ * Variable Declarations
+ ******************************************************************************/
 
+int running;
 
 static PluginManager *pm;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_t threads[256];
 
-void catcher(int signo) {
+/*******************************************************************************
+ * Forward Declarations
+ ******************************************************************************/
+
+static void init_timings();
+
+void
+catcher(int signo) {
 	running = 0;
 	printf("\nSignal %d catched\n", signo);
 
 }
-static void init_timings();
 
-int startThreads() {
-	void *ptr;
+int
+startThreads() {
+	//void *ptr;
 	int t;
 	running = 1;
 
-        pm = PluginManager_new();        
+	pm = PluginManager_new();
 	const char *dirname = { "/plugins" };
 	char *pluginLocation = malloc(300 * sizeof(char));
 	strcpy(pluginLocation, pwd);
 	strcat(pluginLocation, dirname);
 
 	void* pdstate = discover_plugins(pluginLocation, pm);
-        init_timings();
+	init_timings();
 
 	int iret[MIN_THREADS + pluginCount];
 
@@ -110,7 +117,8 @@ int startThreads() {
 	return 1;
 }
 
-void *entryThreads(void *arg) {
+void*
+entryThreads(void *arg) {
 	int *typeT = (int*) arg;
 	switch (*typeT) {
 	case 0:
@@ -126,7 +134,8 @@ void *entryThreads(void *arg) {
 	return NULL;
 }
 
-int startSending() {
+int
+startSending() {
 	void *ptr;
 	char update_interval[20] = {'\0'};
 	mfp_get_value("timings", "publish_data_interval", update_interval);
@@ -144,7 +153,8 @@ int startSending() {
 	return 1;
 }
 
-void removeSpace(char *str) {
+void
+removeSpace(char *str) {
 	char *p1 = str, *p2 = str;
 	do
 		while (*p2 == ' ')
@@ -152,7 +162,8 @@ void removeSpace(char *str) {
 	while ( (*p1++ = *p2++) );
 }
 
-int prepSend(metric data) {
+int
+prepSend(metric data) {
 	if (!data) {
 		return 0;
 	}
@@ -171,7 +182,8 @@ int prepSend(metric data) {
 
 long timings[256];
 
-static void init_timings()
+static void
+init_timings()
 {
 	mfp_data *mfp_timing_data = malloc(sizeof(mfp_data));
 	mfp_get_data("timings", mfp_timing_data);
@@ -198,18 +210,19 @@ static void init_timings()
 		char value[20] = {'\0'};
 		mfp_get_value("timings", current_plugin_name, value);
 		//char* value = mfp_get_value("timings", current_plugin_name);
-		if (!value || (value[0] == '\0')) {
+		if (value[0] == '\0') {
 			timings[i] = default_timing;
 		} else {
 			timings[i] = atoi(value);
-fprintf(stderr,  "\ntiming for plugin %s is %ld\n", current_plugin_name, timings[i]);
+		fprintf(stderr, "\ntiming for plugin %s is %ld\n", current_plugin_name, timings[i]);
 		}
 	}
 
 	free(mfp_timing_data);
 }
 
-int gatherMetric(int num) {
+int
+gatherMetric(int num) {
 	char* current_plugin_name = plugin_name[num];
 
 	struct timespec tim = { 0, 0 };
@@ -243,7 +256,8 @@ int gatherMetric(int num) {
 	return 1;
 }
 
-int checkConf() {
+int
+checkConf() {
 	while (running) {
 		mfp_parse(confFile);
         init_timings();
