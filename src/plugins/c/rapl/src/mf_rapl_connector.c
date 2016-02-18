@@ -197,7 +197,7 @@ mf_rapl_sample(RAPL_Plugin *data)
      * update time interval
      */
     before_time = after_time;
-    
+
     return SUCCESS;
 }
 
@@ -210,7 +210,7 @@ mf_rapl_to_json(RAPL_Plugin *data)
 {
     char *metric = malloc(512 * sizeof(char));
     char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"energy\"");
+    strcpy(json, "\"type\":\"energy\"");
 
     int idx;
     size_t size = data->num_events;
@@ -220,7 +220,7 @@ mf_rapl_to_json(RAPL_Plugin *data)
         //if metric is energy, send also power value
         char *p = strstr(data->events[idx], "ENERGY");
         if (p != NULL) {
-            double power_value = (double) data->values[idx] * 1.0e9 / elapsed_time; 
+            double power_value = (double) data->values[idx] * 1.0e9 / elapsed_time;
             //nano joule / nano second = watt
             char event[40] = {'\0'};
             strncpy(event, data->events[idx], (p - data->events[idx]));

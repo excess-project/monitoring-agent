@@ -129,17 +129,17 @@ prepare_query(const char* URL)
 }
 
 size_t
-curl_write( void *ptr, size_t size, size_t nmemb, struct string *stream)
+curl_write(void *ptr, size_t size, size_t nmemb, struct string *stream)
 {
+    stream->ptr = realloc(stream->ptr, size*nmemb+1);
+    if (stream->ptr == NULL) {
+        fprintf(stderr, "realloc() failed\n");
+        exit(EXIT_FAILURE);
+    }
+    memcpy(stream->ptr, ptr, size*nmemb);
+    stream->ptr[size*nmemb] = '\0';
+    stream->len = size*nmemb;
 
-  stream->ptr = realloc(stream->ptr, size*nmemb+1);
-  if (stream->ptr == NULL) {
-    fprintf(stderr, "realloc() failed\n");
-    exit(EXIT_FAILURE);
-  }
-  memcpy(stream->ptr, ptr, size*nmemb);
-  stream->ptr[size*nmemb] = '\0';
-  stream->len = size*nmemb;
     return fwrite(ptr, size, nmemb, stdout);
 }
 
@@ -157,8 +157,6 @@ query(const char* query, char* received_data)
         return 0;
     }
 
-    puts(query);
-
     init_string(&response_message);
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write);
@@ -173,8 +171,6 @@ query(const char* query, char* received_data)
     if(response_message.len > 0){
     	strncpy(received_data, response_message.ptr, response_message.len);
     }
-    //received_data = (char*) realloc (received_data, response_message.len);
-    //strcpy(received_data, response_message.ptr);
     curl_easy_reset(curl);
 
     if(strstr(received_data, "Description") == NULL) {
@@ -198,8 +194,6 @@ publish_json(const char *URL, char *message)
 
     #ifndef DEBUG
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_non_data);
-    #else
-    puts(message);
 	#endif
 
 	CURLcode response = curl_easy_perform(curl);

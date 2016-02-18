@@ -157,7 +157,7 @@ mf_meminfo_to_json(MEMINFO_Plugin *data)
 {
     char *metric = malloc(512 * sizeof(char));
     char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"memory\"");
+    strcpy(json, "\"type\":\"memory\"");
 
     int idx;
     size_t size = data->num_events;
