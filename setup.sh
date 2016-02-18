@@ -78,9 +78,9 @@ make install all
 # ============================================================================ #
 
 cd $ROOT
-wget http://mirror.23media.de/apache/apr/apr-1.5.1.tar.gz
-tar zxvf apr-1.5.1.tar.gz
-cd apr-1.5.1
+wget http://www.eu.apache.org/dist//apr/apr-1.5.2.tar.gz
+tar zxvf apr-1.5.2.tar.gz
+cd apr-1.5.2
 ./configure --prefix=${INSTALL_PATH_APR}
 make
 make install
@@ -91,9 +91,9 @@ make install all
 # ============================================================================ #
 
 cd $ROOT
-wget http://mirror.23media.de/apache/apr/apr-util-1.5.3.tar.gz
-tar zxvf apr-util-1.5.3.tar.gz
-cd apr-util-1.5.3
+wget http://www.eu.apache.org/dist//apr/apr-util-1.5.4.tar.gz
+tar zxvf apr-util-1.5.4.tar.gz
+cd apr-util-1.5.4
 ./configure --prefix=${INSTALL_PATH_APU} --with-apr=${INSTALL_PATH_APR}
 make
 make install
@@ -127,6 +127,3 @@ rm -rf nvidia_gdk_download
 # COMPILING                                                                    #
 # ============================================================================ #
 
-cd $ROOT
-make
-make install
