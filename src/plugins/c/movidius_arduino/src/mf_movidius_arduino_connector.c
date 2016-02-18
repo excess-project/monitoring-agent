@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
@@ -68,7 +65,7 @@ int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events)
     maximum_number_of_cores = num_cores;
     channel_coef = malloc(MOVI_MAX_PRESET_EVENTS * sizeof(double));
     set_channel_coef();
-    
+
     all_data = malloc(num_cores * sizeof(MOVI_Plugin));
     create_eventset_for_all(all_data);
     create_eventset_for(data, movi_events, num_events);
@@ -238,7 +235,8 @@ mf_movi_to_json(MOVI_Plugin *data)
     //num_events = MOVI_MAX_PRESET_EVENTS; /* unused */
     char *metric = malloc(512 * sizeof(char));
     char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"power\"");
+    strcpy(json, "\"type\":\"power\"");
+
     for (core = 0; core < maximum_number_of_cores; core++) {
         num_events = data[core].num_events;
         for (event_idx = 0; event_idx < num_events; event_idx++) {
@@ -247,7 +245,6 @@ mf_movi_to_json(MOVI_Plugin *data)
         }
     }
     free(metric);
-  //  printf("%s\n",json);
     return json;
 }
 
@@ -257,7 +254,7 @@ mf_movi_to_json(MOVI_Plugin *data)
 
 void mf_movi_shutdown()
 {
-  close(arduino_fd);
+    close(arduino_fd);
 }
 
 double timer_get_time(void)

@@ -83,6 +83,16 @@ extern char* experiment_id;
  */
 extern char* task;
 
+/*
+ * a reference to the name of the host
+ */
+extern char* hostname;
+
+/*
+ * a reference to the mf api version
+ */
+extern char* api_version;
+
 /** @brief Initializing and creating the log file
  *
  * Per default, the log file is created in the folder 'log' within the

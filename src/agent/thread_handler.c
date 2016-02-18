@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <signal.h>
+#include <sys/time.h>
 /* start of monitoring-related includes */
 #include <publisher.h>
 #include "excess_main.h"
@@ -48,7 +49,6 @@ void
 catcher(int signo) {
 	running = 0;
 	printf("\nSignal %d catched\n", signo);
-
 }
 
 int
@@ -77,9 +77,11 @@ startThreads() {
 		nums[t] = t;
 		iret[t] = pthread_create(&threads[t], NULL, entryThreads, &nums[t]);
 		if (iret[t]) {
-			fprintf(stderr, "ERROR; return code from pthread_create() is %d\n",
+			fprintf(stderr,
+					"ERROR; return code from pthread_create() is %d\n",
 					iret[t]);
-			fprintf(logFile, "ERROR; return code from pthread_create() is %d\n",
+			fprintf(logFile,
+					"ERROR; return code from pthread_create() is %d\n",
 					iret[t]);
 			exit(-1);
 		}
@@ -131,6 +133,7 @@ entryThreads(void *arg) {
 		gatherMetric(*typeT);
 		break;
 	}
+
 	return NULL;
 }
 
@@ -139,13 +142,15 @@ startSending() {
 	void *ptr;
 	char update_interval[20] = {'\0'};
 	mfp_get_value("timings", "publish_data_interval", update_interval);
-	//char* update_interval = mfp_get_value("timings", "publish_data_interval");
+
 	while (running) {
 		sleep(atoi(update_interval));
-
 		if (apr_queue_pop(data_queue, &ptr) == APR_SUCCESS) {
 			metric mPtr = ptr;
-			prepSend(mPtr);
+			int retval = prepSend(mPtr);
+			if (retval == -1) {
+				running = 0;
+			}
 			free(mPtr);
 		}
 	}
@@ -153,14 +158,7 @@ startSending() {
 	return 1;
 }
 
-void
-removeSpace(char *str) {
-	char *p1 = str, *p2 = str;
-	do
-		while (*p2 == ' ')
-			p2++;
-	while ( (*p1++ = *p2++) );
-}
+int connection_error = 0;
 
 int
 prepSend(metric data) {
@@ -168,14 +166,46 @@ prepSend(metric data) {
 		return 0;
 	}
 
-	char msg[4096] = "";
-	char *hostname = (char*) malloc(sizeof(char) * 80);
-	getFQDN(hostname);
-	hostname[strlen(hostname) - 1] = '\0';
+	/* get timestamp */
+	char fmt[64], buf[64];
+    struct timeval tv;
+    struct tm *tm;
+    gettimeofday(&tv, NULL);
+    if((tm = localtime(&tv.tv_sec)) != NULL) {
+		// yyyy-MM-dd’T'HH:mm:ss.SSS
+		strftime(fmt, sizeof fmt, "%Y-%m-%dT%H:%M:%S.%%6u", tm);
+		snprintf(buf, sizeof buf, fmt, tv.tv_usec);
+    }
+    char time_stamp[64];
+    memcpy(time_stamp, buf, strlen(buf) - 3);
+    time_stamp[strlen(buf) - 3] = '\0';
 
-	sprintf(msg, "{\"Timestamp\":%lld.%.9ld,\"hostname\":\"%s\"%s}", (long long) data->timestamp.tv_sec, data->timestamp.tv_nsec, hostname, data->msg);
-	publish_json(server_name, msg);
-	free(hostname);
+    /* replace whitespaces in timestamp: yyyy-MM-dd’T'HH:mm:ss. SS */
+    int i = 0;
+  	while (time_stamp[i]) {
+	    if (isspace(time_stamp[i])) {
+    	    time_stamp[i] = '0';
+	    }
+    	i++;
+  	}
+
+	char msg[4096] = "";
+	sprintf(msg,
+		"{\"@timestamp\":\"%s\",\"host\":\"%s\",\"task\":\"%s\",%s}",
+		time_stamp,
+		hostname,
+		task,
+		data->msg
+	);
+
+	int retval = publish_json(server_name, msg);
+	if (retval == 0) {
+		++connection_error;
+	}
+	if (connection_error == 50) {
+		fprintf(stderr, "ERROR: Too many connection errors: %s\n", server_name);
+		return -1;
+	}
 
 	return 1;
 }
@@ -190,12 +220,10 @@ init_timings()
 
 	char timing[20] = {'\0'};
 	mfp_get_value("timings", "publish_data_interval", timing);
-	//char* timing = mfp_get_value("timings", "publish_data_interval");
 	timings[0] = atoi(timing);
 
 	memset(timing, 0, sizeof(timing));
 	mfp_get_value("timings", "update_configuration", timing);
-	//timing = mfp_get_value("timings", "update_configuration");
 	timings[1] = atoi(timing);
 
 	memset(timing, 0, sizeof(timing));
@@ -209,12 +237,14 @@ init_timings()
 		}
 		char value[20] = {'\0'};
 		mfp_get_value("timings", current_plugin_name, value);
-		//char* value = mfp_get_value("timings", current_plugin_name);
 		if (value[0] == '\0') {
 			timings[i] = default_timing;
 		} else {
 			timings[i] = atoi(value);
-		fprintf(stderr, "\ntiming for plugin %s is %ld\n", current_plugin_name, timings[i]);
+			fprintf(stderr,
+					"\ntiming for plugin %s is %ld\n",
+					current_plugin_name, timings[i]
+			);
 		}
 	}
 
@@ -236,8 +266,14 @@ gatherMetric(int num) {
 		tim.tv_nsec = timings[num];
 	}
 	PluginHook hook = PluginManager_get_hook(pm);
-	fprintf(stderr,  "\ngather metric %s (#%d) with update interval of %ld ns\n", current_plugin_name, num, timings[num]);
-	fprintf(logFile, "\ngather metric %s (#%d) with update interval of %ld ns\n", current_plugin_name, num, timings[num]);
+	fprintf(stderr,
+			"\ngather metric %s (#%d) with update interval of %ld ns\n",
+			current_plugin_name, num, timings[num]
+	);
+	fprintf(logFile,
+			"\ngather metric %s (#%d) with update interval of %ld ns\n",
+			current_plugin_name, num, timings[num]
+	);
 	metric resMetric = malloc(sizeof(metric_t));
 
 	while (running) {
@@ -248,10 +284,10 @@ gatherMetric(int num) {
 		}
 		nanosleep(&tim, &tim2);
 	}
-	hook(); // call when terminating program, enables cleanup of plug-ins
 	free(resMetric);
 
-	//startStop(name, STOP);
+	/* call when terminating program, enables cleanup of plug-ins */
+	hook();
 
 	return 1;
 }
@@ -263,7 +299,6 @@ checkConf() {
         init_timings();
         char wait_some_seconds[20] = {'\0'};
         mfp_get_value("timings", "update_configuration", wait_some_seconds);
-		//char *wait_some_seconds = mfp_get_value("timings", "update_configuration");
 		sleep(atoi(wait_some_seconds));
 	}
 	return 1;
