@@ -27,6 +27,7 @@ INSTALL_PATH_APR=`pwd`/${BINARY_FOLDER}/apr
 INSTALL_PATH_APU=${INSTALL_PATH_APR}
 INSTALL_PATH_CURL=`pwd`/${BINARY_FOLDER}/curl
 INSTALL_PATH_NVIDIA=`pwd`/${BINARY_FOLDER}/nvidia
+INSTALL_PATH_SENSORS=`pwd`/${BINARY_FOLDER}/sensors
 
 # ============================================================================ #
 # VERSIONS OF REQUIRED LIBRARIES                                               #
@@ -119,8 +120,8 @@ cd $ROOT
 wget https://fossies.org/linux/misc/lm_sensors-3.4.0.tar.gz
 tar zxvf lm_sensors-3.4.0.tar.gz
 cd lm_sensors-3.4.0
-make all
-make install
+make PREFIX=${INSTALL_PATH_SENSORS} all
+make PREFIX=${INSTALL_PATH_SENSORS} install
 
 # ============================================================================ #
 # CLEANING UP                                                                  #

@@ -23,8 +23,8 @@ TESTS = tests
 UTILS = $(SRC)/utils
 BINARIES = $(COMMON)/../bin
 
-SENSORS = -L/usr/local/lib -lsensors
-SENSORS_INC = -I/usr/local/include/sensors
+SENSORS = -L${BINARIES}/sensors/lib -lsensors
+SENSORS_INC = -I${BINARIES}/sensors/include/sensors
 
 COMMON_INC = -I$(COMMON)
 CORE_INC = -I$(COMMON)/core
@@ -43,7 +43,7 @@ prepare:
 	@mkdir -p lib
 
 mf_plugin_sensors.so: mf_plugin_sensors.o mf_sensors_connector.o
-	$(CC) -o $(LIB)/mf_plugin_sensors.so $^ -shared /usr/local/lib/libsensors.so
+	$(CC) -o $(LIB)/mf_plugin_sensors.so $^ -shared ${BINARIES}/sensors/lib/libsensors.so
 
 mf_sensors_connector.o: $(SRC)/mf_sensors_connector.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I.
