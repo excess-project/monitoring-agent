@@ -23,8 +23,8 @@ TESTS = tests
 UTILS = $(SRC)/utils
 BINARIES = $(COMMON)/../bin
 
-SENSORS = -L/usr/lib/x86_64-linux-gnu/ -lsensors
-SENSORS_INC = -I/usr/include/sensors
+SENSORS = -L/usr/local/lib -lsensors
+SENSORS_INC = -I/usr/local/include/sensors
 
 COMMON_INC = -I$(COMMON)
 CORE_INC = -I$(COMMON)/core
@@ -37,13 +37,13 @@ PARSER_INC = -I$(COMMON)/contrib/parser/src
 FILES = $(shell find src -name '*.c')
 HEADER = $(shell find src -name '*.h')
 
-all: clean prepare mf_sensors_client
+all: clean prepare mf_sensors_client mf_plugin_sensors.so
 
 prepare:
 	@mkdir -p lib
 
 mf_plugin_sensors.so: mf_plugin_sensors.o mf_sensors_connector.o
-	$(CC) -o $(LIB)/mf_plugin_sensors.so $^ -shared /usr/lib/x86_64-linux-gnu/libsensors.so
+	$(CC) -o $(LIB)/mf_plugin_sensors.so $^ -shared /usr/local/lib/libsensors.so
 
 mf_sensors_connector.o: $(SRC)/mf_sensors_connector.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I.

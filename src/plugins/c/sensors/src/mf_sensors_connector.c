@@ -123,9 +123,22 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
                 }
 
                 char* label = sensors_get_label(chip, feature);
-                if (prefix("Core", label) != 0) {
+
+                int i = 0;
+                int flag = 0;
+                for (i=0; i<num_events; i++) {
+                    if(strcmp(sensors_events[i], label) == 0) {
+                        flag=1;
+                        break;
+                    }
+                }
+                if(flag == 0) {
                     continue;
                 }
+
+                //if (prefix("Core", label) != 0) {
+                //    continue;
+                //}
 
                 if (features == NULL) {
                     features = create_feature(chip, subfeature, label);
@@ -149,12 +162,16 @@ int
 mf_sensors_sample(SENSORS_Plugin *data)
 {
     double value;
-
+    int i;
     requested_features *iter;
-    for (iter = features; iter != NULL; iter = iter->next) {
+    for (i = 0, iter = features; iter != NULL; iter = iter->next, i++) {
         sensors_get_value(iter->chip, iter->subfeature->number, &value);
+        data->events[i] = malloc(16);
+        strcpy(data->events[i], iter->label);
+        data->values[i]=value;
         printf("%s %s %.2f\n", iter->label, iter->subfeature->name, value);
     }
+    data->num_events = i+1;
 
     return 1;
 }
@@ -169,6 +186,12 @@ mf_sensors_to_json(SENSORS_Plugin *data)
     char *metric = malloc(512 * sizeof(char));
     char *json = malloc(4096 * sizeof(char));
     strcpy(json, ",\"type\":\"temperature\"");
+    int i;
+    for (i = 0; i < data->num_events && data->events[i] != NULL; i++) {
+        sprintf(metric, ",\"%s\":%.2f", data->events[i], data->values[i]);
+        strcat(json, metric);
+    }
+
     free(metric);
 
     return json;

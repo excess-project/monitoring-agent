@@ -111,6 +111,18 @@ chmod +x gdk_linux_amd64_352_55_release.run
 ./gdk_linux_amd64_352_55_release.run --silent --installdir=${INSTALL_PATH_NVIDIA}
 
 # ============================================================================ #
+# DOWNLOAD AND INSTALL SENSORS LIB                                             #
+# https://fossies.org/linux/misc/lm_sensors-3.4.0.tar.gz/lm_sensors-3.4.0/lib/libsensors.3
+# ============================================================================ #
+
+cd $ROOT
+wget https://fossies.org/linux/misc/lm_sensors-3.4.0.tar.gz
+tar zxvf lm_sensors-3.4.0.tar.gz
+cd lm_sensors-3.4.0
+make all
+make install
+
+# ============================================================================ #
 # CLEANING UP                                                                  #
 # ============================================================================ #
 
@@ -122,6 +134,7 @@ rm -rf apr-1.5.1
 rm -rf apr-util-1.5.3
 rm -rf curl-7.37.0
 rm -rf nvidia_gdk_download
+rm -rf lm_sensors-3.4.0
 
 # ============================================================================ #
 # COMPILING                                                                    #
