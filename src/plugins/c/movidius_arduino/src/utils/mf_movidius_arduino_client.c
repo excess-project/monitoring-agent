@@ -68,7 +68,7 @@ main(int argc, char** argv)
      * initialize PAPI plugin
      */
     MOVI_Plugin* monitoring_data = malloc(num_cores * sizeof(MOVI_Plugin));
-    mf_movi_init(monitoring_data,MOVI_MAX_PRESET_EVENTS,num_cores);
+    mf_movi_init(monitoring_data, argv, argc);
 
     do {
         /*
