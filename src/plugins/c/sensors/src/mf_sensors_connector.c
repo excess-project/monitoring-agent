@@ -106,14 +106,14 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
             continue;
         }
         char chipname[16] = {'\0'};
-        const sensors_feature *feature;
+        const sensors_feature *feature_tmp, *feature;
         int feature_num = 0;
         /*get chip name*/
-        while ((feature = sensors_get_features(chip, &feature_num)) != NULL) {
-            if (feature->type != SENSORS_FEATURE_TEMP) {
+        while ((feature_tmp = sensors_get_features(chip, &feature_num)) != NULL) {
+            if (feature_tmp->type != SENSORS_FEATURE_TEMP) {
                 continue;
             }
-            char *label = sensors_get_label(chip, feature);
+            char *label = sensors_get_label(chip, feature_tmp);
             if (prefix("Physical id", label) != 0) {
                 continue;
             }
@@ -123,8 +123,8 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
             chipnum[1]='_';
             strcpy(chipname, "CPU");
             strcat(chipname, chipnum);
-
         }
+        feature_num = 0;
         /* filter sensors features according to configured sensors_events */
         while ((feature = sensors_get_features(chip, &feature_num)) != NULL) {
             const sensors_subfeature *subfeature;
@@ -147,7 +147,6 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
                 char *my_label = malloc(16);
                 strcpy(my_label, chipname);
                 strcat(my_label, label);
-
                 int i = 0;
                 int flag = 0;
                 for (i=0; i<num_events; i++) {
@@ -165,7 +164,6 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
                 } else {
                     features = add_feature(features, chip, subfeature, my_label);
                 }
-                free(my_label);
                 break;
             }
         }
@@ -189,7 +187,7 @@ mf_sensors_sample(SENSORS_Plugin *data)
         data->events[i] = malloc(16);
         strcpy(data->events[i], iter->label);
         data->values[i]=value;
-        printf("%s %s %.2f\n", iter->label, iter->subfeature->name, value);
+        //printf("%s %s %.2f\n", iter->label, iter->subfeature->name, value);
     }
     data->num_events = i+1;
 
