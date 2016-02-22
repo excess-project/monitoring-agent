@@ -54,10 +54,7 @@ struct MOVI_Plugin_t
  * @return 1 on success; 0 otherwise.
  */
 
-int mf_movi_init(
-    MOVI_Plugin *data,
-    size_t num_events,
-    size_t num_cores);
+int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events);
 /** @brief Samples given MOVI events
  *
  * This function samples given MOVI events .

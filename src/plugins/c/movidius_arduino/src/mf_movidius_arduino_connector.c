@@ -43,35 +43,36 @@ static double* channel_coef=NULL;
 static int arduino_fd = 0;
 static char* arduino_buf = NULL;
 static int arduino_buf_size = 2048;
+MOVI_Plugin *all_data;
 
 /*******************************************************************************
  * FORWARD DECLARATIONS
  ******************************************************************************/
 
 static int is_movi_initialized();
-static int create_eventset_for();
-
+static int create_eventset_for(MOVI_Plugin *data, char **movi_events, size_t num_events);
+static int create_eventset_for_all(MOVI_Plugin *all_data);
+void set_channel_coef();
+int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events);
+void filter(MOVI_Plugin *all_data, MOVI_Plugin *data);
 
 /*******************************************************************************
  * mf_papi_init
  ******************************************************************************/
-
-int
-mf_movi_init(
-    MOVI_Plugin *data,
-    size_t num_events,
-    size_t num_cores)
+int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events)
 {
     if (is_movi_initialized()) {
         return SUCCESS;
     }
-    num_cores=1;
+    int num_cores = 1;
     maximum_number_of_cores = num_cores;
-    channel_coef = malloc(num_events*sizeof(double));
-     /* creates EventSets for each individual core
-     */
-    create_eventset_for(data,channel_coef,channel_coef);
-    /*
+    channel_coef = malloc(MOVI_MAX_PRESET_EVENTS * sizeof(double));
+    set_channel_coef();
+    
+    all_data = malloc(num_cores * sizeof(MOVI_Plugin));
+    create_eventset_for_all(all_data);
+    create_eventset_for(data, movi_events, num_events);
+     /*
      * initialize time measurements
      */
     before_time = malloc(sizeof(double) * num_cores);
@@ -98,8 +99,6 @@ mf_movi_init(
         before_time[core] = timer_get_time();
     }
     is_initialized = 1;
-
-
     return SUCCESS;
 }
 
@@ -116,59 +115,79 @@ is_movi_initialized()
 /*******************************************************************************
  * create_eventset_for
  ******************************************************************************/
-
 static int
-create_eventset_for(MOVI_Plugin *data, double* ch_coef1, int num_cores)
+create_eventset_for(MOVI_Plugin *data, char **movi_events, size_t num_events)
 {
-    int retval;
-    int number_of_core;
-    int ii;
-
+    int retval, number_of_core, num_cores, ii;
     retval = SUCCESS;
     num_cores = 1;
     for (number_of_core = 0; number_of_core < num_cores; number_of_core++)
     {
-        for(ii=0;ii<MOVI_MAX_PRESET_EVENTS;ii++)
+        for(ii=0; ii < num_events; ii++)
         {
-          data[number_of_core].events[ii]=(char*)malloc(256*sizeof(char));
-          data[number_of_core].values[ii]=(double)ii;
+            data[number_of_core].events[ii]=(char*)malloc(256*sizeof(char));
+            sprintf(data[number_of_core].events[ii], movi_events[ii]);
         }
-        sprintf(data[number_of_core].events[0],"VDDCR_A");
-        sprintf(data[number_of_core].events[1],"VDDCV_A");
-        sprintf(data[number_of_core].events[2],"DRAM_VDD1");
-        sprintf(data[number_of_core].events[3],"MIPI_VDD");
-        sprintf(data[number_of_core].events[4],"DRAM_VDD2");
-        sprintf(data[number_of_core].events[5],"DRAM_VDDQ");
-        sprintf(data[number_of_core].events[6],"DRAM_MVDDQ");
-        sprintf(data[number_of_core].events[7],"DRAM_MVDDA");
-        sprintf(data[number_of_core].events[8],"USB_VDD330");
-        sprintf(data[number_of_core].events[9],"USB_VP_VDD");
-        sprintf(data[number_of_core].events[10],"VDDIO");
-        sprintf(data[number_of_core].events[11],"VDDIO_B ");
-        sprintf(data[number_of_core].events[12],"RESERVED");
-        sprintf(data[number_of_core].events[13],"PLL_AVDD");
-        sprintf(data[number_of_core].events[14],"VDDCV_A");
-        sprintf(data[number_of_core].events[15],"MIPI_VDD");
-        ch_coef1[0]=(1.0/20.0);
-        ch_coef1[1]=(1.0/0.6);
-        ch_coef1[2]=(1.0/20.0);
-        ch_coef1[3]=(1.0/20.0);
-        ch_coef1[4]=(1.0/10.0);
-        ch_coef1[5]=(1.0/20.0);
-        ch_coef1[6]=(1.0/2.0);
-        ch_coef1[7]=(1.0/20.0);
-        ch_coef1[8]=(1.0/20.0);
-        ch_coef1[9]=(1.0/20.0);
-        ch_coef1[10]=(1.0/10.0);
-        ch_coef1[11]=(1.0/20.0);
-        ch_coef1[12]=(0.0);
-        ch_coef1[13]=(1/20.0);
-        ch_coef1[14]=(1.0);
-        ch_coef1[15]=(1.0);
-        data[number_of_core].num_events = MOVI_MAX_PRESET_EVENTS;
+        data[number_of_core].num_events = num_events;
     }
-
     return retval;
+}
+
+static int
+create_eventset_for_all(MOVI_Plugin *all_data)
+{
+    int retval, number_of_core, num_cores, ii;
+    retval = SUCCESS;
+    num_cores = 1;
+    for (number_of_core = 0; number_of_core < num_cores; number_of_core++)
+    {
+        for(ii=0; ii < MOVI_MAX_PRESET_EVENTS; ii++)
+        {
+            all_data[number_of_core].events[ii]=(char*)malloc(256*sizeof(char));
+            all_data[number_of_core].values[ii]=(double)ii;
+        }
+        sprintf(all_data[number_of_core].events[0],"VDDCR_A");
+        sprintf(all_data[number_of_core].events[1],"VDDCV_A");
+        sprintf(all_data[number_of_core].events[2],"DRAM_VDD1");
+        sprintf(all_data[number_of_core].events[3],"MIPI_VDD_A");
+        sprintf(all_data[number_of_core].events[4],"DRAM_VDD2");
+        sprintf(all_data[number_of_core].events[5],"DRAM_VDDQ");
+        sprintf(all_data[number_of_core].events[6],"DRAM_MVDDQ");
+        sprintf(all_data[number_of_core].events[7],"DRAM_MVDDA");
+        sprintf(all_data[number_of_core].events[8],"USB_VDD330");
+        sprintf(all_data[number_of_core].events[9],"USB_VP_VDD");
+        sprintf(all_data[number_of_core].events[10],"VDDIO");
+        sprintf(all_data[number_of_core].events[11],"VDDIO_B ");
+        sprintf(all_data[number_of_core].events[12],"RESERVED");
+        sprintf(all_data[number_of_core].events[13],"PLL_AVDD");
+        sprintf(all_data[number_of_core].events[14],"VDDCV_V");
+        sprintf(all_data[number_of_core].events[15],"MIPI_VDD_V");
+    }
+    return retval;
+}
+
+
+/*******************************************************************************
+ * set_channel_coef
+ ******************************************************************************/
+void set_channel_coef()
+{
+    channel_coef[0]=(1.0/20.0);
+    channel_coef[1]=(1.0/0.6);
+    channel_coef[2]=(1.0/20.0);
+    channel_coef[3]=(1.0/20.0);
+    channel_coef[4]=(1.0/10.0);
+    channel_coef[5]=(1.0/20.0);
+    channel_coef[6]=(1.0/2.0);
+    channel_coef[7]=(1.0/20.0);
+    channel_coef[8]=(1.0/20.0);
+    channel_coef[9]=(1.0/20.0);
+    channel_coef[10]=(1.0/10.0);
+    channel_coef[11]=(1.0/20.0);
+    channel_coef[12]=(0.0);
+    channel_coef[13]=(1/20.0);
+    channel_coef[14]=(1.0);
+    channel_coef[15]=(1.0);
 }
 
 /*******************************************************************************
@@ -190,7 +209,8 @@ mf_movi_sample(MOVI_Plugin *data)
          * read, set, and reset counters
          */
          read_arduino(arduino_fd, arduino_buf, &sample_size, arduino_buf_size-1);
-         convert(data,arduino_buf, sample_size, channel_coef);
+         convert(all_data,arduino_buf, sample_size, channel_coef);
+         filter(all_data, data);
 
         /*
          * update time interval
@@ -219,11 +239,10 @@ mf_movi_to_json(MOVI_Plugin *data)
     char *metric = malloc(512 * sizeof(char));
     char *json = malloc(4096 * sizeof(char));
     strcpy(json, ",\"type\":\"power\"");
-
     for (core = 0; core < maximum_number_of_cores; core++) {
         num_events = data[core].num_events;
         for (event_idx = 0; event_idx < num_events; event_idx++) {
-            sprintf(metric, ",\"%s\":"FORMAT_SCIENTIFIC,  data[core].events[event_idx],data[core].values[event_idx]*channel_coef[event_idx]);
+            sprintf(metric, ",\"%s\":"FORMAT_SCIENTIFIC,  data[core].events[event_idx],data[core].values[event_idx]);
             strcat(json, metric);
         }
     }
@@ -326,7 +345,7 @@ void read_arduino(int fd, char* arduino_output, size_t* length,  size_t max_leng
     *length = read (fd, arduino_output, max_length);
 }
 
-void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch_coef1 )
+void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch_coef1)
 {
     size_t current_pos;
     size_t current_numpos, num_length;
@@ -433,7 +452,7 @@ void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch
                  }
                  current_numpos = 0;
                  found=0;
-             //    printf("CHANNEL:%d; STRING:%s; COVERT: %f; RESULT: %f; current_pos: %d; length: %d\n",channel, tmp, number, data[0].values[channel],current_pos,length);
+             //printf("CHANNEL:%d; STRING:%s; COVERT: %f; RESULT: %f; current_pos: %d; length: %d\n", channel, tmp, number, data[0].values[channel], (int)current_pos, (int)length);
                  channel++;
                  if (channel > MOVI_MAX_PRESET_EVENTS-1) found2=1;
              }
@@ -442,4 +461,20 @@ void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch
 /*     for(ii=0;ii<MOVI_MAX_PRESET_EVENTS;ii++)
         printf("%2d CHANNEL:%s; RESULT: %f\n",ii+1,  data[0].events[ii], data[0].values[ii]);*/
 
+}
+
+/*******************************************************************************
+ * filter
+ ******************************************************************************/
+void filter(MOVI_Plugin *all_data, MOVI_Plugin *data)
+{
+    int ii, jj;
+    for(ii = 0; ii < data[0].num_events; ii++) {
+        for (jj = 0; jj < MOVI_MAX_PRESET_EVENTS; jj++) {
+            if(strcmp(data[0].events[ii], all_data[0].events[jj]) != 0) {
+                continue;
+            }
+            data[0].values[ii] = all_data[0].values[jj];
+        }
+    }
 }

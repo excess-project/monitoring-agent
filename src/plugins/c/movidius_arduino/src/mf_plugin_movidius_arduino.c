@@ -53,7 +53,7 @@ init_mf_plugin_movidius_arduino(PluginManager *pm)
      * initialize MOVI plug-in including registering metrics
      */
     monitoring_data = malloc(num_cores * sizeof(MOVI_Plugin));
-    is_available = mf_movi_init(monitoring_data,MOVI_MAX_PRESET_EVENTS,num_cores);
+    is_available = mf_movi_init(monitoring_data, conf_data->keys, conf_data->size);
 
     return is_available;
 }
