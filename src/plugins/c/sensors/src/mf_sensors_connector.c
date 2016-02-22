@@ -105,10 +105,27 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
         if (strcmp(chip->prefix, "coretemp") != 0) {
             continue;
         }
-
+        char chipname[16] = {'\0'};
         const sensors_feature *feature;
         int feature_num = 0;
+        /*get chip name*/
+        while ((feature = sensors_get_features(chip, &feature_num)) != NULL) {
+            if (feature->type != SENSORS_FEATURE_TEMP) {
+                continue;
+            }
+            char *label = sensors_get_label(chip, feature);
+            if (prefix("Physical id", label) != 0) {
+                continue;
+            }
+            int label_length = sizeof(label);
+            char chipnum[2] = {'\0'};
+            strncpy(chipnum, label+label_length+4, sizeof(char));
+            chipnum[1]='_';
+            strcpy(chipname, "CPU");
+            strcat(chipname, chipnum);
 
+        }
+        /* filter sensors features according to configured sensors_events */
         while ((feature = sensors_get_features(chip, &feature_num)) != NULL) {
             const sensors_subfeature *subfeature;
             int subfeature_num = 0;
@@ -124,10 +141,17 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
 
                 char* label = sensors_get_label(chip, feature);
 
+                if (prefix("Core", label) != 0) {
+                    continue;
+                }
+                char *my_label = malloc(16);
+                strcpy(my_label, chipname);
+                strcat(my_label, label);
+
                 int i = 0;
                 int flag = 0;
                 for (i=0; i<num_events; i++) {
-                    if(strcmp(sensors_events[i], label) == 0) {
+                    if(strcmp(sensors_events[i], my_label) == 0) {
                         flag=1;
                         break;
                     }
@@ -136,16 +160,12 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
                     continue;
                 }
 
-                //if (prefix("Core", label) != 0) {
-                //    continue;
-                //}
-
                 if (features == NULL) {
-                    features = create_feature(chip, subfeature, label);
+                    features = create_feature(chip, subfeature, my_label);
                 } else {
-                    features = add_feature(features, chip, subfeature, label);
+                    features = add_feature(features, chip, subfeature, my_label);
                 }
-
+                free(my_label);
                 break;
             }
         }
