@@ -123,7 +123,7 @@ create_eventset_for(MOVI_Plugin *data, char **movi_events, size_t num_events)
         for(ii=0; ii < num_events; ii++)
         {
             data[number_of_core].events[ii]=(char*)malloc(256*sizeof(char));
-            sprintf(data[number_of_core].events[ii], movi_events[ii]);
+            //sprintf(data[number_of_core].events[ii], movi_events[ii]);
         }
         data[number_of_core].num_events = num_events;
     }
