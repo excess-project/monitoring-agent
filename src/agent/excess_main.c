@@ -336,9 +336,9 @@ int main(int argc, char* argv[]) {
 	}
 	fprintf(logFile, "Configuration taken from: %s\n", confFile);
 
-	/* set task to _all if not provided by the user */
+	/* set task to all if not provided by the user */
 	if (t_flag == 0) {
-		strcpy(task, "_all");
+		strcpy(task, "manual_monitoring");
 	}
 
 	/* set default api version */
