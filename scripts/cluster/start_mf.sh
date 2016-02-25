@@ -21,6 +21,12 @@ DBKEY=$1
 NODE=$2
 PBS_JOBID=$3
 PBS_USER=$4
+PBS_JOBNAME=$5 # new argument introduced in 16.2
+
+if [ -n "${PBS_JOBNAME}" ]; then
+  PBS_JOBNAME="Unnamed_PBS_Job"
+fi
+
 LOG_FILE=/var/log/hpcmeasure/mf_service_prologue_${NODE}.log
 
 HOME_USER=/nas_home/${PBS_USER}
@@ -58,18 +64,18 @@ echo $DATE":DBKEY:"$DBKEY >>$LOG_FILE
 
 
 #start mf_agent and save the process id
-libs=/opt/mf/1.0.2/lib
+libs=/opt/mf/${MF_REVISION}/lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$libs
 
 #check user config file
 echo $DATE":Check for file ${MF_AGENT_USER_CONFIGFILE}" >> $LOG_FILE
 if [ -e "${MF_AGENT_USER_CONFIGFILE}" ]; then
    echo $DATE":Using ${MF_AGENT_USER_CONFIGFILE} as configuration file" >> $LOG_FILE
-   ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_USER_CONFIGFILE} &> /dev/null &
+   ${MF_BIN_PATH}/mf_agent -w ${PBS_USER} -t ${PBS_JOBNAME} -e ${DBKEY} -c ${MF_AGENT_USER_CONFIGFILE} &> /dev/null &
    MF_CONFIG_FILE=${MF_AGENT_USER_CONFIGFILE}
 else
    echo	$DATE":Using ${MF_AGENT_STD_CONFIGFILE} as configuration file"	>> $LOG_FILE
-   ${MF_BIN_PATH}/mf_agent -id=${DBKEY} -config=${MF_AGENT_STD_CONFIGFILE} &> /dev/null &
+   ${MF_BIN_PATH}/mf_agent -w ${PBS_USER} -t ${PBS_JOBNAME} -e ${DBKEY} -c ${MF_AGENT_STD_CONFIGFILE} &> /dev/null &
    MF_CONFIG_FILE=${MF_AGENT_STD_CONFIGFILE}
 fi
 MF_SERVICE_PID=$!
