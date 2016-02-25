@@ -197,7 +197,7 @@ rm -rf ${CURL}-${CURL_VERSION}
 rm -rf nvidia_gdk_download
 rm -rf bison-2.3
 rm -rf flex-2.5.33
-#rm -rf lm_sensors-3.4.0
+rm -rf lm_sensors-3.4.0
 rm -rf ${NVIDIA_GDK}
 
 # ============================================================================ #
