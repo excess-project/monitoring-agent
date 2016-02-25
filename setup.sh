@@ -174,7 +174,7 @@ make
 make install
 
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${INSTALL_PATH_FLEX}/lib:${INSTALL_PATH_BISON}/lib
-export PATH=${PATH}:${INSTALL_PATH_BISON}:${INSTALL_PATH_FLEX}
+export PATH=${PATH}:${INSTALL_PATH_BISON}/bin:${INSTALL_PATH_FLEX}/bin
 
 cd $ROOT
 wget https://fossies.org/linux/misc/lm_sensors-3.4.0.tar.gz
@@ -197,7 +197,7 @@ rm -rf ${CURL}-${CURL_VERSION}
 rm -rf nvidia_gdk_download
 rm -rf bison-2.3
 rm -rf flex-2.5.33
-#rm -rf lm_sensors-3.4.0
+rm -rf lm_sensors-3.4.0
 rm -rf ${NVIDIA_GDK}
 
 # ============================================================================ #
