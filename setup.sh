@@ -27,7 +27,10 @@ INSTALL_PATH_APR=`pwd`/${BINARY_FOLDER}/apr
 INSTALL_PATH_APU=${INSTALL_PATH_APR}
 INSTALL_PATH_CURL=`pwd`/${BINARY_FOLDER}/curl
 INSTALL_PATH_NVIDIA=`pwd`/${BINARY_FOLDER}/nvidia
+INSTALL_PATH_BISON=`pwd`/${BINARY_FOLDER}/bison
+INSTALL_PATH_FLEX=`pwd`/${BINARY_FOLDER}/flex
 INSTALL_PATH_SENSORS=`pwd`/${BINARY_FOLDER}/sensors
+
 
 # ============================================================================ #
 # VERSIONS OF REQUIRED LIBRARIES                                               #
@@ -115,6 +118,24 @@ chmod +x gdk_linux_amd64_352_55_release.run
 # DOWNLOAD AND INSTALL SENSORS LIB                                             #
 # https://fossies.org/linux/misc/lm_sensors-3.4.0.tar.gz/lm_sensors-3.4.0/lib/libsensors.3
 # ============================================================================ #
+#
+# DEPENDENCIES: bison and flex
+#
+cd $ROOT
+wget http://ftp.gnu.org/gnu/bison/bison-2.3.tar.gz 
+tar zxvf bison-2.3.tar.gz
+cd bison-2.3
+./configure --prefix=${INSTALL_PATH_BISON}
+make
+make install
+
+cd $ROOT
+wget http://prdownloads.sourceforge.net/flex/flex-2.5.33.tar.gz
+tar zxvf flex-2.5.33.tar.gz
+cd flex-2.5.33
+./configure --prefix=${INSTALL_PATH_FLEX}
+make
+make install
 
 cd $ROOT
 wget https://fossies.org/linux/misc/lm_sensors-3.4.0.tar.gz
@@ -135,6 +156,8 @@ rm -rf apr-1.5.1
 rm -rf apr-util-1.5.3
 rm -rf curl-7.37.0
 rm -rf nvidia_gdk_download
+rm -rf bison-2.3
+rm -rf flex-2.5.33
 rm -rf lm_sensors-3.4.0
 
 # ============================================================================ #
