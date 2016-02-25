@@ -16,31 +16,42 @@
 
 usage() {
     cat <<EOF
-Usage: $0 [i:c:h]
+Usage: $0 [w:t:c:e:h]
 
 -h                  prints this usage information.
 
--i <ID>             sets a user-defined experiment ID
--c <CONFIG_FILE>    specifies a user-defined configuration file (e.g., mf_config.ini)
+-w <USER_ID>        sets a current user (EXCESS) or workflow (DreamCloud) ID [optional]
+-t <TASK_ID>        sets a user-defined application (EXCESS) or task (DreamCloud) ID [optional]
+-e <ID>             sets a user-defined experiment ID [optional]
+-a <API_VERSION>    sets the API version to communicate with the backend (default: v1) [optional]
+-c <CONFIG_FILE>    specifies a user-defined configuration file (e.g., mf_config.ini) [optional]
 EOF
 
 }
 
 BASE_DIR=`pwd`
-DIST_DIR=${BASE_DIR}/dist
+DIST_DIR=${BASE_DIR}
 DIST_BIN_DIR=${DIST_DIR}/bin
 LIB_DIR=${DIST_DIR}/lib
 
-unset ID
-unset CONFIG
+PARAMS=''
 
-while getopts ":i:c:h" opt; do
+while getopts "w:t:c:e:a:h" opt; do
   case $opt in
-    i)
-      ID=$OPTARG
+    w)
+      PARAMS+=" -w ${OPTARG}"
+      ;;
+    t)
+      PARAMS+=" -t ${OPTARG}"
       ;;
     c)
-      CONFIG=$OPTARG
+      PARAMS+=" -c ${OPTARG}"
+      ;;
+    e)
+      PARAMS+=" -e ${OPTARG}"
+      ;;
+    a)
+      PARAMS+=" -a ${OPTARG}"
       ;;
     h)
       usage
@@ -61,36 +72,9 @@ done
 libs=${LIB_DIR}
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$libs
 
-if [ $OPTIND -eq 1 ]; then
-    echo "Starting agent..." >&2
-    nohup ${DIST_BIN_DIR}/mf_agent > mf_agent.log 2>&1&
-    echo $! > mf_agent.pid
-    echo "Done."
-    echo
-    exit 0;
-fi
-
-# start monitoring agent with appropriate parameters
-echo "Starting agent..." >&2
-if [ ! -z "$ID" ]; then
-    if [ ! -z "$CONFIG" ]; then
-        nohup ${DIST_BIN_DIR}/mf_agent -id=$ID -config=$CONFIG > mf_agent.log 2>&1&
-        echo $! > mf_agent.pid
-        echo "Done."
-        echo
-        exit 0;
-    fi
-    nohup ${DIST_BIN_DIR}/mf_agent -id=$ID > mf_agent.log 2>&1&
-    echo $! > mf_agent.pid
-    echo "Done."
-    echo
-    exit 0;
-fi
-
-if [ ! -z "$CONFIG" ]; then
-    nohup ${DIST_BIN_DIR}/mf_agent -config=$CONFIG > mf_agent.log 2>&1&
-    echo $! > mf_agent.pid
-fi
+# run agent with given parameters
+nohup ${DIST_BIN_DIR}/mf_agent ${PARAMS} > mf_agent.log 2>&1&
+echo $! > mf_agent.pid
 echo "Done."
 echo
 
