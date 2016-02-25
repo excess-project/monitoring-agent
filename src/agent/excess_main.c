@@ -297,7 +297,7 @@ int main(int argc, char* argv[]) {
 
 	/* parse command-line arguments */
 	static char usage[] = "usage: %s [-e id] [-w workflow] [-t task] [-c config] [-a version] [-h help]\n";
-	while ((c = getopt(argc, argv, "w:t:c:e:h")) != -1)
+	while ((c = getopt(argc, argv, "w:t:c:e:a:h")) != -1)
 		switch (c) {
 		case 'w':
 			strcpy(workflow, optarg);
