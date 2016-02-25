@@ -174,7 +174,7 @@ make
 make install
 
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${INSTALL_PATH_FLEX}/lib:${INSTALL_PATH_BISON}/lib
-export PATH=${PATH}:${INSTALL_PATH_BISON}:${INSTALL_PATH_FLEX}
+export PATH=${PATH}:${INSTALL_PATH_BISON}/bin:${INSTALL_PATH_FLEX}/bin
 
 cd $ROOT
 wget https://fossies.org/linux/misc/lm_sensors-3.4.0.tar.gz
