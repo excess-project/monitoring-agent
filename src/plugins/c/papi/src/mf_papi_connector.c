@@ -156,7 +156,7 @@ set_maximum_number_of_cores_for_sampling(size_t *requested_number_of_cores)
      * get number of CPUs
      */
     int max_cores = PAPI_get_opt(PAPI_MAX_CPUS,/*@-nullpass@*/ NULL);
-
+    printf("MAX CORES %zu\n", *requested_number_of_cores);
     /*
      * an error occurred
      */
@@ -170,10 +170,8 @@ set_maximum_number_of_cores_for_sampling(size_t *requested_number_of_cores)
     /*
      * reduce the number of requested cores for sampling to the maximum
      */
-    if (*requested_number_of_cores < max_cores) {
-        if (*requested_number_of_cores > 0) {
-            max_cores = *requested_number_of_cores;
-        }
+    if (*requested_number_of_cores > max_cores) {
+        *requested_number_of_cores = max_cores;
     }
 
     log_info("PAPI >> Number of cores selected for measuring is %d", max_cores);
@@ -450,7 +448,7 @@ mf_papi_to_json(PAPI_Plugin **data)
 
     char *metric = malloc(512 * sizeof(char));
     char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"performance\"");
+    strcpy(json, "\"type\":\"performance\"");
 
     for (core = 0; core != maximum_number_of_cores; ++core) {
         num_events = data[core]->num_events;

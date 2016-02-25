@@ -203,13 +203,12 @@ mf_sensors_to_json(SENSORS_Plugin *data)
 {
     char *metric = malloc(512 * sizeof(char));
     char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"temperature\"");
+    strcpy(json, "\"type\":\"temperature\"");
     int i;
     for (i = 0; i < data->num_events && data->events[i] != NULL; i++) {
         sprintf(metric, ",\"%s\":%.2f", data->events[i], data->values[i]);
         strcat(json, metric);
     }
-
     free(metric);
 
     return json;

@@ -111,7 +111,7 @@ send_trigger(const char* function_name, int flag)
     char *json = malloc(1024 * sizeof(char));
     char *status = malloc(256 * sizeof(char));
 
-    strcpy(json, ",\"type\":\"user_function\"");
+    strcpy(json, "\"type\":\"user_function\"");
     sprintf(status, ",\"name\":\"%s\",\"status\":%d", function_name, flag);
     strcat(json, status);
     strcpy(resMetric->msg, json);
@@ -138,8 +138,8 @@ get_time_in_ns(struct timespec date)
 void stats_data_by_metric(char *Metrics_name, long double start_time, long double stop_time, char *res)
 {
     char query_url[300] = { '\0' };
-    
-    // <stats_request_url> := http://localhost:3000/execution/stats/<db_key>    
+
+    // <stats_request_url> := http://localhost:3000/execution/stats/<db_key>
     // query_url := <stats_request_url>/<metric>/<start_time>/<stop_time>
     sprintf(query_url, "%s/%s/%.9Lf/%.9Lf",
             stats_request_url,
@@ -147,7 +147,7 @@ void stats_data_by_metric(char *Metrics_name, long double start_time, long doubl
             start_time,
             stop_time
            );
-    
+
     get_data_by_query(query_url, res);
 }
 

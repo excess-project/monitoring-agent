@@ -44,7 +44,7 @@ HEADER = $(shell find $(SRC) -name "*.h")
 #
 # DEBUG SWITCH
 #
-DEBUG ?= 1
+DEBUG ?= 0
 ifeq ($(DEBUG), 1)
 	CFLAGS += -DDEBUG -g
 else

@@ -143,7 +143,7 @@ mf_vmstat_to_json(VMSTAT_Plugin *data)
 {
     char *metric = malloc(512 * sizeof(char));
     char *json = malloc(4096 * sizeof(char));
-    strcpy(json, ",\"type\":\"io\"");
+    strcpy(json, "\"type\":\"io\"");
 
     int idx;
     size_t size = data->num_events;
