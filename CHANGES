@@ -1,5 +1,18 @@
 # RELEASE NOTES
 
+## 16.2 (26/02/2016)
+
+### Features
+- New plugins: sensors, movidius
+- Merged agent sources across EU projects into a unified version of the agent
+- Updated command line parameters: user, task, id, config, api version
+- Agent uses API version v1 per default in order to communicate with backend server
+- New version schema: year + month
+
+### Fixes
+- Fixed compiling issues with mf_api tests
+
+
 ## 1.0.1 (14/01/2016)
 
 ### Fixes
