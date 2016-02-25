@@ -4,7 +4,7 @@
 CC = /usr/bin/gcc
 COPT_SO = $(CFLAGS) -fpic
 
-REVISION = 1.0.2
+REVISION = 16.2
 HOST=$(shell hostname)
 INSTALL_DIR = dist
 
@@ -138,8 +138,8 @@ copy_ini:
 
 copy_scripts:
 	cp -r scripts $(INSTALL_DIR)
-	cp start.sh $(INSTALL_DIR)
-	cp stop.sh $(INSTALL_DIR)
+	mv $(INSTALL_DIR)/scripts/start.sh $(INSTALL_DIR)
+	mv $(INSTALL_DIR)/scripts/stop.sh $(INSTALL_DIR)
 
 copy_plugins_to_install:
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(INSTALL_PLUGINS_DIR)/
