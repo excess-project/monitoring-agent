@@ -1,4 +1,5 @@
 bin
+binaries
 doxygen
 build
 dist
@@ -10,5 +11,5 @@ man/www
 **.tar.gz*
 *.pid
 *.log
-
+*.swp
 **mf_*_client

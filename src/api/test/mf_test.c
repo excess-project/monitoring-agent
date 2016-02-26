@@ -91,9 +91,8 @@ main(int argc, char** argv)
     /***************************************************************************
      * Retrieve information from the database
      **************************************************************************/
-    
+
     char *response = malloc(10000 * sizeof(char));
-    memset(response, 10000, '\0');
     get_data_by_interval(start_time, end_time, response);
     puts(response);
 

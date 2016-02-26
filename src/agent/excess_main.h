@@ -69,15 +69,37 @@ extern char *confFile;
  */
 extern FILE *logFile;
 
+/*
+ * a reference to current workflow/user id
+ */
+extern char* workflow;
+
+/*
+ * a reference to current experiment id
+ */
+extern char* experiment_id;
+/*
+ * a reference to the current task/application id
+ */
+extern char* task;
+
+/*
+ * a reference to the name of the host
+ */
+extern char* hostname;
+
+/*
+ * a reference to the mf api version
+ */
+extern char* api_version;
+
 /** @brief Initializing and creating the log file
  *
  * Per default, the log file is created in the folder 'log' within the
  * working directory of the monitoring agent; filenames have the pattern
  * log-<YYYY>-<MM>-<DD>-<HH:MM:SS>
- *
- * @returns 1 on successful file creation; 0 otherwise.
  */
-int createLogFile();
+void createLogFile();
 
 /** @brief Perform initialization prior starting monitoring
  *

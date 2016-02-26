@@ -219,7 +219,7 @@ int mfp_parse(const char* filename);
  * @brief Returns a stored value for the given section and key.
  * @return the value stored for the index <section, key>
  */
-char* mfp_get_value(const char* section, const char* key);
+char* mfp_get_value(const char* section, const char* key, char *ret_val);
 
 /**
  * @brief Sets or overwrites the value for a given section and key.

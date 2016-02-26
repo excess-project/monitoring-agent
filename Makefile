@@ -2,11 +2,20 @@
 ## Authors: Anthony Sulistio, Nico Eichhorn, Dennis Hoppe
 
 CC = /usr/bin/gcc
-
 COPT_SO = $(CFLAGS) -fpic
 
-REVISION = 1.0.1
+REVISION = 16.2
+HOST=$(shell hostname)
 INSTALL_DIR = dist
+
+ifneq (,$(findstring excess,$(HOST)))
+	INSTALL_DIR = /opt/mf/${REVISION}
+endif
+
+ifneq (,$(findstring jenkins,$(HOST)))
+	INSTALL_DIR = dist
+endif
+
 INSTALL_PLUGINS_DIR = $(INSTALL_DIR)/bin/plugins
 INSTALL_INCLUDES_DIR = $(INSTALL_DIR)/include
 INSTALL_LIB_DIR = $(INSTALL_DIR)/lib
@@ -35,9 +44,9 @@ HEADER = $(shell find $(SRC) -name "*.h")
 #
 # DEBUG SWITCH
 #
-DEBUG ?= 1
+DEBUG ?= 0
 ifeq ($(DEBUG), 1)
-    CFLAGS += -DDEBUG -g
+	CFLAGS += -DDEBUG -g
 else
 	CFLAGS += -DNDEBUG
 endif
@@ -84,7 +93,7 @@ all: prepare excess_main copy_plugins lib
 lib: libmf.so
 
 $(SRC)/%.o: %.c $(HEADER)
-		$(CC) -c $< $(CFLAGS) -fpic
+	$(CC) -c $< $(CFLAGS) -fpic
 
 prepare:
 	@mkdir -p $(PLUGIN_DEST)
@@ -96,6 +105,8 @@ prepare:
 
 excess_main: $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(SRC)/plugin_discover.o $(SRC)/plugin_manager.o
 	$(CC) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+	echo $(HOST)
+	echo $(INSTALL_DIR)
 
 mf_api.o:
 	$(CC) -c $(MF_API_SRC)/mf_api.c -o $@ $(COPT_SO) -I. $(MF_API_INC) $(CFLAGS) $(EXCESS_INC) $(MF) $(LFLAGS)
@@ -126,16 +137,19 @@ copy_ini:
 	cp -f $(BASE)/mf_config.ini $(INSTALL_DIR)
 
 copy_scripts:
-	mv start.sh $(INSTALL_DIR)
-	mv stop.sh $(INSTALL_DIR)
+	cp -r scripts $(INSTALL_DIR)
+	mv $(INSTALL_DIR)/scripts/start.sh $(INSTALL_DIR)
+	mv $(INSTALL_DIR)/scripts/stop.sh $(INSTALL_DIR)
 
 copy_plugins_to_install:
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/movidius_arduino/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/nvidia/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/sensors/lib/*.so $(INSTALL_PLUGINS_DIR)/
 
 copy_includes:
 	cp -f $(BASE)/api/src/mf_api.h $(INSTALL_INCLUDES_DIR)
@@ -154,19 +168,23 @@ copy_libs:
 #
 plugins:
 	$(MAKE) -C $(PLUGIN_DIR)/papi DEBUG=$(DEBUG)
+	$(MAKE) -C $(PLUGIN_DIR)/movidius_arduino DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/rapl DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/infiniband DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/nvidia DEBUG=$(DEBUG)
+	$(MAKE) -C $(PLUGIN_DIR)/sensors DEBUG=$(DEBUG)
 
 copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/movidius_arduino/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/rapl/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/meminfo/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/vmstat/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/nvidia/lib/*.so $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/sensors/lib/*.so $(PLUGIN_DEST)/
 
 #
 # CLEAN-UP
@@ -178,11 +196,13 @@ clean-all: clean clean-install
 	$(MAKE) -C $(BASE)/contrib/parser clean
 	$(MAKE) -C $(BASE)/contrib/publisher clean
 	$(MAKE) -C $(PLUGIN_DIR)/papi clean
+	$(MAKE) -C $(PLUGIN_DIR)/movidius_arduino clean
 	$(MAKE) -C $(PLUGIN_DIR)/rapl clean
 	$(MAKE) -C $(PLUGIN_DIR)/meminfo clean
 	$(MAKE) -C $(PLUGIN_DIR)/vmstat clean
 	$(MAKE) -C $(PLUGIN_DIR)/infiniband clean
 	$(MAKE) -C $(PLUGIN_DIR)/nvidia clean
+	$(MAKE) -C $(PLUGIN_DIR)/sensors clean
 	rm -rf bin
 
 clean-install:
