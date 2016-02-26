@@ -3,11 +3,11 @@
 echo "Deploying a new development version of the monitoring agent to the EXCESS cluster"
 
 VERSION=$1
-
+REPO=$2
 #
 # set parameters to retrieve artifact from nexus
 #
-REPO=snapshots
+#REPO=snapshots
 GROUP=eu/excess-project
 ARTIFACT=monitoring-agent
 VERSION=${VERSION}
