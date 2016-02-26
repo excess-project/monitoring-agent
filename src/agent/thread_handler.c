@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <ctype.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <unistd.h>
