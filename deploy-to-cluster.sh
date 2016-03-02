@@ -7,7 +7,7 @@ REPO=$2
 #
 # set parameters to retrieve artifact from nexus
 #
-#REPO=snapshots
+
 GROUP=eu/excess-project
 ARTIFACT=monitoring-agent
 VERSION=${VERSION}
