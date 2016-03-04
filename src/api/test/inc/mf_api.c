@@ -17,6 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/time.h>
+#include <ctype.h>
 
 #include <excess_main.h>    // createLogFile, prepare
 #include <publisher.h>      // prepSend, get_execution_id, query
@@ -31,62 +33,13 @@
 #define STOP_MONITORING 0
 
 static int api_is_initialized = 0;
-static char stats_request_url[128];
-static char exec_url[128];
+static char statistics_url[256];
+static char profiles_url[256];
 
 static void check_api();
-static long double get_time_in_ns();
-static long double send_trigger();
-void get_data_by_query();
-static char* retrieve_execution_id();
-
-char*
-mf_api_initialize(const char* URL, char* exe_id)
-{
-    if (URL == NULL || strlen(URL) == 0) {
-        log_error("mf_api_initialize() - URL is not set: %s", URL);
-        exit(EXIT_FAILURE);
-    }
-    strcpy(exec_url, URL);
-    strcat(exec_url, "/executions");
-    if (exe_id == NULL || strlen(exe_id) == 0) {
-        printf("execution id is not given.\n");
-        char* db_key = retrieve_execution_id(exec_url);
-        exe_id = db_key;
-        printf("get execution id by publisher.c.\n");
-    }
-    else {
-        printf("execution id is given as: %s\n", exe_id);
-    }
-
-    strcpy(execution_id, exe_id);  // execution_id is defined in publisher.h
-    strcpy(server_name, URL);      // server_name is defined in excess_main.h
-    strcat(server_name, "/executions/");
-    strcat(server_name, execution_id);
-
-    strcpy(stats_request_url, URL);
-    strcat(stats_request_url, "/execution/stats/");
-    strcat(stats_request_url, execution_id);
-
-    createLogFile();
-    api_is_initialized = 1;
-
-    return execution_id;
-}
-
-long double
-mf_api_start_profiling(const char* function_name)
-{
-    check_api();
-    return send_trigger(function_name, START_MONITORING);
-}
-
-long double
-mf_api_stop_profiling(const char* function_name)
-{
-    check_api();
-    return send_trigger(function_name, STOP_MONITORING);
-}
+static void convert_time(struct timeval tv, char* time_stamp);
+static struct timeval send_trigger();
+static void get_data_by_query();
 
 static void
 check_api()
@@ -97,16 +50,217 @@ check_api()
     }
 }
 
-static long double
+static void
+convert_time(struct timeval tv, char* time_stamp)
+{
+    /* get timestamp */
+    char fmt[64], buf[64];
+    struct tm *tm;
+    if((tm = localtime(&tv.tv_sec)) != NULL) {
+        // yyyy-MM-dd’T'HH:mm:ss.SSS
+        strftime(fmt, sizeof fmt, "%Y-%m-%dT%H:%M:%S.%%6u", tm);
+        snprintf(buf, sizeof buf, fmt, tv.tv_usec);
+    }
+
+    memcpy(time_stamp, buf, strlen(buf) - 3);
+    time_stamp[strlen(buf) - 3] = '\0';
+
+    /* replace whitespaces in timestamp: yyyy-MM-dd’T'HH:mm:ss. SS */
+    int i = 0;
+    while (time_stamp[i]) {
+        if (isspace(time_stamp[i])) {
+            time_stamp[i] = '0';
+        }
+        i++;
+    }
+}
+
+/*if the experiment is not registered by v1/mf/experiments, 
+  create the experiment.
+  return experiment_id */
+char*
+mf_api_create_experiment(const char* URL, char* wf_id, char* task_id)
+{   
+    if (URL == NULL || strlen(URL) == 0) {
+        printf("mf_api_create_experiment() - URL is not set.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (wf_id == NULL || strlen(wf_id) == 0) {
+        printf("mf_api_create_experiment() - wf_id is not set.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (task_id == NULL || strlen(task_id) == 0) {
+        printf("mf_api_create_experiment() - task_id is not set.\n");
+        exit(EXIT_FAILURE);
+    }
+    /* generating message */
+    char msg[1000] = {'\0'};
+    char time_stamp[64] = {'\0'};
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    convert_time(tv, time_stamp);
+
+    if(hostname == NULL || strlen(hostname) == 0){
+        hostname = malloc(256 * sizeof(char));
+        hostname[0] = '\0';
+        getFQDN(hostname);
+        hostname[strlen(hostname) - 1] = '\0';
+    }
+
+    sprintf(msg,
+        "{\"host\":\"%s\",\"@timestamp\":\"%s\",\"user\":\"%s\",\"application\":\"%s\"}"
+        ,hostname, time_stamp, wf_id, task_id);
+
+    /*generating experiment id*/
+    char* path = malloc(256 * sizeof(char));
+    sprintf(path,"%s/v1/mf/users/%s/create", URL, wf_id);
+    char* exp_id = malloc(256 * sizeof(char));
+    memset(exp_id, '\0', 256 * sizeof(char));
+    strcpy(exp_id, create_experiment_id(path, msg));
+    
+    return exp_id;
+}
+
+/*mf api initialization with given URL, workflow, task, experiment_id
+  prepare URLs for getting statistics data and profiles data */
+void
+mf_api_initialize(const char* URL, char* wf_id, char* exp_id, char* task_id)
+{
+    printf("mf_api_initialize...\n");
+    if (URL == NULL || strlen(URL) == 0) {
+        printf("mf_api_initialize() - URL is not set.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (wf_id == NULL || strlen(wf_id) == 0) {
+        printf("mf_api_initialize() - workflow_id is not set.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (exp_id == NULL || strlen(exp_id) == 0) {
+        printf("mf_api_initialize() - experiment_id is not set.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (task_id == NULL || strlen(task_id) == 0) {
+        printf("mf_api_initialize() - task_id is not set.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* prepare hostname for prepSend*/
+    if(hostname == NULL || strlen(hostname) == 0) {
+        hostname = malloc(256 * sizeof(char));
+        hostname[0] = '\0';
+        getFQDN(hostname);
+        hostname[strlen(hostname) - 1] = '\0';
+    }
+
+    /* prepare task for prepSend*/
+    if(task == NULL || strlen(task) == 0) {
+        task = malloc(128 * sizeof(char));
+        task[0] = '\0';
+        strcpy(task, task_id);
+    }
+    
+    /*initializing server name for sending metric data, if it is empty*/
+    if ((server_name != NULL) && (server_name[0] == '\0')) {
+        sprintf(server_name, "%s/v1/mf/metrics/%s/%s?task=%s", URL, wf_id, exp_id, task_id);
+    }
+
+    /*generating url for getting statistics data*/
+    //URL should be "192.168.0.160:3030"
+    memset(statistics_url, '\0', 256*sizeof(char));
+    sprintf(statistics_url, "%s/v1/mf/statistics/%s/%s/%s", URL, wf_id, task_id, exp_id);
+
+    /*generating url for getting profiles data*/
+    memset(profiles_url, '\0', 256*sizeof(char));
+    sprintf(profiles_url, "%s/v1/mf/profiles/%s/%s/%s", URL, wf_id, task_id, exp_id);
+
+    createLogFile();
+    api_is_initialized = 1;
+
+}
+
+/*get statistics data by metric*/
+void 
+mf_api_stats_data_by_metric(char *Metrics_name, char *res)
+{
+    char query_url[300] = {'\0'};
+
+    // <stats_request_url> := http://localhost:3000/v1/mf/statistics/<workflow_id>/<task_id>/<experiment_id>
+    // query_url := <stats_request_url>?metric=<metric>
+    sprintf(query_url, "%s?metric=%s",
+            statistics_url,
+            Metrics_name);
+
+    get_data_by_query(query_url, res);
+}
+
+/*get statistics data of a metric during the given time interval*/
+void 
+mf_api_stats_data_by_interval(char *Metrics_name, struct timeval start_tv, struct timeval stop_tv, char *res)
+{
+    char start_timestamp[64] = {'\0'};
+    char stop_timestamp[64]  = {'\0'};
+    char query_url[300] = {'\0'};
+
+    convert_time(start_tv, start_timestamp);
+    convert_time(stop_tv, stop_timestamp);
+
+    // <stats_request_url> := http://localhost:3000/v1/mf/statistics/<workflow_id>/<task_id>/<experiment_id>
+    // query_url := <stats_request_url>?metric=<metric>&from=<start_timestamp>&to=<stop_timestamp>
+    sprintf(query_url, "%s?metric=%s&from=%s&to=%s",
+            statistics_url,
+            Metrics_name,
+            start_timestamp,
+            stop_timestamp
+           );
+
+    get_data_by_query(query_url, res);
+}
+
+/* get all profiles data */
+void 
+mf_api_get_profiles_data(char *res)
+{
+    char query_url[300] = {'\0'};
+
+    // e.g. http://localhost:3000/v1/mf/profiles/<workflow_id>/<task_id>/<experiment_id>
+    sprintf(query_url, "%s",
+            profiles_url);
+
+    get_data_by_query(query_url, res);
+}
+
+static void
+get_data_by_query(char* query_url, char *res)
+{
+    check_api();
+    query(query_url, res);
+}
+
+/*return timestamps in timeval structure*/
+struct timeval
+mf_api_start_profiling(const char* function_name)
+{
+    check_api();
+    return send_trigger(function_name, START_MONITORING);
+}
+
+/*return timestamps in timeval structure*/
+struct timeval
+mf_api_stop_profiling(const char* function_name)
+{
+    check_api();
+    return send_trigger(function_name, STOP_MONITORING);
+}
+
+/*return timestamps in timeval structure*/
+static struct timeval
 send_trigger(const char* function_name, int flag)
 {
-    long double timestamp;
-
     metric resMetric = malloc(sizeof(metric_t));
     resMetric->msg = malloc(100 * sizeof(char));
 
-    int clk_id = CLOCK_REALTIME;
-    clock_gettime(clk_id, &resMetric->timestamp);
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
 
     char *json = malloc(1024 * sizeof(char));
     char *status = malloc(256 * sizeof(char));
@@ -116,122 +270,20 @@ send_trigger(const char* function_name, int flag)
     strcat(json, status);
     strcpy(resMetric->msg, json);
     free(json);
-
     prepSend(resMetric);
-
-    timestamp = get_time_in_ns(resMetric->timestamp);
     free(resMetric);
-
-    return timestamp;
+    return tv;
 }
 
-static long double
-get_time_in_ns(struct timespec date)
-{
-    long double timestamp = date.tv_sec +
-        (long double) (date.tv_nsec / 10e8);
-
-    return timestamp;
-}
-
-
-void stats_data_by_metric(char *Metrics_name, long double start_time, long double stop_time, char *res)
-{
-    char query_url[300] = { '\0' };
-
-    // <stats_request_url> := http://localhost:3000/execution/stats/<db_key>
-    // query_url := <stats_request_url>/<metric>/<start_time>/<stop_time>
-    sprintf(query_url, "%s/%s/%.9Lf/%.9Lf",
-            stats_request_url,
-            Metrics_name,
-            start_time,
-            stop_time
-           );
-
-    get_data_by_query(query_url, res);
-}
-
-void get_data_by_interval(long double start_time, long double stop_time, char *res)
-{
-    char query_url[300] = { '\0' };
-
-    // <server_name> := http://localhost:3000/executions/
-    // query_url := <server_name>/<db_key>/<start_time>/<stop_time>
-    sprintf(query_url, "%s/%.9Lf/%.9Lf",
-        server_name,
-        start_time,
-        stop_time
-    );
-
-    get_data_by_query(query_url, res);
-}
-
-void get_data_by_query(char* query_url, char *res)
-{
-    check_api();
-    query(query_url, res);
-}
-
+/*send metrics data in json format*/
 void
 mf_api_send(const char* json)
 {
+    check_api();
     metric resMetric = malloc(sizeof(metric_t));
     resMetric->msg = malloc(100 * sizeof(char));
 
-    int clk_id = CLOCK_REALTIME;
-    clock_gettime(clk_id, &resMetric->timestamp);
-    char* final_msg = malloc(strlen(json)+2);
-    final_msg[0] = ',';
-    strcpy(final_msg+1, json);
-    strcpy(resMetric->msg, final_msg);
-
+    strcpy(resMetric->msg, json);
     prepSend(resMetric);
-
-    free(final_msg);
-}
-
-static char*
-retrieve_execution_id(const char* URL)
-{
-    char msg[1000] = "";
-    struct tm *time_info;
-    time_t curTime;
-    char timeArr[80];
-    char* hostname = (char*) malloc(sizeof(char) * 256);
-    char* username = getenv("USER");
-
-    if (username == NULL) {
-        username = malloc(sizeof(char) * 12);
-        strcpy(username, "default");
-    }
-    const char *description = "Test with User-Library";
-
-    time(&curTime);
-    time_info = localtime(&curTime);
-    strftime(timeArr, 80, "%c", time_info);
-
-    getFQDN(hostname);
-    hostname[strlen(hostname) - 1] = '\0';
-    sprintf(msg,
-        "{\"Name\":\"%s\", \"Description\":\"%s\", \"Start_date\":\"%s\", \"Username\":\"%s\"}",
-        hostname, description, timeArr, username
-    );
-
-    return get_execution_id(URL, msg);
-}
-
-char*
-mf_api_get_execution_id()
-{
-    check_api();
-    return execution_id;
-}
-
-void mf_api_get_data_by_id(char* execution_id, char *res)
-{
-    char query_url[300] = { '\0' };
-
-    // e.g. http://localhost:3000/executions/:id
-    sprintf(query_url, "%s/%s", exec_url, execution_id);
-    get_data_by_query(query_url, res);
+    free(resMetric);
 }

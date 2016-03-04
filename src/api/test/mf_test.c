@@ -19,29 +19,43 @@
  *
  * @author Dennis Hoppe <hoppe@hrls.de>
  */
+
+/*how to execute :
+    ./mf_test -u 127.0.0.1:3030 -w hpcfapix -t api_test
+*/
 #include <ctype.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include <mf_api.h>
+#include <time.h>
 
 int
 main(int argc, char** argv)
 {
     int i, c;
     const char* URL = NULL;
-    long double start_time, end_time;
+    char* wf_id = NULL;
+    char* task_id = NULL;
+    struct timeval start_time, end_time;
 
     /***************************************************************************
      * GET OPTIONS
      **************************************************************************/
 
     opterr = 0;
-    while ((c = getopt(argc, argv, "?k:u:")) != -1) {
+    while ((c = getopt(argc, argv, "?k:u:w:t:")) != -1) {
         switch (c) {
             case 'u':
                 URL = optarg;
+                break;
+            case 'w':
+                wf_id = optarg;
+                break;
+            case 't':
+                task_id = optarg;
                 break;
             case '?':
                 if (optopt == 'u') {
@@ -59,25 +73,21 @@ main(int argc, char** argv)
                 abort();
         }
     }
-
+    
+    char *metric = "mem_used";
     /***************************************************************************
      * Initialize API and send custom data to the server
      **************************************************************************/
+    char *exp_id = mf_api_create_experiment(URL, wf_id, task_id);
 
-    mf_api_initialize(URL, NULL);
+    mf_api_initialize(URL, wf_id, exp_id, task_id);
 
-    char* EXE_ID = mf_api_get_execution_id();
-
-    printf("EXE_ID generated is :%s.\n", EXE_ID);
-
-    mf_api_initialize(URL, EXE_ID);
-
-    //mf_api_initialize(URL);
     start_time = mf_api_start_profiling("fcnt1");
 
     char* mem_info = malloc(256 * sizeof(char));
-    for (i = 0; i != 2; ++i) {
-        sprintf(mem_info, "\"mem_used\":%d", i);
+
+    for (i = 0; i != 10; ++i) {
+        sprintf(mem_info, "\"%s\":%d", metric, i);
         mf_api_send(mem_info);
 
         usleep(250000);
@@ -93,8 +103,18 @@ main(int argc, char** argv)
      **************************************************************************/
 
     char *response = malloc(10000 * sizeof(char));
-    get_data_by_interval(start_time, end_time, response);
-    puts(response);
+    memset(response, '\0', 10000 * sizeof(char));
+    mf_api_get_profiles_data(response);
+    printf("\n\nmf_api_get_profiles_data: %s\n", response);
 
+    memset(response, '\0', 10000 * sizeof(char));
+    mf_api_stats_data_by_metric(metric, response);
+    printf("\n\nmf_api_stats_data_by_metric: %s\n", response);
+
+    memset(response, '\0', 10000 * sizeof(char));
+    mf_api_stats_data_by_interval(metric, start_time, end_time, response);
+    printf("\n\nmf_api_stats_data_by_interval: %s\n", response);
+
+    free(response);
     return EXIT_SUCCESS;
 }
