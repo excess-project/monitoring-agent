@@ -55,6 +55,7 @@ void mf_api_get_profiles_data(char *res);
 
 /**
  * @brief Starts the monitoring of given external function.
+   return the timestamp of the starting time 
 
  */
 struct timeval mf_api_start_profiling(const char *function_name);
@@ -66,6 +67,8 @@ void mf_api_send(const char* json);
 
 /**
  * @brief Stops the monitoring of the given external function.
+   return the timestamp of the stopping time 
+
  */
 struct timeval mf_api_stop_profiling(const char *function_name);
 
