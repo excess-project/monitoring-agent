@@ -30,7 +30,12 @@ fi
 #
 # target
 #
-TARGET_DIR=/opt/mf/stable
+if [ ${REPO} = "releases" ]; then
+	TARGET_DIR=/opt/mf/stable
+else
+	TARGET_DIR=/opt/mf/dev
+fi
+
 TARGET_FOLDER=${VERSION}
 TARGET=${TARGET_DIR}/${TARGET_FOLDER}
 
