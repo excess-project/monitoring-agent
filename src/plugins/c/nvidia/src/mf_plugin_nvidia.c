@@ -108,7 +108,7 @@ static char *create_JSON_msg()
   char *buf = msg;
   char *end = buf + max_msg_length;
 
-  buf = append(buf, end, ",\"type\":\"GPU\"");
+  buf = append(buf, end, "\"type\":\"GPU\"");
   if (is_enabled("performance_state")) {
     buf = mf_nvml_append_perf_state(nvidia_handle, buf, end);
   }
