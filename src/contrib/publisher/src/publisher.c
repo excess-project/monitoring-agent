@@ -20,6 +20,8 @@
 
 #include "mf_debug.h"
 #include "publisher.h"
+#include "mf_parser.h"
+#include "mf_types.h"
 
 static CURL *curl;
 char execution_id[ID_SIZE] = { 0 };
@@ -205,6 +207,41 @@ publish_json(const char *URL, char *message)
 
 	curl_easy_reset(curl);
 
+    return result;
+}
+
+int
+publish_unit(metric_units *units)
+{
+    int result = SEND_SUCCESS;
+    int i = 0;
+    char server[64];
+    mfp_get_value("generic", "server", server);
+    
+    for (i=0; i < units->num_metrics; i++) {
+        char *URL = malloc(128 * sizeof(char));
+        sprintf(URL, "%s/v1/mf/units/%s", server, units->metric_name[i]);
+        char *msg = malloc(1000 * sizeof(char));
+        sprintf(msg, "{\"name\":\"%s\",\"plugin\":\"%s\",\"unit\":\"%s\"}", 
+            units->metric_name[i], units->plugin_name[i], units->unit[i]);
+        if (!check_URL(URL) || !check_message(msg)) {
+            return 0;
+        }
+        if (!prepare_publish(URL, msg)) {
+            return 0;
+        }
+        #ifndef DEBUG
+            curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");  /* !!! */
+        #endif
+
+        CURLcode response = curl_easy_perform(curl);
+        if (response != CURLE_OK) {
+            result = SEND_FAILED;
+            const char *error_msg = curl_easy_strerror(response);
+            log_error("publish(const char*, Message) %s", error_msg);
+        }
+        curl_easy_reset(curl);
+    }
     return result;
 }
 
