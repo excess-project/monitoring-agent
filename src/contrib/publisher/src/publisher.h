@@ -32,6 +32,8 @@
 #define SEND_FAILED  0
 #define ID_SIZE 64
 
+#include "mf_types.h"
+
 extern char execution_id[ID_SIZE];
 
 typedef struct Message_t Message;
@@ -96,7 +98,7 @@ int publish(const char *URL, Message *messages);
  * @return 1 if successful; 0 otherwise
  */
 int publish_json(const char *URL, char *message);
-
+int publish_unit(metric_units *units);
 /**
  * @brief Frees the cURL headers and global variables.
  *

@@ -30,4 +30,20 @@ struct metric_t {
     char *msg;
 } metric_t;
 
+/**
+ * @brief pointer to the metric's unit
+ */
+typedef struct metric_unit_t metric_units;
+
+/**
+ * @brief structure which represents a unit of a metric
+ */
+struct metric_unit_t 
+{
+    char *metric_name[128];
+    char *plugin_name[128];
+    char *unit[128];
+    int num_metrics;
+};
+
 #endif

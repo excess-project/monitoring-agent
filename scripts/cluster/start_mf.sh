@@ -23,7 +23,7 @@ PBS_JOBID=$3
 PBS_USER=$4
 PBS_JOBNAME=$5 # new argument introduced in 16.2
 
-if [ -n "${PBS_JOBNAME}" ]; then
+if [ -z "${PBS_JOBNAME}" ]; then
   PBS_JOBNAME="Unnamed_PBS_Job"
 fi
 

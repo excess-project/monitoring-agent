@@ -18,8 +18,10 @@
 #include <unistd.h> /* access */
 
 /* monitoring-related includes */
+#include "mf_types.h"
 #include "mf_debug.h"
 #include "mf_meminfo_connector.h"
+#include "publisher.h"
 
 #define SUCCESS 1
 #define FAILURE 0
@@ -110,7 +112,12 @@ mf_meminfo_init(MEMINFO_Plugin *data, char **meminfo_events, size_t num_events)
             retval = FAILURE;
         }
     }
+    
+    metric_units *MEMINFO_units = NULL;
+    MEMINFO_units = malloc(sizeof(metric_units));
+    mf_meminfo_unit_init(MEMINFO_units);
 
+    publish_unit(MEMINFO_units);
     return retval;
 }
 
@@ -180,4 +187,47 @@ mf_meminfo_shutdown()
     /*
      * nothing to do
      */
+}
+
+/*******************************************************************************
+ * mf_meminfo_unit_init
+ ******************************************************************************/
+
+int
+mf_meminfo_unit_init(metric_units *unit)
+{
+    int i;
+    char meminfo_str[128];
+    /*
+     * check if data is initialized
+     */
+    if (unit == NULL) {
+        unit = malloc(sizeof(metric_units));
+    }
+    memset(unit, 0, sizeof(metric_units));
+
+    i = 0;
+    FILE *fp = fopen(PROC_MEMINFO, "r");
+    while (fscanf(fp, "%s", meminfo_str) == 1) {
+        /*
+         * tasks the string as a metric name, if it ends with :
+         */
+        if (strlen(meminfo_str) >= 2 && meminfo_str[strlen(meminfo_str)-1] == ':') {
+            /*remove first the : */
+            meminfo_str[strlen(meminfo_str)-1] = '\0';
+            unit->metric_name[i] =malloc(32 * sizeof(char));
+            strcpy(unit->metric_name[i], meminfo_str);
+            
+            unit->plugin_name[i] =malloc(32 * sizeof(char));
+            strcpy(unit->plugin_name[i], "mf_plugin_meminfo");
+            
+            unit->unit[i] =malloc(4 * sizeof(char));
+            strcpy(unit->unit[i], "kB");    //all metrics in /proc/meminfo are in kB
+            
+            i++;
+        }
+    }
+    fclose(fp);
+    unit->num_metrics = i;
+    return 1;
 }
