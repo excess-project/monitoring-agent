@@ -158,7 +158,7 @@ chmod +x ${NVIDIA_GDK}
 # DEPENDENCIES: bison and flex
 #
 cd $ROOT
-wget http://ftp.gnu.org/gnu/bison/bison-2.3.tar.gz 
+wget http://ftp.gnu.org/gnu/bison/bison-2.3.tar.gz
 tar zxvf bison-2.3.tar.gz
 cd bison-2.3
 ./configure --prefix=${INSTALL_PATH_BISON}
@@ -204,4 +204,4 @@ rm -rf ${NVIDIA_GDK}
 # DONE
 # ============================================================================ #
 
-echo "\n\nALL DEPENDENCIES WERE INSTALLED SUCCESSFULLY!\n"
+echo "ALL DEPENDENCIES WERE INSTALLED SUCCESSFULLY!"
