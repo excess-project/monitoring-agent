@@ -204,4 +204,4 @@ rm -rf ${NVIDIA_GDK}
 # DONE
 # ============================================================================ #
 
-echo "\n\nALL DEPENDENCIES WERE INSTALLED SUCCESSFULLY!\n"
+echo "ALL DEPENDENCIES WERE INSTALLED SUCCESSFULLY!"
