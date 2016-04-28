@@ -202,7 +202,9 @@ mf_api_stats_data_by_interval(char *Metrics_name, struct timeval start_tv, struc
     char query_url[300] = {'\0'};
     char host[10] = {'\0'};
 
-    strncpy(host, hostname, 6 * sizeof(char)); // eg: host will be: node01 or node02 or node03
+    if(hostname != NULL && strlen(hostname) != 0) {
+        strncpy(host, hostname, 6 * sizeof(char));
+    }
 
     convert_time(start_tv, start_timestamp);
     convert_time(stop_tv, stop_timestamp);
