@@ -161,6 +161,14 @@ prepare() {
     		);
     		return 0;
 		}
+	} else { /* we have already an id, let's register it at the server */
+		char* URL = malloc(256 * sizeof(char));
+		sprintf(URL,
+				"%s/%s/mf/users/%s/%s/create",
+				server_name, api_version, workflow, experiment_id
+		);
+		publish_json(URL, msg);
+		free(URL);
 	}
 
 	/* set the correct path for sending metric data */
