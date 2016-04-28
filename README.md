@@ -30,7 +30,7 @@ This project requires the following dependencies to be installed:
 | Apache APR Utils  | https://apr.apache.org/                           | 1.5.3     |
 | Nvidia GDK        | https://developer.nvidia.com/gpu-deployment-kit   | 352.55    |
 
-To ease the process of setting up a development enviroment, we provide a basic
+To ease the process of setting up a development environment, we provide a basic
 script that downloads all dependencies, installs them locally in the project
 directory, and then performs some clean-up operations. Thus, compiling the
 monitoring agent can be performed in a sandbox without affecting your current
