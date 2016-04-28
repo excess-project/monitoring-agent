@@ -323,7 +323,7 @@ int main(int argc, char* argv[]) {
 			break;
 		case 'e':
 			strcpy(experiment_id, optarg);
-			fprintf(logFile, "> experiment ID: %s\n", confFile);
+			fprintf(logFile, "> experiment ID: %s\n", experiment_id);
 			break;
 		case 'a':
 			strcpy(api_version, optarg);

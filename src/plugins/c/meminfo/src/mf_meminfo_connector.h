@@ -30,6 +30,7 @@
 #ifndef _MF_MEMINFO_CONNECTOR_H
 #define _MF_MEMINFO_CONNECTOR_H
 
+#include "mf_types.h"
 //#include <stddef.h>
 
 /** @brief data structure to store RAPL monitoring data
@@ -68,6 +69,7 @@ int mf_meminfo_is_enabled();
  */
 int mf_meminfo_init(MEMINFO_Plugin *data, char **meminfo_events, size_t num_events);
 
+int mf_meminfo_unit_init(metric_units *unit);
 /** @brief Sample /proc/meminfo based on given events
  *
  * This function samples /proc/meminfo, and stores current metric values for the

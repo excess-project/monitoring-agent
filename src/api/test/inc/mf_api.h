@@ -22,17 +22,42 @@
 #ifndef MF_API_H_
 #define MF_API_H_
 
+/**
+ * @brief if the experiment is not registered by v1/mf/experiments, 
+          create the experiemnt.
+          On success return the created experiment_id
+ */
+char* mf_api_create_experiment(const char* URL, char* wf_id, char* task_id);
 
 /**
- * @brief Initializes the monitoring; has to be called in advance. On success,
- *        the function call returns the current execution id.
+ * @brief Initializes the monitoring; has to be called in advance.
+          Prepare URLs for getting statistics data and profiles data. 
  */
-char* mf_api_initialize(const char* URL, char* exe_id);
+void mf_api_initialize(const char* URL, char* wf_id, char* exp_id, char* task_id);
+
+/**
+ * @brief Query the database in order to retrieve stats metric value collected
+ *        during the entire time interval
+ */
+void mf_api_stats_data_by_metric(char *Metrics_name, char *res);
+
+/**
+ * @brief Query the database in order to retrieve stats metric value collected
+ *        within the given range: the interval is defined by the two
+ *        timestamps start_tv and stop_tv.
+ */
+void mf_api_stats_data_by_interval(char *Metrics_name, struct timeval start_tv, struct timeval stop_tv, char *res);
+
+/**
+ * @brief Query the database in order to retrieve all metrics data for a specific experiment
+ */
+void mf_api_get_profiles_data(char *res);
 
 /**
  * @brief Starts the monitoring of given external function.
+
  */
-long double mf_api_start_profiling(const char *function_name);
+struct timeval mf_api_start_profiling(const char *function_name);
 
 /**
  * @brief Sends data formatted in a JSON-like format using key-value pairs.
@@ -42,32 +67,7 @@ void mf_api_send(const char* json);
 /**
  * @brief Stops the monitoring of the given external function.
  */
-long double mf_api_stop_profiling(const char *function_name);
+struct timeval mf_api_stop_profiling(const char *function_name);
 
-/**
- * @brief Query the database in order to retrieve all metrics collected
- *        within the given range: the interval is defined by the two
- *        timestamps start_time and stop_time.
- */
-void get_data_by_interval(long double start_time, long double stop_time, char *res);
-
-/**
- *  * @brief Query the database in order to retrieve stats metric value collected
- *   *        within the given range: the interval is defined by the two
- *    *        timestamps start_time and stop_time.
- *     */
-void stats_data_by_metric(char *Metrics_name, long double start_time, long double stop_time, char *res);
-
-/**
- * @brief Returns the execution id of the given application. It should be noted
- *        that mf_api_initialize(URL) has to be called first.
- */
-char* mf_api_get_execution_id();
-
-/**
- * @brief Returns data stored in the database related to the given execution id.
- *        The format the data is returned is JSON formatted.
- */
-void mf_api_get_data_by_id(char* execution_id, char *res);
 
 #endif
