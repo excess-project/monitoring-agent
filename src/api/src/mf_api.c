@@ -144,7 +144,7 @@ mf_api_initialize(const char* URL, char* wf_id, char* exp_id, char* task_id)
         exit(EXIT_FAILURE);
     }
 
-    /* prepare hostname for prepSend*/
+    /* prepare hostname for prepSend and metrics interval statistics*/
     if(hostname == NULL || strlen(hostname) == 0) {
         hostname = malloc(256 * sizeof(char));
         hostname[0] = '\0';
@@ -200,17 +200,21 @@ mf_api_stats_data_by_interval(char *Metrics_name, struct timeval start_tv, struc
     char start_timestamp[64] = {'\0'};
     char stop_timestamp[64]  = {'\0'};
     char query_url[300] = {'\0'};
+    char host[10] = {'\0'};
+
+    strncpy(host, hostname, 6 * sizeof(char)); // eg: host will be: node01 or node02 or node03
 
     convert_time(start_tv, start_timestamp);
     convert_time(stop_tv, stop_timestamp);
 
     // <stats_request_url> := http://localhost:3000/v1/mf/statistics/<workflow_id>/<task_id>/<experiment_id>
-    // query_url := <stats_request_url>?metric=<metric>&from=<start_timestamp>&to=<stop_timestamp>
-    sprintf(query_url, "%s?metric=%s&from=%s&to=%s",
+    // query_url := <stats_request_url>?metric=<metric>&from=<start_timestamp>&to=<stop_timestamp>&host=<node01>
+    sprintf(query_url, "%s?metric=%s&from=%s&to=%s&host=%s",
             statistics_url,
             Metrics_name,
             start_timestamp,
-            stop_timestamp
+            stop_timestamp,
+            host
            );
 
     get_data_by_query(query_url, res);
