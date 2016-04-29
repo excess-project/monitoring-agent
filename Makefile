@@ -168,6 +168,7 @@ copy_libs:
 	cp -f $(BINARIES)/papi/lib/libpapi.so* $(INSTALL_DIR)/lib
 	cp -f $(BINARIES)/papi/lib/libpfm.so* $(INSTALL_DIR)/lib
 	cp -f lib/*.so $(INSTALL_DIR)/lib
+	cp -f lib/*.a $(INSTALL_DIR)/lib
 
 #
 #
