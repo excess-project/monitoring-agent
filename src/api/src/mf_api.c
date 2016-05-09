@@ -218,7 +218,7 @@ mf_api_stats_data_by_interval(char *Metrics_name, struct timeval start_tv, struc
             stop_timestamp,
             host
            );
-    printf("\n[DEBUG] query_url is : %s\n\n", query_url);
+
     get_data_by_query(query_url, res);
 }
 

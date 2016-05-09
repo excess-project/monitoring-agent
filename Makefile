@@ -116,7 +116,7 @@ libmf.so: mf_api.o $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(
 	rm -f mf_api.o
 
 mf_api_static.o:
-	$(CC) -static -c $(MF_API_SRC)/mf_api.c -o $@ -I. $(MF_API_INC) $(CFLAGS) $(EXCESS_INC) -lrt -ldl $(LFLAGS)
+	$(CC) -c $(MF_API_SRC)/mf_api.c -o $@ -I. $(MF_API_INC) $(CFLAGS) $(EXCESS_INC) $(LFLAGS)
 
 libmf.a: mf_api_static.o $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(SRC)/plugin_discover.o $(SRC)/plugin_manager.o
 	ar rcs lib/libmf.a $^
