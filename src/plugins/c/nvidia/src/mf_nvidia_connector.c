@@ -24,6 +24,8 @@
 
 typedef nvmlDevice_t** handle_t;
 
+static int mf_nvml_avail();
+
 static handle_t mf_nvml_init();
 /* Functions to get and append current device state information.
  * See http://docs.nvidia.com/deploy/nvml-api/group__nvmlDeviceQueries.html
@@ -77,7 +79,7 @@ static char *mf_nvml_append_throttled_time(handle_t devices,
     }                                                               \
   }
 
-static handle_t mf_nvml_init()
+static int mf_nvml_avail()
 {
   nvmlReturn_t ret = nvmlInit();
   switch (ret) {
@@ -91,9 +93,27 @@ static handle_t mf_nvml_init()
     return NULL;
     break;
   }
+  return 1;
+}
+
+static handle_t mf_nvml_init()
+{
+  /*
+  nvmlReturn_t ret = nvmlInit();
+  switch (ret) {
+  case NVML_SUCCESS:
+    break;
+  default:
+    fprintf(stderr,
+            "mf_nvml_init(): Failed to initialize the nvml library with "
+            "return code %d.\n",
+            ret);
+    return NULL;
+    break;
+  }*/
 
   unsigned int device_count = 0;
-  ret = nvmlDeviceGetCount(&device_count);
+  nvmlReturn_t ret = nvmlDeviceGetCount(&device_count);
   switch (ret) {
   case NVML_SUCCESS:
     break;
