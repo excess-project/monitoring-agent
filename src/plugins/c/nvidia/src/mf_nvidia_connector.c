@@ -90,7 +90,7 @@ static int mf_nvml_avail()
             "mf_nvml_init(): Failed to initialize the nvml library with "
             "return code %d.\n",
             ret);
-    return NULL;
+    return 0;
     break;
   }
   return 1;

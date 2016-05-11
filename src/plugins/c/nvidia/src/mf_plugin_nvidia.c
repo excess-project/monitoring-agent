@@ -65,7 +65,7 @@ static metric mf_plugin_nvidia_hook()
 extern int init_mf_plugin_nvidia(PluginManager *pm)
 {
   //fprintf(stderr, "init_mf_plugin_nvidia() called!\n");
-  if(mf_nvml_avail() == NULL) {
+  if(mf_nvml_avail() == 0) {
     fprintf(stderr, "mf_nvml_avail check failed!\n");
     return -1;
   }
