@@ -48,4 +48,9 @@ extern char *pwd;
  */
 int getFQDN(char *fqdn);
 
+/**
+ * @brief convert timestamp in long double to a string
+ */
+void convert_time_to_char(long double ts, char* time_stamp);
+
 #endif /* EXCESS_H_ */
