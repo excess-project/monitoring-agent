@@ -170,7 +170,7 @@ prepSend(metric data) {
 
 	/* use data->timestamp from plugin */
 	char time_stamp[64] = {'\0'};
-	long double timestamp = (long double) (data->timestamp.tv_sec + data->timestamp.tv_nsec * 1e-9);
+	long double timestamp = data->timestamp.tv_sec + (long double)(data->timestamp.tv_nsec / 1.0e9);
 	convert_time_to_char(timestamp, time_stamp);
 
 	char msg[4096] = "";

@@ -98,7 +98,7 @@ prepare() {
 	char time_stamp[64] = {'\0'};
 	struct timespec ts;
 	clock_gettime(CLOCK_REALTIME, &ts);
-	long double timestamp = (long double) (ts.tv_sec + ts.tv_nsec * 1e-9);
+	long double timestamp = ts.tv_sec + (long double)(ts.tv_nsec / 1.0e9);
 	convert_time_to_char(timestamp, time_stamp);
 
 	/* get username */

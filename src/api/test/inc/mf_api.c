@@ -72,7 +72,7 @@ mf_api_create_experiment(const char* URL, char* wf_id, char* task_id)
     char time_stamp[64] = {'\0'};
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
-    long double timestamp = (long double) (ts.tv_sec + ts.tv_nsec * 1e-9);
+    long double timestamp =  ts.tv_sec + (long double) (ts.tv_nsec / 1.0e9);
     convert_time_to_char(timestamp, time_stamp);
 
     if(hostname == NULL || strlen(hostname) == 0){
@@ -243,7 +243,7 @@ send_trigger(const char* function_name, int flag)
 
     int clk_id = CLOCK_REALTIME;
     clock_gettime(clk_id, &resMetric->timestamp);
-    time_stamp = (long double) (resMetric->timestamp.tv_sec + resMetric->timestamp.tv_nsec * 1e-9);
+    time_stamp = resMetric->timestamp.tv_sec + (long double) (resMetric->timestamp.tv_nsec/1.0e9);
 
     char *json = malloc(1024 * sizeof(char));
     char *status = malloc(256 * sizeof(char));
