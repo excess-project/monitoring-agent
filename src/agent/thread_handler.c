@@ -168,41 +168,10 @@ prepSend(metric data) {
 		return 0;
 	}
 
-	/* get timestamp */
-	/*
-	char fmt[64], buf[64];
-	struct timeval tv;
-	struct tm *tm;
-	gettimeofday(&tv, NULL);
-	if((tm = localtime(&tv.tv_sec)) != NULL) {
-		// yyyy-MM-dd’T'HH:mm:ss.SSS
-		strftime(fmt, sizeof fmt, "%Y-%m-%dT%H:%M:%S.%%6u", tm);
-		snprintf(buf, sizeof buf, fmt, tv.tv_usec);
-	}
-	*/
-
 	/* use data->timestamp from plugin */
-	char fmt[64], buf[64];
-	struct timespec *ts = &data->timestamp;;
-	struct tm *tm;
-	if((tm = localtime(&ts->tv_sec)) != NULL) {
-		// yyyy-MM-dd’T'HH:mm:ss.SSS
-		strftime(fmt, sizeof fmt, "%Y-%m-%dT%H:%M:%S.%%6ld", tm);
-		snprintf(buf, sizeof buf, fmt, (ts->tv_nsec*1e-3));
-	}
-
-	char time_stamp[64];
-	memcpy(time_stamp, buf, strlen(buf) - 3);
-	time_stamp[strlen(buf) - 3] = '\0';
-	
-	/* replace whitespaces in timestamp: yyyy-MM-dd’T'HH:mm:ss. SS */
-	int i = 0;
-  	while (time_stamp[i]) {
-  		if (isspace(time_stamp[i])) {
-  			time_stamp[i] = '0';
-  		}
-  		i++;
-  	}
+	char time_stamp[64] = {'\0'};
+	long double timestamp = (long double) (data->timestamp.tv_sec + data->timestamp.tv_nsec * 1e-9);
+	convert_time_to_char(timestamp, time_stamp);
 
 	char msg[4096] = "";
 	sprintf(msg,

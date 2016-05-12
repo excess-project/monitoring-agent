@@ -95,40 +95,24 @@ prepare() {
 	hostname[strlen(hostname) - 1] = '\0';
 
 	/* get timestamp */
-	char fmt[64], buf[64];
-    struct timeval tv;
-    struct tm *tm;
-    gettimeofday(&tv, NULL);
-    if((tm = localtime(&tv.tv_sec)) != NULL) {
-		// yyyy-MM-dd’T'HH:mm:ss.SSS
-		strftime(fmt, sizeof fmt, "%Y-%m-%dT%H:%M:%S.%%6u", tm);
-		snprintf(buf, sizeof buf, fmt, tv.tv_usec);
-    }
-    char time_stamp[64];
-    memcpy(time_stamp, buf, strlen(buf) - 3);
-    time_stamp[strlen(buf) - 3] = '\0';
+	char time_stamp[64] = {'\0'};
+	struct timespec ts;
+	clock_gettime(CLOCK_REALTIME, &ts);
+	long double timestamp = (long double) (ts.tv_sec + ts.tv_nsec * 1e-9);
+	convert_time_to_char(timestamp, time_stamp);
 
-    /* replace whitespaces in timestamp: yyyy-MM-dd’T'HH:mm:ss. SS */
-    int i = 0;
-  	while (time_stamp[i]) {
-	    if (isspace(time_stamp[i])) {
-    	    time_stamp[i] = '0';
-	    }
-    	i++;
-  	}
-
-    /* get username */
-    char *username = getenv("USER");
-    if (username == NULL) {
+	/* get username */
+	char *username = getenv("USER");
+	if (username == NULL) {
 		username = malloc(sizeof(char) * 128);
 		strcpy(username, "unknown");
-    }
+	}
 
 	/* set task id */
 	toLower(task, strlen(task));
 
-    /* set default description */
-    const char *description = "Running with default configuration...";
+	/* set default description */
+	const char *description = "Running with default configuration...";
 
 	sprintf(msg,
 		"{\"host\":\"%s\",\"description\":\"%s\",\"@timestamp\":\"%s\",\"user\":\"%s\",\"application\":\"%s\"}",
