@@ -21,7 +21,7 @@
 #include <ctype.h>
 
 #include <excess_main.h>    // createLogFile, prepare
-#include <publisher.h>      // prepSend, get_execution_id, query
+#include <publisher.h>      // get_execution_id, query
 #include <thread_handler.h> // prepSend
 #include <util.h>           // getFQDN
 
@@ -265,8 +265,10 @@ send_trigger(const char* function_name, int flag)
     metric resMetric = malloc(sizeof(metric_t));
     resMetric->msg = malloc(100 * sizeof(char));
 
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
+    //struct timeval tv;
+    //gettimeofday(&tv, NULL);
+    int clk_id = CLOCK_REALTIME;
+    clock_gettime(clk_id, &resMetric->timestamp);
 
     char *json = malloc(1024 * sizeof(char));
     char *status = malloc(256 * sizeof(char));
@@ -288,6 +290,9 @@ mf_api_send(const char* json)
     check_api();
     metric resMetric = malloc(sizeof(metric_t));
     resMetric->msg = malloc(100 * sizeof(char));
+    
+    int clk_id = CLOCK_REALTIME;
+    clock_gettime(clk_id, &resMetric->timestamp);
 
     strcpy(resMetric->msg, json);
     prepSend(resMetric);
