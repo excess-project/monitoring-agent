@@ -37,8 +37,7 @@ static char statistics_url[256];
 static char profiles_url[256];
 
 static void check_api();
-static void convert_time(struct timeval tv, char* time_stamp);
-static struct timeval send_trigger();
+static long double send_trigger();
 static void get_data_by_query();
 
 static void
@@ -47,31 +46,6 @@ check_api()
     if (!api_is_initialized) {
         log_error("Library is not initialized. Please call %s first.", "mf_api_initialize");
         exit(EXIT_FAILURE);
-    }
-}
-
-static void
-convert_time(struct timeval tv, char* time_stamp)
-{
-    /* get timestamp */
-    char fmt[64], buf[64];
-    struct tm *tm;
-    if((tm = localtime(&tv.tv_sec)) != NULL) {
-        // yyyy-MM-dd’T'HH:mm:ss.SSS
-        strftime(fmt, sizeof fmt, "%Y-%m-%dT%H:%M:%S.%%6u", tm);
-        snprintf(buf, sizeof buf, fmt, tv.tv_usec);
-    }
-
-    memcpy(time_stamp, buf, strlen(buf) - 3);
-    time_stamp[strlen(buf) - 3] = '\0';
-
-    /* replace whitespaces in timestamp: yyyy-MM-dd’T'HH:mm:ss. SS */
-    int i = 0;
-    while (time_stamp[i]) {
-        if (isspace(time_stamp[i])) {
-            time_stamp[i] = '0';
-        }
-        i++;
     }
 }
 
@@ -96,9 +70,10 @@ mf_api_create_experiment(const char* URL, char* wf_id, char* task_id)
     /* generating message */
     char msg[1000] = {'\0'};
     char time_stamp[64] = {'\0'};
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    convert_time(tv, time_stamp);
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    long double timestamp = (long double) (ts.tv_sec + ts.tv_nsec * 1e-9);
+    convert_time_to_char(timestamp, time_stamp);
 
     if(hostname == NULL || strlen(hostname) == 0){
         hostname = malloc(256 * sizeof(char));
@@ -195,7 +170,7 @@ mf_api_stats_data_by_metric(char *Metrics_name, char *res)
 
 /*get statistics data of a metric during the given time interval*/
 void 
-mf_api_stats_data_by_interval(char *Metrics_name, struct timeval start_tv, struct timeval stop_tv, char *res)
+mf_api_stats_data_by_interval(char *Metrics_name, long double start_time, long double stop_time, char *res)
 {
     char start_timestamp[64] = {'\0'};
     char stop_timestamp[64]  = {'\0'};
@@ -206,8 +181,8 @@ mf_api_stats_data_by_interval(char *Metrics_name, struct timeval start_tv, struc
         strncpy(host, hostname, 6 * sizeof(char));
     }
 
-    convert_time(start_tv, start_timestamp);
-    convert_time(stop_tv, stop_timestamp);
+    convert_time_to_char(start_time, start_timestamp);
+    convert_time_to_char(stop_time, stop_timestamp);
 
     // <stats_request_url> := http://localhost:3000/v1/mf/statistics/<workflow_id>/<task_id>/<experiment_id>
     // query_url := <stats_request_url>?metric=<metric>&from=<start_timestamp>&to=<stop_timestamp>&host=<node01>
@@ -242,33 +217,33 @@ get_data_by_query(char* query_url, char *res)
     query(query_url, res);
 }
 
-/*return timestamps in timeval structure*/
-struct timeval
+/*return timestamps in long double data type*/
+long double
 mf_api_start_profiling(const char* function_name)
 {
     check_api();
     return send_trigger(function_name, START_MONITORING);
 }
 
-/*return timestamps in timeval structure*/
-struct timeval
+/*return timestamps in long double data type*/
+long double
 mf_api_stop_profiling(const char* function_name)
 {
     check_api();
     return send_trigger(function_name, STOP_MONITORING);
 }
 
-/*return timestamps in timeval structure*/
-static struct timeval
+/*return timestamps in long double data type*/
+static long double
 send_trigger(const char* function_name, int flag)
 {
+    long double time_stamp;
     metric resMetric = malloc(sizeof(metric_t));
     resMetric->msg = malloc(100 * sizeof(char));
 
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
     int clk_id = CLOCK_REALTIME;
     clock_gettime(clk_id, &resMetric->timestamp);
+    time_stamp = (long double) (resMetric->timestamp.tv_sec + resMetric->timestamp.tv_nsec * 1e-9);
 
     char *json = malloc(1024 * sizeof(char));
     char *status = malloc(256 * sizeof(char));
@@ -280,7 +255,7 @@ send_trigger(const char* function_name, int flag)
     free(json);
     prepSend(resMetric);
     free(resMetric);
-    return tv;
+    return time_stamp;
 }
 
 /*send metrics data in json format*/
