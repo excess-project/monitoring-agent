@@ -265,8 +265,8 @@ send_trigger(const char* function_name, int flag)
     metric resMetric = malloc(sizeof(metric_t));
     resMetric->msg = malloc(100 * sizeof(char));
 
-    //struct timeval tv;
-    //gettimeofday(&tv, NULL);
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
     int clk_id = CLOCK_REALTIME;
     clock_gettime(clk_id, &resMetric->timestamp);
 
@@ -290,7 +290,7 @@ mf_api_send(const char* json)
     check_api();
     metric resMetric = malloc(sizeof(metric_t));
     resMetric->msg = malloc(100 * sizeof(char));
-    
+
     int clk_id = CLOCK_REALTIME;
     clock_gettime(clk_id, &resMetric->timestamp);
 
