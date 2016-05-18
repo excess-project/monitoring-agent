@@ -21,7 +21,9 @@
 
 /* monitoring-related includes */
 #include "mf_debug.h"
+#include "mf_types.h"
 #include "mf_sensors_connector.h"
+#include "publisher.h"
 
 #define SUCCESS 1
 #define FAILURE 0
@@ -92,6 +94,9 @@ mf_sensors_is_enabled()
 int
 mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
 {
+    metric_units *SENSORS_units = malloc(sizeof(metric_units));
+    memset(SENSORS_units, 0, sizeof(metric_units));
+    int unit_i = 0;
     int retval = sensors_init(NULL);
     if (retval != 0) {
         log_error("ERROR: Couldn't initiate lm-sensors: %s",
@@ -118,7 +123,7 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
                 continue;
             }
             int label_length = sizeof(label);
-            char chipnum[2] = {'\0'};
+            char chipnum[3] = {'\0'};
             strncpy(chipnum, label+label_length+4, sizeof(char));
             chipnum[1]='_';
             strcpy(chipname, "CPU");
@@ -147,6 +152,15 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
                 char *my_label = malloc(16);
                 strcpy(my_label, chipname);
                 strcat(my_label, label);
+
+                SENSORS_units->metric_name[unit_i] = malloc(16 * sizeof(char));
+                strcpy(SENSORS_units->metric_name[unit_i], my_label);
+                SENSORS_units->plugin_name[unit_i] = malloc(32 * sizeof(char));
+                strcpy(SENSORS_units->plugin_name[unit_i], "mf_plugin_sensors");
+                SENSORS_units->unit[unit_i] = malloc(4 * sizeof(char));
+                strcpy(SENSORS_units->unit[unit_i], "°c");      //all metrics is about temperature
+                unit_i++;
+
                 int i = 0;
                 int flag = 0;
                 for (i=0; i<num_events; i++) {
@@ -168,7 +182,10 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
             }
         }
     }
-
+    
+    SENSORS_units->num_metrics = unit_i;
+    publish_unit(SENSORS_units);
+    
     return SUCCESS;
 }
 
