@@ -184,14 +184,14 @@ int mf_nvml_unit_init(metric_units *unit, int dev_count)
           unit->unit[i] =malloc(6 * sizeof(char));
           sprintf(unit->metric_name[i], "GPU%d:GPU_utilization", dev);
           strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
-          strcpy(unit->unit[i], "%%");
+          strcpy(unit->unit[i], "%");
           i++;
           unit->metric_name[i] =malloc(32 * sizeof(char));
           unit->plugin_name[i] =malloc(32 * sizeof(char));
           unit->unit[i] =malloc(6 * sizeof(char));
           sprintf(unit->metric_name[i], "GPU%d:MEM_utilization", dev);
           strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
-          strcpy(unit->unit[i], "%%");
+          strcpy(unit->unit[i], "%");
           i++;
       }
     }
@@ -203,7 +203,7 @@ int mf_nvml_unit_init(metric_units *unit, int dev_count)
           unit->unit[i] =malloc(6 * sizeof(char));
           sprintf(unit->metric_name[i], "GPU%d:encoder_utilization", dev);
           strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
-          strcpy(unit->unit[i], "%%");
+          strcpy(unit->unit[i], "%");
           i++;
           unit->metric_name[i] =malloc(32 * sizeof(char));
           unit->plugin_name[i] =malloc(32 * sizeof(char));
@@ -222,7 +222,7 @@ int mf_nvml_unit_init(metric_units *unit, int dev_count)
           unit->unit[i] =malloc(6 * sizeof(char));
           sprintf(unit->metric_name[i], "GPU%d:decoder_utilization", dev);
           strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
-          strcpy(unit->unit[i], "%%");
+          strcpy(unit->unit[i], "%");
           i++;
           unit->metric_name[i] =malloc(32 * sizeof(char));
           unit->plugin_name[i] =malloc(32 * sizeof(char));
@@ -336,7 +336,7 @@ int mf_nvml_unit_init(metric_units *unit, int dev_count)
           unit->unit[i] =malloc(4 * sizeof(char));
           sprintf(unit->metric_name[i], "GPU%d:fan_speed", dev);
           strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
-          strcpy(unit->unit[i], "%%");
+          strcpy(unit->unit[i], "%");
           i++;
       }
     }
