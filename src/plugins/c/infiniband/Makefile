@@ -5,9 +5,9 @@ CC = /usr/bin/gcc
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb $(infiniband_INC) $(EXCESS_INC) $(PARSER_INC) $(CORE_INC) $(COMMON_INC)
+-Wcast-align -O0 -ggdb $(infiniband_INC) $(EXCESS_INC) $(PARSER_INC) $(PUBLISHER_INC) $(CORE_INC) $(COMMON_INC)
 
-LFLAGS = $(PAPI) $(PARSER)
+LFLAGS = $(PAPI) $(PARSER) $(PUBLISHER)
 
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
@@ -33,6 +33,9 @@ EXCESS_INC = -I$(COMMON)/agent
 
 PARSER = -L$(COMMON)/contrib/parser/ -lparser
 PARSER_INC = -I$(COMMON)/contrib/parser/src
+
+PUBLISHER = -L$(COMMON)/contrib/publisher/ -lpublisher
+PUBLISHER_INC = -I$(COMMON)/contrib/publisher/src
 
 FILES = $(shell find src -name '*.c')
 HEADER = $(shell find src -name '*.h')
