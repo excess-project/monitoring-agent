@@ -113,9 +113,8 @@ mf_rapl_unit_init(metric_units *unit, int rapl_cid)
     }
     memset(unit, 0, sizeof(metric_units));
 
-    /* All preset events print units */
-    //code = PAPI_NATIVE_MASK;
-    code = PAPI_PRESET_MASK;
+    /* All NATIVE events print units */
+    code = PAPI_NATIVE_MASK;
     num_events = 0;
 
     r = PAPI_enum_cmp_event( &code, PAPI_ENUM_FIRST, rapl_cid );
@@ -130,13 +129,21 @@ mf_rapl_unit_init(metric_units *unit, int rapl_cid)
             log_error("ERROR: get_event _info failed %s", PAPI_strerror(retval));
             return FAILURE;
         }
-
+        if(strlen(evinfo.units)==0) {
+            r = PAPI_enum_cmp_event( &code, PAPI_ENUM_EVENTS, rapl_cid );
+            continue;
+        }
         unit->metric_name[num_events] =malloc(64 * sizeof(char));
-        strcpy(unit->metric_name[num_events], event_names[num_events]);
+        strcpy(unit->metric_name[num_events], event_names[num_events]+7);
         unit->plugin_name[num_events] =malloc(32 * sizeof(char));
         strcpy(unit->plugin_name[num_events], "mf_plugin_rapl");
         unit->unit[num_events] =malloc(PAPI_MIN_STR_LEN * sizeof(char));
-        strncpy(unit->unit[num_events], evinfo.units, sizeof(units[0])-1);
+        if(strstr(unit->metric_name[num_events], "ENERGY:") != NULL) {
+            strcpy(unit->unit[num_events], "J");
+        }
+        else {
+            strncpy(unit->unit[num_events], evinfo.units, sizeof(units[0])-1);    
+        }
         num_events++;
         r = PAPI_enum_cmp_event( &code, PAPI_ENUM_EVENTS, rapl_cid );
      }
