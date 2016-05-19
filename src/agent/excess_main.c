@@ -86,6 +86,8 @@ prepare() {
 	if (!pwd_is_set) {
 		set_pwd();
 	}
+	/* get server */
+	mfp_get_value("generic", "server", server_name);
 
 	/* prepare default message */
 	char msg[1000] = "";
@@ -101,35 +103,18 @@ prepare() {
 	long double timestamp = ts.tv_sec + (long double)(ts.tv_nsec / 1.0e9);
 	convert_time_to_char(timestamp, time_stamp);
 
-	/* get username */
-	char *username = getenv("USER");
-	if (username == NULL) {
-		username = malloc(sizeof(char) * 128);
-		strcpy(username, "unknown");
-	}
-
-	/* set task id */
+	/* set workflow and task_id to lower case */
+	toLower(workflow, strlen(workflow));
 	toLower(task, strlen(task));
 
-	/* set default description */
-	const char *description = "Running with default configuration...";
-
 	sprintf(msg,
-		"{\"host\":\"%s\",\"description\":\"%s\",\"@timestamp\":\"%s\",\"user\":\"%s\",\"application\":\"%s\"}",
-		hostname, description, time_stamp, username, task
+		"{\"host\":\"%s\",\"@timestamp\":\"%s\",\"user\":\"%s\",\"application\":\"%s\",\"job_id\":\"non-pbs\"}",
+		hostname, time_stamp, workflow, task
 	);
-
-	/* get server */
-	mfp_get_value("generic", "server", server_name);
-
-	/* set workflow id */
-	if ((workflow != NULL) && (workflow[0] == '\0')) {
-		strcpy(workflow, username);
-	}
-	toLower(workflow, strlen(workflow));
 
 	/* set or create experiment id */
 	if ((experiment_id != NULL) && (experiment_id[0] == '\0')) {
+		/*we don't have an experiment_id */
 		char* URL = malloc(256 * sizeof(char));
 		sprintf(URL,
 				"%s/%s/mf/users/%s/create",
@@ -145,7 +130,8 @@ prepare() {
     		);
     		return 0;
 		}
-	} else { /* we have already an id, let's register it at the server */
+	} else { 
+		/* we have already an experiment_id, register it at the server if no such experiment exists */
 		char* URL = malloc(256 * sizeof(char));
 		sprintf(URL,
 				"%s/%s/mf/users/%s/%s/create",
@@ -257,9 +243,10 @@ set_pwd()
  */
 int main(int argc, char* argv[]) {
 	int c;
-	int a_flag = 0;
-	int c_flag = 0;
-	int t_flag = 0;
+	int w_flag = 0;	//arg "workflow" exists flag
+	int t_flag = 0;	//arg "task" exists flag
+	int c_flag = 0;	//arg "config file" exists flag
+	int a_flag = 0;	//arg "api version" exists flag
 	int err = 0, help = 0;
 	extern char *optarg;
 
@@ -293,6 +280,7 @@ int main(int argc, char* argv[]) {
 		switch (c) {
 		case 'w':
 			strcpy(workflow, optarg);
+			w_flag = 1;
 			fprintf(logFile, "> workflow ID: %s\n", workflow);
 			break;
 		case 't':
@@ -322,22 +310,29 @@ int main(int argc, char* argv[]) {
 			break;
 	}
 
+	/* set workflow to "username" if not given as input arg */
+	if (w_flag == 0) {
+		/* get username */
+		char *username = getenv("USER");
+		if (username == NULL) {
+			username = malloc(sizeof(char) * 128);
+			strcpy(username, "unknown");
+		}
+		strcpy(workflow, username);
+	}
+	/* set task to all if not provided by the user */
+	if (t_flag == 0) {
+		strcpy(task, "manual_monitoring");
+	}
 	/* set default configuration file if no configuration was given */
 	if (c_flag == 0) {
 		sprintf(confFile, "%s/%s", pwd, "../mf_config.ini");
 	}
 	fprintf(logFile, "Configuration taken from: %s\n", confFile);
-
-	/* set task to all if not provided by the user */
-	if (t_flag == 0) {
-		strcpy(task, "manual_monitoring");
-	}
-
 	/* set default api version */
 	if (a_flag == 0) {
 		strcpy(api_version, "v1");
 	}
-
 	/* print usage */
 	if (err || help) {
 		fprintf(stderr, usage, argv[0]);
