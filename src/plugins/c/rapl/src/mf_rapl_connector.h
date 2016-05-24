@@ -56,6 +56,7 @@ struct RAPL_Plugin_t
 };
 
 /** @brief Checks if the RAPL component is available and enabled
+ * if RAPL component is available collects events units and send them to mf_server
  *
  * This function checks if the RAPL component is compiled within the given
  * PAPI library, and that the RAPL features are enabled.
@@ -63,6 +64,14 @@ struct RAPL_Plugin_t
  * @return 1 if RAPL component is enabled; 0 otherwise.
  */
 int mf_rapl_is_enabled();
+
+/** @brief Initializes rapl units and send to mf_server
+ *
+ * @it is called by mf_rapl_is_enabled
+ *
+ * @return 1 on success; 0 otherwise.
+ */
+int mf_rapl_unit_init(int rapl_cid);
 
 /** @brief Initializes RAPL plug-in
  *

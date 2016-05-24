@@ -3,7 +3,7 @@ CC = /usr/bin/gcc
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb $(CURL_INC) $(CORE_INC) $(PARSER_INC)
+-Wcast-align -O0 -ggdb $(CURL_INC) $(CORE_INC) $(EXCESS_INC) $(PARSER_INC)
 
 LFLAGS =  -lm $(CURL) $(PARSER)
 
@@ -16,6 +16,7 @@ endif
 
 COMMON = ../..
 CORE_INC = -I$(COMMON)/core
+EXCESS_INC = -I$(COMMON)/agent
 PARSER_INC = -I$(COMMON)/contrib/parser/src
 CURL = -L../../../bin/curl/lib -lcurl
 PARSER = -L$(COMMON)/contrib/parser/ -lparser
@@ -28,10 +29,10 @@ all: clean-all libpublisher.so libpublisher.a
 publisher.o:
 	$(CC) -c src/publisher.c -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
-libpublisher.so: publisher.o
+libpublisher.so: publisher.o $(COMMON)/agent/util.o
 	$(CC) -shared -o $@ $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 
-libpublisher.a:	publisher.o
+libpublisher.a:	publisher.o $(COMMON)/agent/util.o
 	ar rcs $@ $^
 
 clean:

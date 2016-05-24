@@ -50,7 +50,6 @@ long long *pre_values;
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
-static int mf_rapl_unit_init(metric_units *unit, int rapl_cid);
 static int is_rapl_initialized();
 static int enable_papi_library();
 static double mf_rapl_get_denominator();
@@ -65,8 +64,6 @@ mf_rapl_is_enabled()
 {
     int numcmp, cid;
     const PAPI_component_info_t *cmpinfo = NULL;
-    metric_units *RAPL_units = malloc(sizeof(metric_units));
-
     enable_papi_library();
 
     if (is_available > -1) {
@@ -83,11 +80,9 @@ mf_rapl_is_enabled()
             } else {
                 is_available = SUCCESS;
                 log_info("Component is ENABLED (%s)", cmpinfo->name);
+                /* init rapl units and send to mf_server*/
+                mf_rapl_unit_init(cid);
             }
-            /* init rapl all metric names and units */
-            mf_rapl_unit_init(RAPL_units, cid);
-            /* publish the units to mf_server */
-            publish_unit(RAPL_units);
             return is_available;
         }
     }
@@ -99,17 +94,23 @@ mf_rapl_is_enabled()
 /*******************************************************************************
  * mf_rapl_unit_init
  ******************************************************************************/
-static int 
-mf_rapl_unit_init(metric_units *unit, int rapl_cid)
+int 
+mf_rapl_unit_init(int rapl_cid)
 {
+    int ret = unit_file_check("rapl");
+    if(ret != 0) {
+        printf("unit file of rapl exists.\n");
+        return FAILURE;
+    }
     /* declare variables */
+    metric_units *unit = malloc(sizeof(metric_units));
     int r, retval, code, num_events;
     char event_names[MAX_RAPL_EVENTS][PAPI_MAX_STR_LEN];
     char units[MAX_RAPL_EVENTS][PAPI_MIN_STR_LEN];
     PAPI_event_info_t evinfo;
 
     if (unit == NULL) {
-        unit = malloc(sizeof(metric_units));
+        return FAILURE;
     }
     memset(unit, 0, sizeof(metric_units));
 
@@ -149,6 +150,7 @@ mf_rapl_unit_init(metric_units *unit, int rapl_cid)
      }
 
      unit->num_metrics = num_events;
+     publish_unit(unit);
      return SUCCESS;
 }
 

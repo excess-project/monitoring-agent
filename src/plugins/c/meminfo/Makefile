@@ -35,7 +35,7 @@ PUBLISHER_INC = -I$(COMMON)/contrib/publisher/src
 FILES = $(shell find src -name '*.c')
 HEADER = $(shell find src -name '*.h')
 
-all: clean prepare mf_meminfo_client mf_plugin_meminfo.so
+all: clean prepare mf_meminfo_client mf_meminfo_units mf_plugin_meminfo.so
 
 prepare:
 	@mkdir -p lib
@@ -52,7 +52,11 @@ mf_plugin_meminfo.o: $(SRC)/mf_plugin_meminfo.c $(HEADER)
 mf_meminfo_client: $(UTILS)/mf_meminfo_client.c $(SRC)/mf_meminfo_connector.c
 	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)
 
+mf_meminfo_units: $(UTILS)/mf_meminfo_units.c $(SRC)/mf_meminfo_connector.c
+	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)
+
 clean:
 	rm -rf *.o
 	rm -rf lib
 	rm -f mf_meminfo_client
+	rm -f mf_meminfo_units

@@ -68,6 +68,14 @@ int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events);
  */
 int mf_movi_sample(MOVI_Plugin *data);
 
+/** @brief Initializes movidius arduino units and send to mf_server
+ *
+ * @it is called by mf_movi_init
+ *
+ * @return 1 on success; 0 otherwise.
+ */
+int mf_movi_unit_init(void);
+
 /** @brief String representation of sampled MOVI events
  *
  * This functions returns a JSON representation of the MOVI events sampled. The
@@ -97,6 +105,4 @@ int set_interface_attribs (int fd, int speed, int parity);
 void set_blocking (int fd, int should_block);
 void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch_coef1 );
 void read_arduino(int fd, char* arduino_output, size_t* length,  size_t max_length);
-
-
 #endif /* _MOVI_CONNECTOR_H */

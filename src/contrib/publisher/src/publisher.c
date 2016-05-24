@@ -17,7 +17,13 @@
 #include <curl/curl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <sys/types.h> 
+#include <sys/time.h>
+#include <time.h>
 
+#include "util.h"
 #include "mf_debug.h"
 #include "publisher.h"
 #include "mf_parser.h"
@@ -243,6 +249,61 @@ publish_unit(metric_units *units)
         curl_easy_reset(curl);
     }
     return result;
+}
+/*check if the units file of a plugin exists.
+    if error, return -1;
+    if file NOT exists, create file and return 0;
+    if file exists, return 1;
+    */
+int 
+unit_file_check(const char *plugin_name) {
+    char buf_1[200] = {'\0'};
+    char buf_2[200] = {'\0'};
+    char pwd[200] = {'\0'};
+    char Filefolder[300] = {'\0'};
+    char Filename[300] = {'\0'};
+
+    /*get the host name, first 6 characters */
+    char hostname[32] = {'\0'};
+    char host[10] = {'\0'};
+    getFQDN(hostname);
+    strncpy(host, hostname, 6 * sizeof(char));
+
+    readlink("/proc/self/exe", buf_1, 200);
+    memcpy(buf_2, buf_1, strlen(buf_1) * sizeof(char));
+    char *lastslash = strrchr(buf_2, '/');
+    int ptr = lastslash - buf_2;
+    memcpy(pwd, buf_2, ptr);
+    sprintf(Filefolder, "%s/plugins/", pwd);
+    sprintf(Filename, "%s/plugins/%s_units_%s", pwd, plugin_name, host);
+    fprintf(stderr, "using logfile: %s\n", Filename);
+
+    struct stat folder = { 0 };
+    struct stat file = { 0 };
+    if (stat(Filefolder, &folder) == -1) {
+        fprintf(stderr, "Folder %s does not exist.\n", Filefolder);
+        return -1;
+    }
+    if (stat(Filename, &file) == -1) {
+        fprintf(stderr, "File %s does not exist.\n", Filename);
+        FILE *fp = fopen(Filename, "w");
+        if (fp == NULL) {
+            fprintf(stderr, "Could not create file: %s\n", Filename);
+            return -1;
+        } else {
+            time_t curTime;
+            time(&curTime);
+            struct tm *time_info = localtime(&curTime);
+            char time_str[50];
+            strftime(time_str, 50, "%F-%T", time_info);
+            fprintf(fp, "mf_meminfo_units run at %s\n", time_str);
+            return 0;
+        }
+    }
+    else {
+        fprintf(stderr, "file %s exists.\n", Filename);
+        return 1;
+    }
 }
 
 int

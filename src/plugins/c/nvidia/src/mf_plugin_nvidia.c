@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <mf_parser.h> /* mfp_data */
 
 #include "util.h"
 #include "plugin_manager.h"

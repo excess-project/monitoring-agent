@@ -98,7 +98,22 @@ int publish(const char *URL, Message *messages);
  * @return 1 if successful; 0 otherwise
  */
 int publish_json(const char *URL, char *message);
+
+/**
+ * @brief Sends the plugin metrics units to a specific URL.
+ *
+ * @return 1 if successful; 0 otherwise
+ */
 int publish_unit(metric_units *units);
+
+/**
+ * @check if the units file of a plugin exists.
+ *     if error, return -1;
+ *     if file NOT exists, create file and return 0;
+ *     if file exists, return 1;
+ */
+int unit_file_check(const char *plugin_name);
+
 /**
  * @brief Frees the cURL headers and global variables.
  *

@@ -29,7 +29,6 @@
 /*******************************************************************************
  * VARIABLE DECLARATIONS
  ******************************************************************************/
-
 static const char *PROC_MEMINFO = "/proc/meminfo";
 
 /*******************************************************************************
@@ -45,6 +44,7 @@ mf_meminfo_is_enabled()
         return FAILURE;
     }
     fclose(fp);
+    mf_meminfo_unit_init();
 
     return SUCCESS;
 }
@@ -112,12 +112,6 @@ mf_meminfo_init(MEMINFO_Plugin *data, char **meminfo_events, size_t num_events)
             retval = FAILURE;
         }
     }
-    
-    metric_units *MEMINFO_units = NULL;
-    MEMINFO_units = malloc(sizeof(metric_units));
-    mf_meminfo_unit_init(MEMINFO_units);
-
-    publish_unit(MEMINFO_units);
     return retval;
 }
 
@@ -192,17 +186,20 @@ mf_meminfo_shutdown()
 /*******************************************************************************
  * mf_meminfo_unit_init
  ******************************************************************************/
-
 int
-mf_meminfo_unit_init(metric_units *unit)
+mf_meminfo_unit_init(void)
 {
     int i;
     char meminfo_str[128];
-    /*
-     * check if data is initialized
-     */
+    int ret = unit_file_check("meminfo");
+    if(ret != 0) {
+        printf("unit file of meminfo exists.\n");
+        return FAILURE;
+    }
+
+    metric_units *unit = malloc(sizeof(metric_units));
     if (unit == NULL) {
-        unit = malloc(sizeof(metric_units));
+        return FAILURE;
     }
     memset(unit, 0, sizeof(metric_units));
 
@@ -229,5 +226,6 @@ mf_meminfo_unit_init(metric_units *unit)
     }
     fclose(fp);
     unit->num_metrics = i;
+    publish_unit(unit);
     return 1;
 }

@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include <nvml.h>
+#include <mf_parser.h>
 #include "mf_types.h"
 #include "publisher.h"
 
@@ -30,7 +31,7 @@ static int mf_nvml_avail();
 
 static handle_t mf_nvml_init();
 
-int mf_nvml_unit_init(metric_units *unit, int dev_count);
+static int mf_nvml_unit_init(int dev_count);
 /* Functions to get and append current device state information.
  * See http://docs.nvidia.com/deploy/nvml-api/group__nvmlDeviceQueries.html
  * for more information.
@@ -131,20 +132,22 @@ static handle_t mf_nvml_init()
       break;
     }
   }
-
-  metric_units *NVML_units = malloc(sizeof(metric_units));
-  mf_nvml_unit_init(NVML_units, device_count);
-  publish_unit(NVML_units);
-
+  mf_nvml_unit_init(device_count);
   return devices;
 }
 
 /*initialize unit of nvml all metrics*/
-int mf_nvml_unit_init(metric_units *unit, int dev_count)
+static int mf_nvml_unit_init(int dev_count)
 {
   int i, conf_i, dev;
+  int ret = unit_file_check("nvml");
+    if(ret != 0) {
+        printf("unit file of nvml exists.\n");
+        return 0;
+    }
+  metric_units *unit = malloc(sizeof(metric_units));
   if(unit== NULL) {
-    unit = malloc(sizeof(metric_units));
+    return 0;
   }
   memset(unit, 0, sizeof(metric_units));
 
@@ -361,6 +364,7 @@ int mf_nvml_unit_init(metric_units *unit, int dev_count)
     }
   }
   unit->num_metrics = i;
+  publish_unit(unit);
   return 1;
 }
 

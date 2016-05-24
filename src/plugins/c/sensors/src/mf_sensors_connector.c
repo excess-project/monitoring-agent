@@ -44,6 +44,13 @@ typedef struct requested_features_t {
 
 requested_features *features = NULL;
 
+/*
+ * declares if the lm_sensors component is enabled to be used for monitoring
+ *
+ * states: (-1) not initialized, (0) disabled, (1) enabled
+ */
+static int is_available = -1;
+
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
@@ -84,7 +91,89 @@ add_feature(requested_features* list, const sensors_chip_name* chip, const senso
 int
 mf_sensors_is_enabled()
 {
-    return 1;
+    int retval, chip_num, feature_num, subfeature_num, i;
+    char chipname[16] = {'\0'};
+    metric_units *SENSORS_units = malloc(sizeof(metric_units));
+
+    int ret = unit_file_check("sensors");
+    if (is_available > -1 && ret !=0) {
+        return is_available;
+    }
+
+    retval = sensors_init(NULL);
+    if (retval != 0) {
+        log_error("ERROR: Couldn't initiate lm-sensors: %s", sensors_strerror(retval));
+        is_available = 0; 
+        return is_available;
+    }
+    if(SENSORS_units == NULL) {
+        is_available = -1;
+        return is_available;
+    }
+    memset(SENSORS_units, 0, sizeof(metric_units));
+
+    i=0;
+    const sensors_chip_name *chip;
+    chip_num = 0;
+    while ((chip = sensors_get_detected_chips(NULL, &chip_num)) != NULL) {
+        if (strcmp(chip->prefix, "coretemp") != 0) {
+            continue;
+        }
+        const sensors_feature *feature_tmp, *feature;
+        feature_num = 0;
+        /*get chip name*/
+        while ((feature_tmp = sensors_get_features(chip, &feature_num)) != NULL) {
+            if (feature_tmp->type != SENSORS_FEATURE_TEMP) {
+                continue;
+            }
+            char *label = sensors_get_label(chip, feature_tmp);
+            if (prefix("Physical id", label) != 0) {
+                continue;
+            }
+            int label_length = sizeof(label);
+            char chipnum[3] = {'\0'};
+            strncpy(chipnum, label+label_length+4, sizeof(char));
+            chipnum[1]='_';
+            memset(chipname, 0, sizeof(chipname));
+            strcpy(chipname, "CPU");
+            strcat(chipname, chipnum);
+        }
+        feature_num = 0;
+        /* filter sensors features according to configured sensors_events */
+        while ((feature = sensors_get_features(chip, &feature_num)) != NULL) {
+            if (feature->type != SENSORS_FEATURE_TEMP) {
+                continue;
+            }
+            const sensors_subfeature *subfeature;
+            subfeature_num = 0;
+            while ((subfeature = sensors_get_all_subfeatures (chip, feature, &subfeature_num)) != NULL) {
+                if (subfeature->type != SENSORS_SUBFEATURE_TEMP_INPUT) {
+                    continue;
+                }
+                char* label = sensors_get_label(chip, feature);
+                if (prefix("Core", label) != 0) {
+                    continue;
+                }
+                char my_label[16] = {'\0'};
+                strcpy(my_label, chipname);
+                strcat(my_label, label);
+
+                SENSORS_units->metric_name[i] = malloc(16 * sizeof(char));
+                strcpy(SENSORS_units->metric_name[i], my_label);
+                SENSORS_units->plugin_name[i] = malloc(32 * sizeof(char));
+                strcpy(SENSORS_units->plugin_name[i], "mf_plugin_sensors");
+                SENSORS_units->unit[i] = malloc(4 * sizeof(char));
+                strcpy(SENSORS_units->unit[i], "°c");      //all metrics is about temperature
+                i++;
+                break;
+            }
+        }
+    }
+    
+    SENSORS_units->num_metrics = i;
+    publish_unit(SENSORS_units);
+    is_available = 1; 
+    return is_available;
 }
 
 /*******************************************************************************
@@ -94,9 +183,6 @@ mf_sensors_is_enabled()
 int
 mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
 {
-    metric_units *SENSORS_units = malloc(sizeof(metric_units));
-    memset(SENSORS_units, 0, sizeof(metric_units));
-    int unit_i = 0;
     int retval = sensors_init(NULL);
     if (retval != 0) {
         log_error("ERROR: Couldn't initiate lm-sensors: %s",
@@ -153,14 +239,6 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
                 strcpy(my_label, chipname);
                 strcat(my_label, label);
 
-                SENSORS_units->metric_name[unit_i] = malloc(16 * sizeof(char));
-                strcpy(SENSORS_units->metric_name[unit_i], my_label);
-                SENSORS_units->plugin_name[unit_i] = malloc(32 * sizeof(char));
-                strcpy(SENSORS_units->plugin_name[unit_i], "mf_plugin_sensors");
-                SENSORS_units->unit[unit_i] = malloc(4 * sizeof(char));
-                strcpy(SENSORS_units->unit[unit_i], "°c");      //all metrics is about temperature
-                unit_i++;
-
                 int i = 0;
                 int flag = 0;
                 for (i=0; i<num_events; i++) {
@@ -182,10 +260,6 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
             }
         }
     }
-    
-    SENSORS_units->num_metrics = unit_i;
-    publish_unit(SENSORS_units);
-    
     return SUCCESS;
 }
 

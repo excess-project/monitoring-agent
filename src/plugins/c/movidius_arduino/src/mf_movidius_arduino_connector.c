@@ -52,7 +52,6 @@ MOVI_Plugin *all_data;
 static int is_movi_initialized();
 static int create_eventset_for(MOVI_Plugin *data, char **movi_events, size_t num_events);
 static int create_eventset_for_all(MOVI_Plugin *all_data);
-static int mf_movi_unit_init(metric_units *unit);
 void set_channel_coef();
 int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events);
 void filter(MOVI_Plugin *all_data, MOVI_Plugin *data);
@@ -62,7 +61,6 @@ void filter(MOVI_Plugin *all_data, MOVI_Plugin *data);
  ******************************************************************************/
 int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events)
 {
-    metric_units *MOVI_units = malloc(sizeof(metric_units));
     if (is_movi_initialized()) {
         return SUCCESS;
     }
@@ -73,8 +71,7 @@ int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events)
 
     all_data = malloc(num_cores * sizeof(MOVI_Plugin));
     create_eventset_for_all(all_data);
-    mf_movi_unit_init(MOVI_units);
-    publish_unit(MOVI_units);
+    mf_movi_unit_init();
     create_eventset_for(data, movi_events, num_events);
      /*
      * initialize time measurements
@@ -110,12 +107,18 @@ int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events)
 /*******************************************************************************
  * mf_movi_unit_init
  ******************************************************************************/
-static int
-mf_movi_unit_init(metric_units *unit)
+int
+mf_movi_unit_init(void)
 {
     int i;
+    int ret = unit_file_check("movidius");
+    if(ret != 0) {
+        printf("unit file of movidius exists.\n");
+        return FAILURE;
+    }
+    metric_units *unit = malloc(sizeof(metric_units));
     if (unit == NULL) {
-        unit = malloc(sizeof(metric_units));
+        return FAILURE;
     }
     memset(unit, 0, sizeof(metric_units));
     for(i=0; i < MOVI_MAX_PRESET_EVENTS; i++) {
@@ -147,6 +150,7 @@ mf_movi_unit_init(metric_units *unit)
     strcpy(unit->metric_name[15], "MIPI_VDD_V");
     
     unit->num_metrics = MOVI_MAX_PRESET_EVENTS;
+    publish_unit(unit);
     return SUCCESS;
 }
 

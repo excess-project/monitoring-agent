@@ -41,7 +41,7 @@ PUBLISHER_INC = -I$(COMMON)/contrib/publisher/src
 FILES = $(shell find src -name '*.c')
 HEADER = $(shell find src -name '*.h')
 
-all: clean prepare mf_movidius_arduino_client mf_plugin_movidius_arduino.so
+all: clean prepare mf_movidius_arduino_client mf_movidius_arduino_units mf_plugin_movidius_arduino.so
 
 mf_plugin_movidius_arduino.so: mf_plugin_movidius_arduino.o mf_movidius_arduino_connector.o
 	$(CC) -o $(LIB)/mf_plugin_movidius_arduino.so $^ -shared
@@ -55,12 +55,16 @@ mf_plugin_movidius_arduino.o: $(SRC)/mf_plugin_movidius_arduino.c $(HEADER)
 mf_movidius_arduino_client: $(UTILS)/mf_movidius_arduino_client.c $(SRC)/mf_movidius_arduino_connector.c
 	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)
 
+mf_movidius_arduino_units: $(UTILS)/mf_movidius_arduino_units.c $(SRC)/mf_movidius_arduino_connector.c
+	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)
+
 prepare:
 	@mkdir -p lib
 
 clean:
 	rm -rf *.o
 	rm -f mf_movidius_arduino_client
+	rm -f mf_movidius_arduino_units
 	rm -rf lib
 
 doc: $(FILES)
