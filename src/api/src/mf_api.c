@@ -37,8 +37,8 @@ static char statistics_url[256];
 static char profiles_url[256];
 
 static void check_api();
-static long double send_trigger();
-static void get_data_by_query();
+static long double send_trigger(const char* function_name, int flag);
+static void get_data_by_query(char* query_url, char *res);
 
 static void
 check_api()
@@ -180,6 +180,7 @@ mf_api_stats_metrics(char **Metrics_name, int Metrics_num, char *res)
     sprintf(query_url, "%s?metric=%s",
             statistics_url,
             Metrics_name[0]);
+
     for (i = 1; i < Metrics_num; i++) {
         strcat(query_url, "&metric=");
         strcat(query_url, Metrics_name[i]);
@@ -238,7 +239,7 @@ mf_api_stats_metrics_by_interval(char **Metrics_name, int Metrics_num, long doub
     // query_url := <stats_request_url>?metric=<metric>&from=<start_timestamp>&to=<stop_timestamp>&host=<node01>
     sprintf(query_url, "%s?metric=%s&from=%s&to=%s&host=%s",
             statistics_url,
-            Metrics_name,
+            Metrics_name[0],
             start_timestamp,
             stop_timestamp,
             host

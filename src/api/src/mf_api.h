@@ -59,7 +59,7 @@ void mf_api_stats_data_by_interval(char *Metrics_name, long double start_time, l
  *        within the given range: the interval is defined by the two
  *        timestamps start_time and stop_time.
  */
-void mf_api_stats_metrics_by_interval(char **Metrics_name, int Metrics_num, long double start_time, long double stop_time, char *res)
+void mf_api_stats_metrics_by_interval(char **Metrics_name, int Metrics_num, long double start_time, long double stop_time, char *res);
 
 /**
  * @brief Query the database in order to retrieve all metrics data for a specific experiment
