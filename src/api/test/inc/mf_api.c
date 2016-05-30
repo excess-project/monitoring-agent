@@ -168,6 +168,26 @@ mf_api_stats_data_by_metric(char *Metrics_name, char *res)
     get_data_by_query(query_url, res);
 }
 
+/*get statistics data by metrics*/
+void 
+mf_api_stats_metrics(char **Metrics_name, int Metrics_num, char *res)
+{
+    int i;
+    char query_url[300] = {'\0'};
+
+    // <stats_request_url> := http://localhost:3000/v1/mf/statistics/<workflow_id>/<task_id>/<experiment_id>
+    // query_url := <stats_request_url>?metric=<metric>
+    sprintf(query_url, "%s?metric=%s",
+            statistics_url,
+            Metrics_name[0]);
+    for (i = 1; i < Metrics_num; i++) {
+        strcat(query_url, "&metric=");
+        strcat(query_url, Metrics_name[i]);
+    }
+
+    get_data_by_query(query_url, res);
+}
+
 /*get statistics data of a metric during the given time interval*/
 void 
 mf_api_stats_data_by_interval(char *Metrics_name, long double start_time, long double stop_time, char *res)
@@ -194,6 +214,40 @@ mf_api_stats_data_by_interval(char *Metrics_name, long double start_time, long d
             host
            );
 
+    get_data_by_query(query_url, res);
+}
+
+/*get statistics data of metrics during the given time interval*/
+void 
+mf_api_stats_metrics_by_interval(char **Metrics_name, int Metrics_num, long double start_time, long double stop_time, char *res)
+{
+    char start_timestamp[64] = {'\0'};
+    char stop_timestamp[64]  = {'\0'};
+    char query_url[300] = {'\0'};
+    char host[10] = {'\0'};
+    int i;
+
+    if(hostname != NULL && strlen(hostname) != 0) {
+        strncpy(host, hostname, 6 * sizeof(char));
+    }
+
+    convert_time_to_char(start_time, start_timestamp);
+    convert_time_to_char(stop_time, stop_timestamp);
+
+    // <stats_request_url> := http://localhost:3000/v1/mf/statistics/<workflow_id>/<task_id>/<experiment_id>
+    // query_url := <stats_request_url>?metric=<metric>&from=<start_timestamp>&to=<stop_timestamp>&host=<node01>
+    sprintf(query_url, "%s?metric=%s&from=%s&to=%s&host=%s",
+            statistics_url,
+            Metrics_name,
+            start_timestamp,
+            stop_timestamp,
+            host
+           );
+
+    for (i = 1; i < Metrics_num; i++) {
+        strcat(query_url, "&metric=");
+        strcat(query_url, Metrics_name[i]);
+    }
     get_data_by_query(query_url, res);
 }
 
