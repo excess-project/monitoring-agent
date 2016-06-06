@@ -172,7 +172,8 @@ mf_sensors_is_enabled()
     
     SENSORS_units->num_metrics = i;
     publish_unit(SENSORS_units);
-    is_available = 1; 
+    is_available = 1;
+    sensors_cleanup();
     return is_available;
 }
 
@@ -280,8 +281,7 @@ mf_sensors_sample(SENSORS_Plugin *data)
         data->values[i]=value;
         //printf("%s %s %.2f\n", iter->label, iter->subfeature->name, value);
     }
-    data->num_events = i+1;
-
+    data->num_events = i;
     return 1;
 }
 

@@ -29,23 +29,16 @@
 #include "mf_parser.h"
 #include "mf_types.h"
 
-static CURL *curl;
 char execution_id[ID_SIZE] = { 0 };
 struct curl_slist *headers = NULL;
 
 static void
 init_curl()
 {
-    if (curl != NULL ) {
-        return;
-    }
-
-    curl_global_init(CURL_GLOBAL_ALL);
-    curl = curl_easy_init();
-
     if (headers != NULL ) {
         return;
     }
+    curl_global_init(CURL_GLOBAL_ALL);
     headers = curl_slist_append(headers, "Accept: application/json");
     headers = curl_slist_append(headers, "Content-Type: application/json");
     headers = curl_slist_append(headers, "charsets: utf-8");
@@ -104,34 +97,37 @@ check_message(char *message)
     return 1;
 }
 
-static int
+static CURL *
 prepare_publish(const char *URL, char *message)
 {
     init_curl();
+    CURL *curl;
+    curl = curl_easy_init();
     curl_easy_setopt(curl, CURLOPT_URL, URL);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, message);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long ) strlen(message));
     
     #ifdef DEBUG
-    curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
     #endif
 
-    return 1;
+    return curl;
 }
 
-static int
+static CURL *
 prepare_query(const char* URL)
 {
     init_curl();
-
+    CURL *curl;
+    curl = curl_easy_init();
     curl_easy_setopt(curl, CURLOPT_URL, URL);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     #ifdef DEBUG
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
     #endif
 
-    return 1;
+    return curl;
 }
 
 size_t
@@ -159,7 +155,8 @@ query(const char* query, char* received_data)
         return 0;
     }
 
-    if (!prepare_query(query)) {
+    CURL *curl = prepare_query(query);
+    if (curl == NULL) {
         return 0;
     }
 
@@ -177,7 +174,7 @@ query(const char* query, char* received_data)
     if(response_message.len > 0){
     	strncpy(received_data, response_message.ptr, response_message.len);
     }
-    curl_easy_reset(curl);
+    curl_easy_cleanup(curl);
 
     if(strstr(received_data, "Description") == NULL) {
         return 0;
@@ -193,8 +190,8 @@ publish_json(const char *URL, char *message)
     if (!check_URL(URL) || !check_message(message)) {
         return 0;
     }
-
-    if (!prepare_publish(URL, message)) {
+    CURL *curl = prepare_publish(URL, message);
+    if (curl == NULL) {
         return 0;
     }
 
@@ -209,7 +206,7 @@ publish_json(const char *URL, char *message)
         log_error("publish(const char*, Message) %s", error_msg);
     }
 
-    curl_easy_reset(curl);
+    curl_easy_cleanup(curl);
     return result;
 }
 
@@ -230,12 +227,12 @@ publish_unit(metric_units *units)
         if (!check_URL(URL) || !check_message(msg)) {
             return 0;
         }
-        if (!prepare_publish(URL, msg)) {
+        CURL *curl = prepare_publish(URL, msg);
+        if (curl == NULL) {
             return 0;
         }
-        #ifndef DEBUG
-            curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");  /* !!! */
-        #endif
+        
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");  /* !!! */
 
         CURLcode response = curl_easy_perform(curl);
         if (response != CURLE_OK) {
@@ -243,7 +240,7 @@ publish_unit(metric_units *units)
             const char *error_msg = curl_easy_strerror(response);
             log_error("publish(const char*, Message) %s", error_msg);
         }
-        curl_easy_reset(curl);
+        curl_easy_cleanup(curl);
     }
     return result;
 }
@@ -319,8 +316,8 @@ get_execution_id(const char *URL, char *message)
     if (!check_URL(URL) || !check_message(message)) {
         return '\0';
     }
-
-    if (!prepare_publish(URL, message)) {
+    CURL *curl = prepare_publish(URL, message);
+    if (curl == NULL) {
         return '\0';
     }
 
@@ -334,7 +331,7 @@ get_execution_id(const char *URL, char *message)
     }
 
     debug("get_execution_id(const char*, char*) Execution_ID = <%s>", execution_id);
-    curl_easy_reset(curl);
+    curl_easy_cleanup(curl);
     return execution_id;
 }
 
@@ -344,8 +341,8 @@ create_experiment_id(const char* URL, char* message)
     if (!check_URL(URL) || !check_message(message)) {
         return '\0';
     }
-
-    if (!prepare_publish(URL, message)) {
+    CURL *curl = prepare_publish(URL, message);
+    if (curl == NULL) {
         return '\0';
     }
 
@@ -360,7 +357,7 @@ create_experiment_id(const char* URL, char* message)
 
     debug("create_experiment_id(const char*, char*) Execution_ID = <%s>", execution_id);
 
-    curl_easy_reset(curl);
+    curl_easy_cleanup(curl);
 
     return execution_id;
 }
@@ -368,10 +365,5 @@ create_experiment_id(const char* URL, char* message)
 void
 shutdown_curl()
 {
-    if (curl == NULL ) {
-        return;
-    }
-
-    curl_easy_cleanup(curl);
     curl_global_cleanup();
 }

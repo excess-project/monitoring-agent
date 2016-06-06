@@ -108,26 +108,21 @@ startThreads() {
 void*
 entryThreads(void *arg) {
 	int *typeT = (int*) arg;
-	switch (*typeT) {
-	case 0:
-		startSending();
-		break;
-	case 1:
+	if(*typeT == 0) {
 		checkConf();
-		break;
-	default:
-		gatherMetric(*typeT);
-		break;
 	}
-
+	else if((1 <= *typeT) && (*typeT<= SEND_THREADS)) {
+		startSending();
+	}
+	else {
+		gatherMetric(*typeT);
+	}
 	return NULL;
 }
 
 int
 startSending() {
 	void *ptr;
-	char update_interval[20] = {'\0'};
-	mfp_get_value("timings", "publish_data_interval", update_interval);
 	EXCESS_concurrent_queue_handle_t data_queue_handle;
 	data_queue_handle =ECQ_get_handle(data_queue);
 	while (running || !ECQ_is_empty(data_queue)) {
@@ -140,7 +135,7 @@ startSending() {
 			free(mPtr);
 		}
 		else {
-			sleep(atoi(update_interval));;
+			usleep(timings[0]);
 		}
 	}
 	ECQ_free_handle(data_queue_handle);
@@ -166,7 +161,7 @@ prepSend(metric data) {
 	long double diff_ts = publish_ts - timestamp;
 	fprintf(logFile, "diff_ts is \t%Lf\n", diff_ts);
 
-	char msg[4096] = "";
+	char msg[4096] = {'\0'};
 	sprintf(msg,
 		"{\"@timestamp\":\"%s\",\"host\":\"%s\",\"task\":\"%s\",%s}",
 		time_stamp,
@@ -174,7 +169,7 @@ prepSend(metric data) {
 		task,
 		data->msg
 	);
-
+	//fprintf(logFile, "%s\n", data->msg);
 	int retval = publish_json(server_name, msg);
 	if (retval == 0) {
 		++connection_error;
@@ -207,7 +202,7 @@ init_timings()
 	mfp_get_value("timings", "default", timing);
 	long default_timing = atoi(timing);
 
-	for (int i = 2; i < mfp_timing_data->size; ++i) {
+	for (int i = MIN_THREADS; i < MIN_THREADS + mfp_timing_data->size; ++i) {
 		char* current_plugin_name = plugin_name[i];
 		if (current_plugin_name == NULL) {
 			continue;
@@ -273,10 +268,10 @@ int
 checkConf() {
 	while (running) {
 		mfp_parse(confFile);
-        init_timings();
-        char wait_some_seconds[20] = {'\0'};
-        mfp_get_value("timings", "update_configuration", wait_some_seconds);
+		char wait_some_seconds[20] = {'\0'};
+		mfp_get_value("timings", "update_configuration", wait_some_seconds);
 		sleep(atoi(wait_some_seconds));
+		init_timings();
 	}
 	return 1;
 }
