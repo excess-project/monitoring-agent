@@ -33,7 +33,9 @@ $(APR_INC) \
 $(CURL_INC) \
 $(PARSER_INC) \
 $(PUBLISHER_INC) \
-$(CORE_INC)
+$(CORE_INC) \
+$(EXCESS_QUEUE) \
+$(EXCESS_QUEUE_C)
 
 LFLAGS =  -lm $(CURL) $(PAPI) $(APR) $(PARSER) $(PUBLISHER)
 
@@ -83,6 +85,9 @@ APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
 APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
+EXCESS_QUEUE = -I$(BASE)/../ext/queue/data-structures-framework/src/include 
+EXCESS_QUEUE_C = -I$(BASE)/../ext/queue
+
 #
 # TARGETS
 #
@@ -95,6 +100,9 @@ lib: libmf.so libmf.a
 $(SRC)/%.o: %.c $(HEADER)
 	$(CC) -c $< $(CFLAGS) -fpic
 
+excess_concurrent_queue.o:
+	g++ -c $(BASE)/../ext/queue/excess_concurrent_queue.cpp -o $@ -I. $(EXCESS_QUEUE) $(EXCESS_QUEUE_C) 
+
 prepare:
 	@mkdir -p $(PLUGIN_DEST)
 	$(MAKE) -C $(BASE)/contrib/parser DEBUG=$(DEBUG)
@@ -103,8 +111,9 @@ prepare:
 	cp -f $(BASE)/contrib/parser/libparser.so lib
 	cp -f $(BASE)/contrib/publisher/libpublisher.so lib
 
-excess_main: $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(SRC)/plugin_discover.o $(SRC)/plugin_manager.o
-	$(CC) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+
+excess_main: excess_concurrent_queue.o $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(SRC)/plugin_discover.o $(SRC)/plugin_manager.o
+	g++ -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 	echo $(HOST)
 	echo $(INSTALL_DIR)
 
@@ -199,6 +208,18 @@ copy_plugins: plugins
 #
 clean:
 	rm -rf *.o *.a *.so $(SRC)/*.o $(OUTPUT) $(BASE)/plugins/*.o $(PLUGIN_DEST)/*.so lib build
+	rm -rf $(BASE)/../ext/queue/*.o
+	$(MAKE) -C $(BASE)/contrib/parser clean
+	$(MAKE) -C $(BASE)/contrib/publisher clean
+	$(MAKE) -C $(PLUGIN_DIR)/papi clean
+	$(MAKE) -C $(PLUGIN_DIR)/movidius_arduino clean
+	$(MAKE) -C $(PLUGIN_DIR)/rapl clean
+	$(MAKE) -C $(PLUGIN_DIR)/meminfo clean
+	$(MAKE) -C $(PLUGIN_DIR)/vmstat clean
+	$(MAKE) -C $(PLUGIN_DIR)/infiniband clean
+	$(MAKE) -C $(PLUGIN_DIR)/nvidia clean
+	$(MAKE) -C $(PLUGIN_DIR)/sensors clean
+	
 
 clean-all: clean clean-install
 	$(MAKE) -C $(BASE)/contrib/parser clean

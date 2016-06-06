@@ -55,7 +55,6 @@ catcher(int signo) {
 
 int
 startThreads() {
-	//void *ptr;
 	int t;
 	running = 1;
 
@@ -69,11 +68,8 @@ startThreads() {
 	init_timings();
 
 	int iret[MIN_THREADS + pluginCount];
-
-	apr_initialize();
-	apr_pool_create(&data_pool, NULL);
-
-	apr_queue_create(&data_queue, 10e4, data_pool);
+	
+	data_queue = ECQ_create(0);
 	int nums[MIN_THREADS + pluginCount];
 	for (t = 0; t < (MIN_THREADS + pluginCount); t++) {
 		nums[t] = t;
@@ -98,15 +94,6 @@ startThreads() {
 	while (running)
 		sleep(1);
 
-	/* send the remaining data to the database */
-	/*
-	while ((apr_queue_trypop(data_queue, &ptr) != APR_EAGAIN)) {
-		metric mPtr = ptr;
-		prepSend(mPtr);
-		free(mPtr);
-	}
-	*/
-
 	for (t = 0; t < NUM_THREADS; t++) {
 		pthread_join(threads[t], NULL );
 	}
@@ -114,10 +101,7 @@ startThreads() {
 	cleanup_plugins(pdstate);
 	shutdown_curl();
 	PluginManager_free(pm);
-	apr_queue_term(data_queue);
-	apr_pool_destroy(data_pool);
-
-	apr_terminate();
+	ECQ_free(data_queue);
 	return 1;
 }
 
@@ -144,10 +128,10 @@ startSending() {
 	void *ptr;
 	char update_interval[20] = {'\0'};
 	mfp_get_value("timings", "publish_data_interval", update_interval);
-
-	while (running) {
-		sleep(atoi(update_interval));
-		if (apr_queue_pop(data_queue, &ptr) == APR_SUCCESS) {
+	EXCESS_concurrent_queue_handle_t data_queue_handle;
+	data_queue_handle =ECQ_get_handle(data_queue);
+	while (running || !ECQ_is_empty(data_queue)) {
+		if(ECQ_try_dequeue(data_queue_handle, &ptr)) {
 			metric mPtr = ptr;
 			int retval = prepSend(mPtr);
 			if (retval == -1) {
@@ -155,8 +139,11 @@ startSending() {
 			}
 			free(mPtr);
 		}
+		else {
+			sleep(atoi(update_interval));;
+		}
 	}
-
+	ECQ_free_handle(data_queue_handle);
 	return 1;
 }
 
@@ -172,6 +159,12 @@ prepSend(metric data) {
 	char time_stamp[64] = {'\0'};
 	long double timestamp = data->timestamp.tv_sec + (long double)(data->timestamp.tv_nsec / 1.0e9);
 	convert_time_to_char(timestamp, time_stamp);
+
+	struct timespec ts;
+	clock_gettime(CLOCK_REALTIME, &ts);
+	long double publish_ts = ts.tv_sec + (long double)(ts.tv_nsec / 1.0e9);
+	long double diff_ts = publish_ts - timestamp;
+	fprintf(logFile, "diff_ts is \t%Lf\n", diff_ts);
 
 	char msg[4096] = "";
 	sprintf(msg,
@@ -260,14 +253,14 @@ gatherMetric(int num) {
 	);
 	metric resMetric = malloc(sizeof(metric_t));
 
+	EXCESS_concurrent_queue_handle_t data_queue_handle;
+	data_queue_handle =ECQ_get_handle(data_queue);
 	while (running) {
 		resMetric = hook();
-		if (apr_queue_push(data_queue, resMetric) != APR_SUCCESS) {
-			fprintf(stderr, "Failed queue push");
-			fprintf(logFile, "failed queue push");
-		}
+		ECQ_enqueue(data_queue_handle, (void *)resMetric);
 		nanosleep(&tim, &tim2);
 	}
+	ECQ_free_handle(data_queue_handle);
 	free(resMetric);
 
 	/* call when terminating program, enables cleanup of plug-ins */

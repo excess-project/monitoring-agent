@@ -17,7 +17,7 @@
 #ifndef THREAD_HANDLER_H_
 #define THREAD_HANDLER_H_
 
-#include <apr_queue.h>
+#include <excess_concurrent_queue.h>
 
 #include "mf_types.h"
 #include "util.h"
@@ -26,9 +26,7 @@
 #define SEND_SUCCESS 1
 #define SEND_FAILED  0
 
-struct apr_queue_t *data_queue;
-struct apr_pool_t *data_pool;
-
+EXCESS_concurrent_queue_t data_queue;
 /**
  * @brief Check for changes in the configuration file at a given time interval
  */

@@ -36,20 +36,19 @@ struct curl_slist *headers = NULL;
 static void
 init_curl()
 {
-	if (curl != NULL ) {
-		return;
-	}
+    if (curl != NULL ) {
+        return;
+    }
 
     curl_global_init(CURL_GLOBAL_ALL);
-	curl = curl_easy_init();
+    curl = curl_easy_init();
 
     if (headers != NULL ) {
-		return;
-	}
-
-	headers = curl_slist_append(headers, "Accept: application/json");
-	headers = curl_slist_append(headers, "Content-Type: application/json");
-	headers = curl_slist_append(headers, "charsets: utf-8");
+        return;
+    }
+    headers = curl_slist_append(headers, "Accept: application/json");
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    headers = curl_slist_append(headers, "charsets: utf-8");
 }
 
 #ifndef DEBUG
@@ -88,35 +87,34 @@ check_URL(const char *URL)
 {
     if (URL == NULL || *URL == '\0') {
         const char *error_msg = "URL not set.";
-		log_error("publish(const char*, Message) %s", error_msg);
-		return 0;
-	}
-	return 1;
+        log_error("publish(const char*, Message) %s", error_msg);
+        return 0;
+    }
+    return 1;
 }
 
 static int
 check_message(char *message)
 {
-	if (message == NULL || *message == '\0') {
-	    const char *error_msg = "message not set.";
-		log_error("publish(const char*, Message) %s", error_msg);
-		return 0;
-	}
-	return 1;
+    if (message == NULL || *message == '\0') {
+        const char *error_msg = "message not set.";
+        log_error("publish(const char*, Message) %s", error_msg);
+        return 0;
+    }
+    return 1;
 }
 
 static int
 prepare_publish(const char *URL, char *message)
 {
     init_curl();
-
-	curl_easy_setopt(curl, CURLOPT_URL, URL);
-	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, message);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long ) strlen(message));
-	#ifdef DEBUG
-    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    curl_easy_setopt(curl, CURLOPT_URL, URL);
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, message);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long ) strlen(message));
+    
+    #ifdef DEBUG
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
     #endif
 
     return 1;
@@ -190,7 +188,7 @@ query(const char* query, char* received_data)
 int
 publish_json(const char *URL, char *message)
 {
-	int result = SEND_SUCCESS;
+    int result = SEND_SUCCESS;
 
     if (!check_URL(URL) || !check_message(message)) {
         return 0;
@@ -201,18 +199,17 @@ publish_json(const char *URL, char *message)
     }
 
     #ifndef DEBUG
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_non_data);
-	#endif
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_non_data);
+    #endif
 
-	CURLcode response = curl_easy_perform(curl);
+    CURLcode response = curl_easy_perform(curl);
     if (response != CURLE_OK) {
-		result = SEND_FAILED;
-		const char *error_msg = curl_easy_strerror(response);
-		log_error("publish(const char*, Message) %s", error_msg);
-	}
+        result = SEND_FAILED;
+        const char *error_msg = curl_easy_strerror(response);
+        log_error("publish(const char*, Message) %s", error_msg);
+    }
 
-	curl_easy_reset(curl);
-
+    curl_easy_reset(curl);
     return result;
 }
 
@@ -316,20 +313,7 @@ char*
 get_execution_id(const char *URL, char *message)
 {
     if (strlen(execution_id) > 0) {
-    	/*
-            char* resp = malloc(100 * sizeof(char));
-            memset(resp, 100, '\0');
-            char query_url[300] = { '\0' };
-            // e.g. http://localhost:3000/executions/add/:id
-            sprintf(query_url, "%sadd/%s", URL, execution_id);
-
-            if (publish_json(query_url, message)) {
-                // Description message was sent.
-                debug("%s is registered under http://localhost:3000/executions/", execution_id);
-                return execution_id;
-            }
-    	*/
-	   return execution_id;
+        return execution_id;
     }
 
     if (!check_URL(URL) || !check_message(message)) {
@@ -340,20 +324,18 @@ get_execution_id(const char *URL, char *message)
         return '\0';
     }
 
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_stream_data);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &execution_id);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_stream_data);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &execution_id);
 
-	CURLcode response = curl_easy_perform(curl);
+    CURLcode response = curl_easy_perform(curl);
     if (response != CURLE_OK) {
-		const char *error_msg = curl_easy_strerror(response);
-		log_error("publish(const char*, Message) %s", error_msg);
-	}
+        const char *error_msg = curl_easy_strerror(response);
+        log_error("publish(const char*, Message) %s", error_msg);
+    }
 
     debug("get_execution_id(const char*, char*) Execution_ID = <%s>", execution_id);
-
-	curl_easy_reset(curl);
-
-	return execution_id;
+    curl_easy_reset(curl);
+    return execution_id;
 }
 
 char*
@@ -387,8 +369,8 @@ void
 shutdown_curl()
 {
     if (curl == NULL ) {
-		return;
-	}
+        return;
+    }
 
     curl_easy_cleanup(curl);
     curl_global_cleanup();

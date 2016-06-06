@@ -54,5 +54,6 @@ prepare:
 
 clean:
 	rm -rf *.o
+	rm -rf mf_nvidia_units
 	rm -rf $(LIB)
 
