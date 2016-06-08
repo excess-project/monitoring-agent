@@ -74,14 +74,13 @@ mf_plugin_sensors_hook()
 {
     if (running && (is_available == 1)) {
         metric resMetric = malloc(sizeof(metric_t));
-        resMetric->msg = malloc(4096 * sizeof(char));
 
         int clk_id = CLOCK_REALTIME;
         clock_gettime(clk_id, &resMetric->timestamp);
 
         mf_sensors_sample(monitoring_data);
 
-        strcpy(resMetric->msg, mf_sensors_to_json(monitoring_data));
+        resMetric->msg = mf_sensors_to_json(monitoring_data);
 
         return resMetric;
     } else {

@@ -41,7 +41,6 @@ static unsigned int max_msg_length = 128;
 
 static metric mf_plugin_nvidia_hook()
 {
-  //fprintf(stderr, "init_mf_plugin_nvidia_hook() called!\n");
   if (running) {
     metric resMetric = malloc(sizeof(metric_t));
 
@@ -49,13 +48,6 @@ static metric mf_plugin_nvidia_hook()
 
     /* Fill in the JSON data. */
     resMetric->msg = create_JSON_msg();
-
-    /* Debug printout. */
-//    fprintf(stderr,
-//            "{\"Timestamp\":\"%Lf\"%s}\n",
-//            resMetric->timestamp.tv_sec +
-//            1.0e-9 * (long double)resMetric->timestamp.tv_nsec,
-//            resMetric->msg);
 
     return resMetric;
   } else {
@@ -65,7 +57,6 @@ static metric mf_plugin_nvidia_hook()
 
 extern int init_mf_plugin_nvidia(PluginManager *pm)
 {
-  //fprintf(stderr, "init_mf_plugin_nvidia() called!\n");
   if(mf_nvml_avail() == 0) {
     fprintf(stderr, "mf_nvml_avail check failed!\n");
     return -1;
@@ -76,8 +67,6 @@ extern int init_mf_plugin_nvidia(PluginManager *pm)
   mfp_get_data_filtered_by_value("mf_plugin_nvidia", nvidia_conf_data, "on");
 
   nvidia_handle = mf_nvml_init();
-
-  //fprintf(stderr, "init_mf_plugin_nvidia() initialized!\n");
 
   return 1;
 }
