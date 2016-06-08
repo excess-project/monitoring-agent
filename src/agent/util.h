@@ -27,6 +27,7 @@
 #include <time.h>
 #include <string.h>
 #include <stdio.h>
+#include "mf_types.h"
 
 #define START 1
 #define STOP 0
@@ -52,5 +53,15 @@ int getFQDN(char *fqdn);
  * @brief convert timestamp in long double to a string
  */
 void convert_time_to_char(long double ts, char* time_stamp);
+
+/**
+ * @brief Free the string contained in a metric
+ */
+void free_metric (metric a_metric);
+
+/**
+ * @brief Free a bulk of metrics, with given bulk size
+ */
+void free_bulk (metric *resMetrics, int size);
 
 #endif /* EXCESS_H_ */

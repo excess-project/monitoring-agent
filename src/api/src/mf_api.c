@@ -23,7 +23,7 @@
 #include <excess_main.h>    // createLogFile, prepare
 #include <publisher.h>      // get_execution_id, query
 #include <thread_handler.h> // prepSend
-#include <util.h>           // getFQDN
+#include <util.h>           // getFQDN, free_bulk
 
 #include "mf_debug.h"
 #include "mf_api.h"
@@ -136,7 +136,7 @@ mf_api_initialize(const char* URL, char* wf_id, char* exp_id, char* task_id)
     
     /*initializing server name for sending metric data, if it is empty*/
     if ((server_name != NULL) && (server_name[0] == '\0')) {
-        sprintf(server_name, "%s/v1/mf/metrics/%s/%s?task=%s", URL, wf_id, exp_id, task_id);
+        sprintf(server_name, "%s/v1/mf/metrics/", URL);
     }
 
     /*generating url for getting statistics data*/
@@ -294,7 +294,7 @@ send_trigger(const char* function_name, int flag)
 {
     long double time_stamp;
     metric resMetric = malloc(sizeof(metric_t));
-    resMetric->msg = malloc(100 * sizeof(char));
+    resMetric->msg = malloc(1024 * sizeof(char));
 
     int clk_id = CLOCK_REALTIME;
     clock_gettime(clk_id, &resMetric->timestamp);
@@ -308,8 +308,8 @@ send_trigger(const char* function_name, int flag)
     strcat(json, status);
     strcpy(resMetric->msg, json);
     free(json);
-    prepSend(resMetric);
-    free(resMetric);
+    prepSend(&resMetric);
+    free_bulk(&resMetric, 1);
     return time_stamp;
 }
 
@@ -319,12 +319,12 @@ mf_api_send(const char* json)
 {
     check_api();
     metric resMetric = malloc(sizeof(metric_t));
-    resMetric->msg = malloc(100 * sizeof(char));
+    resMetric->msg = malloc(1024 * sizeof(char));
 
     int clk_id = CLOCK_REALTIME;
     clock_gettime(clk_id, &resMetric->timestamp);
 
     strcpy(resMetric->msg, json);
-    prepSend(resMetric);
-    free(resMetric);
+    prepSend(&resMetric);
+    free_bulk(&resMetric, 1);
 }

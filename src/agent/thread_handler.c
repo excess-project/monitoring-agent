@@ -127,12 +127,13 @@ startSending() {
 	data_queue_handle =ECQ_get_handle(data_queue);
 	while (running || !ECQ_is_empty(data_queue)) {
 		if(ECQ_try_dequeue(data_queue_handle, &ptr)) {
-			metric mPtr = ptr;
+			metric *mPtr = ptr;
+			fprintf(logFile,"%p\taddress dequeued\n", mPtr);
 			int retval = prepSend(mPtr);
 			if (retval == -1) {
 				running = 0;
 			}
-			free(mPtr);
+			free_bulk(mPtr, BULK_SIZE);
 		}
 		else {
 			usleep(timings[0]);
@@ -145,32 +146,41 @@ startSending() {
 int connection_error = 0;
 
 int
-prepSend(metric data) {
+prepSend(metric *data) {
+	int i;
+	char json[1024 * BULK_SIZE] = {'\0'};
+	json[0] = '[';
 	if (!data) {
 		return 0;
 	}
+	for(i=0; i<BULK_SIZE && data[i] != NULL; i++) {
+		/* use data->timestamp from plugin */
+		char time_stamp[64] = {'\0'};
+		long double timestamp = data[i]->timestamp.tv_sec + (long double)(data[i]->timestamp.tv_nsec / 1.0e9);
+		convert_time_to_char(timestamp, time_stamp);
 
-	/* use data->timestamp from plugin */
-	char time_stamp[64] = {'\0'};
-	long double timestamp = data->timestamp.tv_sec + (long double)(data->timestamp.tv_nsec / 1.0e9);
-	convert_time_to_char(timestamp, time_stamp);
-
-	struct timespec ts;
-	clock_gettime(CLOCK_REALTIME, &ts);
-	long double publish_ts = ts.tv_sec + (long double)(ts.tv_nsec / 1.0e9);
-	long double diff_ts = publish_ts - timestamp;
-	fprintf(logFile, "diff_ts is \t%Lf\n", diff_ts);
-
-	char msg[4096] = {'\0'};
-	sprintf(msg,
-		"{\"@timestamp\":\"%s\",\"host\":\"%s\",\"task\":\"%s\",%s}",
-		time_stamp,
-		hostname,
-		task,
-		data->msg
-	);
-	//fprintf(logFile, "%s\n", data->msg);
-	int retval = publish_json(server_name, msg);
+		//fprintf(logFile, "\n%p\t address of the %dth metric prepSend\n", data[i], i);
+		/*
+		struct timespec ts;
+		clock_gettime(CLOCK_REALTIME, &ts);
+		long double publish_ts = ts.tv_sec + (long double)(ts.tv_nsec / 1.0e9);
+		long double diff_ts = publish_ts - timestamp;
+		fprintf(logFile, "diff_ts is \t%Lf\n", diff_ts);*/
+		char msg[1024] = {'\0'};
+		sprintf(msg,
+			"{\"@timestamp\":\"%s\",\"host\":\"%s\",\"WorkflowID\":\"%s\",\"ExperimentID\":\"%s\",\"task\":\"%s\",%s},",
+			time_stamp,
+			hostname,
+			workflow,
+			experiment_id,
+			task,
+			data[i]->msg
+		);
+		strcat(json, msg);
+	}
+	json[strlen(json)-1] = ']';
+	json[strlen(json)] = '\0';
+	int retval = publish_json(server_name, json);
 	if (retval == 0) {
 		++connection_error;
 	}
@@ -178,7 +188,6 @@ prepSend(metric data) {
 		fprintf(stderr, "ERROR: Too many connection errors: %s\n", server_name);
 		return -1;
 	}
-
 	return 1;
 }
 
@@ -225,6 +234,7 @@ init_timings()
 
 int
 gatherMetric(int num) {
+	int i;
 	char* current_plugin_name = plugin_name[num];
 
 	struct timespec tim = { 0, 0 };
@@ -246,18 +256,22 @@ gatherMetric(int num) {
 			"\ngather metric %s (#%d) with update interval of %ld ns\n",
 			current_plugin_name, num, timings[num]
 	);
-	metric resMetric = malloc(sizeof(metric_t));
 
 	EXCESS_concurrent_queue_handle_t data_queue_handle;
 	data_queue_handle =ECQ_get_handle(data_queue);
 	while (running) {
-		resMetric = hook();
-		ECQ_enqueue(data_queue_handle, (void *)resMetric);
-		nanosleep(&tim, &tim2);
+		//malloc a pointer to bulk of metrics
+		metric *resMetrics = (metric *) 0;
+		resMetrics = (metric *) malloc(BULK_SIZE * sizeof(metric));
+		for(i=0; i<BULK_SIZE; i++) {
+			resMetrics[i] = hook();	//malloc of resMetrics[i] in hook()
+			//fprintf(logFile, "\n%p\t address of the %dth metric get hook\n", resMetrics[i], i);
+			nanosleep(&tim, &tim2);
+		}
+		fprintf(logFile, "%p\taddress enqueued\n", resMetrics);
+		ECQ_enqueue(data_queue_handle, (void *)resMetrics);
 	}
 	ECQ_free_handle(data_queue_handle);
-	free(resMetric);
-
 	/* call when terminating program, enables cleanup of plug-ins */
 	hook();
 

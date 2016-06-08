@@ -26,6 +26,7 @@
 //minimum number of thread required for sending and config
 // = SEND_THREADS +1
 #define SEND_THREADS 10
+#define BULK_SIZE 8
 #define SEND_SUCCESS 1
 #define SEND_FAILED  0
 
@@ -58,6 +59,6 @@ int startSending();
 /**
  * @brief Convenience method to prepare the data before sending.
  */
-int prepSend(metric data);
+int prepSend(metric *data);
 
 #endif /* THREAD_HANDLER_H_ */

@@ -22,6 +22,7 @@
 #include <ctype.h>
 
 #include "excess_main.h"
+#include "mf_types.h"
 #include "util.h"
 
 int getFQDN(char *fqdn) {
@@ -90,4 +91,20 @@ convert_time_to_char(long double ts, char* time_stamp)
         }
         i++;
     }
+}
+
+/*free the string contained in a metric*/
+void free_metric (metric a_metric) {
+    free(a_metric->msg);
+    a_metric->msg = (char *) 0;
+}
+
+/*free a bulk of metrics*/
+void free_bulk (metric *resMetrics, int size) {
+    int i;
+    for (i=0; i<size; i++) {
+        free_metric(resMetrics[i]);
+        free(resMetrics[i]);
+    }
+    free(resMetrics);
 }
