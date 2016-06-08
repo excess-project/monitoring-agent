@@ -143,10 +143,7 @@ prepare() {
 
 	/* set the correct path for sending metric data */
 	char* path = malloc(256 * sizeof(char));
-	sprintf(path,
-			"/%s/mf/metrics/%s/%s?task=%s",
-			api_version, workflow, experiment_id, task
-	);
+	sprintf(path, "/%s/mf/metrics/", api_version);
 	strcat(server_name, path);
 
 	return 1;
