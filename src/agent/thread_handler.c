@@ -33,7 +33,7 @@
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
-
+long timings[256];	//defined as extern in excess_main.h
 int running;
 
 static PluginManager *pm;
@@ -68,9 +68,9 @@ startThreads() {
 	init_timings();
 
 	int iret[MIN_THREADS + pluginCount];
-	
-	data_queue = ECQ_create(0);
 	int nums[MIN_THREADS + pluginCount];
+	data_queue = ECQ_create(0);
+	
 	for (t = 0; t < (MIN_THREADS + pluginCount); t++) {
 		nums[t] = t;
 		iret[t] = pthread_create(&threads[t], NULL, entryThreads, &nums[t]);
@@ -93,9 +93,10 @@ startThreads() {
 	sigaction(SIGINT, &sig, NULL );
 	while (running)
 		sleep(1);
-
-	for (t = 0; t < NUM_THREADS; t++) {
-		pthread_join(threads[t], NULL );
+	
+	//thread join from plugins threads till the threads[1]
+	for (t = (MIN_THREADS + pluginCount -1); t > 0; t--) {
+		pthread_join(threads[t], NULL);
 	}
 
 	cleanup_plugins(pdstate);
@@ -125,10 +126,9 @@ startSending() {
 	void *ptr;
 	EXCESS_concurrent_queue_handle_t data_queue_handle;
 	data_queue_handle =ECQ_get_handle(data_queue);
-	while (running || !ECQ_is_empty(data_queue)) {
+	while (running || !ECQ_is_empty(data_queue_handle)) {
 		if(ECQ_try_dequeue(data_queue_handle, &ptr)) {
 			metric *mPtr = ptr;
-			fprintf(logFile,"%p\taddress dequeued\n", mPtr);
 			int retval = prepSend(mPtr);
 			if (retval == -1) {
 				running = 0;
@@ -159,7 +159,6 @@ prepSend(metric *data) {
 		long double timestamp = data[i]->timestamp.tv_sec + (long double)(data[i]->timestamp.tv_nsec / 1.0e9);
 		convert_time_to_char(timestamp, time_stamp);
 
-		//fprintf(logFile, "\n%p\t address of the %dth metric prepSend\n", data[i], i);
 		/*
 		struct timespec ts;
 		clock_gettime(CLOCK_REALTIME, &ts);
@@ -180,6 +179,7 @@ prepSend(metric *data) {
 	}
 	json[strlen(json)-1] = ']';
 	json[strlen(json)] = '\0';
+	//printf("%s\n", json);
 	int retval = publish_json(server_name, json);
 	if (retval == 0) {
 		++connection_error;
@@ -190,8 +190,6 @@ prepSend(metric *data) {
 	}
 	return 1;
 }
-
-long timings[256];
 
 static void
 init_timings()
@@ -268,7 +266,6 @@ gatherMetric(int num) {
 			//fprintf(logFile, "\n%p\t address of the %dth metric get hook\n", resMetrics[i], i);
 			nanosleep(&tim, &tim2);
 		}
-		fprintf(logFile, "%p\taddress enqueued\n", resMetrics);
 		ECQ_enqueue(data_queue_handle, (void *)resMetrics);
 	}
 	ECQ_free_handle(data_queue_handle);

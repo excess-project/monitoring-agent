@@ -103,8 +103,10 @@ void free_metric (metric a_metric) {
 void free_bulk (metric *resMetrics, int size) {
     int i;
     for (i=0; i<size; i++) {
-        free_metric(resMetrics[i]);
-        free(resMetrics[i]);
+        if(resMetrics[i] != NULL) {
+            free_metric(resMetrics[i]);
+            free(resMetrics[i]);    
+        }
     }
     free(resMetrics);
 }

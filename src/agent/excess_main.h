@@ -37,11 +37,6 @@
 #include <mf_parser.h>
 
 /*
- * number of threads used for monitoring plug-ins
- */
-int NUM_THREADS;
-
-/*
  * The array containing the timings of the plug-ins allows to store the timing
  * for up to 254 plug-ins, the first two values are reserved for the timing
  * of the threads which manage the re-read of the configuration file and then
