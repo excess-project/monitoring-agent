@@ -37,7 +37,7 @@ static char statistics_url[256];
 static char profiles_url[256];
 
 static void check_api();
-static long double send_trigger(const char* function_name, int flag);
+static double send_trigger(const char* function_name, int flag);
 static void get_data_by_query(char* query_url, char *res);
 
 static void
@@ -72,7 +72,7 @@ mf_api_create_experiment(const char* URL, char* wf_id, char* task_id)
     char time_stamp[64] = {'\0'};
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
-    long double timestamp =  ts.tv_sec + (long double) (ts.tv_nsec / 1.0e9);
+    double timestamp =  ts.tv_sec + (double) (ts.tv_nsec / 1.0e9);
     convert_time_to_char(timestamp, time_stamp);
 
     if(hostname == NULL || strlen(hostname) == 0){
@@ -191,7 +191,7 @@ mf_api_stats_metrics(char **Metrics_name, int Metrics_num, char *res)
 
 /*get statistics data of a metric during the given time interval*/
 void 
-mf_api_stats_data_by_interval(char *Metrics_name, long double start_time, long double stop_time, char *res)
+mf_api_stats_data_by_interval(char *Metrics_name, double start_time, double stop_time, char *res)
 {
     char start_timestamp[64] = {'\0'};
     char stop_timestamp[64]  = {'\0'};
@@ -220,7 +220,7 @@ mf_api_stats_data_by_interval(char *Metrics_name, long double start_time, long d
 
 /*get statistics data of metrics during the given time interval*/
 void 
-mf_api_stats_metrics_by_interval(char **Metrics_name, int Metrics_num, long double start_time, long double stop_time, char *res)
+mf_api_stats_metrics_by_interval(char **Metrics_name, int Metrics_num, double start_time, double stop_time, char *res)
 {
     char start_timestamp[64] = {'\0'};
     char stop_timestamp[64]  = {'\0'};
@@ -272,33 +272,32 @@ get_data_by_query(char* query_url, char *res)
     query(query_url, res);
 }
 
-/*return timestamps in long double data type*/
-long double
+/*return timestamps in double data type*/
+double
 mf_api_start_profiling(const char* function_name)
 {
     check_api();
     return send_trigger(function_name, START_MONITORING);
 }
 
-/*return timestamps in long double data type*/
-long double
+/*return timestamps in double data type*/
+double
 mf_api_stop_profiling(const char* function_name)
 {
     check_api();
     return send_trigger(function_name, STOP_MONITORING);
 }
 
-/*return timestamps in long double data type*/
-static long double
+/*return timestamps in double data type*/
+static double
 send_trigger(const char* function_name, int flag)
 {
-    long double time_stamp;
     metric resMetric = malloc(sizeof(metric_t));
     resMetric->msg = malloc(1024 * sizeof(char));
 
     int clk_id = CLOCK_REALTIME;
     clock_gettime(clk_id, &resMetric->timestamp);
-    time_stamp = resMetric->timestamp.tv_sec + (long double) (resMetric->timestamp.tv_nsec/1.0e9);
+    double time_stamp = resMetric->timestamp.tv_sec + (double) (resMetric->timestamp.tv_nsec/1.0e9);
 
     char *json = malloc(1024 * sizeof(char));
     char *status = malloc(256 * sizeof(char));
@@ -307,6 +306,7 @@ send_trigger(const char* function_name, int flag)
     sprintf(status, ",\"name\":\"%s\",\"status\":%d", function_name, flag);
     strcat(json, status);
     strcpy(resMetric->msg, json);
+    free(status);
     free(json);
     prepSend(&resMetric);
     free_bulk(&resMetric, 1);

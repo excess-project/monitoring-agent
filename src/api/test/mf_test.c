@@ -39,7 +39,7 @@ main(int argc, char** argv)
     const char* URL = NULL;
     char* wf_id = NULL;
     char* task_id = NULL;
-    long double start_time, end_time;
+    double start_time, end_time;
 
     /***************************************************************************
      * GET OPTIONS

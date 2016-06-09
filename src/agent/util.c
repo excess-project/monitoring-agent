@@ -67,7 +67,7 @@ int getFQDN(char *fqdn) {
 }
 
 void
-convert_time_to_char(long double ts, char* time_stamp)
+convert_time_to_char(double ts, char* time_stamp)
 {
     time_t second = (time_t) floorl(ts);
     time_t usec = (time_t)((ts - second) * 1e6);

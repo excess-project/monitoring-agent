@@ -52,14 +52,14 @@ void mf_api_stats_metrics(char **Metrics_name, int Metrics_num, char *res);
  *        within the given range: the interval is defined by the two
  *        timestamps start_time and stop_time.
  */
-void mf_api_stats_data_by_interval(char *Metrics_name, long double start_time, long double stop_time, char *res);
+void mf_api_stats_data_by_interval(char *Metrics_name, double start_time, double stop_time, char *res);
 
 /**
  * @brief Query the database in order to retrieve stats of multiple metrics
  *        within the given range: the interval is defined by the two
  *        timestamps start_time and stop_time.
  */
-void mf_api_stats_metrics_by_interval(char **Metrics_name, int Metrics_num, long double start_time, long double stop_time, char *res);
+void mf_api_stats_metrics_by_interval(char **Metrics_name, int Metrics_num, double start_time, double stop_time, char *res);
 
 /**
  * @brief Query the database in order to retrieve all metrics data for a specific experiment
@@ -70,7 +70,7 @@ void mf_api_get_profiles_data(char *res);
  * @brief Starts the monitoring of given external function.
  *	return the timestamp of start profiling
  */
-long double mf_api_start_profiling(const char *function_name);
+double mf_api_start_profiling(const char *function_name);
 
 /**
  * @brief Sends data formatted in a JSON-like format using key-value pairs.
@@ -81,7 +81,7 @@ void mf_api_send(const char* json);
  * @brief Stops the monitoring of the given external function.
  *	return the timestamp of stop profiling
  */
-long double mf_api_stop_profiling(const char *function_name);
+double mf_api_stop_profiling(const char *function_name);
 
 
 #endif

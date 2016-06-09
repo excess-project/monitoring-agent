@@ -50,9 +50,9 @@ extern char *pwd;
 int getFQDN(char *fqdn);
 
 /**
- * @brief convert timestamp in long double to a string
+ * @brief convert timestamp in double to a string
  */
-void convert_time_to_char(long double ts, char* time_stamp);
+void convert_time_to_char(double ts, char* time_stamp);
 
 /**
  * @brief Free the string contained in a metric
