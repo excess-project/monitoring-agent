@@ -22,10 +22,8 @@
 #include "mf_types.h"
 #include "util.h"
 
-#define MIN_THREADS 11 
-//minimum number of thread required for sending and config
-// = SEND_THREADS +1
-#define SEND_THREADS 10
+#define MIN_THREADS 2
+//minimum number of thread required for metrics sending and check config
 #define BULK_SIZE 8
 #define SEND_SUCCESS 1
 #define SEND_FAILED  0

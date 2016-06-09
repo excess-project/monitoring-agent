@@ -45,6 +45,11 @@
 extern long timings[256];
 
 /*
+ * The timing for publish_json is measured
+ */
+extern double publish_json_time;
+
+/*
  * name of the host the monitoring agent is running on
  */
 extern char server_name[256];

@@ -39,6 +39,7 @@ char* workflow;
 char* task;
 char* hostname;
 char* api_version;
+double publish_json_time;
 
 int hostChanged = 0;
 int pwd_is_set = 0;
@@ -100,7 +101,7 @@ prepare() {
 	char time_stamp[64] = {'\0'};
 	struct timespec ts;
 	clock_gettime(CLOCK_REALTIME, &ts);
-	long double timestamp = ts.tv_sec + (long double)(ts.tv_nsec / 1.0e9);
+	double timestamp = ts.tv_sec + (double)(ts.tv_nsec / 1.0e9);
 	convert_time_to_char(timestamp, time_stamp);
 
 	/* set workflow and task_id to lower case */
@@ -113,6 +114,8 @@ prepare() {
 	);
 
 	/* set or create experiment id */
+	struct timespec ts_start, ts_end;
+	clock_gettime(CLOCK_REALTIME, &ts_start);
 	if ((experiment_id != NULL) && (experiment_id[0] == '\0')) {
 		/*we don't have an experiment_id */
 		char* URL = malloc(256 * sizeof(char));
@@ -140,7 +143,8 @@ prepare() {
 		publish_json(URL, msg);
 		free(URL);
 	}
-
+	clock_gettime(CLOCK_REALTIME, &ts_end);
+	publish_json_time = (ts_end.tv_sec - ts_start.tv_sec) + (double)((ts_end.tv_nsec - ts_start.tv_nsec) / 1.0e9);
 	/* set the correct path for sending metric data */
 	char* path = malloc(256 * sizeof(char));
 	sprintf(path, "/%s/mf/metrics/", api_version);

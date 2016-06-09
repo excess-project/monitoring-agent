@@ -34,8 +34,8 @@
  * Variable Declarations
  ******************************************************************************/
 long timings[256];	//defined as extern in excess_main.h
+long min_plugin_interval;
 int running;
-
 static PluginManager *pm;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -66,12 +66,20 @@ startThreads() {
 
 	void* pdstate = discover_plugins(pluginLocation, pm);
 	init_timings();
+	//calculate the sending threads number
+	int sending_threads = (int) (pluginCount * publish_json_time * 1.0e9 / (min_plugin_interval * BULK_SIZE));
+	int num_threads = MIN_THREADS + pluginCount + sending_threads;
+	fprintf(logFile, "\nnumber of plugins is \t\t%d\n", pluginCount);
+	fprintf(logFile, "time used for publish json is \t%f(s)\n", publish_json_time);
+	fprintf(logFile, "minimum plugin time interval is \t%ld(ns)\n", min_plugin_interval);
+	fprintf(logFile, "BULK_SIZE is \t\t%d\n", BULK_SIZE);
+	fprintf(logFile, "num of threads of sending is \t%d\n", sending_threads);
+	fprintf(logFile, "total number of threads is \t\t%d\n", num_threads);
+	int iret[num_threads];
+	int nums[num_threads];
 
-	int iret[MIN_THREADS + pluginCount];
-	int nums[MIN_THREADS + pluginCount];
 	data_queue = ECQ_create(0);
-	
-	for (t = 0; t < (MIN_THREADS + pluginCount); t++) {
+	for (t = 0; t < num_threads; t++) {
 		nums[t] = t;
 		iret[t] = pthread_create(&threads[t], NULL, entryThreads, &nums[t]);
 		if (iret[t]) {
@@ -94,8 +102,8 @@ startThreads() {
 	while (running)
 		sleep(1);
 	
-	//thread join from plugins threads till the threads[1]
-	for (t = (MIN_THREADS + pluginCount -1); t > 0; t--) {
+	//thread join from plugins threads till all the sending threads
+	for (t = MIN_THREADS; t < num_threads; t++) {
 		pthread_join(threads[t], NULL);
 	}
 
@@ -112,11 +120,11 @@ entryThreads(void *arg) {
 	if(*typeT == 0) {
 		checkConf();
 	}
-	else if((1 <= *typeT) && (*typeT<= SEND_THREADS)) {
-		startSending();
+	else if((MIN_THREADS <= *typeT) && (*typeT< MIN_THREADS + pluginCount)) {
+		gatherMetric(*typeT);
 	}
 	else {
-		gatherMetric(*typeT);
+		startSending();
 	}
 	return NULL;
 }
@@ -156,15 +164,15 @@ prepSend(metric *data) {
 	for(i=0; i<BULK_SIZE && data[i] != NULL; i++) {
 		/* use data->timestamp from plugin */
 		char time_stamp[64] = {'\0'};
-		long double timestamp = data[i]->timestamp.tv_sec + (long double)(data[i]->timestamp.tv_nsec / 1.0e9);
+		double timestamp = data[i]->timestamp.tv_sec + (double)(data[i]->timestamp.tv_nsec / 1.0e9);
 		convert_time_to_char(timestamp, time_stamp);
 
 		/*
 		struct timespec ts;
 		clock_gettime(CLOCK_REALTIME, &ts);
-		long double publish_ts = ts.tv_sec + (long double)(ts.tv_nsec / 1.0e9);
-		long double diff_ts = publish_ts - timestamp;
-		fprintf(logFile, "diff_ts is \t%Lf\n", diff_ts);*/
+		double publish_ts = ts.tv_sec + (double)(ts.tv_nsec / 1.0e9);
+		double diff_ts = publish_ts - timestamp;
+		fprintf(logFile, "diff_ts is \t%f\n", diff_ts);*/
 		char msg[1024] = {'\0'};
 		sprintf(msg,
 			"{\"@timestamp\":\"%s\",\"host\":\"%s\",\"WorkflowID\":\"%s\",\"ExperimentID\":\"%s\",\"task\":\"%s\",%s},",
@@ -179,7 +187,6 @@ prepSend(metric *data) {
 	}
 	json[strlen(json)-1] = ']';
 	json[strlen(json)] = '\0';
-	//printf("%s\n", json);
 	int retval = publish_json(server_name, json);
 	if (retval == 0) {
 		++connection_error;
@@ -208,6 +215,7 @@ init_timings()
 	memset(timing, 0, sizeof(timing));
 	mfp_get_value("timings", "default", timing);
 	long default_timing = atoi(timing);
+	min_plugin_interval = default_timing;
 
 	for (int i = MIN_THREADS; i < MIN_THREADS + mfp_timing_data->size; ++i) {
 		char* current_plugin_name = plugin_name[i];
@@ -224,6 +232,10 @@ init_timings()
 					"\ntiming for plugin %s is %ld\n",
 					current_plugin_name, timings[i]
 			);
+		}
+		//get the min_plugin_interval
+		if(timings[i] < min_plugin_interval) {
+			min_plugin_interval = timings[i];
 		}
 	}
 
