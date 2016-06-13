@@ -103,7 +103,7 @@ $(SRC)/%.o: %.c $(HEADER)
 	$(CC) -c $< $(CFLAGS) -fpic
 
 excess_concurrent_queue.o:
-	$(CXX) -c $(BASE)/../ext/queue/excess_concurrent_queue.cpp -o $@ -I. $(EXCESS_QUEUE) $(EXCESS_QUEUE_C) 
+	$(CXX) -c $(BASE)/../ext/queue/excess_concurrent_queue.cpp -o $@ -I. $(EXCESS_QUEUE) $(EXCESS_QUEUE_C) -fpic
 
 prepare:
 	@mkdir -p $(PLUGIN_DEST)
@@ -122,9 +122,10 @@ excess_main: excess_concurrent_queue.o $(SRC)/excess_main.o $(SRC)/thread_handle
 mf_api.o:
 	$(CC) -c $(MF_API_SRC)/mf_api.c -o $@ $(COPT_SO) -I. $(MF_API_INC) $(CFLAGS) $(EXCESS_INC) $(MF) $(LFLAGS)
 
-libmf.so: mf_api.o $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(SRC)/plugin_discover.o $(SRC)/plugin_manager.o
-	$(CC) -shared -o lib/libmf.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(MF) $(LFLAGS)
+libmf.so: excess_concurrent_queue.o mf_api.o $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(SRC)/plugin_discover.o $(SRC)/plugin_manager.o
+	$(CXX) -shared -o lib/libmf.so $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(MF) $(LFLAGS)
 	rm -f mf_api.o
+	rm -f excess_concurrent_queue.o
 
 mf_api_static.o:
 	$(CC) -c $(MF_API_SRC)/mf_api.c -o $@ -I. $(MF_API_INC) $(CFLAGS) $(EXCESS_INC) $(LFLAGS)
