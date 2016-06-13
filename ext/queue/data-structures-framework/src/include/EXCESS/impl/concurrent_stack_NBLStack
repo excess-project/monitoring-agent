@@ -1,0 +1,106 @@
+// concurrent_stack adapter instantiation for the NOBLE NBLStack containers.
+// Copyright (C) 2015  Anders Gidenstam
+//
+// This library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef __CONCURRENT_STACK_NBLSTACK_H
+#define __CONCURRENT_STACK_NBLSTACK_H
+
+#include <EXCESS/concurrent_stack>
+
+#include <Noble.h>
+
+namespace excess {
+
+template < typename T >
+class concurrent_stack_NBLStack
+  : public concurrent_stack<T>
+{
+private:
+  NBLStackRoot *stack;
+
+public:
+  class handle // Each instance MUST be acquired and used in a single thread.
+    : public concurrent_stack<T>::handle
+  {
+private:
+    friend concurrent_stack_NBLStack;
+    NBLStack* stack;
+
+    handle(NBLStack* stack)
+    {
+      this->stack = stack;
+    }
+
+  public:
+    ~handle()
+    {
+      NBLStackFreeHandle(stack);
+      stack = 0;
+    }
+
+    void push(T* item)
+    {
+      NBLStackPush(stack, item);
+    }
+
+    bool try_pop(T*& item)
+    {
+      void* res = NBLStackPop(stack);
+      if (res) {
+        item = (T*)res;
+      }
+      return res != 0;
+    }
+
+    bool empty()
+    {
+      return NBLStackIsEmpty(stack);
+    }
+
+    int size()
+    {
+      return NBLStackSize(stack);
+    }
+  };
+
+  enum stack_impl {LF_B, LF_ELIM};
+
+  concurrent_stack_NBLStack(stack_impl impl, int max_size)
+  {
+    switch(impl) {
+    case LF_B:
+      stack = NBLStackCreateLF_B(max_size);
+      break;
+    case LF_ELIM:
+    default:
+      stack = NBLStackCreateLF_ELIM(max_size);
+      break;
+    }
+  }
+
+  ~concurrent_stack_NBLStack()
+  {
+    NBLStackFree(stack);
+  }
+
+  handle* get_handle()
+  {
+    return new handle(NBLStackGetHandle(stack));
+  }
+};
+
+}
+#endif

@@ -1,0 +1,111 @@
+// concurrent_stack adapter instantiation for the std::vector class and OpenMP.
+// Copyright (C) 2015  Anders Gidenstam
+//
+// This library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef __CONCURRENT_STACK_VECTOR_H
+#define __CONCURRENT_STACK_VECTOR_H
+
+#include <omp.h>
+#include <vector>
+
+namespace excess {
+
+template < typename T >
+class concurrent_stack_vector
+{
+private:
+  std::vector<T*>* stack;
+
+public:
+  class handle
+  {
+  private:
+    friend concurrent_stack_vector;
+    std::vector<T*>* stack;
+
+    handle(std::vector<T*>* stack)
+    {
+      this->stack = stack;
+    }
+
+  public:
+    ~handle()
+    {
+      stack = 0;
+    }
+    
+    bool insert(T* item)
+    {
+#pragma omp critical
+      {
+        stack->push_back(item);
+      }
+      return true;
+    }
+
+    bool try_remove_any(T*& item)
+    {
+      bool res = false;
+#pragma omp critical
+      {
+        if (!stack->empty()) {
+          item = stack->back();
+          stack->pop_back();
+          res = true;
+        }
+      }
+      return res;
+    }
+
+    bool empty()
+    {
+      bool res;
+#pragma omp critical
+      {
+        res = stack->empty();
+      }
+      return res;
+    }
+
+    int size()
+    {
+      int res;
+#pragma omp critical
+      {
+        res = stack->size();
+      }
+      return res;
+    }
+  };
+
+  concurrent_stack_vector()
+  {
+    stack = new std::vector<T*>();
+  }
+
+  ~concurrent_stack_vector()
+  {
+    delete stack;
+  }
+
+  handle get_handle()
+  {
+    return handle(stack);
+  }
+};
+
+}
+#endif

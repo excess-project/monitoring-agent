@@ -1,0 +1,105 @@
+// concurrent_weak_dictionary adapter instantiation for the EXCESS tree
+// library GreenBST container.
+// Copyright (C) 2016  Anders Gidenstam
+//
+// This library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef __CONCURRENT_WEAK_DICTIONARY_GREENBST_H
+#define __CONCURRENT_WEAK_DICTIONARY_GREENBST_H
+
+#include <EXCESS/concurrent_weak_dictionary>
+
+namespace c_greenbst {
+extern "C" {
+// The GreenBST header defines and includes too many things.
+typedef struct global greenbst_t;
+typedef unsigned key_t;
+
+greenbst_t* greenbst_alloc(int t);
+int         greenbst_free(greenbst_t* map);
+int         greenbst_insert(greenbst_t* map, key_t key, void* data);
+int         greenbst_contains(greenbst_t* map, key_t key);
+void*       greenbst_get(greenbst_t* map, key_t key);
+int         greenbst_delete(greenbst_t* map, key_t key);
+}
+}
+
+namespace excess {
+
+// NOTE: The values of the Key type MUST fit within an unsigned int.
+template < class Key, class T >
+class concurrent_weak_dictionary_GreenBST
+  :  public concurrent_weak_dictionary<Key, T>
+{
+private:
+  c_greenbst::greenbst_t* search_tree;
+public:
+  class handle // Each instance MUST be acquired and used in a single thread.
+    : public concurrent_weak_dictionary<Key, T>::handle
+  {
+  private:
+    c_greenbst::greenbst_t* search_tree;
+  public:
+    handle(c_greenbst::greenbst_t* search_tree)
+    {
+      this->search_tree = search_tree;
+    }
+
+    ~handle()
+    {
+      search_tree = 0;
+    }
+
+    void insert(Key key, T* value)
+    {
+      c_greenbst::greenbst_insert(search_tree,
+                                  (c_greenbst::key_t)key,
+                                  reinterpret_cast<void*>(value));
+    }
+
+    bool lookup(Key key, T*& value)
+    {
+      return
+        0 != (value = reinterpret_cast<T*>
+                        (c_greenbst::greenbst_get(search_tree,
+                                                  (c_greenbst::key_t)key)));
+    }
+
+    void remove(Key key)
+    {
+      c_greenbst::greenbst_delete(search_tree, (c_greenbst::key_t)key);
+    }
+  };
+
+  concurrent_weak_dictionary_GreenBST()
+  {
+    // NOTE: The GreenBST binaries are pre-compiled with GNode size 4095.
+    search_tree = c_greenbst::greenbst_alloc(4095);
+  }
+
+  ~concurrent_weak_dictionary_GreenBST()
+  {
+    // FIXME: The greenbst_free() function is missing in the object file.
+    //c_greenbst::greenbst_free(search_tree);
+    search_tree = 0;
+  }
+
+  typename concurrent_weak_dictionary<Key, T>::handle* get_handle()
+  {
+    return new handle(search_tree);
+  }
+};
+}
+#endif

@@ -1,0 +1,88 @@
+// concurrent_bag adapter instantiation for the Michael and Scott two lock
+// queue container.
+// Copyright (C) 2015  Anders Gidenstam
+//
+// This library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef __CONCURRENT_BAG_MSTLB_H
+#define __CONCURRENT_BAG_MSTLB_H
+
+#include <EXCESS/concurrent_bag>
+
+#include "concurrent_queue_MSTLB"
+
+namespace excess {
+
+template < typename T >
+class concurrent_bag_MSTLB
+  : public concurrent_bag<T>
+{
+private:
+  concurrent_queue_MSTLB<T>* queue;
+
+public:
+  class handle // Each instance MUST be acquired and used in a single thread.
+    : public concurrent_bag<T>::handle
+  {
+  private:
+    friend concurrent_bag_MSTLB;
+    typename concurrent_queue_MSTLB<T>::handle* queue;
+
+    handle(concurrent_queue_MSTLB<T>* queue)
+    {
+      this->queue = queue->get_handle();
+    }
+
+  public:
+    ~handle()
+    {
+      delete queue;
+      queue = 0;
+    }
+
+    void insert(T* item)
+    {
+      queue->enqueue(item);
+    }
+
+    bool try_remove_any(T*& item)
+    {
+      return queue->try_dequeue(item);
+    }
+
+    bool empty()
+    {
+      return queue->empty();
+    }
+  };
+
+  concurrent_bag_MSTLB()
+  {
+    queue = new concurrent_queue_MSTLB<T>();
+  }
+
+  ~concurrent_bag_MSTLB()
+  {
+    delete queue;
+  }
+
+  handle* get_handle()
+  {
+    return new handle(queue);
+  }
+};
+
+}
+#endif

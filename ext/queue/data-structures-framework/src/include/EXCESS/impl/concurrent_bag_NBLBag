@@ -1,0 +1,106 @@
+// concurrent_bag adapter instantiation for the NOBLE NBLBag containers.
+// Copyright (C) 2015  Anders Gidenstam
+//
+// This library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef __CONCURRENT_BAG_NBLBAG_H
+#define __CONCURRENT_BAG_NBLBAG_H
+
+#include <EXCESS/concurrent_bag>
+
+#include <Noble.h>
+
+namespace excess {
+
+template < typename T >
+class concurrent_bag_NBLBag
+  : public concurrent_bag<T>
+{
+private:
+  NBLBagRoot *bag;
+
+public:
+  class handle // Each instance MUST be acquired and used in a single thread.
+    : public concurrent_bag<T>::handle
+  {
+private:
+    friend concurrent_bag_NBLBag;
+    NBLBag* bag;
+
+    handle(NBLBag* bag)
+    {
+      this->bag = bag;
+    }
+
+  public:
+    ~handle()
+    {
+      NBLBagFreeHandle(bag);
+      bag = 0;
+    }
+
+    void insert(T* item)
+    {
+      NBLBagAdd(bag, item);
+    }
+
+    bool try_remove_any(T*& item)
+    {
+      void* res = NBLBagTryRemoveAny(bag);
+      if (res) {
+        item = (T*)res;
+      }
+      return res != 0;
+    }
+
+    bool empty()
+    {
+      return NBLBagIsEmpty(bag);
+    }
+
+    int size()
+    {
+      return NBLBagSize(bag);
+    }
+  };
+
+  enum bag_impl {LF_BB, LF_EDTREE};
+
+  concurrent_bag_NBLBag(bag_impl impl, int max_size)
+  {
+    switch(impl) {
+    case LF_EDTREE:
+      bag = NBLBagCreateLF_EDTREE(max_size);
+      break;
+    case LF_BB:
+    default:
+      bag = NBLBagCreateLF_BB(max_size);
+      break;
+    }
+  }
+
+  ~concurrent_bag_NBLBag()
+  {
+    NBLBagFree(bag);
+  }
+
+  handle* get_handle()
+  {
+    return new handle(NBLBagGetHandle(bag));
+  }
+};
+
+}
+#endif

@@ -1,0 +1,89 @@
+// EXCESS concurrent_weak_dictionary adapters.
+// Copyright (C) 2015 - 2016  Anders Gidenstam
+//
+// This library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef __CONCURRENT_WEAK_DICTIONARY_H
+#define __CONCURRENT_WEAK_DICTIONARY_H
+
+namespace excess {
+
+template < class Key, class T >
+class concurrent_weak_dictionary
+{
+public:
+  class handle // Each handle MUST be acquired and used in a single thread.
+  {
+  public:
+    virtual ~handle() {}
+    virtual void insert(Key key, T* value)  = 0;
+    virtual bool lookup(Key key, T*& value) = 0;
+    virtual void remove(Key key)            = 0;
+
+  protected:
+    handle() {}
+  private:
+    // Disallow copying and assignment.
+    handle(const handle&);
+    void operator=(const handle&);
+  };
+  
+  virtual ~concurrent_weak_dictionary() {}
+  virtual handle* get_handle() = 0;
+  // NOTE: Each handle MUST be acquired and used in a single thread and
+  //       the handle MUST be deleted when no longer needed.
+protected:
+  concurrent_weak_dictionary() {}
+private:
+  // Disallow copying and assignment.
+  concurrent_weak_dictionary(const concurrent_weak_dictionary&);
+  void operator=(const concurrent_weak_dictionary&);
+};
+}
+
+// EXCESS tree library
+#ifdef USE_ETL
+// NOTE: Currently only one of these at the time can be linked into in
+//       one binary.
+#include "impl/concurrent_weak_dictionary_CBTree"
+#include "impl/concurrent_weak_dictionary_DeltaTree"
+#include "impl/concurrent_weak_dictionary_GreenBST"
+#endif
+
+// Intel TBB
+#ifdef USE_TBB
+#include "impl/concurrent_weak_dictionary_TBBhashmap"
+#endif
+
+// Nhan & Tsigas CCKHashtable
+#ifdef USE_CCKHT
+#include "impl/concurrent_weak_dictionary_CCKHT"
+#include "impl/concurrent_weak_dictionary_BCCKHT"
+#endif
+
+// Concurrent hash map containers by Moran Tzafrir, Maurice Herlihy and
+// Nir Shavit.
+#ifdef USE_HSHT
+#include "impl/concurrent_weak_dictionary_HSHTBH"
+#include "impl/concurrent_weak_dictionary_HSHTC"
+#include "impl/concurrent_weak_dictionary_HSHTH"
+#endif
+
+// NOBLE
+#ifdef USE_NOBLE
+//#include "impl/concurrent_weak_dictionary_NBLSkipList"
+#endif
+
+#endif
