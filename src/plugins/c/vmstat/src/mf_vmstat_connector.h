@@ -89,7 +89,7 @@ int mf_vmstat_sample(VMSTAT_Plugin *data);
  *
  * @return JSON-like representation of @p data
  */
-const char* mf_vmstat_to_json(VMSTAT_Plugin *data);
+char* mf_vmstat_to_json(VMSTAT_Plugin *data);
 
 /** @brief Stops measuring /proc/vmstat events
  *

@@ -153,7 +153,7 @@ mf_meminfo_sample(MEMINFO_Plugin *data)
  * mf_meminfo_to_json
  ******************************************************************************/
 
-const char*
+char*
 mf_meminfo_to_json(MEMINFO_Plugin *data)
 {
     char *metric = malloc(512 * sizeof(char));

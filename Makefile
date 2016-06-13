@@ -2,6 +2,7 @@
 ## Authors: Anthony Sulistio, Nico Eichhorn, Dennis Hoppe
 
 CC = /usr/bin/gcc
+CXX = /usr/bin/g++
 COPT_SO = $(CFLAGS) -fpic
 
 REVISION = 16.2
@@ -14,6 +15,7 @@ endif
 
 ifneq (,$(findstring jenkins,$(HOST)))
 	INSTALL_DIR = dist
+	CXX = /opt/centos/devtoolset-1.1/root/usr/bin/g++
 endif
 
 INSTALL_PLUGINS_DIR = $(INSTALL_DIR)/bin/plugins
@@ -101,7 +103,7 @@ $(SRC)/%.o: %.c $(HEADER)
 	$(CC) -c $< $(CFLAGS) -fpic
 
 excess_concurrent_queue.o:
-	g++ -c $(BASE)/../ext/queue/excess_concurrent_queue.cpp -o $@ -I. $(EXCESS_QUEUE) $(EXCESS_QUEUE_C) 
+	$(CXX) -c $(BASE)/../ext/queue/excess_concurrent_queue.cpp -o $@ -I. $(EXCESS_QUEUE) $(EXCESS_QUEUE_C) 
 
 prepare:
 	@mkdir -p $(PLUGIN_DEST)
@@ -113,7 +115,7 @@ prepare:
 
 
 excess_main: excess_concurrent_queue.o $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(SRC)/plugin_discover.o $(SRC)/plugin_manager.o
-	g++ -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+	$(CXX) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
 	echo $(HOST)
 	echo $(INSTALL_DIR)
 

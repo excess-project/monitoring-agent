@@ -97,7 +97,7 @@ int mf_meminfo_sample(MEMINFO_Plugin *data);
  *
  * @return JSON-like representation of @p data
  */
-const char* mf_meminfo_to_json(MEMINFO_Plugin *data);
+char* mf_meminfo_to_json(MEMINFO_Plugin *data);
 
 /** @brief Stops measuring /proc/meminfo events
  *
