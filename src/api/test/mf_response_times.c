@@ -31,7 +31,7 @@ main(int argc, char** argv)
 {
     int i, c;
     const char* URL = NULL;
-    long double start_time, end_time;
+    double start_time, end_time;
 
     /***************************************************************************
      * GET OPTIONS

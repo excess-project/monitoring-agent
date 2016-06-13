@@ -37,17 +37,17 @@
 #include <mf_parser.h>
 
 /*
- * number of threads used for monitoring plug-ins
- */
-int NUM_THREADS;
-
-/*
  * The array containing the timings of the plug-ins allows to store the timing
  * for up to 254 plug-ins, the first two values are reserved for the timing
  * of the threads which manage the re-read of the configuration file and then
  * sending the gathered data to the server.
  */
 extern long timings[256];
+
+/*
+ * The timing for publish_json is measured
+ */
+extern double publish_json_time;
 
 /*
  * name of the host the monitoring agent is running on

@@ -5,9 +5,9 @@ CC = /usr/bin/gcc
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb $(SENSORS_INC) $(PARSER_INC) $(EXCESS_INC) $(CORE_INC) $(COMMON_INC)
+-Wcast-align -O0 -ggdb $(SENSORS_INC) $(PARSER_INC) $(PUBLISHER_INC) $(EXCESS_INC) $(CORE_INC) $(COMMON_INC)
 
-LFLAGS = $(SENSORS) $(PARSER) $(APR)
+LFLAGS = $(SENSORS) $(PARSER) $(PUBLISHER) $(APR)
 
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
@@ -34,10 +34,13 @@ EXCESS_INC = -I$(COMMON)/agent
 PARSER = -L$(COMMON)/contrib/parser/ -lparser
 PARSER_INC = -I$(COMMON)/contrib/parser/src
 
+PUBLISHER = -L$(COMMON)/contrib/publisher/ -lpublisher
+PUBLISHER_INC = -I$(COMMON)/contrib/publisher/src
+
 FILES = $(shell find src -name '*.c')
 HEADER = $(shell find src -name '*.h')
 
-all: clean prepare mf_sensors_client mf_plugin_sensors.so
+all: clean prepare mf_sensors_client mf_sensors_units mf_plugin_sensors.so
 
 prepare:
 	@mkdir -p lib
@@ -54,7 +57,11 @@ mf_plugin_sensors.o: $(SRC)/mf_plugin_sensors.c $(HEADER)
 mf_sensors_client: $(UTILS)/mf_sensors_client.c $(SRC)/mf_sensors_connector.c
 	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)
 
+mf_sensors_units: $(UTILS)/mf_sensors_units.c $(SRC)/mf_sensors_connector.c
+	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)
+
 clean:
 	rm -rf *.o
 	rm -rf lib
 	rm -f mf_sensors_client
+	rm -f mf_sensors_units

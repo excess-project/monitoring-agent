@@ -39,6 +39,7 @@ char* workflow;
 char* task;
 char* hostname;
 char* api_version;
+double publish_json_time;
 
 int hostChanged = 0;
 int pwd_is_set = 0;
@@ -86,6 +87,8 @@ prepare() {
 	if (!pwd_is_set) {
 		set_pwd();
 	}
+	/* get server */
+	mfp_get_value("generic", "server", server_name);
 
 	/* prepare default message */
 	char msg[1000] = "";
@@ -95,57 +98,26 @@ prepare() {
 	hostname[strlen(hostname) - 1] = '\0';
 
 	/* get timestamp */
-	char fmt[64], buf[64];
-    struct timeval tv;
-    struct tm *tm;
-    gettimeofday(&tv, NULL);
-    if((tm = localtime(&tv.tv_sec)) != NULL) {
-		// yyyy-MM-dd’T'HH:mm:ss.SSS
-		strftime(fmt, sizeof fmt, "%Y-%m-%dT%H:%M:%S.%%6u", tm);
-		snprintf(buf, sizeof buf, fmt, tv.tv_usec);
-    }
-    char time_stamp[64];
-    memcpy(time_stamp, buf, strlen(buf) - 3);
-    time_stamp[strlen(buf) - 3] = '\0';
+	char time_stamp[64] = {'\0'};
+	struct timespec ts;
+	clock_gettime(CLOCK_REALTIME, &ts);
+	double timestamp = ts.tv_sec + (double)(ts.tv_nsec / 1.0e9);
+	convert_time_to_char(timestamp, time_stamp);
 
-    /* replace whitespaces in timestamp: yyyy-MM-dd’T'HH:mm:ss. SS */
-    int i = 0;
-  	while (time_stamp[i]) {
-	    if (isspace(time_stamp[i])) {
-    	    time_stamp[i] = '0';
-	    }
-    	i++;
-  	}
-
-    /* get username */
-    char *username = getenv("USER");
-    if (username == NULL) {
-		username = malloc(sizeof(char) * 128);
-		strcpy(username, "unknown");
-    }
-
-	/* set task id */
+	/* set workflow and task_id to lower case */
+	toLower(workflow, strlen(workflow));
 	toLower(task, strlen(task));
 
-    /* set default description */
-    const char *description = "Running with default configuration...";
-
 	sprintf(msg,
-		"{\"host\":\"%s\",\"description\":\"%s\",\"@timestamp\":\"%s\",\"user\":\"%s\",\"application\":\"%s\"}",
-		hostname, description, time_stamp, username, task
+		"{\"host\":\"%s\",\"@timestamp\":\"%s\",\"user\":\"%s\",\"application\":\"%s\",\"job_id\":\"non-pbs\"}",
+		hostname, time_stamp, workflow, task
 	);
 
-	/* get server */
-	mfp_get_value("generic", "server", server_name);
-
-	/* set workflow id */
-	if ((workflow != NULL) && (workflow[0] == '\0')) {
-		strcpy(workflow, username);
-	}
-	toLower(workflow, strlen(workflow));
-
 	/* set or create experiment id */
+	struct timespec ts_start, ts_end;
+	clock_gettime(CLOCK_REALTIME, &ts_start);
 	if ((experiment_id != NULL) && (experiment_id[0] == '\0')) {
+		/*we don't have an experiment_id */
 		char* URL = malloc(256 * sizeof(char));
 		sprintf(URL,
 				"%s/%s/mf/users/%s/create",
@@ -161,7 +133,8 @@ prepare() {
     		);
     		return 0;
 		}
-	} else { /* we have already an id, let's register it at the server */
+	} else { 
+		/* we have already an experiment_id, register it at the server if no such experiment exists */
 		char* URL = malloc(256 * sizeof(char));
 		sprintf(URL,
 				"%s/%s/mf/users/%s/%s/create",
@@ -170,13 +143,11 @@ prepare() {
 		publish_json(URL, msg);
 		free(URL);
 	}
-
+	clock_gettime(CLOCK_REALTIME, &ts_end);
+	publish_json_time = (ts_end.tv_sec - ts_start.tv_sec) + (double)((ts_end.tv_nsec - ts_start.tv_nsec) / 1.0e9);
 	/* set the correct path for sending metric data */
 	char* path = malloc(256 * sizeof(char));
-	sprintf(path,
-			"/%s/mf/metrics/%s/%s?task=%s",
-			api_version, workflow, experiment_id, task
-	);
+	sprintf(path, "/%s/mf/metrics/", api_version);
 	strcat(server_name, path);
 
 	return 1;
@@ -273,9 +244,10 @@ set_pwd()
  */
 int main(int argc, char* argv[]) {
 	int c;
-	int a_flag = 0;
-	int c_flag = 0;
-	int t_flag = 0;
+	int w_flag = 0;	//arg "workflow" exists flag
+	int t_flag = 0;	//arg "task" exists flag
+	int c_flag = 0;	//arg "config file" exists flag
+	int a_flag = 0;	//arg "api version" exists flag
 	int err = 0, help = 0;
 	extern char *optarg;
 
@@ -309,6 +281,7 @@ int main(int argc, char* argv[]) {
 		switch (c) {
 		case 'w':
 			strcpy(workflow, optarg);
+			w_flag = 1;
 			fprintf(logFile, "> workflow ID: %s\n", workflow);
 			break;
 		case 't':
@@ -338,22 +311,29 @@ int main(int argc, char* argv[]) {
 			break;
 	}
 
+	/* set workflow to "username" if not given as input arg */
+	if (w_flag == 0) {
+		/* get username */
+		char *username = getenv("USER");
+		if (username == NULL) {
+			username = malloc(sizeof(char) * 128);
+			strcpy(username, "unknown");
+		}
+		strcpy(workflow, username);
+	}
+	/* set task to all if not provided by the user */
+	if (t_flag == 0) {
+		strcpy(task, "manual_monitoring");
+	}
 	/* set default configuration file if no configuration was given */
 	if (c_flag == 0) {
 		sprintf(confFile, "%s/%s", pwd, "../mf_config.ini");
 	}
 	fprintf(logFile, "Configuration taken from: %s\n", confFile);
-
-	/* set task to all if not provided by the user */
-	if (t_flag == 0) {
-		strcpy(task, "manual_monitoring");
-	}
-
 	/* set default api version */
 	if (a_flag == 0) {
 		strcpy(api_version, "v1");
 	}
-
 	/* print usage */
 	if (err || help) {
 		fprintf(stderr, usage, argv[0]);

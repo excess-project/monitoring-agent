@@ -1,0 +1,121 @@
+// concurrent_queue adapter instantiation for the NOBLE NBLQueue containers.
+// Copyright (C) 2015  Anders Gidenstam
+//
+// This library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef __CONCURRENT_QUEUE_NBLQUEUE_H
+#define __CONCURRENT_QUEUE_NBLQUEUE_H
+
+#include <EXCESS/concurrent_queue>
+
+#include <Noble.h>
+
+namespace excess {
+
+template < typename T >
+class concurrent_queue_NBLQueue
+  : public concurrent_queue<T>
+{
+private:
+  NBLQueueRoot *queue;
+
+public:
+  class handle // Each instance MUST be acquired and used in a single thread.
+    : public concurrent_queue<T>::handle
+  {
+private:
+    friend concurrent_queue_NBLQueue;
+    NBLQueue* queue;
+
+    handle(NBLQueue* queue)
+    {
+      this->queue = queue;
+    }
+
+  public:
+    ~handle()
+    {
+      NBLQueueFreeHandle(queue);
+      queue = 0;
+    }
+
+    void enqueue(T* item)
+    {
+      NBLQueueEnqueue(queue, item);
+    }
+
+    bool try_dequeue(T*& item)
+    {
+      void* res = NBLQueueDequeue(queue);
+      if (res) {
+        item = (T*)res;
+      }
+      return res != 0;
+    }
+
+    bool empty()
+    {
+      return NBLQueueIsEmpty(queue);
+    }
+
+    int size()
+    {
+      return NBLQueueSize(queue);
+    }
+  };
+
+  enum queue_impl {LB, LF_DB, LF_DU, LF_SB, LF_BB, LF_BASKET, LF_ELIM};
+
+  concurrent_queue_NBLQueue(queue_impl impl, int max_size)
+  {
+    switch(impl) {
+    case LB:
+      queue = NBLQueueCreateLB();
+      break;
+    case LF_DB:
+      queue = NBLQueueCreateLF_DB(max_size);
+      break;
+    case LF_DU:
+      queue = NBLQueueCreateLF_DU(max_size);
+      break;
+    case LF_SB:
+      queue = NBLQueueCreateLF_SB(max_size);
+      break;
+    case LF_BASKET:
+      queue = NBLQueueCreateLF_BASKET(max_size);
+      break;
+    case LF_ELIM:
+      queue = NBLQueueCreateLF_ELIM(max_size);
+      break;
+    case LF_BB:
+    default:
+      queue = NBLQueueCreateLF_BB(max_size);
+      break;
+    }
+  }
+
+  ~concurrent_queue_NBLQueue()
+  {
+    NBLQueueFree(queue);
+  }
+
+  handle* get_handle()
+  {
+    return new handle(NBLQueueGetHandle(queue));
+  }
+};
+
+}
+#endif

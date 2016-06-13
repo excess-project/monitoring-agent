@@ -18,8 +18,11 @@
 #include <sys/stat.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <math.h>
+#include <ctype.h>
 
 #include "excess_main.h"
+#include "mf_types.h"
 #include "util.h"
 
 int getFQDN(char *fqdn) {
@@ -61,4 +64,49 @@ int getFQDN(char *fqdn) {
     free(p);
 
     return 1;
+}
+
+void
+convert_time_to_char(double ts, char* time_stamp)
+{
+    time_t second = (time_t) floorl(ts);
+    time_t usec = (time_t)((ts - second) * 1e6);
+    /* get timestamp */
+    char fmt[64], buf[64];
+    struct tm *tm;
+    if((tm = localtime(&second)) != NULL) {
+        // yyyy-MM-dd’T'HH:mm:ss.SSS
+        strftime(fmt, sizeof fmt, "%Y-%m-%dT%H:%M:%S.%%6u", tm);
+        snprintf(buf, sizeof buf, fmt, usec);
+    }
+
+    memcpy(time_stamp, buf, strlen(buf) - 3);
+    time_stamp[strlen(buf) - 3] = '\0';
+
+    /* replace whitespaces in timestamp: yyyy-MM-dd’T'HH:mm:ss. SS */
+    int i = 0;
+    while (time_stamp[i]) {
+        if (isspace(time_stamp[i])) {
+            time_stamp[i] = '0';
+        }
+        i++;
+    }
+}
+
+/*free the string contained in a metric*/
+void free_metric (metric a_metric) {
+    free(a_metric->msg);
+    a_metric->msg = (char *) 0;
+}
+
+/*free a bulk of metrics*/
+void free_bulk (metric *resMetrics, int size) {
+    int i;
+    for (i=0; i<size; i++) {
+        if(resMetrics[i] != NULL) {
+            free_metric(resMetrics[i]);
+            free(resMetrics[i]);    
+        }
+    }
+    free(resMetrics);
 }

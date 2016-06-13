@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <signal.h>
+#include <time.h>
 #include <sys/time.h>
 /* start of monitoring-related includes */
 #include <publisher.h>
@@ -32,9 +33,9 @@
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
-
+long timings[256];	//defined as extern in excess_main.h
+long min_plugin_interval;
 int running;
-
 static PluginManager *pm;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -55,7 +56,6 @@ static void init_timings();
 
 int
 startThreads() {
-	//void *ptr;
 	int t;
 	running = 1;
 
@@ -67,15 +67,20 @@ startThreads() {
 
 	void* pdstate = discover_plugins(pluginLocation, pm);
 	init_timings();
+	//calculate the sending threads number
+	int sending_threads = (int) (pluginCount * publish_json_time * 1.0e9 / (min_plugin_interval * BULK_SIZE));
+	int num_threads = MIN_THREADS + pluginCount + sending_threads;
+	fprintf(logFile, "\nnumber of plugins is \t\t%d\n", pluginCount);
+	fprintf(logFile, "time used for publish json is \t%f(s)\n", publish_json_time);
+	fprintf(logFile, "minimum plugin time interval is \t%ld(ns)\n", min_plugin_interval);
+	fprintf(logFile, "BULK_SIZE is \t\t%d\n", BULK_SIZE);
+	fprintf(logFile, "num of threads of sending is \t%d\n", sending_threads);
+	fprintf(logFile, "total number of threads is \t\t%d\n", num_threads);
+	int iret[num_threads];
+	int nums[num_threads];
 
-	int iret[MIN_THREADS + pluginCount];
-
-	apr_initialize();
-	apr_pool_create(&data_pool, NULL);
-
-	apr_queue_create(&data_queue, 10e4, data_pool);
-	int nums[MIN_THREADS + pluginCount];
-	for (t = 0; t < (MIN_THREADS + pluginCount); t++) {
+	data_queue = ECQ_create(0);
+	for (t = 0; t < num_threads; t++) {
 		nums[t] = t;
 		iret[t] = pthread_create(&threads[t], NULL, entryThreads, &nums[t]);
 		if (iret[t]) {
@@ -97,43 +102,30 @@ startThreads() {
 	sigaction(SIGINT, &sig, NULL );
 	while (running)
 		sleep(1);
-
-	/* send the remaining data to the database */
-	/*
-	while ((apr_queue_trypop(data_queue, &ptr) != APR_EAGAIN)) {
-		metric mPtr = ptr;
-		prepSend(mPtr);
-		free(mPtr);
-	}
-	*/
-
-	for (t = 0; t < NUM_THREADS; t++) {
-		pthread_join(threads[t], NULL );
+	
+	//thread join from plugins threads till all the sending threads
+	for (t = MIN_THREADS; t < num_threads; t++) {
+		pthread_join(threads[t], NULL);
 	}
 
 	cleanup_plugins(pdstate);
 	shutdown_curl();
 	PluginManager_free(pm);
-	apr_queue_term(data_queue);
-	apr_pool_destroy(data_pool);
-
-	apr_terminate();
+	ECQ_free(data_queue);
 	return 1;
 }
 
 void*
 entryThreads(void *arg) {
 	int *typeT = (int*) arg;
-	switch (*typeT) {
-	case 0:
-		startSending();
-		break;
-	case 1:
+	if(*typeT == 0) {
 		checkConf();
-		break;
-	default:
+	}
+	else if((MIN_THREADS <= *typeT) && (*typeT< MIN_THREADS + pluginCount)) {
 		gatherMetric(*typeT);
-		break;
+	}
+	else {
+		startSending();
 	}
 	return NULL;
 }
@@ -141,65 +133,62 @@ entryThreads(void *arg) {
 int
 startSending() {
 	void *ptr;
-	char update_interval[20] = {'\0'};
-	mfp_get_value("timings", "publish_data_interval", update_interval);
-
-	while (running) {
-		sleep(atoi(update_interval));
-		if (apr_queue_pop(data_queue, &ptr) == APR_SUCCESS) {
-			metric mPtr = ptr;
+	EXCESS_concurrent_queue_handle_t data_queue_handle;
+	data_queue_handle =ECQ_get_handle(data_queue);
+	while (running || !ECQ_is_empty(data_queue_handle)) {
+		if(ECQ_try_dequeue(data_queue_handle, &ptr)) {
+			metric *mPtr = ptr;
 			int retval = prepSend(mPtr);
 			if (retval == -1) {
 				running = 0;
 			}
-			free(mPtr);
+			free_bulk(mPtr, BULK_SIZE);
+		}
+		else {
+			usleep(timings[0]);
 		}
 	}
-
+	ECQ_free_handle(data_queue_handle);
 	return 1;
 }
 
 int connection_error = 0;
 
 int
-prepSend(metric data) {
+prepSend(metric *data) {
+	int i;
+	char json[1024 * BULK_SIZE] = {'\0'};
+	json[0] = '[';
 	if (!data) {
 		return 0;
 	}
+	for(i=0; i<BULK_SIZE && data[i] != NULL; i++) {
+		/* use data->timestamp from plugin */
+		char time_stamp[64] = {'\0'};
+		double timestamp = data[i]->timestamp.tv_sec + (double)(data[i]->timestamp.tv_nsec / 1.0e9);
+		convert_time_to_char(timestamp, time_stamp);
 
-	/* get timestamp */
-	char fmt[64], buf[64];
-    struct timeval tv;
-    struct tm *tm;
-    gettimeofday(&tv, NULL);
-    if((tm = localtime(&tv.tv_sec)) != NULL) {
-		// yyyy-MM-dd’T'HH:mm:ss.SSS
-		strftime(fmt, sizeof fmt, "%Y-%m-%dT%H:%M:%S.%%6u", tm);
-		snprintf(buf, sizeof buf, fmt, tv.tv_usec);
-    }
-    char time_stamp[64];
-    memcpy(time_stamp, buf, strlen(buf) - 3);
-    time_stamp[strlen(buf) - 3] = '\0';
-
-    /* replace whitespaces in timestamp: yyyy-MM-dd’T'HH:mm:ss. SS */
-    int i = 0;
-  	while (time_stamp[i]) {
-	    if (isspace(time_stamp[i])) {
-    	    time_stamp[i] = '0';
-	    }
-    	i++;
-  	}
-
-	char msg[4096] = "";
-	sprintf(msg,
-		"{\"@timestamp\":\"%s\",\"host\":\"%s\",\"task\":\"%s\",%s}",
-		time_stamp,
-		hostname,
-		task,
-		data->msg
-	);
-
-	int retval = publish_json(server_name, msg);
+		/*
+		struct timespec ts;
+		clock_gettime(CLOCK_REALTIME, &ts);
+		double publish_ts = ts.tv_sec + (double)(ts.tv_nsec / 1.0e9);
+		double diff_ts = publish_ts - timestamp;
+		fprintf(logFile, "diff_ts is \t%f\n", diff_ts);*/
+		char msg[1024] = {'\0'};
+		sprintf(msg,
+			"{\"@timestamp\":\"%s\",\"host\":\"%s\",\"WorkflowID\":\"%s\",\"ExperimentID\":\"%s\",\"task\":\"%s\",%s},",
+			time_stamp,
+			hostname,
+			workflow,
+			experiment_id,
+			task,
+			data[i]->msg
+		);
+		strcat(json, msg);
+	}
+	json[strlen(json)-1] = ']';
+	json[strlen(json)] = '\0';
+	int retval = publish_json(server_name, json);
 	if (retval == 0) {
 		++connection_error;
 	}
@@ -207,11 +196,8 @@ prepSend(metric data) {
 		fprintf(stderr, "ERROR: Too many connection errors: %s\n", server_name);
 		return -1;
 	}
-
 	return 1;
 }
-
-long timings[256];
 
 static void
 init_timings()
@@ -230,8 +216,9 @@ init_timings()
 	memset(timing, 0, sizeof(timing));
 	mfp_get_value("timings", "default", timing);
 	long default_timing = atoi(timing);
+	min_plugin_interval = default_timing;
 
-	for (int i = 2; i < mfp_timing_data->size; ++i) {
+	for (int i = MIN_THREADS; i < MIN_THREADS + mfp_timing_data->size; ++i) {
 		char* current_plugin_name = plugin_name[i];
 		if (current_plugin_name == NULL) {
 			continue;
@@ -247,6 +234,10 @@ init_timings()
 					current_plugin_name, timings[i]
 			);
 		}
+		//get the min_plugin_interval
+		if(timings[i] < min_plugin_interval) {
+			min_plugin_interval = timings[i];
+		}
 	}
 
 	free(mfp_timing_data);
@@ -254,6 +245,7 @@ init_timings()
 
 int
 gatherMetric(int num) {
+	int i;
 	char* current_plugin_name = plugin_name[num];
 
 	struct timespec tim = { 0, 0 };
@@ -275,18 +267,21 @@ gatherMetric(int num) {
 			"\ngather metric %s (#%d) with update interval of %ld ns\n",
 			current_plugin_name, num, timings[num]
 	);
-	metric resMetric = malloc(sizeof(metric_t));
 
+	EXCESS_concurrent_queue_handle_t data_queue_handle;
+	data_queue_handle =ECQ_get_handle(data_queue);
 	while (running) {
-		resMetric = hook();
-		if (apr_queue_push(data_queue, resMetric) != APR_SUCCESS) {
-			fprintf(stderr, "Failed queue push");
-			fprintf(logFile, "failed queue push");
+		//malloc a pointer to bulk of metrics
+		metric *resMetrics = (metric *) 0;
+		resMetrics = (metric *) malloc(BULK_SIZE * sizeof(metric));
+		for(i=0; i<BULK_SIZE; i++) {
+			resMetrics[i] = hook();	//malloc of resMetrics[i] in hook()
+			//fprintf(logFile, "\n%p\t address of the %dth metric get hook\n", resMetrics[i], i);
+			nanosleep(&tim, &tim2);
 		}
-		nanosleep(&tim, &tim2);
+		ECQ_enqueue(data_queue_handle, (void *)resMetrics);
 	}
-	free(resMetric);
-
+	ECQ_free_handle(data_queue_handle);
 	/* call when terminating program, enables cleanup of plug-ins */
 	hook();
 
@@ -297,10 +292,10 @@ int
 checkConf() {
 	while (running) {
 		mfp_parse(confFile);
-        init_timings();
-        char wait_some_seconds[20] = {'\0'};
-        mfp_get_value("timings", "update_configuration", wait_some_seconds);
+		char wait_some_seconds[20] = {'\0'};
+		mfp_get_value("timings", "update_configuration", wait_some_seconds);
 		sleep(atoi(wait_some_seconds));
+		init_timings();
 	}
 
 	return 1;

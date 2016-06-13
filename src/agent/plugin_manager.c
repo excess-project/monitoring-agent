@@ -16,7 +16,7 @@
 
 #include <stdlib.h>
 #include <pthread.h>
-#include <apr_queue.h>
+#include <excess_concurrent_queue.h>
 
 #include "plugin_manager.h"
 #include "plugin_discover.h"
@@ -34,23 +34,17 @@ typedef struct PluginHookType_t {
  * @brief definition of plugin manager struct
  */
 struct PluginManager_t {
-	struct apr_queue_t *hook_queue;
-	struct apr_pool_t *data_pool;
+	EXCESS_concurrent_queue_t hook_queue;
 };
 
 PluginManager* PluginManager_new() {
-	apr_initialize();
 	PluginManager *pm = malloc(sizeof(PluginManager));
-
-	apr_pool_create(&pm->data_pool, NULL);
-	apr_queue_create(&pm->hook_queue, 256, pm->data_pool);
+	pm->hook_queue = ECQ_create(0);
 	return pm;
 }
 
 void PluginManager_free(PluginManager *pm) {
-	apr_queue_term(pm->hook_queue);
-	apr_pool_destroy(pm->data_pool);
-	apr_terminate();
+	ECQ_free(pm->hook_queue);
 	free(pm);
 }
 
@@ -60,25 +54,27 @@ void PluginManager_register_hook(PluginManager *pm, const char *name,
 	PluginHookType *hookType = malloc(sizeof(PluginHookType));
 	hookType->hook = hook;
 	hookType->name = name;
-	apr_status_t status = apr_queue_push(pm->hook_queue, hookType);
-	if (status != APR_SUCCESS) {
-		fprintf(stderr, "Failed queue push");
-		fprintf(logFile, "Failed queue push");
-	}
+
+	EXCESS_concurrent_queue_handle_t hook_queue_handle;
+	hook_queue_handle =ECQ_get_handle(pm->hook_queue);
+	ECQ_enqueue(hook_queue_handle, (void *)hookType);
+	ECQ_free_handle(hook_queue_handle);
 	pluginCount++;
 }
 
 PluginHook PluginManager_get_hook(PluginManager *pm) {
 	PluginHook funcPtr = NULL;
 	void *retPtr;
-	apr_status_t status = apr_queue_pop(pm->hook_queue, &retPtr);
-	if (status == APR_SUCCESS) {
+	
+	EXCESS_concurrent_queue_handle_t hook_queue_handle;
+	hook_queue_handle =ECQ_get_handle(pm->hook_queue);
+	if(ECQ_try_dequeue(hook_queue_handle, &retPtr)) {
 		PluginHookType *typePtr;
-		intptr_t hlpr = (intptr_t) retPtr;
-		typePtr = (struct PluginHookType_t*) hlpr;
+		typePtr = (struct PluginHookType_t *) retPtr;
 		funcPtr = *(typePtr->hook);
 		fprintf(stderr, "using Plugin %s ", typePtr->name);
-		fprintf(logFile, "using Plugin %s ", typePtr->name);
+		fprintf(logFile, "using Plugin %s ", typePtr->name);	
 	}
+	ECQ_free_handle(hook_queue_handle);
 	return funcPtr;
 }

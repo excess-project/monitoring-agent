@@ -22,8 +22,11 @@
 
 #include <stdlib.h> /* malloc */
 #include <time.h>
+#include <string.h>
 /* monitoring-related includes */
 #include "mf_debug.h"
+#include "mf_types.h"
+#include "publisher.h"
 #include "mf_movidius_arduino_connector.h"
 
 #define SUCCESS 1
@@ -68,6 +71,7 @@ int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events)
 
     all_data = malloc(num_cores * sizeof(MOVI_Plugin));
     create_eventset_for_all(all_data);
+    mf_movi_unit_init();
     create_eventset_for(data, movi_events, num_events);
      /*
      * initialize time measurements
@@ -99,6 +103,58 @@ int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events)
     return SUCCESS;
 }
 
+
+/*******************************************************************************
+ * mf_movi_unit_init
+ ******************************************************************************/
+int
+mf_movi_unit_init(void)
+{
+    int i;
+    int ret = unit_file_check("movidius");
+    if(ret != 0) {
+        printf("unit file of movidius exists.\n");
+        return FAILURE;
+    }
+    metric_units *unit = malloc(sizeof(metric_units));
+    if (unit == NULL) {
+        return FAILURE;
+    }
+    memset(unit, 0, sizeof(metric_units));
+    for(i=0; i < MOVI_MAX_PRESET_EVENTS; i++) {
+        unit->metric_name[i]=malloc(32*sizeof(char));
+        unit->plugin_name[i]=malloc(32*sizeof(char));
+        strcpy(unit->plugin_name[i], "mf_plugin_movidius");
+        unit->unit[i]=malloc(4*sizeof(char));
+        if(i <= 13) {
+            strcpy(unit->unit[i], "mA");
+        }
+        else
+            strcpy(unit->unit[i], "mV");   
+    }
+    strcpy(unit->metric_name[0], "VDDCR_A");
+    strcpy(unit->metric_name[1], "VDDCV_A");
+    strcpy(unit->metric_name[2], "DRAM_VDD1");
+    strcpy(unit->metric_name[3], "MIPI_VDD_A");
+    strcpy(unit->metric_name[4], "DRAM_VDD2");
+    strcpy(unit->metric_name[5], "DRAM_VDDQ");
+    strcpy(unit->metric_name[6], "DRAM_MVDDQ");
+    strcpy(unit->metric_name[7], "DRAM_MVDDA");
+    strcpy(unit->metric_name[8], "USB_VDD330");
+    strcpy(unit->metric_name[9], "USB_VP_VDD");
+    strcpy(unit->metric_name[10], "VDDIO");
+    strcpy(unit->metric_name[11], "VDDIO_B");
+    strcpy(unit->metric_name[12], "RESERVED");
+    strcpy(unit->metric_name[13], "PLL_AVDD");
+    strcpy(unit->metric_name[14], "VDDCV_V");
+    strcpy(unit->metric_name[15], "MIPI_VDD_V");
+    
+    unit->num_metrics = MOVI_MAX_PRESET_EVENTS;
+    publish_unit(unit);
+    return SUCCESS;
+}
+
+
 /*******************************************************************************
  * is_movi_initialized
  ******************************************************************************/
@@ -123,7 +179,8 @@ create_eventset_for(MOVI_Plugin *data, char **movi_events, size_t num_events)
         for(ii=0; ii < num_events; ii++)
         {
             data[number_of_core].events[ii]=(char*)malloc(256*sizeof(char));
-            sprintf(data[number_of_core].events[ii], movi_events[ii]);
+            //sprintf(data[number_of_core].events[ii], movi_events[ii]);
+            strcpy(data[number_of_core].events[ii], movi_events[ii]);
         }
         data[number_of_core].num_events = num_events;
     }
@@ -234,7 +291,7 @@ mf_movi_to_json(MOVI_Plugin *data)
     size_t num_events;
     //num_events = MOVI_MAX_PRESET_EVENTS; /* unused */
     char *metric = malloc(512 * sizeof(char));
-    char *json = malloc(4096 * sizeof(char));
+    char *json = malloc(1024 * sizeof(char));
     strcpy(json, "\"type\":\"power\"");
 
     for (core = 0; core < maximum_number_of_cores; core++) {

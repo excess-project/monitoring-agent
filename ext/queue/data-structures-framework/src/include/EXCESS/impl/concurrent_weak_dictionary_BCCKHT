@@ -1,0 +1,89 @@
+// concurrent_weak_dictionary adapter instantiation for the bucketize
+// CCKHashtable container by Nhan Nguyen and Philippas Tsigas.
+// Copyright (C) 2015  Anders Gidenstam
+//
+// This library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef __CONCURRENT_WEAK_DICTIONARY_BCCKHT_H
+#define __CONCURRENT_WEAK_DICTIONARY_BCCKHT_H
+
+#include <EXCESS/concurrent_weak_dictionary>
+
+#include <cstdio>
+#include <cstdlib>
+namespace cckht {
+#include <BucketizeConcCK.h>
+}
+
+namespace excess {
+
+template < class Key, class T >
+class concurrent_weak_dictionary_BCCKHT
+  :  public concurrent_weak_dictionary<Key, T>
+{
+private:
+  // FIXME: The hash function is currently hard-coded.
+  typedef cckht::BucketizeConcCK<Key, T*> bcckht_t;
+  bcckht_t* map;
+public:
+  class handle // Each instance MUST be acquired and used in a single thread.
+    : public concurrent_weak_dictionary<Key, T>::handle
+  {
+  private:
+    bcckht_t* map;
+  public:
+    handle(bcckht_t* map)
+    {
+      this->map = map;
+    }
+
+    ~handle()
+    {
+      map = 0;
+    }
+
+    void insert(Key key, T* value)
+    {
+      map->Insert(key, value);
+    }
+
+    bool lookup(Key key, T*& value)
+    {
+      return map->Search(key, value);
+    }
+
+    void remove(Key key)
+    {
+      map->Remove(key);
+    }
+  };
+
+  concurrent_weak_dictionary_BCCKHT(int max_size)
+  {
+    map = new bcckht_t(max_size);
+  }
+
+  ~concurrent_weak_dictionary_BCCKHT()
+  {
+    delete map;
+  }
+
+  typename concurrent_weak_dictionary<Key, T>::handle* get_handle()
+  {
+    return new handle(map);
+  }
+};
+}
+#endif

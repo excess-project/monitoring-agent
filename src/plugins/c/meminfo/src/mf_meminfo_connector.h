@@ -69,7 +69,13 @@ int mf_meminfo_is_enabled();
  */
 int mf_meminfo_init(MEMINFO_Plugin *data, char **meminfo_events, size_t num_events);
 
-int mf_meminfo_unit_init(metric_units *unit);
+/** @brief Initializes meminfo units and send to mf_server
+ *
+ * @it is called by mf_meminfo_is_enabled
+ *
+ * @return 1 on success; 0 otherwise.
+ */
+int mf_meminfo_unit_init(void);
 /** @brief Sample /proc/meminfo based on given events
  *
  * This function samples /proc/meminfo, and stores current metric values for the
@@ -91,7 +97,7 @@ int mf_meminfo_sample(MEMINFO_Plugin *data);
  *
  * @return JSON-like representation of @p data
  */
-const char* mf_meminfo_to_json(MEMINFO_Plugin *data);
+char* mf_meminfo_to_json(MEMINFO_Plugin *data);
 
 /** @brief Stops measuring /proc/meminfo events
  *

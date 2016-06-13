@@ -1,0 +1,79 @@
+// EXCESS concurrent_bag adapters.
+// Copyright (C) 2015  Anders Gidenstam
+//
+// This library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef __CONCURRENT_BAG_H
+#define __CONCURRENT_BAG_H
+
+namespace excess {
+
+template < typename T >
+class concurrent_bag
+{
+public:
+  class handle // Each instance MUST be acquired and used in a single thread.
+  {
+  public:
+    virtual ~handle() {}
+
+    virtual void insert(T* item)          = 0;
+    virtual bool try_remove_any(T*& item) = 0;
+    virtual bool empty()                  = 0;
+
+    //int  size(); // NOTE: Often not atomic, sometimes not even thread-safe.
+  protected:
+    handle() {}
+  private:
+    // Disallow copying and assignment.
+    handle(const handle&);
+    void operator=(const handle&);
+  };
+
+  virtual ~concurrent_bag() {}
+  virtual handle* get_handle() = 0;
+  // NOTE: Each handle MUST be acquired and used in a single thread and
+  //       the handle MUST be deleted when no longer needed.
+protected:
+  concurrent_bag() {}
+private:
+  // Disallow copying and assignment.
+  concurrent_bag(const concurrent_bag&);
+  void operator=(const concurrent_bag&);
+};
+
+}
+
+// C++ STL + OpenMP
+#ifdef USE_OPENMP
+#include "impl/concurrent_bag_vector"
+#endif
+
+// NOBLE
+#ifdef USE_NOBLE
+#include "impl/concurrent_bag_NBLBag"
+#include "impl/concurrent_bag_NBLQueue"
+#include "impl/concurrent_bag_NBLStack"
+#endif
+
+// Intel TBB
+#ifdef USE_TBB 
+#include "impl/concurrent_bag_TBBQueue"
+#endif
+
+// Two-lock queue by M. Michael and M. Scott.
+#include "impl/concurrent_bag_MSTLB"
+
+#endif

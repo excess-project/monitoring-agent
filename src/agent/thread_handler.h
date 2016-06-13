@@ -17,18 +17,18 @@
 #ifndef THREAD_HANDLER_H_
 #define THREAD_HANDLER_H_
 
-#include <apr_queue.h>
+#include <excess_concurrent_queue.h>
 
 #include "mf_types.h"
 #include "util.h"
 
-#define MIN_THREADS 2 //minimum number of thread required for sending and config
+#define MIN_THREADS 2
+//minimum number of thread required for metrics sending and check config
+#define BULK_SIZE 8
 #define SEND_SUCCESS 1
 #define SEND_FAILED  0
 
-struct apr_queue_t *data_queue;
-struct apr_pool_t *data_pool;
-
+EXCESS_concurrent_queue_t data_queue;
 /**
  * @brief Check for changes in the configuration file at a given time interval
  */
@@ -57,6 +57,6 @@ int startSending();
 /**
  * @brief Convenience method to prepare the data before sending.
  */
-int prepSend(metric data);
+int prepSend(metric *data);
 
 #endif /* THREAD_HANDLER_H_ */

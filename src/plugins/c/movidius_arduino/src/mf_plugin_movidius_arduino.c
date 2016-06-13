@@ -67,14 +67,13 @@ mf_plugin_movi_hook()
 {
     if (running && (is_available == 1)) {
         metric resMetric = malloc(sizeof(metric_t));
-        resMetric->msg = malloc(4096 * sizeof(char));
 
         int clk_id = CLOCK_REALTIME;
         clock_gettime(clk_id, &resMetric->timestamp);
 
         mf_movi_sample(monitoring_data);
 
-        strcpy(resMetric->msg, mf_movi_to_json(monitoring_data));
+        resMetric->msg = mf_movi_to_json(monitoring_data);
 
         return resMetric;
     } else {

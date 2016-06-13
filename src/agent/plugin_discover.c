@@ -25,8 +25,7 @@
 #include "mf_types.h"
 #include "excess_main.h"
 #include "plugin_discover.h"
-
-#define MIN_THREADS 2
+#include "thread_handler.h"
 
 typedef struct PluginHandleList_t {
 	void* handle;

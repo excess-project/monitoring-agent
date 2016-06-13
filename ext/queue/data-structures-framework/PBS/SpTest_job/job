@@ -1,0 +1,119 @@
+#!/bin/sh -f
+# name of the job
+#PBS -N SpTest
+# use the complete path to the standard output files
+#PBS -o /nas_home/andersg/EXCESS-software/data-structures-framework/PBS/SpTest_job/$PBS_JOBID.out
+#PBS -e /nas_home/andersg/EXCESS-software/data-structures-framework/PBS/SpTest_job/$PBS_JOBID.err 
+# set walltime: max. 00:10:00 for the queue 'batch' and max. 01:00:00 for the queue 'night'
+#PBS -l walltime=01:00:00
+# set the queue: batch or night
+#PBS -q night
+# set the number of nodes 
+#PBS -l nodes=1:node01:ppn=20
+# use submission enviroment - please don't change
+#pbs -V
+#start job from the directory it was submitted
+#cd $PBS_WORKDIR
+date
+echo "PBS_O_HOST=$PBS_O_HOST  # The name of the host upon which the qsub command is running."
+echo "PBS_O_WORKDIR=$PBS_O_WORKDIR  # The absolute path of the current working directory of the qsub command."
+echo "PBS_JOBID=$PBS_JOBID  # The job identifier assigned to the job by the batch system."
+echo "PBS_JOBNAME=$PBS_JOBNAME # The job name supplied by the user."
+
+#load used modules
+. $HOME/.modules
+
+# load module power/mf_shared
+# and get the new dbkey from the monitoring framework
+module load power/mf_shared/20
+DBKEY_STRING=$( get_unique_dbkey -d ${HOME}/.mf/dbkey/ -f ${PBS_JOBID} )
+DBKEY=$( echo ${DBKEY_STRING}| awk -v N=$N '{print $2}' )
+echo "Monitoring framework DBKEY = $DBKEY"
+
+# Job environment
+export JOBDIR=/nas_home/andersg/EXCESS-software/data-structures-framework/PBS/SpTest_job/
+export LOGDIR=/nas_home/andersg/results/SpTest_`date +%Y-%m-%d_%H.%M`
+
+mkdir $LOGDIR
+cd $LOGDIR
+
+###############################################################################
+echo "job is starting"
+
+export LOGBASE=SpTest_result_`date +%Y-%m-%d_%H.%M`
+export RMAINLOG=$LOGDIR/$LOGBASE-out.txt
+
+echo "PBS job $PBS_JOBID named $PBS_JOBNAME is starting..." >> $RMAINLOG
+echo "Monitoring framework key $DBKEY" >> $RMAINLOG
+
+PROGRAM=$HOME/EXCESS-software/data-structures-framework/src/SpBLAS/sptest
+
+FREQUENCIES="3"
+#FREQUENCIES="3.4Ghz 2.3Ghz 1.2Ghz"
+#THREADS="2 4 6 8 10 12 14 16"
+THREADS="40"
+# The total case duration is 2 + $KILLDURATION + 3 seconds.
+# $KILLDURATION must be sufficiently larger than $PRGDURATION or
+# the case may be terminated prematurely.
+# $SAMPLEDURATION should be less than the total case duration.
+PRGDURATION="60"
+KILLDURATION="70"
+SAMPLEDURATION="70"
+# 0.  New EXCESS algorithm with row store.
+# 1.  New EXCESS algorithm with triplet store.
+# 2.  Sequential Gustavson algorithm.
+# 3.  librsb.
+# 4.  CombBLAS.
+ALGORITHMS="0 2 3"
+#ALGORITHMS="3"
+MATRIXBASE="$HOME/EXCESS-software/data-structures-framework/matrices/general"
+#MATRICES="R16.mtx rajat31.mtx sme3Dc.mtx torso1.mtx"
+#MATRICES="R16.mtx ASIC_320k.mtx rajat31.mtx sme3Dc.mtx torso1.mtx"
+MATRICES="ASIC_320k.mtx cage12.mtx m133-b3.mtx majorbasis.mtx patents_main.mtx poisson3Da.mtx R16.mtx rajat31.mtx scircuit.mtx sme3Dc.mtx torso1.mtx webbase-1M.mtx"
+#           1.  FILL CORE per socket;  2.  JUMP socket.
+PINNING="1"
+
+export RAPLSAMPLE="$HOME/EXCESS-software/state-record-tool/read-rapl-likwid -s 10 -d $SAMPLEDURATION"
+
+for Frequency in $FREQUENCIES; do
+    # Set the CPU frequency.
+    likwid-setFrequencies -f $Frequency
+
+    sleep 5s
+    echo Verifying CPU frequency setting.
+    likwid-setFrequencies -p
+    sleep 5s
+
+    for Threads in $THREADS; do
+        for Matrix in $MATRICES; do
+            for Alg in $ALGORITHMS; do
+                Case=a$Alg-m$Matrix-f$Frequency-t$Threads
+                echo "Starting $LOGBASE-$Case ..."
+
+                RRAPLLOG=$LOGDIR/$LOGBASE-RAPL-$Case.csv
+                RCACHELOG=$LOGDIR/$LOGBASE-CACHE-$Case.txt
+                ROUTLOG=$LOGDIR/$LOGBASE-OUT-$Case.txt
+
+                # Start sampling
+                ($RAPLSAMPLE -o $RRAPLLOG)&
+
+                echo >> $RMAINLOG; echo >> $RMAINLOG;
+                date >> $RMAINLOG; echo $Case >> $RMAINLOG
+
+                echo "$PROGRAM -a $Alg $MATRIXBASE/$Matrix" >> $RMAINLOG
+                sleep 2s
+
+                `which time` $PROGRAM -a $Alg $MATRIXBASE/$Matrix 2>> $RMAINLOG > $ROUTLOG & (sleep $KILLDURATION; killall $PROGRAM &>> $RMAINLOG)
+
+                echo "... done"
+                sleep 3s
+                echo " "
+            done
+        done
+    done
+done
+
+sleep 30s
+
+###############################################################################
+echo "job is done"

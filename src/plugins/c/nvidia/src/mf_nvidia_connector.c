@@ -21,10 +21,17 @@
 #include <string.h>
 
 #include <nvml.h>
+#include <mf_parser.h>
+#include "mf_types.h"
+#include "publisher.h"
 
 typedef nvmlDevice_t** handle_t;
 
+static int mf_nvml_avail();
+
 static handle_t mf_nvml_init();
+
+static int mf_nvml_unit_init(int dev_count);
 /* Functions to get and append current device state information.
  * See http://docs.nvidia.com/deploy/nvml-api/group__nvmlDeviceQueries.html
  * for more information.
@@ -77,7 +84,7 @@ static char *mf_nvml_append_throttled_time(handle_t devices,
     }                                                               \
   }
 
-static handle_t mf_nvml_init()
+static int mf_nvml_avail()
 {
   nvmlReturn_t ret = nvmlInit();
   switch (ret) {
@@ -88,12 +95,16 @@ static handle_t mf_nvml_init()
             "mf_nvml_init(): Failed to initialize the nvml library with "
             "return code %d.\n",
             ret);
-    return NULL;
+    return 0;
     break;
   }
+  return 1;
+}
 
+static handle_t mf_nvml_init()
+{
   unsigned int device_count = 0;
-  ret = nvmlDeviceGetCount(&device_count);
+  nvmlReturn_t ret = nvmlDeviceGetCount(&device_count);
   switch (ret) {
   case NVML_SUCCESS:
     break;
@@ -121,9 +132,242 @@ static handle_t mf_nvml_init()
       break;
     }
   }
-
+  mf_nvml_unit_init(device_count);
   return devices;
 }
+
+/*initialize unit of nvml all metrics*/
+static int mf_nvml_unit_init(int dev_count)
+{
+  int i, conf_i, dev;
+  int ret = unit_file_check("nvml");
+    if(ret != 0) {
+        printf("unit file of nvml exists.\n");
+        return 0;
+    }
+  metric_units *unit = malloc(sizeof(metric_units));
+  if(unit== NULL) {
+    return 0;
+  }
+  memset(unit, 0, sizeof(metric_units));
+
+  mfp_data *conf_data =  malloc(sizeof(mfp_data));
+  mfp_get_data("mf_plugin_nvidia", conf_data);
+
+  i=0;
+  for(conf_i = 0; conf_i < conf_data->size; conf_i++) {
+    if(strcmp(conf_data->keys[conf_i], "power_usage") == 0) {
+      for (dev=0; dev < dev_count; dev++) {
+        unit->metric_name[i] =malloc(32 * sizeof(char));
+        unit->plugin_name[i] =malloc(32 * sizeof(char));
+        unit->unit[i] =malloc(6 * sizeof(char));
+        sprintf(unit->metric_name[i], "GPU%d:power", dev);
+        strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+        strcpy(unit->unit[i], "Watt");
+        i++;
+      }
+    }
+
+    if(strcmp(conf_data->keys[conf_i], "power_limit") == 0) {
+        for (dev=0; dev < dev_count; dev++) {
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:power_limit", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "Watt");
+          i++;
+      }
+    }
+
+    if(strcmp(conf_data->keys[conf_i], "utilization") == 0) {
+        for (dev=0; dev < dev_count; dev++) {
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:GPU_utilization", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "%");
+          i++;
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:MEM_utilization", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "%");
+          i++;
+      }
+    }
+
+    if(strcmp(conf_data->keys[conf_i], "encoder_utilization") == 0) {
+      for (dev=0; dev < dev_count; dev++) {
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:encoder_utilization", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "%");
+          i++;
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:encoder_sampling_period", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "s");
+          i++;
+      }
+    }
+
+    if(strcmp(conf_data->keys[conf_i], "decoder_utilization") == 0) {
+      for (dev=0; dev < dev_count; dev++) {
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:decoder_utilization", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "%");
+          i++;
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:decoder_sampling_period", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "s");
+          i++;
+      }
+    }
+
+    if(strcmp(conf_data->keys[conf_i], "clock_frequencies") == 0) {
+      for (dev=0; dev < dev_count; dev++) {
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:GRAPHICS_clock", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "Hz");
+          i++;
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:SM_clock", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "Hz");
+          i++;
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:MEM_clock", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "Hz");
+          i++;
+      }
+    }
+
+    if(strcmp(conf_data->keys[conf_i], "memory") == 0) {
+      for (dev=0; dev < dev_count; dev++) {
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:MEM_used", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "bytes");
+          i++;
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:MEM_free", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "bytes");
+          i++;
+      }
+    }
+
+    if(strcmp(conf_data->keys[conf_i], "memory_BAR1") == 0) {
+      for (dev=0; dev < dev_count; dev++) {
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:BAR1_MEM_used", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "bytes");
+          i++;
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(6 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:BAR1_MEM_free", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "bytes");
+          i++;
+      }
+    }
+
+    if(strcmp(conf_data->keys[conf_i], "PCIe_throughput") == 0) {
+      for (dev=0; dev < dev_count; dev++) {
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(10 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:PCIe_tx_throughput", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "bytes/s");
+          i++;
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(10 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:PCIe_rx_throughput", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "bytes/s");
+          i++;
+      }
+    }
+
+    if(strcmp(conf_data->keys[conf_i], "temperature") == 0) {
+      for (dev=0; dev < dev_count; dev++) {
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(4 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:temperature", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "°c");
+          i++;
+      }
+    }
+
+    if(strcmp(conf_data->keys[conf_i], "fan_speed") == 0) {
+      for (dev=0; dev < dev_count; dev++) {
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(4 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:fan_speed", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "%");
+          i++;
+      }
+    }
+
+    if(strcmp(conf_data->keys[conf_i], "time_throttled") == 0) {
+      for (dev=0; dev < dev_count; dev++) {
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(10 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:time_power_capped", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "s");
+          i++;
+          unit->metric_name[i] =malloc(32 * sizeof(char));
+          unit->plugin_name[i] =malloc(32 * sizeof(char));
+          unit->unit[i] =malloc(10 * sizeof(char));
+          sprintf(unit->metric_name[i], "GPU%d:time_thermal_capped", dev);
+          strcpy(unit->plugin_name[i], "mf_plugin_nvidia");
+          strcpy(unit->unit[i], "s");
+          i++;
+      }
+    }
+  }
+  unit->num_metrics = i;
+  publish_unit(unit);
+  return 1;
+}
+
 
 static char *mf_nvml_append_perf_state(handle_t devices, char *buf, char *end)
 {

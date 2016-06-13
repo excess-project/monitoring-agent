@@ -6,9 +6,9 @@ CC = /usr/bin/gcc
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb $(PAPI_INC) $(PARSER_INC) $(EXCESS_INC) $(CORE_INC) $(COMMON_INC)
+-Wcast-align -O0 -ggdb $(PAPI_INC) $(PARSER_INC) $(PUBLISHER_INC) $(EXCESS_INC) $(CORE_INC) $(COMMON_INC)
 
-LFLAGS = $(PAPI) $(PARSER)
+LFLAGS = $(PAPI) $(PARSER) $(PUBLISHER)
 
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
@@ -35,10 +35,13 @@ EXCESS_INC = -I$(COMMON)/agent
 PARSER = -L$(COMMON)/contrib/parser/ -lparser
 PARSER_INC = -I$(COMMON)/contrib/parser/src
 
+PUBLISHER = -L$(COMMON)/contrib/publisher/ -lpublisher
+PUBLISHER_INC = -I$(COMMON)/contrib/publisher/src
+
 FILES = $(shell find src -name '*.c')
 HEADER = $(shell find src -name '*.h')
 
-all: clean prepare mf_rapl_client mf_plugin_rapl.so
+all: clean prepare mf_rapl_client mf_rapl_units mf_plugin_rapl.so
 
 mf_plugin_rapl.so: mf_plugin_rapl.o mf_rapl_connector.o
 	$(CC) -o $(LIB)/mf_plugin_rapl.so $^ -shared $(BINARIES)/papi/lib/libpapi.so
@@ -52,12 +55,16 @@ mf_plugin_rapl.o: $(SRC)/mf_plugin_rapl.c $(HEADER)
 mf_rapl_client: $(UTILS)/mf_rapl_client.c $(SRC)/mf_rapl_connector.c
 	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)
 
+mf_rapl_units: $(UTILS)/mf_rapl_units.c $(SRC)/mf_rapl_connector.c
+	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)
+
 prepare:
 	@mkdir -p lib
 
 clean:
 	rm -rf *.o
 	rm -f mf_rapl_client
+	rm -f mf_rapl_units
 	rm -rf lib
 
 doc: $(FILES)

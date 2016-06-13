@@ -1,0 +1,131 @@
+#!/bin/sh -f
+# name of the job
+#PBS -N SpGEMM_alg0_1_threads
+# use the complete path to the standard output files
+#PBS -o /nas_home/andersg/EXCESS-software/data-structures-framework/PBS/SpGEMM_job/$PBS_JOBID.out
+#PBS -e /nas_home/andersg/EXCESS-software/data-structures-framework/PBS/SpGEMM_job/$PBS_JOBID.err 
+# set walltime: max. 00:10:00 for the queue 'batch' and max. 01:00:00 for the queue 'night'
+#PBS -l walltime=01:00:00
+# set the queue: batch or night
+#PBS -q night
+# set the number of nodes 
+#PBS -l nodes=1:node01:ppn=20
+# use submission enviroment - please don't change
+#pbs -V
+#start job from the directory it was submitted
+#cd $PBS_WORKDIR
+date
+echo "PBS_O_HOST=$PBS_O_HOST  # The name of the host upon which the qsub command is running."
+echo "PBS_O_WORKDIR=$PBS_O_WORKDIR  # The absolute path of the current working directory of the qsub command."
+echo "PBS_JOBID=$PBS_JOBID  # The job identifier assigned to the job by the batch system."
+echo "PBS_JOBNAME=$PBS_JOBNAME # The job name supplied by the user."
+
+#load used modules
+. $HOME/.modules
+
+# load module power/mf_shared
+# and get the new dbkey from the monitoring framework
+#module load power/mf_shared/20
+#DBKEY_STRING=$( get_unique_dbkey -d ${HOME}/.mf/dbkey/ -f ${PBS_JOBID} )
+#DBKEY=$( echo ${DBKEY_STRING}| awk -v N=$N '{print $2}' )
+#echo "Monitoring framework DBKEY = $DBKEY"
+
+# Job environment
+export JOBDIR=/nas_home/andersg/EXCESS-software/data-structures-framework/PBS/SpGEMM_job/
+export LOGDIR=/nas_home/andersg/results/SpGEMM_`date +%Y-%m-%d_%H.%M`
+
+mkdir $LOGDIR
+cd $LOGDIR
+
+###############################################################################
+echo "job is starting"
+
+export LOGBASE=SpGEMM_result_`date +%Y-%m-%d_%H.%M`
+export RMAINLOG=$LOGDIR/$LOGBASE-out.txt
+
+echo "PBS job $PBS_JOBID named $PBS_JOBNAME is starting..." >> $RMAINLOG
+echo "Monitoring framework key $DBKEY" >> $RMAINLOG
+
+PROGRAMDIR=$HOME/EXCESS-software/data-structures-framework/
+PROGRAM=$PROGRAMDIR/testbench
+
+FREQUENCIES="3"
+#FREQUENCIES="3.4Ghz 2.3Ghz 1.2Ghz"
+#THREADS="2 4 6 8 10 12 14 16"
+THREADS="1"
+# The total case duration is 2 + $KILLDURATION + 3 seconds.
+# $KILLDURATION must be sufficiently larger than $PRGDURATION or
+# the case may be terminated prematurely.
+# $SAMPLEDURATION should be less than the total case duration.
+KILLDURATION="240"
+SAMPLEDURATION="240"
+#   0. Queue NOBLE Lock-Free DB          1. Queue NOBLE Lock-Free DU
+#   2. Queue NOBLE Lock-Free SB          3. Queue NOBLE Lock-Free BB
+#   4. Queue NOBLE Lock-Free BASKET      5. Queue NOBLE Lock-Free ELIM
+#   6. Queue NOBLE Lock-Based            7. Queue TBB concurrent_queue
+#   8. Queue M&S Two-lock queue          9. Stack NOBLE Lock-Free B
+#  10. Stack NOBLE Lock-Free ELIM       11. Bag NOBLE Lock-Free BB
+#  12. Pool NOBLE Lock-Free EDTREE
+#ALGORITHMS="0 1 2 3 4 5 6 7 8 9 10 11"
+ALGORITHMS="0"
+#ALGORITHMS="3"
+# Matrix
+#   0. R14;         1. R15;        2. R16;        3. ASIC_320k.mtx;
+#   4. rajat31.mtx; 5. sme3Dc.mtx; 6. torso1.mtx; (default 0)
+MATRICES="0 1 2 3 4 5 6"
+# MxM alg:
+#   0. sequential Gustavson.
+#   1. new D-S parallel
+MMalg=0
+# Work unit size (rows of A, default 4)
+WUSIZES=1
+
+# Pinning: -1. NONE. (default);        0.  FILL PU per socket;
+#           1.  FILL CORE per socket;  2.  JUMP socket.
+PINNING="1"
+
+export RAPLSAMPLE="$HOME/EXCESS-software/state-record-tool/read-rapl-likwid -s 10 -d $SAMPLEDURATION"
+
+for Frequency in $FREQUENCIES; do
+    # Set the CPU frequency.
+    likwid-setFrequencies -f $Frequency >> $RMAINLOG
+
+    sleep 5s
+    echo Verifying CPU frequency setting. >> $RMAINLOG
+    likwid-setFrequencies -p >> $RMAINLOG
+    sleep 5s
+
+    for Threads in $THREADS; do
+        for Matrix in $MATRICES; do
+            for WUSize in $WUSIZES; do
+                for Alg in $ALGORITHMS; do
+                    Case=ca$Alg-mma$MMalg-m$Matrix-wus$WUSize-f$Frequency-t$Threads
+                    echo "Starting $LOGBASE-$Case ..."
+
+                    RRAPLLOG=$LOGDIR/$LOGBASE-RAPL-$Case.csv
+                    RCACHELOG=$LOGDIR/$LOGBASE-CACHE-$Case.txt
+                    ROUTLOG=$LOGDIR/$LOGBASE-OUT-$Case.txt
+
+                    # Start sampling
+                    ($RAPLSAMPLE -o $RRAPLLOG)&
+                    echo >> $RMAINLOG; echo >> $RMAINLOG;
+                    date >> $RMAINLOG; echo $Case >> $RMAINLOG
+
+                    echo "$PROGRAM -e 3 -p $PINNING -t $Threads -i $Alg -s 0 $Matrix -s 1 $MMalg -s 2 $WUSize" >> $RMAINLOG
+                    sleep 2s
+
+                    (cd $PROGRAMDIR; $PROGRAM -e 3 -p $PINNING -t $Threads -i $Alg -s 0 $Matrix -s 1 $MMalg -s 2 $WUSize 2>> $RMAINLOG > $ROUTLOG & (sleep $KILLDURATION; killall $PROGRAM &>> $RMAINLOG))
+
+                    echo "... done"
+                    sleep 3s
+                    echo " "
+                done
+            done
+        done
+    done
+done
+
+sleep 30s
+
+###############################################################################
+echo "job is done"

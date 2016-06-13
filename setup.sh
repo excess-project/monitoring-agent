@@ -55,7 +55,7 @@ cd $ROOT
 wget http://icl.cs.utk.edu/projects/papi/downloads/${PAPI}-${PAPI_VERSION}.tar.gz
 if [ ! -f ${PAPI}-${PAPI_VERSION}.tar.gz ]; then
     echo "[ERROR] File not found: " ${PAPI}-${PAPI_VERSION}.tar.gz
-    exit 0;
+    exit 1;
 fi
 tar zxvf ${PAPI}-${PAPI_VERSION}.tar.gz
 cd ${PAPI}-${PAPI_VERSION}/src
@@ -71,7 +71,7 @@ cd $ROOT
 wget http://ftp.fau.de/pub/likwid/${LIKWID}-${LIKWID_VERSION}.tar.gz
 if [ ! -f ${LIKWID}-${LIKWID_VERSION}.tar.gz ]; then
     echo "[ERROR] File not found: " ${LIKWID}-${LIKWID_VERSION}.tar.gz
-    exit 0;
+    exit 1;
 fi
 tar zxvf ${LIKWID}-${LIKWID_VERSION}.tar.gz
 cd ${LIKWID}-${LIKWID_VERSION}
@@ -90,7 +90,7 @@ cd $ROOT
 wget http://curl.haxx.se/download/${CURL}-${CURL_VERSION}.tar.gz
 if [ ! -f ${CURL}-${CURL_VERSION}.tar.gz ]; then
     echo "[ERROR] File not found: " ${CURL}-${CURL_VERSION}.tar.gz
-    exit 0;
+    exit 1;
 fi
 tar zxvf ${CURL}-${CURL_VERSION}.tar.gz
 cd ${CURL}-${CURL_VERSION}
@@ -107,7 +107,7 @@ cd $ROOT
 wget http://www.eu.apache.org/dist/apr/${APR}-${APR_VERSION}.tar.gz
 if [ ! -f ${APR}-${APR_VERSION}.tar.gz ]; then
     echo "[ERROR] File not found: " ${APR}-${APR_VERSION}.tar.gz
-    exit 0;
+    exit 1;
 fi
 tar zxvf ${APR}-${APR_VERSION}.tar.gz
 cd ${APR}-${APR_VERSION}
@@ -124,7 +124,7 @@ cd $ROOT
 wget http://www.eu.apache.org/dist//apr/apr-util-1.5.4.tar.gz
 if [ ! -f ${APR_UTIL}-${APR_UTIL_VERSION}.tar.gz ]; then
     echo "[ERROR] File not found: " ${APR_UTIL}-${APR_UTIL_VERSION}.tar.gz
-    exit 0;
+    exit 1;
 fi
 tar zxvf ${APR_UTIL}-${APR_UTIL_VERSION}.tar.gz
 cd ${APR_UTIL}-${APR_UTIL_VERSION}
@@ -145,7 +145,7 @@ NVIDIA_GDK="gdk_linux_amd64_352_55_release.run"
 wget ${NVIDIA_BASE_URL}/compute/cuda/7.5/Prod/gdk/${NVIDIA_GDK}
 if [ ! -f ${NVIDIA_GDK} ]; then
     echo "[ERROR] File not found: " ${NVIDIA_GDK}
-    exit 0;
+    exit 1;
 fi
 chmod +x ${NVIDIA_GDK}
 ./${NVIDIA_GDK} --silent --installdir=${INSTALL_PATH_NVIDIA}

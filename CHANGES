@@ -1,5 +1,18 @@
 # RELEASE NOTES
 
+## 16.6 (13/06/2016)
+
+### Features
+- New MF APIs; added data statistics retrieving with multiple metrics
+- Added plugin units send and create during initialization; Make binaries for each plugin units collection and publish
+- Enable to register experiments with given experiment ID
+- Generate static libraries like, libmf.a and libpublisher.a during building
+- Bulk message sending with BULK_SIZE being 8
+- Improved metrics sending with multiple sending threads
+- Integrated with EXCESS Concurrent Queue; source kept in ext/queue
+- Bug fix: send the rest of metrics before threads end
+
+
 ## 16.2 (26/02/2016)
 
 ### Features
@@ -103,3 +116,4 @@ None.
 
 ### Remarks
 You can switch on the monitoring on the EXCESS cluster on a per-node basis by creating the file <pre>start_monitoring</pre> within the directory <pre>$HOME/.mf/service/<node></pre>.
+

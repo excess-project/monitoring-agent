@@ -1,0 +1,114 @@
+// concurrent_bag adapter instantiation for the std::vector class and OpenMP.
+// Copyright (C) 2015  Anders Gidenstam
+//
+// This library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef __CONCURRENT_BAG_VECTOR_H
+#define __CONCURRENT_BAG_VECTOR_H
+
+#include <EXCESS/concurrent_bag>
+
+#include <omp.h>
+#include <vector>
+
+namespace excess {
+
+template < typename T >
+class concurrent_bag_vector
+  : public concurrent_bag<T>
+{
+private:
+  std::vector<T*>* bag;
+
+public:
+  class handle // Each instance MUST be acquired and used in a single thread.
+    : public concurrent_bag<T>::handle
+  {
+  private:
+    friend concurrent_bag_vector;
+    std::vector<T*>* bag;
+
+    handle(std::vector<T*>* bag)
+    {
+      this->bag = bag;
+    }
+
+  public:
+    ~handle()
+    {
+      bag = 0;
+    }
+    
+    void insert(T* item)
+    {
+#pragma omp critical
+      {
+        bag->push_back(item);
+      }
+    }
+
+    bool try_remove_any(T*& item)
+    {
+      bool res = false;
+#pragma omp critical
+      {
+        if (!bag->empty()) {
+          item = bag->back();
+          bag->pop_back();
+          res = true;
+        }
+      }
+      return res;
+    }
+
+    bool empty()
+    {
+      bool res;
+#pragma omp critical
+      {
+        res = bag->empty();
+      }
+      return res;
+    }
+
+    int size()
+    {
+      int res;
+#pragma omp critical
+      {
+        res = bag->size();
+      }
+      return res;
+    }
+  };
+
+  concurrent_bag_vector()
+  {
+    bag = new std::vector<T*>();
+  }
+
+  ~concurrent_bag_vector()
+  {
+    delete bag;
+  }
+
+  handle* get_handle()
+  {
+    return new handle(bag);
+  }
+};
+
+}
+#endif

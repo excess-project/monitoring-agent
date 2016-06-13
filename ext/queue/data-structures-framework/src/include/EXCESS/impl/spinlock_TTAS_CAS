@@ -1,0 +1,60 @@
+// Simple test and test-and-set spinlock implemented with CAS.
+// Copyright (C) 2015  Anders Gidenstam
+//
+// This library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef __SPINLOCK_TTAS_CAS_H
+#define __SPINLOCK_TTAS_CAS_H
+
+#include <EXCESS/spinlock>
+
+namespace excess {
+namespace locks {
+
+// Test and test-and-set CAS-based spin-lock without back-off.
+// Each lock operation enforce a full memory barrier.
+class spinlock_TTAS_CAS
+  : spinlock {
+private:
+  volatile int flag;
+  
+public:
+  spinlock_TTAS_CAS()
+  {
+    flag = 0;
+  }
+
+  void lock()
+  {
+    for (;;) {
+      if (!flag) {
+        // Lock with CAS to also enforce a full memory barrier.
+        if (__sync_bool_compare_and_swap_4(&flag, 0, 1)) {
+          return;
+        }
+      }
+    }
+  }
+
+  void unlock()
+  {
+    // Unlock with CAS to enforce a full memory barrier.
+    __sync_bool_compare_and_swap_4(&flag, 1, 0);
+  }
+};
+
+}}
+
+#endif

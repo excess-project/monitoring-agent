@@ -1,0 +1,122 @@
+#!/bin/sh -f
+# name of the job
+#PBS -N excess_cluster_GEMM_CASETHREADS_threads
+# use the complete path to the standard output files
+#PBS -o /nas_home/andersg/EXCESS-software/data-structures-framework/PBS/GEMM_job/$PBS_JOBID.out
+#PBS -e /nas_home/andersg/EXCESS-software/data-structures-framework/PBS/GEMM_job/$PBS_JOBID.err 
+# set walltime: max. 00:10:00 for the queue 'batch' and max. 01:00:00 for the queue 'night'
+#PBS -l walltime=01:00:00
+# set the queue: batch or night
+#PBS -q night
+# set the number of nodes 
+#PBS -l nodes=1:node01:ppn=20
+# use submission enviroment - please don't change
+#pbs -V
+#start job from the directory it was submitted
+#cd $PBS_WORKDIR
+date
+echo "PBS_O_HOST=$PBS_O_HOST  # The name of the host upon which the qsub command is running."
+echo "PBS_O_WORKDIR=$PBS_O_WORKDIR  # The absolute path of the current working directory of the qsub command."
+echo "PBS_JOBID=$PBS_JOBID  # The job identifier assigned to the job by the batch system."
+echo "PBS_JOBNAME=$PBS_JOBNAME 	# The job name supplied by the user."
+
+# load used modules
+. $HOME/.modules
+
+# load module power/mf_shared
+# and get the new dbkey from the monitoring framework
+module load power/mf_shared
+DBKEY=$( get_unique_dbkey -d ${HOME}/.mf/dbkey/ -f ${PBS_JOBID} )
+echo "Monitoring framework $DBKEY"
+
+# Job environment
+export JOBDIR=/nas_home/andersg/EXCESS-software/data-structures-framework/PBS/GEMM_job/
+export LOGDIR=/nas_home/andersg/results/GEMM_`date +%Y-%m-%d_%H.%M`
+
+mkdir $LOGDIR
+cd $LOGDIR
+
+###############################################################################
+echo "job is starting"
+
+export LOGBASE=GEMM_result_`date +%Y-%m-%d_%H.%M`
+export RMAINLOG=$LOGDIR/$LOGBASE-out.txt
+
+echo "PBS job $PBS_JOBID is starting..." >> $RMAINLOG
+echo "Monitoring framework $DBKEY" >> $RMAINLOG
+
+PROGRAM=$HOME/EXCESS-software/data-structures-framework/testbench
+
+# The actual frequency on the HLRS cluster is unknown.
+# Probably 2.9GHz with potential TurboBoost to 3.8GHz. 
+FREQUENCIES=""
+#FREQUENCIES="3.4Ghz 2.3Ghz 1.2Ghz"
+#THREADS="2 4 6 8 10 12 14 16"
+THREADS="CASETHREADS"
+# The total case duration is 5 + $KILLDURATION + 10 seconds.
+# $KILLDURATION must be sufficiently larger than $PRGDURATION or
+# the case may be terminated prematurely.
+KILLDURATION="30"
+SAMPLEDURATION="40"
+REPEATS="1"
+#   0. Queue NOBLE Lock-Free DB          1. Queue NOBLE Lock-Free DU
+#   2. Queue NOBLE Lock-Free SB          3. Queue NOBLE Lock-Free BB
+#   4. Queue NOBLE Lock-Free BASKET      5. Queue NOBLE Lock-Free ELIM
+#   6. Queue NOBLE Lock-Based            7. Queue TBB concurrent_queue
+#   8. Stack NOBLE Lock-Free B           9. Stack NOBLE Lock-Free ELIM
+#   10. Bag NOBLE Lock-Free BB          11. Pool NOBLE Lock-Free EDTREE
+ALGORITHMS="0 1 2 3 4 5 6 7 8 9 10 11"
+#ALGORITHMS="9"
+# Matrix size
+MATRIXSIZES="8192"
+# Matrix workunit size
+WUSIZES="1024"
+# Pinning 1 means FILL.
+PINNING="1"
+
+export RAPLSAMPLE="$HOME/EXCESS-software/state-record-tool/read-rapl-likwid -d $SAMPLEDURATION"
+export TEMPSAMPLE="$HOME/EXCESS-software/state-record-tool/read-coretemp -d $SAMPLEDURATION"
+
+#for Frequency in $FREQUENCIES; do
+    # Set the CPU frequency. How is this done one the HLRS EXCESS cluster?
+
+    sleep 5s
+    echo Verifying CPU frequency setting.
+    #echo 'CPU frequencies:' >> $RMAINLOG; sudo cat /sys/bus/cpu/devices/cpu*/cpufreq/cpuinfo_cur_freq | tee -a $RMAINLOG -
+    sleep 5s
+
+    for Iter in $REPEATS; do
+        for Threads in $THREADS; do
+            for MatrixN in $MATRIXSIZES; do
+		for WuN in $WUSIZES; do
+                    for Alg in $ALGORITHMS; do
+			Case=a$Alg-mn$MatrixN-wun$WuN-f$Frequency-t$Threads-$Iter
+			echo "Starting $LOGBASE-$Case ..."
+
+			RRAPLLOG=$LOGDIR/$LOGBASE-RAPL-$Case.csv
+			RTEMPLOG=$LOGDIR/$LOGBASE-TEMP-$Case.csv
+			RCACHELOG=$LOGDIR/$LOGBASE-CACHE-$Case.txt
+			ROUTLOG=$LOGDIR/$LOGBASE-OUT-$Case.txt
+                        
+                        # Start sampling
+                        ($RAPLSAMPLE -o $RRAPLLOG)&
+                        ($TEMPSAMPLE -o $RTEMPLOG)&
+			echo >> $RMAINLOG; echo >> $RMAINLOG;
+			date >> $RMAINLOG; echo $Case >> $RMAINLOG
+
+                        sleep 5s
+
+			$PROGRAM -e 1 -p $PINNING -t $Threads -i $Alg -s 0 $MatrixN -s 1 $WuN 2>> $RMAINLOG > $ROUTLOG & (sleep $KILLDURATION; killall $PROGRAM &>> $RMAINLOG)
+
+			echo "... done"
+			sleep 10s
+			echo " "
+		    done
+                done
+            done
+        done
+    done
+#done
+
+###############################################################################
+echo "job is done"

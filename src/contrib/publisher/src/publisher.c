@@ -17,33 +17,31 @@
 #include <curl/curl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <sys/types.h> 
+#include <sys/time.h>
+#include <time.h>
 
+#include "util.h"
 #include "mf_debug.h"
 #include "publisher.h"
 #include "mf_parser.h"
 #include "mf_types.h"
 
-static CURL *curl;
 char execution_id[ID_SIZE] = { 0 };
 struct curl_slist *headers = NULL;
 
 static void
 init_curl()
 {
-	if (curl != NULL ) {
-		return;
-	}
-
-    curl_global_init(CURL_GLOBAL_ALL);
-	curl = curl_easy_init();
-
     if (headers != NULL ) {
-		return;
-	}
-
-	headers = curl_slist_append(headers, "Accept: application/json");
-	headers = curl_slist_append(headers, "Content-Type: application/json");
-	headers = curl_slist_append(headers, "charsets: utf-8");
+        return;
+    }
+    curl_global_init(CURL_GLOBAL_ALL);
+    headers = curl_slist_append(headers, "Accept: application/json");
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    headers = curl_slist_append(headers, "charsets: utf-8");
 }
 
 #ifndef DEBUG
@@ -82,52 +80,54 @@ check_URL(const char *URL)
 {
     if (URL == NULL || *URL == '\0') {
         const char *error_msg = "URL not set.";
-		log_error("publish(const char*, Message) %s", error_msg);
-		return 0;
-	}
-	return 1;
+        log_error("publish(const char*, Message) %s", error_msg);
+        return 0;
+    }
+    return 1;
 }
 
 static int
 check_message(char *message)
 {
-	if (message == NULL || *message == '\0') {
-	    const char *error_msg = "message not set.";
-		log_error("publish(const char*, Message) %s", error_msg);
-		return 0;
-	}
-	return 1;
-}
-
-static int
-prepare_publish(const char *URL, char *message)
-{
-    init_curl();
-
-	curl_easy_setopt(curl, CURLOPT_URL, URL);
-	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, message);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long ) strlen(message));
-	#ifdef DEBUG
-    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-    #endif
-
+    if (message == NULL || *message == '\0') {
+        const char *error_msg = "message not set.";
+        log_error("publish(const char*, Message) %s", error_msg);
+        return 0;
+    }
     return 1;
 }
 
-static int
+static CURL *
+prepare_publish(const char *URL, char *message)
+{
+    init_curl();
+    CURL *curl;
+    curl = curl_easy_init();
+    curl_easy_setopt(curl, CURLOPT_URL, URL);
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, message);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long ) strlen(message));
+    
+    #ifdef DEBUG
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    #endif
+
+    return curl;
+}
+
+static CURL *
 prepare_query(const char* URL)
 {
     init_curl();
-
+    CURL *curl;
+    curl = curl_easy_init();
     curl_easy_setopt(curl, CURLOPT_URL, URL);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     #ifdef DEBUG
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
     #endif
 
-    return 1;
+    return curl;
 }
 
 size_t
@@ -155,7 +155,8 @@ query(const char* query, char* received_data)
         return 0;
     }
 
-    if (!prepare_query(query)) {
+    CURL *curl = prepare_query(query);
+    if (curl == NULL) {
         return 0;
     }
 
@@ -173,7 +174,7 @@ query(const char* query, char* received_data)
     if(response_message.len > 0){
     	strncpy(received_data, response_message.ptr, response_message.len);
     }
-    curl_easy_reset(curl);
+    curl_easy_cleanup(curl);
 
     if(strstr(received_data, "Description") == NULL) {
         return 0;
@@ -184,29 +185,28 @@ query(const char* query, char* received_data)
 int
 publish_json(const char *URL, char *message)
 {
-	int result = SEND_SUCCESS;
+    int result = SEND_SUCCESS;
 
     if (!check_URL(URL) || !check_message(message)) {
         return 0;
     }
-
-    if (!prepare_publish(URL, message)) {
+    CURL *curl = prepare_publish(URL, message);
+    if (curl == NULL) {
         return 0;
     }
 
     #ifndef DEBUG
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_non_data);
-	#endif
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_non_data);
+    #endif
 
-	CURLcode response = curl_easy_perform(curl);
+    CURLcode response = curl_easy_perform(curl);
     if (response != CURLE_OK) {
-		result = SEND_FAILED;
-		const char *error_msg = curl_easy_strerror(response);
-		log_error("publish(const char*, Message) %s", error_msg);
-	}
+        result = SEND_FAILED;
+        const char *error_msg = curl_easy_strerror(response);
+        log_error("publish(const char*, Message) %s", error_msg);
+    }
 
-	curl_easy_reset(curl);
-
+    curl_easy_cleanup(curl);
     return result;
 }
 
@@ -227,12 +227,12 @@ publish_unit(metric_units *units)
         if (!check_URL(URL) || !check_message(msg)) {
             return 0;
         }
-        if (!prepare_publish(URL, msg)) {
+        CURL *curl = prepare_publish(URL, msg);
+        if (curl == NULL) {
             return 0;
         }
-        #ifndef DEBUG
-            curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");  /* !!! */
-        #endif
+        
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");  /* !!! */
 
         CURLcode response = curl_easy_perform(curl);
         if (response != CURLE_OK) {
@@ -240,9 +240,64 @@ publish_unit(metric_units *units)
             const char *error_msg = curl_easy_strerror(response);
             log_error("publish(const char*, Message) %s", error_msg);
         }
-        curl_easy_reset(curl);
+        curl_easy_cleanup(curl);
     }
     return result;
+}
+/*check if the units file of a plugin exists.
+    if error, return -1;
+    if file NOT exists, create file and return 0;
+    if file exists, return 1;
+    */
+int 
+unit_file_check(const char *plugin_name) {
+    char buf_1[200] = {'\0'};
+    char buf_2[200] = {'\0'};
+    char pwd[200] = {'\0'};
+    char Filefolder[300] = {'\0'};
+    char Filename[300] = {'\0'};
+
+    /*get the host name, first 6 characters */
+    char hostname[32] = {'\0'};
+    char host[10] = {'\0'};
+    getFQDN(hostname);
+    strncpy(host, hostname, 6 * sizeof(char));
+
+    readlink("/proc/self/exe", buf_1, 200);
+    memcpy(buf_2, buf_1, strlen(buf_1) * sizeof(char));
+    char *lastslash = strrchr(buf_2, '/');
+    int ptr = lastslash - buf_2;
+    memcpy(pwd, buf_2, ptr);
+    sprintf(Filefolder, "%s/plugins/", pwd);
+    sprintf(Filename, "%s/plugins/%s_units_%s", pwd, plugin_name, host);
+    fprintf(stderr, "using logfile: %s\n", Filename);
+
+    struct stat folder = { 0 };
+    struct stat file = { 0 };
+    if (stat(Filefolder, &folder) == -1) {
+        fprintf(stderr, "Folder %s does not exist.\n", Filefolder);
+        return -1;
+    }
+    if (stat(Filename, &file) == -1) {
+        fprintf(stderr, "File %s does not exist.\n", Filename);
+        FILE *fp = fopen(Filename, "w");
+        if (fp == NULL) {
+            fprintf(stderr, "Could not create file: %s\n", Filename);
+            return -1;
+        } else {
+            time_t curTime;
+            time(&curTime);
+            struct tm *time_info = localtime(&curTime);
+            char time_str[50];
+            strftime(time_str, 50, "%F-%T", time_info);
+            fprintf(fp, "mf_meminfo_units run at %s\n", time_str);
+            return 0;
+        }
+    }
+    else {
+        fprintf(stderr, "file %s exists.\n", Filename);
+        return 1;
+    }
 }
 
 int
@@ -255,44 +310,29 @@ char*
 get_execution_id(const char *URL, char *message)
 {
     if (strlen(execution_id) > 0) {
-    	/*
-            char* resp = malloc(100 * sizeof(char));
-            memset(resp, 100, '\0');
-            char query_url[300] = { '\0' };
-            // e.g. http://localhost:3000/executions/add/:id
-            sprintf(query_url, "%sadd/%s", URL, execution_id);
-
-            if (publish_json(query_url, message)) {
-                // Description message was sent.
-                debug("%s is registered under http://localhost:3000/executions/", execution_id);
-                return execution_id;
-            }
-    	*/
-	   return execution_id;
+        return execution_id;
     }
 
     if (!check_URL(URL) || !check_message(message)) {
         return '\0';
     }
-
-    if (!prepare_publish(URL, message)) {
+    CURL *curl = prepare_publish(URL, message);
+    if (curl == NULL) {
         return '\0';
     }
 
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_stream_data);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &execution_id);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_stream_data);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &execution_id);
 
-	CURLcode response = curl_easy_perform(curl);
+    CURLcode response = curl_easy_perform(curl);
     if (response != CURLE_OK) {
-		const char *error_msg = curl_easy_strerror(response);
-		log_error("publish(const char*, Message) %s", error_msg);
-	}
+        const char *error_msg = curl_easy_strerror(response);
+        log_error("publish(const char*, Message) %s", error_msg);
+    }
 
     debug("get_execution_id(const char*, char*) Execution_ID = <%s>", execution_id);
-
-	curl_easy_reset(curl);
-
-	return execution_id;
+    curl_easy_cleanup(curl);
+    return execution_id;
 }
 
 char*
@@ -301,8 +341,8 @@ create_experiment_id(const char* URL, char* message)
     if (!check_URL(URL) || !check_message(message)) {
         return '\0';
     }
-
-    if (!prepare_publish(URL, message)) {
+    CURL *curl = prepare_publish(URL, message);
+    if (curl == NULL) {
         return '\0';
     }
 
@@ -317,7 +357,7 @@ create_experiment_id(const char* URL, char* message)
 
     debug("create_experiment_id(const char*, char*) Execution_ID = <%s>", execution_id);
 
-    curl_easy_reset(curl);
+    curl_easy_cleanup(curl);
 
     return execution_id;
 }
@@ -325,10 +365,5 @@ create_experiment_id(const char* URL, char* message)
 void
 shutdown_curl()
 {
-    if (curl == NULL ) {
-		return;
-	}
-
-    curl_easy_cleanup(curl);
     curl_global_cleanup();
 }

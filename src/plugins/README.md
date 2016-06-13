@@ -252,7 +252,7 @@ papi_plugin_hook()
 {
   if (running) {
     metric papi_metric = malloc(sizeof(metric_t));
-    papi_metric->message = malloc(4096 * sizeof(char));
+    papi_metric->message = malloc(1024 * sizeof(char));
 
     /* allocate memory for the parser struct */
     mfp_data *conf_data = malloc(sizeof(mfp_data));

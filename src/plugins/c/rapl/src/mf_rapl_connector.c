@@ -18,6 +18,8 @@
 
 /* monitoring-related includes */
 #include "mf_debug.h"
+#include "mf_types.h"
+#include "publisher.h"
 #include "mf_rapl_connector.h"
 
 #define SUCCESS 1
@@ -48,7 +50,6 @@ long long *pre_values;
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
-
 static int is_rapl_initialized();
 static int enable_papi_library();
 static double mf_rapl_get_denominator();
@@ -79,6 +80,8 @@ mf_rapl_is_enabled()
             } else {
                 is_available = SUCCESS;
                 log_info("Component is ENABLED (%s)", cmpinfo->name);
+                /* init rapl units and send to mf_server*/
+                mf_rapl_unit_init(cid);
             }
             return is_available;
         }
@@ -86,6 +89,69 @@ mf_rapl_is_enabled()
 
     is_available = FAILURE;
     return is_available;
+}
+
+/*******************************************************************************
+ * mf_rapl_unit_init
+ ******************************************************************************/
+int 
+mf_rapl_unit_init(int rapl_cid)
+{
+    int ret = unit_file_check("rapl");
+    if(ret != 0) {
+        printf("unit file of rapl exists.\n");
+        return FAILURE;
+    }
+    /* declare variables */
+    metric_units *unit = malloc(sizeof(metric_units));
+    int r, retval, code, num_events;
+    char event_names[MAX_RAPL_EVENTS][PAPI_MAX_STR_LEN];
+    char units[MAX_RAPL_EVENTS][PAPI_MIN_STR_LEN];
+    PAPI_event_info_t evinfo;
+
+    if (unit == NULL) {
+        return FAILURE;
+    }
+    memset(unit, 0, sizeof(metric_units));
+
+    /* All NATIVE events print units */
+    code = PAPI_NATIVE_MASK;
+    num_events = 0;
+
+    r = PAPI_enum_cmp_event( &code, PAPI_ENUM_FIRST, rapl_cid );
+    while ( r == PAPI_OK ) {
+        retval = PAPI_event_code_to_name( code, event_names[num_events] );
+        if ( retval != PAPI_OK ) {
+            log_error("ERROR: event_code_to_name failed %s", PAPI_strerror(retval));
+            return FAILURE;
+        }
+        retval = PAPI_get_event_info(code, &evinfo);
+        if (retval != PAPI_OK) {
+            log_error("ERROR: get_event _info failed %s", PAPI_strerror(retval));
+            return FAILURE;
+        }
+        if(strlen(evinfo.units)==0) {
+            r = PAPI_enum_cmp_event( &code, PAPI_ENUM_EVENTS, rapl_cid );
+            continue;
+        }
+        unit->metric_name[num_events] =malloc(64 * sizeof(char));
+        strcpy(unit->metric_name[num_events], event_names[num_events]+7);
+        unit->plugin_name[num_events] =malloc(32 * sizeof(char));
+        strcpy(unit->plugin_name[num_events], "mf_plugin_rapl");
+        unit->unit[num_events] =malloc(PAPI_MIN_STR_LEN * sizeof(char));
+        if(strstr(unit->metric_name[num_events], "ENERGY:") != NULL) {
+            strcpy(unit->unit[num_events], "J");
+        }
+        else {
+            strncpy(unit->unit[num_events], evinfo.units, sizeof(units[0])-1);    
+        }
+        num_events++;
+        r = PAPI_enum_cmp_event( &code, PAPI_ENUM_EVENTS, rapl_cid );
+     }
+
+     unit->num_metrics = num_events;
+     publish_unit(unit);
+     return SUCCESS;
 }
 
 /*******************************************************************************
@@ -209,7 +275,7 @@ char*
 mf_rapl_to_json(RAPL_Plugin *data)
 {
     char *metric = malloc(512 * sizeof(char));
-    char *json = malloc(4096 * sizeof(char));
+    char *json = malloc(1024 * sizeof(char));
     strcpy(json, "\"type\":\"energy\"");
 
     int idx;
