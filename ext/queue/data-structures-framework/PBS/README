@@ -1,3 +1,0 @@
-The directory contains TORQUE/PBS batch job scripts for the EXCESS
-cluster at HLRS Stuttgart. They will need edits to run on another
-account or machine.
