@@ -1,11 +1,16 @@
 % EXCESS ATOM Monitoring Agent
 % Copyright (C) 2014, 2015 University of Stuttgart
 
-# List of Dependencies (downloaded via install_dependencies.sh)
+# List of Dependencies (downloaded via setup.sh)
 
-| Component         | Homepage                                          | Version   |
-|------------------ |-------------------------------------------------  |---------  |
-| PAPI-C            | http://icl.cs.utk.edu/papi/                       | 5.4.0     |
-| Apache APR        | https://apr.apache.org/                           | 1.5.1     |
-| Apache APR Utils  | https://apr.apache.org/                           | 1.5.3     |
-| Nvidia GDK        | https://developer.nvidia.com/gpu-deployment-kit   | 352.55    |
+| Component         | Homepage                                                      | Version   |
+|------------------ |-------------------------------------------------------------  |---------  |
+| PAPI-C            | http://icl.cs.utk.edu/papi/                                   | 5.4.0     |
+| Apache APR        | https://apr.apache.org/                                       | 1.5.2     |
+| Apache APR Utils  | https://apr.apache.org/                                       | 1.5.4     |
+| Nvidia GDK        | https://developer.nvidia.com/gpu-deployment-kit               | 352.55    |
+| CURL              | http://curl.haxx.se/                                          | 7.37.0    |
+| EXCESS QUEUE      | https://github.com/excess-project/data-structures-library.git | 0.1.0     |
+| sensors           | https://fossies.org/linux/misc/lm_sensors-3.4.0.tar.gz        | 3.4.0     |
+| bison             | http://ftp.gnu.org/gnu/bison                                  | 2.3       |
+| flex              | http://prdownloads.sourceforge.net/flex                       | 2.5.33    |

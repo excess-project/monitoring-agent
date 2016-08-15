@@ -1,13 +1,13 @@
 ## Copyright (C) 2016 University of Stuttgart
 ## Authors: Dennis Hoppe
-CC = /usr/bin/gcc
+CC = gcc
 
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
 -Wcast-align -O0 -ggdb $(SENSORS_INC) $(PARSER_INC) $(PUBLISHER_INC) $(EXCESS_INC) $(CORE_INC) $(COMMON_INC)
 
-LFLAGS = $(SENSORS) $(PARSER) $(PUBLISHER) $(APR)
+LFLAGS = $(SENSORS) $(PARSER) $(PUBLISHER) $(APR) $(CURL)
 
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
@@ -23,6 +23,7 @@ TESTS = tests
 UTILS = $(SRC)/utils
 BINARIES = $(COMMON)/../bin
 
+CURL = -L$(BINARIES)/curl/lib -lcurl
 SENSORS = -L${BINARIES}/sensors/lib -lsensors
 SENSORS_INC = -I${BINARIES}/sensors/include/sensors
 

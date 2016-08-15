@@ -84,8 +84,18 @@ int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events)
      const char *portname = "/dev/ttyACM0";
      if(open_interfase(&arduino_fd,portname)!=SUCCESS)
      {
-        log_info ("error %d by opening %s: %s", errno, portname, strerror (errno));
-        return FAILURE;
+       portname = "/dev/ttyACM1";
+       if(open_interfase(&arduino_fd,portname)!=SUCCESS)
+       {
+         log_info ("error %d by opening %s: %s", errno, portname, strerror (errno));
+         return FAILURE;
+       }else
+       {
+         log_info ("device opened: %s", portname);
+       }
+     }else
+     {
+         log_info ("device opened: %s", portname);
      }
      set_interface_attribs(arduino_fd,B115200, 0);// set speed to 115,200 bps, 8n1 (no parity)
      set_blocking (arduino_fd, 0);                // set no blocking
@@ -302,6 +312,7 @@ mf_movi_to_json(MOVI_Plugin *data)
         }
     }
     free(metric);
+    log_info("%s\n",json);
     return json;
 }
 

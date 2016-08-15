@@ -1,14 +1,14 @@
 ## Copyright (C) 2014-2015 University of Stuttgart
 ## Authors: Dennis Hoppe
 
-CC = /usr/bin/gcc
+CC = gcc
 
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
 -Wcast-align -O0 -ggdb $(MOVIDIUS_ARDUINO_INC) $(EXCESS_INC) $(PARSER_INC) $(PUBLISHER_INC) $(CORE_INC) $(COMMON_INC)
 
-LFLAGS = $(MOVIDIUS_ARDUINO) $(PARSER) $(PUBLISHER)
+LFLAGS = $(MOVIDIUS_ARDUINO) $(PARSER) $(PUBLISHER) $(CURL)
 
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
@@ -24,6 +24,7 @@ TESTS = tests
 UTILS = $(SRC)/utils
 BINARIES = $(COMMON)/../bin
 
+CURL = -L$(BINARIES)/curl/lib -lcurl
 MOVIDIUS_ARDUINO = -L$(BINARIES)/movidius_arduino/lib
 MOVIDIUS_ARDUINO_INC = -I$(BINARIES)/movidius_arduino/include/
 

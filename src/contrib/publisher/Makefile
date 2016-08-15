@@ -1,4 +1,4 @@
-CC = /usr/bin/gcc
+CC = gcc
 
 COPT_SO = $(CFLAGS) -fpic
 

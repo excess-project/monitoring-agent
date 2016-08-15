@@ -1,4 +1,4 @@
-CC = /usr/bin/gcc
+CC = gcc
 
 CFLAGS = -std=gnu99 -pedantic -Wall $(SRC_INC)
 

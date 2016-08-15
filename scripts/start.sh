@@ -16,13 +16,14 @@
 
 usage() {
     cat <<EOF
-Usage: $0 [w:t:c:e:h]
+Usage: $0 [w:t:c:e:o:a:h]
 
 -h                  prints this usage information.
 
 -w <USER_ID>        sets a current user (EXCESS) or workflow (DreamCloud) ID [optional]
 -t <TASK_ID>        sets a user-defined application (EXCESS) or task (DreamCloud) ID [optional]
 -e <ID>             sets a user-defined experiment ID [optional]
+-o <HOSTNAME>       sets a user-defined hostname [optional]
 -a <API_VERSION>    sets the API version to communicate with the backend (default: v1) [optional]
 -c <CONFIG_FILE>    specifies a user-defined configuration file (e.g., mf_config.ini) [optional]
 EOF
@@ -36,7 +37,7 @@ LIB_DIR=${DIST_DIR}/lib
 
 PARAMS=''
 
-while getopts "w:t:c:e:a:h" opt; do
+while getopts "w:t:c:e:o:a:h" opt; do
   case $opt in
     w)
       PARAMS+=" -w ${OPTARG}"
@@ -49,6 +50,9 @@ while getopts "w:t:c:e:a:h" opt; do
       ;;
     e)
       PARAMS+=" -e ${OPTARG}"
+      ;;
+    o)
+      PARAMS+=" -o ${OPTARG}"
       ;;
     a)
       PARAMS+=" -a ${OPTARG}"

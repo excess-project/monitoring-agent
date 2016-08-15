@@ -15,6 +15,7 @@
  */
 
 #include <curl/curl.h>
+#include <curl/multi.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -47,7 +48,7 @@ init_curl()
 #ifndef DEBUG
 static size_t write_non_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
-   return size * nmemb;
+    return size * nmemb;
 }
 #endif
 
@@ -366,4 +367,72 @@ void
 shutdown_curl()
 {
     curl_global_cleanup();
+}
+
+/*added for non-blocking multi-curl */
+
+void* non_block_publish(const char *URL, char *message) {
+    int still_running = 0;
+    CURLM *m_curl=NULL;
+    CURL *each=NULL;
+    init_curl();
+    if(m_curl == NULL) {
+        m_curl = curl_multi_init();    
+    }
+    each = curl_easy_init();
+    curl_easy_setopt(each, CURLOPT_URL, URL);
+    curl_easy_setopt(each, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(each, CURLOPT_POSTFIELDS, message);
+    curl_easy_setopt(each, CURLOPT_POSTFIELDSIZE, (long ) strlen(message));
+    
+    #ifdef DEBUG
+    curl_easy_setopt(each, CURLOPT_VERBOSE, 1L);
+    #endif
+    #ifndef DEBUG
+    curl_easy_setopt(each, CURLOPT_WRITEFUNCTION, write_non_data);
+    #endif
+    curl_multi_add_handle(m_curl, each);
+    curl_multi_perform(m_curl, &still_running);
+    return (void *)m_curl;
+}
+
+int curl_handle_clean(void *curl_ptr) {
+    CURLM *m_curl = curl_ptr;
+    int still_running = 0;
+    curl_multi_perform(m_curl, &still_running);
+
+    do {
+        int numfds=0;
+        int res = curl_multi_wait(m_curl, NULL, 0, MAX_WAIT_MSECS, &numfds);
+        if(res != CURLM_OK) {
+            fprintf(stderr, "error: curl_multi_wait() returned %d\n", res);
+            return SEND_FAILED;
+        }
+        curl_multi_perform(m_curl, &still_running);
+    } while(still_running);
+
+    /* get the reponse message and remove each finished handle */
+    CURL *eh=NULL;
+    CURLMsg *msg=NULL;
+    CURLcode return_code=0;
+    int msgs_left=0;
+
+    while ((msg = curl_multi_info_read(m_curl, &msgs_left))) {
+        if (msg->msg == CURLMSG_DONE) {
+            eh = msg->easy_handle;
+            return_code = msg->data.result;
+            if(return_code != CURLE_OK) {
+                fprintf(stderr, "CURL error code: %d\n", msg->data.result);
+                continue;
+            }
+            curl_multi_remove_handle(m_curl, eh);
+            curl_easy_cleanup(eh);
+        }
+        else {
+            fprintf(stderr, "error: after curl_multi_info_read(), CURLMsg=%d\n", msg->msg);
+        }
+    }
+    /* clean the multi curl structure */
+    curl_multi_cleanup(m_curl);
+    return SEND_SUCCESS;
 }

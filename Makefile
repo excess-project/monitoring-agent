@@ -1,16 +1,17 @@
 ## Copyright 2014,2015 University of Stuttgart
 ## Authors: Anthony Sulistio, Nico Eichhorn, Dennis Hoppe
 
-CC = /usr/bin/gcc
-CXX = /usr/bin/g++
+CC = gcc
+CXX = g++
 COPT_SO = $(CFLAGS) -fpic
 
-REVISION = 16.6
+REVISION = 16.8
 HOST=$(shell hostname)
 INSTALL_DIR = dist
 
 ifneq (,$(findstring excess,$(HOST)))
 	INSTALL_DIR = /opt/mf/${REVISION}
+	CXX = /opt/centos/devtoolset-1.1/root/usr/bin/g++
 endif
 
 ifneq (,$(findstring jenkins,$(HOST)))
@@ -87,7 +88,7 @@ APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
 APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
-EXCESS_QUEUE = -I$(BASE)/../ext/queue/data-structures-framework/src/include 
+EXCESS_QUEUE = -I$(BASE)/../ext/queue/data-structures-library/src/include
 EXCESS_QUEUE_C = -I$(BASE)/../ext/queue
 
 #
@@ -179,8 +180,9 @@ copy_agent:
 copy_libs:
 	cp -f $(BINARIES)/papi/lib/libpapi.so* $(INSTALL_DIR)/lib
 	cp -f $(BINARIES)/papi/lib/libpfm.so* $(INSTALL_DIR)/lib
-	cp -f $(BINARIES)/apr/lib/libaprutil-1.so* $(INSTALL_DIR)/lib
-	cp -f $(BINARIES)/apr/lib/libapr-1.so* $(INSTALL_DIR)/lib
+	cp -f $(BINARIES)/apr/lib/lib*so* $(INSTALL_DIR)/lib
+	cp -f $(BINARIES)/curl/lib/libcurl.so* $(INSTALL_DIR)/lib 
+	cp -f $(BINARIES)/sensors/lib/libsensors.so* $(INSTALL_DIR)/lib 
 	cp -f lib/*.so $(INSTALL_DIR)/lib
 	cp -f lib/*.a $(INSTALL_DIR)/lib
 

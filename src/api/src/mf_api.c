@@ -214,6 +214,7 @@ mf_api_stats_data_by_interval(char *Metrics_name, double start_time, double stop
             stop_timestamp,
             host
            );
+
     get_data_by_query(query_url, res);
 }
 

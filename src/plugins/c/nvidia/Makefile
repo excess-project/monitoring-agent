@@ -1,14 +1,14 @@
 ## Copyright (C) 2015 Chalmers University of Technology, Sweden
 ## Authors: Anders Gidenstam
 
-CC = /usr/bin/gcc
+CC = gcc
 
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
 -Wcast-align -O0 -ggdb $(PARSER_INC) $(PUBLISHER_INC) $(EXCESS_INC) $(CORE_INC) $(COMMON_INC) $(NVML_INC)
 
-LFLAGS = $(PARSER) $(PUBLISHER) $(NVML)
+LFLAGS = $(PARSER) $(PUBLISHER) $(NVML) $(CURL)
 
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
@@ -22,6 +22,7 @@ SRC = src
 LIB = lib
 UTILS = $(SRC)/utils
 
+CURL = -L$(COMMON)/../bin/curl/lib -lcurl
 COMMON_INC = -I$(COMMON)
 CORE_INC = -I$(COMMON)/core
 

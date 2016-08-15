@@ -1,7 +1,7 @@
 ## Copyright (C) 2014-2015 University of Stuttgart
 ## Authors: Dennis Hoppe
 
-CC = /usr/bin/gcc
+CC = gcc
 
 COPT_SO = $(CFLAGS) -fpic
 

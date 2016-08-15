@@ -1,5 +1,16 @@
 # RELEASE NOTES
 
+## 16.8 (15/06/2016)
+
+### Features
+- Movidius plugin modified with looking for the other devices
+- Use curl-multi-perform to enable non-blocking sending
+- Make json string longer for papi plugin
+- Add starting parameter hostname to enable customized hostname
+- Remove EXCESS concurrent queue source; download it from GitHub via setup.sh
+- Bugs fix 
+
+
 ## 16.6 (13/06/2016)
 
 ### Features

@@ -30,6 +30,7 @@ INSTALL_PATH_NVIDIA=`pwd`/${BINARY_FOLDER}/nvidia
 INSTALL_PATH_BISON=`pwd`/${BINARY_FOLDER}/bison
 INSTALL_PATH_FLEX=`pwd`/${BINARY_FOLDER}/flex
 INSTALL_PATH_SENSORS=`pwd`/${BINARY_FOLDER}/sensors
+INSTALL_PATH_EXCESS_QUEUE=`pwd`/ext/queue
 
 
 # ============================================================================ #
@@ -46,6 +47,7 @@ APR="apr"
 APR_VERSION="1.5.2"
 APR_UTIL="apr-util"
 APR_UTIL_VERSION="1.5.4"
+EXCESS_QUEUE_VERSION=release/0.1.0
 
 # ============================================================================ #
 # DOWNLOAD AND INSTALL PAPI-C                                                  #
@@ -182,6 +184,17 @@ tar zxvf lm_sensors-3.4.0.tar.gz
 cd lm_sensors-3.4.0
 make PREFIX=${INSTALL_PATH_SENSORS} all
 make PREFIX=${INSTALL_PATH_SENSORS} install
+
+# ============================================================================ #
+# DOWNLOAD AND INSTALL EXCESS QUEUE LIBS                                                                                        #
+# https://github.com/excess-project/data-structures-library.git
+# ============================================================================ #
+#
+cd $INSTALL_PATH_EXCESS_QUEUE
+rm -rf data-structures-library
+git clone https://github.com/excess-project/data-structures-library.git
+cd data-structures-library
+git checkout $EXCESS_QUEUE_VERSION
 
 # ============================================================================ #
 # CLEANING UP                                                                  #

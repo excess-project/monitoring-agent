@@ -46,20 +46,21 @@ pthread_t threads[256];
  ******************************************************************************/
 
 static void init_timings();
+int cleanSending();
+void* prepare_json(metric *data);
 
 void
 catcher(int signo) {
 	running = 0;
 	printf("\nSignal %d catched\n", signo);
 }
-static void init_timings();
 
 int
 startThreads() {
 	int t;
 	running = 1;
 
-        pm = PluginManager_new();
+	pm = PluginManager_new();
 	const char *dirname = { "/plugins" };
 	char *pluginLocation = malloc(300 * sizeof(char));
 	strcpy(pluginLocation, pwd);
@@ -68,14 +69,15 @@ startThreads() {
 	void* pdstate = discover_plugins(pluginLocation, pm);
 	init_timings();
 	//calculate the sending threads number
-	int sending_threads = (int) (pluginCount * publish_json_time * 1.0e9 / (min_plugin_interval * BULK_SIZE));
+	int sending_threads = (int) (pluginCount * publish_json_time * 1.0e9 / min_plugin_interval);
 	int num_threads = MIN_THREADS + pluginCount + sending_threads;
-	fprintf(logFile, "\nnumber of plugins is \t\t%d\n", pluginCount);
+	//fprintf(logFile, "\nnumber of plugins is \t\t%d\n", pluginCount);
 	fprintf(logFile, "time used for publish json is \t%f(s)\n", publish_json_time);
 	fprintf(logFile, "minimum plugin time interval is \t%ld(ns)\n", min_plugin_interval);
-	fprintf(logFile, "BULK_SIZE is \t\t%d\n", BULK_SIZE);
-	fprintf(logFile, "num of threads of sending is \t%d\n", sending_threads);
-	fprintf(logFile, "total number of threads is \t\t%d\n", num_threads);
+	fprintf(logFile, "publish data interval is \t%ld(ns)\n", timings[0]);
+	//fprintf(logFile, "BULK_SIZE is \t\t%d\n", BULK_SIZE);
+	//fprintf(logFile, "num of threads of sending is \t%d\n", sending_threads);
+	//fprintf(logFile, "total number of threads is \t\t%d\n", num_threads);
 	int iret[num_threads];
 	int nums[num_threads];
 
@@ -125,7 +127,8 @@ entryThreads(void *arg) {
 		gatherMetric(*typeT);
 	}
 	else {
-		startSending();
+		//startSending();
+		cleanSending();
 	}
 	return NULL;
 }
@@ -152,29 +155,53 @@ startSending() {
 	return 1;
 }
 
+int
+cleanSending() {
+	void *ptr;
+	EXCESS_concurrent_queue_handle_t data_queue_handle;
+	data_queue_handle =ECQ_get_handle(data_queue);
+	while (running || !ECQ_is_empty(data_queue_handle)) {
+		if(ECQ_try_dequeue(data_queue_handle, &ptr)) {
+			curl_handle_clean(ptr);
+			//struct timespec ts;
+    		//clock_gettime(CLOCK_REALTIME, &ts);
+    		//double timestamp = ts.tv_sec + (double)(ts.tv_nsec / 1.0e9);
+    		//fprintf(logFile,"handle is cleaned at\t%f\n", timestamp);
+		}
+		else {
+			usleep(timings[0]);
+		}
+	}
+	ECQ_free_handle(data_queue_handle);
+	return 1;
+}
+
 int connection_error = 0;
 
 int
 prepSend(metric *data) {
 	int i;
-	char json[1024 * BULK_SIZE] = {'\0'};
+	char json[2048 * BULK_SIZE] = {'\0'};
 	json[0] = '[';
 	if (!data) {
 		return 0;
 	}
+	//struct timespec ts;
+	//clock_gettime(CLOCK_REALTIME, &ts);
+	//double publish_ts = ts.tv_sec + (double)(ts.tv_nsec / 1.0e9);
+	
 	for(i=0; i<BULK_SIZE && data[i] != NULL; i++) {
 		/* use data->timestamp from plugin */
 		char time_stamp[64] = {'\0'};
 		double timestamp = data[i]->timestamp.tv_sec + (double)(data[i]->timestamp.tv_nsec / 1.0e9);
 		convert_time_to_char(timestamp, time_stamp);
 
-		/*
-		struct timespec ts;
-		clock_gettime(CLOCK_REALTIME, &ts);
-		double publish_ts = ts.tv_sec + (double)(ts.tv_nsec / 1.0e9);
-		double diff_ts = publish_ts - timestamp;
-		fprintf(logFile, "diff_ts is \t%f\n", diff_ts);*/
-		char msg[1024] = {'\0'};
+		//if(i == 0) {
+		//	double diff_ts = publish_ts - timestamp;
+		//	fprintf(logFile, "%f\t%f\n", timestamp, diff_ts);
+		//}
+
+		char msg[2048] = {'\0'};
 		sprintf(msg,
 			"{\"@timestamp\":\"%s\",\"host\":\"%s\",\"WorkflowID\":\"%s\",\"ExperimentID\":\"%s\",\"task\":\"%s\",%s},",
 			time_stamp,
@@ -188,6 +215,7 @@ prepSend(metric *data) {
 	}
 	json[strlen(json)-1] = ']';
 	json[strlen(json)] = '\0';
+	//fprintf(logFile, "\njson message is: %s\n", json);
 	int retval = publish_json(server_name, json);
 	if (retval == 0) {
 		++connection_error;
@@ -279,7 +307,11 @@ gatherMetric(int num) {
 			//fprintf(logFile, "\n%p\t address of the %dth metric get hook\n", resMetrics[i], i);
 			nanosleep(&tim, &tim2);
 		}
-		ECQ_enqueue(data_queue_handle, (void *)resMetrics);
+		void* m_ptr = prepare_json(resMetrics);
+		free_bulk(resMetrics, BULK_SIZE);
+		//ECQ_enqueue(data_queue_handle, (void *)resMetrics);
+		ECQ_enqueue(data_queue_handle, m_ptr);
+		//fprintf(logFile,"pushed a multi-curl-handle\t%p\n", m_ptr);
 	}
 	ECQ_free_handle(data_queue_handle);
 	/* call when terminating program, enables cleanup of plug-ins */
@@ -297,6 +329,46 @@ checkConf() {
 		sleep(atoi(wait_some_seconds));
 		init_timings();
 	}
-
 	return 1;
+}
+
+void* prepare_json(metric *data)
+{
+	int i;
+	char json[1024 * BULK_SIZE] = {'\0'};
+	json[0] = '[';
+	if (!data) {
+		return NULL;
+	}
+	/*struct timespec ts;
+	clock_gettime(CLOCK_REALTIME, &ts);
+	double publish_ts = ts.tv_sec + (double)(ts.tv_nsec / 1.0e9);*/
+	
+	for(i=0; i<BULK_SIZE && data[i] != NULL; i++) {
+		/* use data->timestamp from plugin */
+		char time_stamp[64] = {'\0'};
+		double timestamp = data[i]->timestamp.tv_sec + (double)(data[i]->timestamp.tv_nsec / 1.0e9);
+		convert_time_to_char(timestamp, time_stamp);
+
+		/*if(i == 0) {
+			double diff_ts = publish_ts - timestamp;
+			fprintf(logFile, "%f\t%f\n", timestamp, diff_ts);
+		}*/
+
+		char msg[1024] = {'\0'};
+		sprintf(msg,
+			"{\"@timestamp\":\"%s\",\"host\":\"%s\",\"WorkflowID\":\"%s\",\"ExperimentID\":\"%s\",\"task\":\"%s\",%s},",
+			time_stamp,
+			hostname,
+			workflow,
+			experiment_id,
+			task,
+			data[i]->msg
+		);
+		strcat(json, msg);
+	}
+	json[strlen(json)-1] = ']';
+	json[strlen(json)] = '\0';
+	void *m_ptr = non_block_publish(server_name, json);
+	return m_ptr;
 }

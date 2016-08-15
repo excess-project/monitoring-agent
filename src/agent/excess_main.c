@@ -93,9 +93,9 @@ prepare() {
 	/* prepare default message */
 	char msg[1000] = "";
 
-	/* retrieve hostname */
+	/* retrieve hostname 
 	getFQDN(hostname);
-	hostname[strlen(hostname) - 1] = '\0';
+	hostname[strlen(hostname) - 1] = '\0';*/
 
 	/* get timestamp */
 	char time_stamp[64] = {'\0'};
@@ -244,6 +244,7 @@ set_pwd()
  */
 int main(int argc, char* argv[]) {
 	int c;
+	int h_flag = 0; //arg "hostname" exists flag
 	int w_flag = 0;	//arg "workflow" exists flag
 	int t_flag = 0;	//arg "task" exists flag
 	int c_flag = 0;	//arg "config file" exists flag
@@ -276,9 +277,14 @@ int main(int argc, char* argv[]) {
 	api_version[0] = '\0';
 
 	/* parse command-line arguments */
-	static char usage[] = "usage: %s [-e id] [-w workflow] [-t task] [-c config] [-a version] [-h help]\n";
-	while ((c = getopt(argc, argv, "w:t:c:e:a:h")) != -1)
+	static char usage[] = "usage: %s [-o hostname] [-e id] [-w workflow] [-t task] [-c config] [-a version] [-h help]\n";
+	while ((c = getopt(argc, argv, "o:w:t:c:e:a:h")) != -1)
 		switch (c) {
+		case 'o':
+			strcpy(hostname, optarg);
+			h_flag = 1;
+			fprintf(logFile, "> hostname: %s\n", hostname);
+			break;
 		case 'w':
 			strcpy(workflow, optarg);
 			w_flag = 1;
@@ -310,7 +316,11 @@ int main(int argc, char* argv[]) {
 			err = 1;
 			break;
 	}
-
+	/* retrieve hostname if not given as input arg */
+	if (h_flag == 0) {
+		getFQDN(hostname);
+		hostname[strlen(hostname) - 1] = '\0';
+	}
 	/* set workflow to "username" if not given as input arg */
 	if (w_flag == 0) {
 		/* get username */

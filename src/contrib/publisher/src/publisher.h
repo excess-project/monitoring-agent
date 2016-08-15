@@ -31,6 +31,7 @@
 #define SEND_SUCCESS 1
 #define SEND_FAILED  0
 #define ID_SIZE 64
+#define MAX_WAIT_MSECS 1*1000  /* multi_curl Wait max. 1 seconds */
 
 #include "mf_types.h"
 
@@ -120,5 +121,19 @@ int unit_file_check(const char *plugin_name);
  * Note: This method needs to be private in order to hide cURL.
  */
 void shutdown_curl();
+
+/*added for non-blocking multi-curl */
+/**
+ * @brief Perform the non-blocking curl_multi_perform
+ *
+ * @return a void pointer to the multi-handles 
+ */
+void* non_block_publish(const char *URL, char *message);
+
+/**
+ * @brief Free the finished multi-handles and handle in the multi-handle.
+ *
+ */
+int curl_handle_clean(void *curl_ptr);
 
 #endif

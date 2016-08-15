@@ -169,12 +169,14 @@ Please [create](https://github.com/excess-project/monitoring-agent/website/issue
 
 | Date        | Version | Comment          |
 | ----------- | ------- | ---------------- |
+| 2016-08-15  | 16.8    | 4th release (stable and libcurl multi-perform) |
+| 2016-06-13  | 16.6    | 3rd release (stable and new features) |
 | 2016-02-26  | 16.2    | 2nd release (removed backend interface) |
 | 2015-12-18  | 1.0     | Public release.  |
 
 
 ## License
-Copyright (C) 2014-2016 University of Stuttgart
+Copyright (C) 2014,2015 University of Stuttgart
 
 [Apache License v2](LICENSE).
 
