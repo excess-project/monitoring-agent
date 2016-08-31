@@ -23,7 +23,7 @@ This section details the data exchange format used for the communication between
 
 <pre>
 {
-  "@timestamp": 1418041226.201397,
+  "@timestamp": "2016-02-15T12:42:47.461",
   "hostname": "fe.excess-project.eu",
   "type": "performance",
   "CP0:PAPI_L2_DCA": 4172129,
@@ -35,7 +35,7 @@ The minimal document is then extended two-fold. Firstly, an additional parameter
 ```bash
 [
   {
-    "@timestamp": 1418041226.201397,
+    "@timestamp": "2016-02-15T12:42:47.461",
     "hostname": "fe.excess-project.eu",
     "type": "perfomance",
     "CPU0::PAPI_L2_DCA": 4172129,
@@ -48,7 +48,7 @@ The minimal document is then extended two-fold. Firstly, an additional parameter
     "CPU3::PAPI_TOT_INS": 499789
   },
   {
-    "@timestamp": 1418041227.2014813,
+    "@timestamp": "2016-02-15T12:42:47.461",
     "hostname": "fe.excess-project.eu",
     "type": "energy",
     "PACKAGE_ENERGY:PACKAGE0": 12.9468,
