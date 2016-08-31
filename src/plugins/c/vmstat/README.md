@@ -14,13 +14,6 @@ framework. Please execute the **MAKEFILE** using
 $ make
 ```
 
-Before calling the sample client **mf_vmstat_client**, please execute the
-shell script **setenv.sh** to add required libraries to the **LD_LIBRARY_PATH**:
-
-```
-$ ./setenv.sh
-```
-
 Next, you can execute the demo client **mf_vmstat_client** as follows:
 
 ```
@@ -33,27 +26,6 @@ events. It follows a list of supported events in the next section.
 
 
 ## List of supported events
-
-The list of supported events to be sampled depends on the underlying
-infrastructure. A link to a full list of standard events is listed in the
-further information section. In order to retrieve a list of available events
-for your infrastructure, please execute the binary
-
-```
-$ ./papi_avail | grep Yes
-```
-
-which comes with the standard PAPI sources. If you have installed the
-monitoring agent for development, and executed the **autobuild** shell script
-located in the root folder, then the PAPI tool should be available at
-
-```
-$ <MONITORING_AGENT>/binaries/papi/bin
-```
-
-
-
-## Further information
 
 - nr_alloc_batch
 - nr_inactive_anon

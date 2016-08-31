@@ -1,11 +1,13 @@
 # Supported Plug-ins
 
-- [Infiniband](c/infiniband/README.md)
-- [/proc/meminfo](c/meminfo/README.md)
-- [/proc/vmstat](c/vmstat/README.md)
+- [infiniband](c/infiniband/README.md)
+- [meminfo](c/meminfo/README.md)
+- [movidius](c/movidius_arduino)
+- [vmstat](c/vmstat/README.md)
 - [Nvidia GPUs](c/nvidia/README.md)
 - [PAPI-C](c/papi/README.md)
 - [RAPL](c/rapl/README.md)
+- [sensors](c/sensors/README.md)
 
 
 # Plug-in Development Tutorial
@@ -21,7 +23,7 @@ This section details the data exchange format used for the communication between
 
 <pre>
 {
-  "Timestamp": 1418041226.201397,
+  "@timestamp": 1418041226.201397,
   "hostname": "fe.excess-project.eu",
   "type": "performance",
   "CP0:PAPI_L2_DCA": 4172129,
@@ -33,7 +35,7 @@ The minimal document is then extended two-fold. Firstly, an additional parameter
 ```bash
 [
   {
-    "Timestamp": 1418041226.201397,
+    "@timestamp": 1418041226.201397,
     "hostname": "fe.excess-project.eu",
     "type": "perfomance",
     "CPU0::PAPI_L2_DCA": 4172129,
@@ -46,7 +48,7 @@ The minimal document is then extended two-fold. Firstly, an additional parameter
     "CPU3::PAPI_TOT_INS": 499789
   },
   {
-    "Timestamp": 1418041227.2014813,
+    "@timestamp": 1418041227.2014813,
     "hostname": "fe.excess-project.eu",
     "type": "energy",
     "PACKAGE_ENERGY:PACKAGE0": 12.9468,
@@ -156,7 +158,7 @@ MFAgents as well as plug-ins are configurable at run-time by a global configurat
 ;EXCESS ATOM Monitoring Framework Configuration
 
 [generic]
-server = http://localhost:3000/executions/
+server = http://localhost:3030
 
 [plugins]
 mf_plugin_papi    = on

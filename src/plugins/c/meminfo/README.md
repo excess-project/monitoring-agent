@@ -19,7 +19,7 @@ Next, you can execute the demonstrator as follows:
 $ ./mf_meminfo_client <LIST_OF_METRICS>
 ```
 
-Replace **<LIST_OF_METRICS>** with a space-separated list of valid PAPI events.
+Replace **<LIST_OF_METRICS>** with a space-separated list of valid /proc/meminfo events.
 It follows a list of supported events in the next section.
 
 
