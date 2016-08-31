@@ -10,7 +10,7 @@ Reducing the energy consumption is a leading design constraint of current and fu
 ## Prerequisites
 
 The monitoring agent requires first a running server and database. In order to install these requirements, please
-checkout the associated [monitoring server][server], first. Please note that the installation and setup steps mentioned below assume that you are running a current Linux as operating system. We have tested the monitoring agent with Ubuntu 14.04 LTS as well as with Scientific Linux 6 (Carbon).
+checkout the associated [monitoring server][server] and [monitoring frontend][frontend], first. Please note that the installation and setup steps mentioned below assume that you are running a current Linux as operating system. We have tested the monitoring agent with Ubuntu 14.04 LTS as well as with Scientific Linux 6 (Carbon).
 
 Before you can proceed, please clone the repository:
 
@@ -26,9 +26,15 @@ This project requires the following dependencies to be installed:
 | Component         | Homepage                                          | Version   |
 |------------------ |-------------------------------------------------  |---------  |
 | PAPI-C            | http://icl.cs.utk.edu/papi/                       | 5.4.0     |
+| CURL              | http://curl.haxx.se/download/                     | 7.37.0    |  
 | Apache APR        | https://apr.apache.org/                           | 1.5.1     |
 | Apache APR Utils  | https://apr.apache.org/                           | 1.5.3     |
-| Nvidia GDK        | https://developer.nvidia.com/gpu-deployment-kit   | 352.55    |
+| Nvidia GDK        | https://developer.nvidia.com/gpu-deployment-kit/  | 352.55    |
+| bison             | http://ftp.gnu.org/gnu/bison/                     | 2.3       |
+| flex              | http://prdownloads.sourceforge.net/flex/          | 2.5.33    |
+| sensors           | https://fossies.org/linux/misc/                   | 3.4.0     |
+| EXCESS queue      | https://github.com/excess-project/data-structures-library.git | release/0.1.0 |
+
 
 To ease the process of setting up a development environment, we provide a basic
 script that downloads all dependencies, installs them locally in the project
@@ -71,6 +77,12 @@ curl localhost:9200
 and that the monitoring server is running at
 
 ```bash
+http://localhost:3030
+```
+
+and that the monitoring frontend is running at
+
+```bash
 http://localhost:3000
 ```
 
@@ -109,7 +121,7 @@ The monitoring agent as well as plug-ins are configurable at run-time by a globa
 ;EXCESS ATOM Monitoring Framework Configuration
 
 [generic]
-server = http://localhost:3000/executions/
+server = http://localhost:3030
 
 [plugins]
 mf_plugin_papi    = on
@@ -182,6 +194,7 @@ Copyright (C) 2014,2015 University of Stuttgart
 
 
 [server]: https://github.com/excess-project/monitoring-server
+[frontend]: https://github.com/excess-project/monitoring-frontend
 [excess]: http://www.excess-project.eu
 [dreamcloud]: http://www.dreamcloud-project.eu
 [plugin-tutorial]: src/plugins/README.md

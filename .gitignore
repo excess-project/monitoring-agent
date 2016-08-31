@@ -4,6 +4,7 @@ doxygen
 build
 dist
 man/www
+ext/queue/data-structures-library
 
 **.so
 **.o
