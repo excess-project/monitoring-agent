@@ -52,7 +52,6 @@ struct SENSORS_Plugin_t
 /** @brief Checks if the sensors component is available and enabled
  * if lm_sensors is available collects events units and send them to mf_server
  *
- *
  * @return 1 if sensors component is enabled; 0 otherwise.
  */
 int mf_sensors_is_enabled();

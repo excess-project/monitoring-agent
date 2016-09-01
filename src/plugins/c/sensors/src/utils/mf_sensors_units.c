@@ -25,10 +25,7 @@
 /* monitoring-related includes */
 #include "mf_sensors_connector.h" /* mf_sensors_is_enabled */
 
-/*******************************************************************************
- * Main
- ******************************************************************************/
-
+/* A client to initialize sensors plugin units of metrics */
 int main(void)
 {
 	printf("[mf_sensors_units] starting...\n");

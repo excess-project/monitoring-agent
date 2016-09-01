@@ -34,7 +34,6 @@
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
-
 typedef struct requested_features_t {
     const sensors_chip_name *chip;
     const sensors_subfeature *subfeature;
@@ -54,7 +53,6 @@ static int is_available = -1;
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
-
 int
 prefix(const char *pre, const char *str)
 {
@@ -84,10 +82,7 @@ add_feature(requested_features* list, const sensors_chip_name* chip, const senso
     return newList;
 }
 
-/*******************************************************************************
- * mf_sensors_is_enabled
- ******************************************************************************/
-
+/* Checks if lm-sensors can be enabled; prepare the units of all metrics */
 int
 mf_sensors_is_enabled()
 {
@@ -177,10 +172,7 @@ mf_sensors_is_enabled()
     return is_available;
 }
 
-/*******************************************************************************
- * mf_sensors_init
- ******************************************************************************/
-
+/* Initialize the sensors plug-in */
 int
 mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
 {
@@ -264,10 +256,7 @@ mf_sensors_init(SENSORS_Plugin *data, char **sensors_events, size_t num_events)
     return SUCCESS;
 }
 
-/*******************************************************************************
- * mf_sensors_sample
- ******************************************************************************/
-
+/* Samples the registered sensors events */
 int
 mf_sensors_sample(SENSORS_Plugin *data)
 {
@@ -279,16 +268,12 @@ mf_sensors_sample(SENSORS_Plugin *data)
         data->events[i] = malloc(16);
         strcpy(data->events[i], iter->label);
         data->values[i]=value;
-        //printf("%s %s %.2f\n", iter->label, iter->subfeature->name, value);
     }
     data->num_events = i;
     return 1;
 }
 
-/*******************************************************************************
- * mf_sensors_to_json
- ******************************************************************************/
-
+/* Conversion of samples data to a JSON document */
 char*
 mf_sensors_to_json(SENSORS_Plugin *data)
 {
@@ -305,10 +290,7 @@ mf_sensors_to_json(SENSORS_Plugin *data)
     return json;
 }
 
-/*******************************************************************************
- * mf_sensors_shutdown
- ******************************************************************************/
-
+/* Stop and clean-up the sensors plugin */
 void
 mf_sensors_shutdown()
 {
