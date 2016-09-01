@@ -33,6 +33,7 @@
 char execution_id[ID_SIZE] = { 0 };
 struct curl_slist *headers = NULL;
 
+/* Initialize libcurl; set headers format */
 static void
 init_curl()
 {
@@ -45,6 +46,7 @@ init_curl()
     headers = curl_slist_append(headers, "charsets: utf-8");
 }
 
+/* Callback function for writing with libcurl */
 #ifndef DEBUG
 static size_t write_non_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
@@ -57,6 +59,7 @@ struct string {
     size_t len;
 };
 
+/* malloc a string and initialize it */
 void
 init_string(struct string *s) {
     s->len = 0;
@@ -68,6 +71,7 @@ init_string(struct string *s) {
     s->ptr[0] = '\0';
 }
 
+/* Callback function to get stream data during writing */
 static size_t
 get_stream_data(void *buffer, size_t size, size_t nmemb, void *stream) {
 	size_t total = size * nmemb;
@@ -76,6 +80,7 @@ get_stream_data(void *buffer, size_t size, size_t nmemb, void *stream) {
 	return total;
 }
 
+/* Check if the url is set */
 static int
 check_URL(const char *URL)
 {
@@ -87,6 +92,7 @@ check_URL(const char *URL)
     return 1;
 }
 
+/* check if the message is set */
 static int
 check_message(char *message)
 {
@@ -98,6 +104,7 @@ check_message(char *message)
     return 1;
 }
 
+/* Prepare for using libcurl to write */
 static CURL *
 prepare_publish(const char *URL, char *message)
 {
@@ -116,6 +123,7 @@ prepare_publish(const char *URL, char *message)
     return curl;
 }
 
+/* Prepare for using libcurl to read */
 static CURL *
 prepare_query(const char* URL)
 {
@@ -131,6 +139,7 @@ prepare_query(const char* URL)
     return curl;
 }
 
+/* Callback function to query*/
 size_t
 curl_write(void *ptr, size_t size, size_t nmemb, struct string *stream)
 {
@@ -146,6 +155,7 @@ curl_write(void *ptr, size_t size, size_t nmemb, struct string *stream)
     return fwrite(ptr, size, nmemb, stdout);
 }
 
+/* Data query using libcurl */
 int
 query(const char* query, char* received_data)
 {
@@ -183,6 +193,7 @@ query(const char* query, char* received_data)
     return result;
 }
 
+/* Metrics data publish using libcurl */
 int
 publish_json(const char *URL, char *message)
 {
@@ -211,6 +222,7 @@ publish_json(const char *URL, char *message)
     return result;
 }
 
+/* Units publish using libcurl */
 int
 publish_unit(metric_units *units)
 {
@@ -245,11 +257,12 @@ publish_unit(metric_units *units)
     }
     return result;
 }
-/*check if the units file of a plugin exists.
-    if error, return -1;
-    if file NOT exists, create file and return 0;
-    if file exists, return 1;
-    */
+
+/* check if the units file of a plugin exists.
+   if error, return -1; 
+   if file NOT exists, create file and return 0;
+   if file exists, return 1;
+*/
 int 
 unit_file_check(const char *plugin_name) {
     char buf_1[200] = {'\0'};
@@ -301,41 +314,7 @@ unit_file_check(const char *plugin_name) {
     }
 }
 
-int
-publish(const char *URL, Message *messages)
-{
-    return SEND_SUCCESS;
-}
-
-char*
-get_execution_id(const char *URL, char *message)
-{
-    if (strlen(execution_id) > 0) {
-        return execution_id;
-    }
-
-    if (!check_URL(URL) || !check_message(message)) {
-        return '\0';
-    }
-    CURL *curl = prepare_publish(URL, message);
-    if (curl == NULL) {
-        return '\0';
-    }
-
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_stream_data);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &execution_id);
-
-    CURLcode response = curl_easy_perform(curl);
-    if (response != CURLE_OK) {
-        const char *error_msg = curl_easy_strerror(response);
-        log_error("publish(const char*, Message) %s", error_msg);
-    }
-
-    debug("get_execution_id(const char*, char*) Execution_ID = <%s>", execution_id);
-    curl_easy_cleanup(curl);
-    return execution_id;
-}
-
+/* Register a new experiment and get the execution id */
 char*
 create_experiment_id(const char* URL, char* message)
 {
@@ -363,14 +342,14 @@ create_experiment_id(const char* URL, char* message)
     return execution_id;
 }
 
+/* Clean-up libcurl */
 void
 shutdown_curl()
 {
     curl_global_cleanup();
 }
 
-/*added for non-blocking multi-curl */
-
+/* Metrics data publish using ńon-blocking libcurl */
 void* non_block_publish(const char *URL, char *message) {
     int still_running = 0;
     CURLM *m_curl=NULL;
@@ -396,6 +375,7 @@ void* non_block_publish(const char *URL, char *message) {
     return (void *)m_curl;
 }
 
+/* Free the finished multi-handles and handle in the multi-handle */
 int curl_handle_clean(void *curl_ptr) {
     CURLM *m_curl = curl_ptr;
     int still_running = 0;

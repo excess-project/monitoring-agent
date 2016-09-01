@@ -69,10 +69,6 @@ void mfp_get_data(const char* section, mfp_data* data);
  * Example: filter = "on" will also retain those keys in the data set which
  * value equals the filter value.
  */
-void mfp_get_data_filtered_by_value(
-    const char* section,
-    mfp_data* data,
-    const char* filter_by_value
-);
+void mfp_get_data_filtered_by_value(const char* section, mfp_data* data, const char* filter_by_value);
 
 #endif

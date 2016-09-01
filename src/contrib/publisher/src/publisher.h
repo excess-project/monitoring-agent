@@ -37,40 +37,6 @@
 
 extern char execution_id[ID_SIZE];
 
-typedef struct Message_t Message;
-typedef struct Data_t Data;
-
-struct Data_t {
-  char *key;
-  char *value;
-};
-
-struct Message_t {
-  char *sender;
-  char *username;
-  char *timestamp;
-  Data *data;
-};
-
-/**
- * @brief Returns the execution id used for communication with Elasticsearch.
- *
- * If the variable #execution_id is set, then this function returns the already
- * initialized value of #execution_id. Otherwise, this function queries
- * the server via calling publish_json() based on the given URL. The #message
- * must have the following format in JSON:
- *
- * \code{.c}
- * {
- *     "Name": <hostname>,
- *     "Description": <description of the job>,
- *     "Start_date": <timestamp>,
- *     "Username": <username>
- * }
- * \endcode
- */
-char* get_execution_id(const char *URL, char *message);
-
 /**
  * @brief Creates a new experiment ID based on the given username and message.
  *
@@ -79,19 +45,10 @@ char* create_experiment_id(const char* URL, char* message);
 
 /**
  * @brief Queries a server by the given query, and writes the response into
- *        received data.
+ * received data.
  *
  */
 int query(const char* query, char* received_data);
-
-/**
- * @brief Publishes previously defined Message objects.
- *
- * It should be noted that this function is not yet implemented.
- *
- * @return 1
- */
-int publish(const char *URL, Message *messages);
 
 /**
  * @brief Sends the data defined in message to the given URL via cURL.
@@ -101,17 +58,16 @@ int publish(const char *URL, Message *messages);
 int publish_json(const char *URL, char *message);
 
 /**
- * @brief Sends the plugin metrics units to a specific URL.
+ * @brief Sends the plugin metrics units to the given URL via cURL.
  *
  * @return 1 if successful; 0 otherwise
  */
 int publish_unit(metric_units *units);
 
 /**
- * @check if the units file of a plugin exists.
- *     if error, return -1;
- *     if file NOT exists, create file and return 0;
- *     if file exists, return 1;
+ * @brief Check if the units file of a plugin exists.
+ * 
+ * @return -1 if error; 0 if file not exists; 1 if successful
  */
 int unit_file_check(const char *plugin_name);
 
@@ -120,11 +76,11 @@ int unit_file_check(const char *plugin_name);
  *
  * Note: This method needs to be private in order to hide cURL.
  */
+
 void shutdown_curl();
 
-/*added for non-blocking multi-curl */
 /**
- * @brief Perform the non-blocking curl_multi_perform
+ * @brief Perform the non-blocking curl_multi_perform to send metrics data
  *
  * @return a void pointer to the multi-handles 
  */

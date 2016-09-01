@@ -27,21 +27,25 @@
 #include "plugin_discover.h"
 #include "thread_handler.h"
 
+/* List of pointers of plugin handles */
 typedef struct PluginHandleList_t {
 	void* handle;
 	struct PluginHandleList_t* next;
 } PluginHandleList;
 
+/* First node of the list*/
 typedef struct PluginDiscoveryState_t {
 	PluginHandleList* handle_list;
 } PluginDiscoveryState;
 
+/* Plugin init function */
 typedef int (*PluginInitFunc)(PluginManager *pm);
 
 int pluginCount = 0;
 
 char* plugin_name[256];
 
+/* Load a plugin by calling the init function of a plugin */
 void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 	char* slashed_path = strdup(fullpath);
 
@@ -78,11 +82,13 @@ void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 	return libhandle;
 }
 
+/* parse mf_config.ini, 
+ * if one plugin is switched on, call load_plugin function to load the plugin 
+ * store all the loaded plugin handlers to a list*/
 void* discover_plugins(const char *dirname, PluginManager *pm) {
 	DIR* dir = opendir(dirname);
 
 	if (!dir) {
-		fprintf(stderr, "unable to open directory %s!\n", dirname);
 		fprintf(logFile, "unable to open directory %s!\n", dirname);
 		return NULL ;
 	}
@@ -135,6 +141,7 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 	return 0;
 }
 
+/* Gets the plug-in name from the given filename */
 char* get_plugin_name(char filename[256]) {
 	char *retStr;
 
@@ -148,6 +155,7 @@ char* get_plugin_name(char filename[256]) {
 	return strncpy(retStr, name_start, last_dot - name_start);
 }
 
+/* Clean-up plug-ins after execution */
 void cleanup_plugins(void* vpds) {
 	PluginDiscoveryState *pds = (PluginDiscoveryState*) vpds;
 	PluginHandleList *node = pds->handle_list;

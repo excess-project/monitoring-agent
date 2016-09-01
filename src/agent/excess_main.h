@@ -104,7 +104,7 @@ void createLogFile();
 /** @brief Perform initialization prior starting monitoring
  *
  * This method performs the following actions: 1) parses the configuration file,
- * 2) reads the host name and current user name, and 3) generates an execution
+ * 2) sets the metrics sending path, and 3) generates an execution
  * ID if not passed via command line.
  *
  * @returns 1 on success; 0 otherwise

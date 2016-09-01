@@ -50,11 +50,6 @@ void *entryThreads(void *arg);
 int gatherMetric(int num);
 
 /**
- * @brief Pops new data from the stack in order to send it to the server
- */
-int startSending();
-
-/**
  * @brief Convenience method to prepare the data before sending.
  */
 int prepSend(metric *data);

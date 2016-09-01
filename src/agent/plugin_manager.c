@@ -23,13 +23,13 @@
 #include "excess_main.h"
 
 /**
- * @brief old way of storing hooks
- * @depreciated
+ * @brief definition of plugin hook
  */
 typedef struct PluginHookType_t {
 	PluginHook hook;
 	const char *name;
 } PluginHookType;
+
 /**
  * @brief definition of plugin manager struct
  */
@@ -37,20 +37,22 @@ struct PluginManager_t {
 	EXCESS_concurrent_queue_t hook_queue;
 };
 
+/* Creat a plugin manager, create a hook queue */
 PluginManager* PluginManager_new() {
 	PluginManager *pm = malloc(sizeof(PluginManager));
 	pm->hook_queue = ECQ_create(0);
 	return pm;
 }
 
+/* Clean-up a plugin manager*/
 void PluginManager_free(PluginManager *pm) {
 	ECQ_free(pm->hook_queue);
 	free(pm);
 }
 
-void PluginManager_register_hook(PluginManager *pm, const char *name,
-		PluginHook hook) {
-
+/* Register a plugin hook to the plugin manager 
+ * push the hook to the hook queue */
+void PluginManager_register_hook(PluginManager *pm, const char *name, PluginHook hook) {
 	PluginHookType *hookType = malloc(sizeof(PluginHookType));
 	hookType->hook = hook;
 	hookType->name = name;
@@ -62,6 +64,7 @@ void PluginManager_register_hook(PluginManager *pm, const char *name,
 	pluginCount++;
 }
 
+/* Get one hook from the hook queue */
 PluginHook PluginManager_get_hook(PluginManager *pm) {
 	PluginHook funcPtr = NULL;
 	void *retPtr;
@@ -72,7 +75,6 @@ PluginHook PluginManager_get_hook(PluginManager *pm) {
 		PluginHookType *typePtr;
 		typePtr = (struct PluginHookType_t *) retPtr;
 		funcPtr = *(typePtr->hook);
-		fprintf(stderr, "using Plugin %s ", typePtr->name);
 		fprintf(logFile, "using Plugin %s ", typePtr->name);	
 	}
 	ECQ_free_handle(hook_queue_handle);

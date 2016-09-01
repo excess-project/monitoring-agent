@@ -37,6 +37,7 @@ long timings[256];	//defined as extern in excess_main.h
 long min_plugin_interval;
 int running;
 static PluginManager *pm;
+int connection_error = 0;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_t threads[256];
@@ -44,17 +45,18 @@ pthread_t threads[256];
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
-
 static void init_timings();
 int cleanSending();
 void* prepare_json(metric *data);
 
+/* catch the stop signal */
 void
 catcher(int signo) {
 	running = 0;
-	printf("\nSignal %d catched\n", signo);
+	fprintf(logFile, "Signal %d catched\n", signo);
 }
 
+/* All threads starts here */
 int
 startThreads() {
 	int t;
@@ -68,30 +70,19 @@ startThreads() {
 
 	void* pdstate = discover_plugins(pluginLocation, pm);
 	init_timings();
-	//calculate the sending threads number
+	/* calculate the sending threads number */
 	int sending_threads = (int) (pluginCount * publish_json_time * 1.0e9 / min_plugin_interval);
 	int num_threads = MIN_THREADS + pluginCount + sending_threads;
-	//fprintf(logFile, "\nnumber of plugins is \t\t%d\n", pluginCount);
-	fprintf(logFile, "time used for publish json is \t%f(s)\n", publish_json_time);
-	fprintf(logFile, "minimum plugin time interval is \t%ld(ns)\n", min_plugin_interval);
-	fprintf(logFile, "publish data interval is \t%ld(ns)\n", timings[0]);
-	//fprintf(logFile, "BULK_SIZE is \t\t%d\n", BULK_SIZE);
-	//fprintf(logFile, "num of threads of sending is \t%d\n", sending_threads);
-	//fprintf(logFile, "total number of threads is \t\t%d\n", num_threads);
 	int iret[num_threads];
 	int nums[num_threads];
 
+	/* create the data metrics queue */
 	data_queue = ECQ_create(0);
 	for (t = 0; t < num_threads; t++) {
 		nums[t] = t;
 		iret[t] = pthread_create(&threads[t], NULL, entryThreads, &nums[t]);
 		if (iret[t]) {
-			fprintf(stderr,
-					"ERROR; return code from pthread_create() is %d\n",
-					iret[t]);
-			fprintf(logFile,
-					"ERROR; return code from pthread_create() is %d\n",
-					iret[t]);
+			fprintf(logFile, "ERROR; return code from pthread_create() is %d\n", iret[t]);
 			exit(-1);
 		}
 	}
@@ -117,6 +108,7 @@ startThreads() {
 	return 1;
 }
 
+/* entry for all threads */
 void*
 entryThreads(void *arg) {
 	int *typeT = (int*) arg;
@@ -127,34 +119,12 @@ entryThreads(void *arg) {
 		gatherMetric(*typeT);
 	}
 	else {
-		//startSending();
 		cleanSending();
 	}
 	return NULL;
 }
 
-int
-startSending() {
-	void *ptr;
-	EXCESS_concurrent_queue_handle_t data_queue_handle;
-	data_queue_handle =ECQ_get_handle(data_queue);
-	while (running || !ECQ_is_empty(data_queue_handle)) {
-		if(ECQ_try_dequeue(data_queue_handle, &ptr)) {
-			metric *mPtr = ptr;
-			int retval = prepSend(mPtr);
-			if (retval == -1) {
-				running = 0;
-			}
-			free_bulk(mPtr, BULK_SIZE);
-		}
-		else {
-			usleep(timings[0]);
-		}
-	}
-	ECQ_free_handle(data_queue_handle);
-	return 1;
-}
-
+/* Clean-up the sending thread */
 int
 cleanSending() {
 	void *ptr;
@@ -163,10 +133,6 @@ cleanSending() {
 	while (running || !ECQ_is_empty(data_queue_handle)) {
 		if(ECQ_try_dequeue(data_queue_handle, &ptr)) {
 			curl_handle_clean(ptr);
-			//struct timespec ts;
-    		//clock_gettime(CLOCK_REALTIME, &ts);
-    		//double timestamp = ts.tv_sec + (double)(ts.tv_nsec / 1.0e9);
-    		//fprintf(logFile,"handle is cleaned at\t%f\n", timestamp);
 		}
 		else {
 			usleep(timings[0]);
@@ -176,8 +142,7 @@ cleanSending() {
 	return 1;
 }
 
-int connection_error = 0;
-
+/* Send a bulk of metrics */
 int
 prepSend(metric *data) {
 	int i;
@@ -186,20 +151,12 @@ prepSend(metric *data) {
 	if (!data) {
 		return 0;
 	}
-	//struct timespec ts;
-	//clock_gettime(CLOCK_REALTIME, &ts);
-	//double publish_ts = ts.tv_sec + (double)(ts.tv_nsec / 1.0e9);
 	
 	for(i=0; i<BULK_SIZE && data[i] != NULL; i++) {
 		/* use data->timestamp from plugin */
 		char time_stamp[64] = {'\0'};
 		double timestamp = data[i]->timestamp.tv_sec + (double)(data[i]->timestamp.tv_nsec / 1.0e9);
 		convert_time_to_char(timestamp, time_stamp);
-
-		//if(i == 0) {
-		//	double diff_ts = publish_ts - timestamp;
-		//	fprintf(logFile, "%f\t%f\n", timestamp, diff_ts);
-		//}
 
 		char msg[2048] = {'\0'};
 		sprintf(msg,
@@ -215,7 +172,6 @@ prepSend(metric *data) {
 	}
 	json[strlen(json)-1] = ']';
 	json[strlen(json)] = '\0';
-	//fprintf(logFile, "\njson message is: %s\n", json);
 	int retval = publish_json(server_name, json);
 	if (retval == 0) {
 		++connection_error;
@@ -227,6 +183,7 @@ prepSend(metric *data) {
 	return 1;
 }
 
+/* parse mf_cconfig.ini to get all timing information */
 static void
 init_timings()
 {
@@ -271,6 +228,7 @@ init_timings()
 	free(mfp_timing_data);
 }
 
+/* each plugin gathers its metrics at a specific rate and send the json-formatted metrics to mf_server */
 int
 gatherMetric(int num) {
 	int i;
@@ -287,14 +245,7 @@ gatherMetric(int num) {
 		tim.tv_nsec = timings[num];
 	}
 	PluginHook hook = PluginManager_get_hook(pm);
-	fprintf(stderr,
-			"\ngather metric %s (#%d) with update interval of %ld ns\n",
-			current_plugin_name, num, timings[num]
-	);
-	fprintf(logFile,
-			"\ngather metric %s (#%d) with update interval of %ld ns\n",
-			current_plugin_name, num, timings[num]
-	);
+	fprintf(logFile, "\ngather metric %s (#%d) with update interval of %ld ns\n", current_plugin_name, num, timings[num]);
 
 	EXCESS_concurrent_queue_handle_t data_queue_handle;
 	data_queue_handle =ECQ_get_handle(data_queue);
@@ -304,22 +255,20 @@ gatherMetric(int num) {
 		resMetrics = (metric *) malloc(BULK_SIZE * sizeof(metric));
 		for(i=0; i<BULK_SIZE; i++) {
 			resMetrics[i] = hook();	//malloc of resMetrics[i] in hook()
-			//fprintf(logFile, "\n%p\t address of the %dth metric get hook\n", resMetrics[i], i);
 			nanosleep(&tim, &tim2);
 		}
 		void* m_ptr = prepare_json(resMetrics);
 		free_bulk(resMetrics, BULK_SIZE);
-		//ECQ_enqueue(data_queue_handle, (void *)resMetrics);
 		ECQ_enqueue(data_queue_handle, m_ptr);
-		//fprintf(logFile,"pushed a multi-curl-handle\t%p\n", m_ptr);
 	}
-	ECQ_free_handle(data_queue_handle);
 	/* call when terminating program, enables cleanup of plug-ins */
+	ECQ_free_handle(data_queue_handle);
+	
 	hook();
-
 	return 1;
 }
 
+/* check if the timing in mf_config.ini has been modified */
 int
 checkConf() {
 	while (running) {
@@ -332,6 +281,7 @@ checkConf() {
 	return 1;
 }
 
+/* prepare json string and use non-blocking sending function to send the string */
 void* prepare_json(metric *data)
 {
 	int i;
@@ -340,20 +290,12 @@ void* prepare_json(metric *data)
 	if (!data) {
 		return NULL;
 	}
-	/*struct timespec ts;
-	clock_gettime(CLOCK_REALTIME, &ts);
-	double publish_ts = ts.tv_sec + (double)(ts.tv_nsec / 1.0e9);*/
 	
 	for(i=0; i<BULK_SIZE && data[i] != NULL; i++) {
 		/* use data->timestamp from plugin */
 		char time_stamp[64] = {'\0'};
 		double timestamp = data[i]->timestamp.tv_sec + (double)(data[i]->timestamp.tv_nsec / 1.0e9);
 		convert_time_to_char(timestamp, time_stamp);
-
-		/*if(i == 0) {
-			double diff_ts = publish_ts - timestamp;
-			fprintf(logFile, "%f\t%f\n", timestamp, diff_ts);
-		}*/
 
 		char msg[1024] = {'\0'};
 		sprintf(msg,

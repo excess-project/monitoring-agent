@@ -37,8 +37,7 @@ void Test_get_section_value(CuTest *tc)
     mfp_parse("config.ini");
     char server_name[40]="";
     mfp_get_value("generic", "server", server_name);
-    //char* server_name = mfp_get_value("generic", "server");
-    CuAssertStrEquals(tc, "http://141.58.0.2:3000/executions/", server_name);
+    CuAssertStrEquals(tc, "http://localhost:3030", server_name);
 }
 
 void Test_get_non_existing_section(CuTest *tc)
@@ -46,7 +45,6 @@ void Test_get_non_existing_section(CuTest *tc)
     mfp_parse("config.ini");
     char lottery_numbers[40]="";
     mfp_get_value("lottery", "numbers", lottery_numbers);
-    //char* lottery_numbers = mfp_get_value("lottery", "numbers");
     CuAssertTrue(tc, (lottery_numbers == NULL || strlen(lottery_numbers) == 0));
 }
 
@@ -55,7 +53,6 @@ void Test_get_non_existing_value(CuTest *tc)
     mfp_parse("config.ini");
     char lottery_numbers[40]="";
     mfp_get_value("generic", "numbers", lottery_numbers);
-    //char* lottery_numbers = mfp_get_value("generic", "numbers");
     CuAssertTrue(tc, (lottery_numbers == NULL || strlen(lottery_numbers) == 0));
 }
 
@@ -125,13 +122,11 @@ void Test_set_value_for_existing_key(CuTest *tc)
     mfp_parse("config.ini");
     char value[10]="";
     mfp_get_value("plugins", "papi", value);
-    //char* value = mfp_get_value("plugins", "papi");
     CuAssertStrEquals(tc, "off", value);
 
     mfp_set_value("plugins", "papi", "on");
     value[10]=0;
     mfp_get_value("plugins", "papi", value);
-    //value = mfp_get_value("plugins", "papi");
     CuAssertStrEquals(tc, "on", value);
 
     free(data);

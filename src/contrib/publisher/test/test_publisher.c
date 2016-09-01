@@ -21,7 +21,7 @@
 #include "CuTest.h"
 #include "publisher.h"
 
-static const char *SERVER = "http://localhost:3000/executions";
+static const char *SERVER = "http://localhost:3030";
 
 static char *URL;
 
@@ -97,15 +97,6 @@ void Test_publish_json_with_empty_message(CuTest *tc)
     CuAssertTrue(tc, retval == 0);
 }
 
-void Test_successful_publish(CuTest *tc)
-{
-    Message messages[1] = {
-        {.sender = "fe.excess-project.eu" }
-    };
-    int retval = publish(URL, messages);
-    CuAssertTrue(tc, retval == 1);
-}
-
 void set_default_query(char *query)
 {
     char *hostname = "localhost";
@@ -122,7 +113,7 @@ void Test_get_execution_id(CuTest *tc)
 {
     char *query = malloc(sizeof(char) * 256);
     set_default_query(query);
-    char *id = get_execution_id(SERVER, query);
+    char *id = create_experiment_id(SERVER, query);
     CuAssertTrue(tc, id != NULL && strlen(id) == 20);
     free(query);
 }
@@ -134,7 +125,7 @@ void startup()
     URL = malloc(sizeof(char) * 256);
     strcpy(URL, SERVER);
     strcat(URL, "/");
-    strcat(URL, get_execution_id(SERVER, query));
+    strcat(URL, create_experiment_id(SERVER, query));
     free(query);
 }
 
@@ -150,10 +141,7 @@ CuSuite* CuGetSuite(void)
     SUITE_ADD_TEST(suite, Test_publish_json);
     SUITE_ADD_TEST(suite, Test_publish_json_with_empty_URL);
     SUITE_ADD_TEST(suite, Test_publish_json_with_empty_message);
-    SUITE_ADD_TEST(suite, Test_successful_publish);
     SUITE_ADD_TEST(suite, Test_get_execution_id);
-
-    //shutdown_curl();
 
     return suite;
 }

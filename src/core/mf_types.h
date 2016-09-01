@@ -18,12 +18,12 @@
 #define MF_TYPES_H_
 
 /**
- * @brief pointer to the metric gathered by the plugins
+ * @brief Pointer to the metric gathered by the plugins
  */
 typedef struct metric_t* metric;
 
 /**
- * @brief structure which represents a value of a metric
+ * @brief Structure which represents a value of a metric
  */
 struct metric_t {
     struct timespec timestamp;
@@ -31,12 +31,12 @@ struct metric_t {
 } metric_t;
 
 /**
- * @brief pointer to the metric's unit
+ * @brief Pointer to the metric's unit
  */
 typedef struct metric_unit_t metric_units;
 
 /**
- * @brief structure which represents a unit of a metric
+ * @brief Structure which represents a unit of a metric
  */
 struct metric_unit_t 
 {

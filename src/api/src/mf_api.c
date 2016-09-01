@@ -21,7 +21,7 @@
 #include <ctype.h>
 
 #include <excess_main.h>    // createLogFile, prepare
-#include <publisher.h>      // get_execution_id, query
+#include <publisher.h>      // create_experiment_id, query
 #include <thread_handler.h> // prepSend
 #include <util.h>           // getFQDN, free_bulk
 

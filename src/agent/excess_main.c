@@ -58,9 +58,7 @@ extern int errno;
 
 static void set_pwd();
 
-/**
- * @brief extract path folder of executable from it's path
- */
+/* extract path folder of executable from it's path */
 char*
 cutPwd(char *pwd) {
 	char *help = malloc(300 * sizeof(char));
@@ -82,6 +80,7 @@ toLower(char* word, int length)
     }
 }
 
+/* Perform initialization prior starting monitoring */
 int
 prepare() {
 	if (!pwd_is_set) {
@@ -92,10 +91,6 @@ prepare() {
 
 	/* prepare default message */
 	char msg[1000] = "";
-
-	/* retrieve hostname 
-	getFQDN(hostname);
-	hostname[strlen(hostname) - 1] = '\0';*/
 
 	/* get timestamp */
 	char time_stamp[64] = {'\0'};
@@ -153,6 +148,7 @@ prepare() {
 	return 1;
 }
 
+/* Initializing and creating the log file */
 void
 createLogFile() {
 	int errnum;
@@ -187,6 +183,7 @@ createLogFile() {
 	}
 }
 
+/* write PID to a file in `pwd`; used by PBS to kill the agent */
 int
 writeTmpPID(void) {
 	int errnum;
@@ -217,6 +214,7 @@ writeTmpPID(void) {
 	return 1;
 }
 
+/* assigns the current working directory to a variable */
 static void
 set_pwd()
 {
@@ -239,9 +237,7 @@ set_pwd()
 	pwd_is_set = 1;
 }
 
-/**
- * @brief everything starts here
- */
+/* everything starts here */
 int main(int argc, char* argv[]) {
 	int c;
 	int h_flag = 0; //arg "hostname" exists flag
@@ -316,11 +312,13 @@ int main(int argc, char* argv[]) {
 			err = 1;
 			break;
 	}
+	
 	/* retrieve hostname if not given as input arg */
 	if (h_flag == 0) {
 		getFQDN(hostname);
 		hostname[strlen(hostname) - 1] = '\0';
 	}
+	
 	/* set workflow to "username" if not given as input arg */
 	if (w_flag == 0) {
 		/* get username */
@@ -331,15 +329,18 @@ int main(int argc, char* argv[]) {
 		}
 		strcpy(workflow, username);
 	}
+	
 	/* set task to all if not provided by the user */
 	if (t_flag == 0) {
 		strcpy(task, "manual_monitoring");
 	}
+	
 	/* set default configuration file if no configuration was given */
 	if (c_flag == 0) {
 		sprintf(confFile, "%s/%s", pwd, "../mf_config.ini");
 	}
 	fprintf(logFile, "Configuration taken from: %s\n", confFile);
+	
 	/* set default api version */
 	if (a_flag == 0) {
 		strcpy(api_version, "v1");
@@ -353,7 +354,6 @@ int main(int argc, char* argv[]) {
 	/* try to parse configuration file */
 	if (mfp_parse(confFile) == 0) {
 		/* could not parse configuration file */
-		fprintf(stderr,  "Stopping service...could not parse configuration.\n");
 		fprintf(logFile, "Stopping service...could not parse configuration.\n");
 		exit(1);
 	}
@@ -363,13 +363,11 @@ int main(int argc, char* argv[]) {
 		/* start the monitoring threads */
 		int retval = startThreads();
 		if (retval == 0) {
-			fprintf(stderr, "Couldn't start the threads!\n");
 			fprintf(logFile, "Couldn't start the threads!\n");
 		}
 	}
 
 	/* clean up tasks */
-	fprintf(stderr,  "Stopping service ...\n");
 	fprintf(logFile, "Stopping service ...\n");
 
 	fclose(logFile);

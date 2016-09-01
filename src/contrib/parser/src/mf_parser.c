@@ -41,6 +41,7 @@ static void intialize_ht();
 static int handle_parser(void*, const char*, const char*, const char*);
 void mfp_set_value(const char* section, const char* key, const char* value);
 
+/* Parses a given file */
 int
 mfp_parse(const char* filename)
 {
@@ -55,6 +56,7 @@ mfp_parse(const char* filename)
     return 1;
 }
 
+/* Sets or overwrites the value for a given section and key */
 static int
 handle_parser(void* user, const char* section, const char* name, const char* value)
 {
@@ -62,6 +64,7 @@ handle_parser(void* user, const char* section, const char* name, const char* val
     return 1;
 }
 
+/* Sets or overwrites the value for a given section and key */
 void
 mfp_set_value(const char* section, const char* key, const char* value)
 {
@@ -77,7 +80,7 @@ mfp_set_value(const char* section, const char* key, const char* value)
     apr_hash_set(ht_values, MAKE_DUP(key), APR_HASH_KEY_STRING, MAKE_DUP(value));
     apr_hash_set(ht_config, MAKE_DUP(section), APR_HASH_KEY_STRING, ht_values);
 }
-
+/* Initialize a hash table */
 static void
 intialize_ht()
 {
@@ -91,6 +94,7 @@ intialize_ht()
     ht_initialized = 1;
 }
 
+/* Returns a stored value for the given section and key */
 void
 mfp_get_value(const char* section, const char* key, char *ret_val)
 {
@@ -109,11 +113,9 @@ mfp_get_value(const char* section, const char* key, char *ret_val)
     strcpy(ret_val, ht_key);
 }
 
+/* Filters the data based on the given filter */
 void
-mfp_get_data_filtered_by_value(
-    const char* section,
-    mfp_data* data,
-    const char* filter_by_value)
+mfp_get_data_filtered_by_value(const char* section, mfp_data* data, const char* filter_by_value)
 {
     intialize_ht();
 
@@ -147,6 +149,7 @@ mfp_get_data_filtered_by_value(
     }
 }
 
+/* Returns the entire data stored for a given section */
 void
 mfp_get_data(const char* section, mfp_data* data)
 {
