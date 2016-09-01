@@ -34,10 +34,7 @@
 
 static void my_exit_handler();
 
-/*******************************************************************************
- * Main
- ******************************************************************************/
-
+/* Test of the meminfo plugin */
 int
 main(int argc, char** argv)
 {
@@ -46,15 +43,12 @@ main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+    /* Setup the exit handler */
     struct sigaction sigIntHandler;
     sigIntHandler.sa_handler = my_exit_handler;
     sigemptyset(&sigIntHandler.sa_mask);
     sigIntHandler.sa_flags = 0;
     sigaction(SIGINT, &sigIntHandler, NULL);
-
-    /***************************************************************************
-     * Monitoring
-     **************************************************************************/
 
     struct timespec profile_time = { 0, 0 };
     profile_time.tv_sec = 0;
@@ -68,7 +62,7 @@ main(int argc, char** argv)
     }
 
     /*
-     * initialize /proc/vmstat plugin
+     * initialize /proc/meminfo plugin
      */
     MEMINFO_Plugin *monitoring_data = malloc(sizeof(MEMINFO_Plugin));
     if (!mf_meminfo_init(monitoring_data, argv, argc)) {
@@ -93,14 +87,10 @@ main(int argc, char** argv)
     } while (1);
 }
 
-/*******************************************************************************
- * my_exit_handler
- ******************************************************************************/
-
+/* Exit handler */
 static void
 my_exit_handler(int s)
 {
-    mf_meminfo_shutdown();
     puts("\nBye bye!");
     exit(EXIT_SUCCESS);
 }

@@ -31,10 +31,7 @@
  ******************************************************************************/
 static const char *PROC_MEMINFO = "/proc/meminfo";
 
-/*******************************************************************************
- * mf_meminfo_sample
- ******************************************************************************/
-
+/* Checks if Checks if /proc/meminfo is readable; and initialize the units of meminfo metrics */
 int
 mf_meminfo_is_enabled()
 {
@@ -49,10 +46,7 @@ mf_meminfo_is_enabled()
     return SUCCESS;
 }
 
-/*******************************************************************************
- * mf_meminfo_init
- ******************************************************************************/
-
+/* Initialize meminfo plugin */
 int
 mf_meminfo_init(MEMINFO_Plugin *data, char **meminfo_events, size_t num_events)
 {
@@ -116,10 +110,7 @@ mf_meminfo_init(MEMINFO_Plugin *data, char **meminfo_events, size_t num_events)
 }
 
 
-/*******************************************************************************
- * mf_meminfo_sample
- ******************************************************************************/
-
+/* Samples the registered meminfo events */
 int
 mf_meminfo_sample(MEMINFO_Plugin *data)
 {
@@ -149,10 +140,7 @@ mf_meminfo_sample(MEMINFO_Plugin *data)
     return SUCCESS;
 }
 
-/*******************************************************************************
- * mf_meminfo_to_json
- ******************************************************************************/
-
+/* Conversion of samples data to a JSON document */
 char*
 mf_meminfo_to_json(MEMINFO_Plugin *data)
 {
@@ -171,21 +159,7 @@ mf_meminfo_to_json(MEMINFO_Plugin *data)
     return json;
 }
 
-/*******************************************************************************
- * mf_meminfo_shutdown
- ******************************************************************************/
-
-void
-mf_meminfo_shutdown()
-{
-    /*
-     * nothing to do
-     */
-}
-
-/*******************************************************************************
- * mf_meminfo_unit_init
- ******************************************************************************/
+/* Initialize meminfo units of metrics */
 int
 mf_meminfo_unit_init(void)
 {

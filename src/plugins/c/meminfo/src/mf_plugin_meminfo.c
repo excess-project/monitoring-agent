@@ -34,10 +34,7 @@ MEMINFO_Plugin *monitoring_data = NULL;
 
 static metric mf_plugin_meminfo_hook();
 
-/*******************************************************************************
- * init_mf_plugin_meminfo
- ******************************************************************************/
-
+/* Initialize the meminfo plugin; register the plugin hook to the plugin manager */
 extern int
 init_mf_plugin_meminfo(PluginManager *pm)
 {
@@ -66,10 +63,7 @@ init_mf_plugin_meminfo(PluginManager *pm)
 }
 
 
-/*******************************************************************************
- * mf_plugin_meminfo_hook
- ******************************************************************************/
-
+/* Meminfo hook function, sample the metrics and convert to a json-formatted string */
 static metric
 mf_plugin_meminfo_hook()
 {

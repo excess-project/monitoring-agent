@@ -25,10 +25,7 @@
 /* monitoring-related includes */
 #include "mf_meminfo_connector.h" /* mf_rapl_is_enabled */
 
-/*******************************************************************************
- * Main
- ******************************************************************************/
-
+/* A client to initialize meminfo plugin units of metrics */
 int main(void)
 {
 	printf("[mf_meminfo_units] starting...\n");

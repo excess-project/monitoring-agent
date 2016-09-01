@@ -76,6 +76,7 @@ int mf_meminfo_init(MEMINFO_Plugin *data, char **meminfo_events, size_t num_even
  * @return 1 on success; 0 otherwise.
  */
 int mf_meminfo_unit_init(void);
+
 /** @brief Sample /proc/meminfo based on given events
  *
  * This function samples /proc/meminfo, and stores current metric values for the
@@ -98,11 +99,5 @@ int mf_meminfo_sample(MEMINFO_Plugin *data);
  * @return JSON-like representation of @p data
  */
 char* mf_meminfo_to_json(MEMINFO_Plugin *data);
-
-/** @brief Stops measuring /proc/meminfo events
- *
- * This method stops sampling /proc/meminfo.
- */
-void mf_meminfo_shutdown();
 
 #endif /* _MF_MEMINFO_CONNECTOR_H */
