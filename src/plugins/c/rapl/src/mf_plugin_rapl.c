@@ -23,7 +23,6 @@
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
-
 mfp_data *conf_data;
 int is_available = 0;
 RAPL_Plugin *monitoring_data = NULL;
@@ -31,13 +30,9 @@ RAPL_Plugin *monitoring_data = NULL;
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
-
 static metric mf_plugin_rapl_hook();
 
-/*******************************************************************************
- * init_mf_plugin_rapl
- ******************************************************************************/
-
+/* Initialize the RAPL plugin; register the plugin hook to the plugin manager */
 extern int
 init_mf_plugin_rapl(PluginManager *pm)
 {
@@ -66,10 +61,7 @@ init_mf_plugin_rapl(PluginManager *pm)
 }
 
 
-/*******************************************************************************
- * mf_plugin_rapl_hook
- ******************************************************************************/
-
+/* RAPL hook function, sample the metrics and convert to a json-formatted string */
 static metric
 mf_plugin_rapl_hook()
 {

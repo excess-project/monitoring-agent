@@ -281,7 +281,7 @@ is_infiniband_initialized()
     return is_initialized;
 }
 
-/*Stop and clean-up the infiniband plugin */
+/* Stop and clean-up the infiniband plugin */
 void
 mf_infiniband_shutdown()
 {

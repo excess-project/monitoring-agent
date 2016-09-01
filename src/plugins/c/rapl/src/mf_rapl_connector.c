@@ -28,7 +28,6 @@
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
-
 /*
  * declares if the plug-in (i.e., RAPL) is already initialized
  */
@@ -55,10 +54,8 @@ static int enable_papi_library();
 static double mf_rapl_get_denominator();
 static double correct_dram_values(char *event, double value, double pre_value);
 
-/*******************************************************************************
- * mf_rapl_is_enabled
- ******************************************************************************/
-
+/* Checks if RAPL component of the PAPI library is enabled
+ * return 1 if component is enabled; 0 otherwise. */
 int
 mf_rapl_is_enabled()
 {
@@ -91,9 +88,7 @@ mf_rapl_is_enabled()
     return is_available;
 }
 
-/*******************************************************************************
- * mf_rapl_unit_init
- ******************************************************************************/
+/* Initialize the units of metrics */
 int 
 mf_rapl_unit_init(int rapl_cid)
 {
@@ -154,10 +149,7 @@ mf_rapl_unit_init(int rapl_cid)
      return SUCCESS;
 }
 
-/*******************************************************************************
- * mf_rapl_init
- ******************************************************************************/
-
+/* Initialize the RAPL plug-in */
 int
 mf_rapl_init(RAPL_Plugin *data, char **rapl_events, size_t num_events)
 {
@@ -223,10 +215,7 @@ mf_rapl_init(RAPL_Plugin *data, char **rapl_events, size_t num_events)
     return registered_idx;
 }
 
-/*******************************************************************************
- * mf_rapl_sample
- ******************************************************************************/
-
+/* Samples the registered RAPL events */
 int
 mf_rapl_sample(RAPL_Plugin *data)
 {
@@ -267,10 +256,7 @@ mf_rapl_sample(RAPL_Plugin *data)
     return SUCCESS;
 }
 
-/*******************************************************************************
- * mf_rapl_to_json
- ******************************************************************************/
-
+/* Conversion of samples data to a JSON document */
 char*
 mf_rapl_to_json(RAPL_Plugin *data)
 {
@@ -301,10 +287,7 @@ mf_rapl_to_json(RAPL_Plugin *data)
     return json;
 }
 
-/*******************************************************************************
- * correct_dram_values
- ******************************************************************************/
-
+/* Adjust the readed value with respect to different coefficients */
 static double
 correct_dram_values(char *event, double value, double pre_value)
 {
@@ -319,10 +302,7 @@ correct_dram_values(char *event, double value, double pre_value)
     return ret;
 }
 
-/*******************************************************************************
- * enable_papi_library
- ******************************************************************************/
-
+/* Initialize PAPI library */
 static int
 enable_papi_library()
 {
@@ -342,20 +322,14 @@ enable_papi_library()
     return is_initialized;
 }
 
-/*******************************************************************************
- * is_rapl_initialized
- ******************************************************************************/
-
+/* Check if RAPL plugin is initialized */
 static int
 is_rapl_initialized()
 {
     return is_initialized;
 }
 
-/*******************************************************************************
- * mf_rapl_shutdown
- ******************************************************************************/
-
+/* Stop and clean-up the RAPL plugin */
 void
 mf_rapl_shutdown()
 {
@@ -380,10 +354,7 @@ mf_rapl_shutdown()
     PAPI_shutdown();
 }
 
-/*******************************************************************************
- * native_cpuid
- ******************************************************************************/
-
+/* Get native cpuid */
 void
 native_cpuid(
     unsigned int *eax,
@@ -400,10 +371,7 @@ native_cpuid(
     );
 }
 
-/*******************************************************************************
- * mf_rapl_get_cpu_model
- ******************************************************************************/
-
+/* Get CPU model */
 static int
 mf_rapl_get_cpu_model()
 {
@@ -413,10 +381,7 @@ mf_rapl_get_cpu_model()
     return (eax >> 4) & 0xF;
 }
 
-/*******************************************************************************
- * mf_rapl_get_denominator
- ******************************************************************************/
-
+/* Get the coefficient of current CPU model */
 static double
 mf_rapl_get_denominator()
 {

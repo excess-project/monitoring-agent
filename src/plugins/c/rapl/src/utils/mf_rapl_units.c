@@ -26,10 +26,7 @@
 /* monitoring-related includes */
 #include "mf_rapl_connector.h" /* mf_rapl_is_enabled */
 
-/*******************************************************************************
- * Main
- ******************************************************************************/
-
+/* A client to initialize rapl plugin units of metrics */
 int main(void)
 {
 	printf("[mf_rapl_units] starting...\n");
