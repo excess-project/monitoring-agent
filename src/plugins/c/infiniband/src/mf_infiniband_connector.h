@@ -58,11 +58,7 @@ int mf_infiniband_is_enabled();
  *
  * @return 1 if all events were valid; 0 otherwise.
  */
-int mf_infiniband_init(
-    INFINIBAND_Plugin *data,
-    char **infiniband_events,
-    size_t num_events
-);
+int mf_infiniband_init(INFINIBAND_Plugin *data, char **infiniband_events, size_t num_events);
 
 /** @brief Samples the registered Infiniband events
  *

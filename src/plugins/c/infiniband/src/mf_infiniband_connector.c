@@ -29,16 +29,11 @@
  * Variable Declarations
  ******************************************************************************/
 
-/*
- * declares if the plug-in (i.e., INFINIBAND) is already initialized
- */
+/* Declares if the plug-in (i.e., INFINIBAND) is already initialized */
 static int is_initialized = 0;
 
-/*
- * declares if the INFINIBAND component is enabled to be used for monitoring
- *
- * states: (-1) not initialized, (0) disabled, (1) enabled
- */
+/* Declares if the INFINIBAND component is enabled to be used for monitoring
+ * states: (-1) not initialized, (0) disabled, (1) enabled */
 static int is_available = -1;
 
 int EventSet = PAPI_NULL;
@@ -52,10 +47,8 @@ static int mf_infiniband_unit_init(metric_units *unit, int infiniband_cid);
 static int is_infiniband_initialized();
 static int enable_papi_library();
 
-/*******************************************************************************
- * mf_infiniband_is_enabled
- ******************************************************************************/
-
+/* Checks if Infiniband component of the PAPI library is enabled
+ * return 1 if component is enabled; 0 otherwise. */
 int
 mf_infiniband_is_enabled()
 {
@@ -92,9 +85,7 @@ mf_infiniband_is_enabled()
     return is_available;
 }
 
-/*******************************************************************************
- * mf_infiniband_unit_init
- ******************************************************************************/
+/* Initialize the units of metrics */
 static int 
 mf_infiniband_unit_init(metric_units *unit, int infiniband_cid)
 {
@@ -144,10 +135,7 @@ mf_infiniband_unit_init(metric_units *unit, int infiniband_cid)
      return SUCCESS;
 }
 
-/*******************************************************************************
- * mf_infiniband_init
- ******************************************************************************/
-
+/* Initialize the Infiniband plug-in */
 int
 mf_infiniband_init(INFINIBAND_Plugin *data, char **rapl_events, size_t num_events)
 {
@@ -203,10 +191,7 @@ mf_infiniband_init(INFINIBAND_Plugin *data, char **rapl_events, size_t num_event
     return registered_idx;
 }
 
-/*******************************************************************************
- * mf_infiniband_sample
- ******************************************************************************/
-
+/* Samples the registered Infiniband events */
 int
 mf_infiniband_sample(INFINIBAND_Plugin *data)
 {
@@ -250,10 +235,7 @@ mf_infiniband_sample(INFINIBAND_Plugin *data)
     return SUCCESS;
 }
 
-/*******************************************************************************
- * mf_infiniband_to_json
- ******************************************************************************/
-
+/* Conversion of samples data to a JSON document */
 char*
 mf_infiniband_to_json(INFINIBAND_Plugin *data)
 {
@@ -272,10 +254,7 @@ mf_infiniband_to_json(INFINIBAND_Plugin *data)
     return json;
 }
 
-/*******************************************************************************
- * enable_papi_library
- ******************************************************************************/
-
+/* Initialize PAPI library */
 static int
 enable_papi_library()
 {
@@ -295,20 +274,14 @@ enable_papi_library()
     return is_initialized;
 }
 
-/*******************************************************************************
- * is_infiniband_initialized
- ******************************************************************************/
-
+/* Check if Infiniband is initialized */
 static int
 is_infiniband_initialized()
 {
     return is_initialized;
 }
 
-/*******************************************************************************
- * mf_infiniband_shutdown
- ******************************************************************************/
-
+/*Stop and clean-up the infiniband plugin */
 void
 mf_infiniband_shutdown()
 {

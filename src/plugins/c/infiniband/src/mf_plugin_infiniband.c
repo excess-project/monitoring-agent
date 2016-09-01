@@ -23,7 +23,6 @@
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
-
 mfp_data *conf_data;
 INFINIBAND_Plugin *monitoring_data = NULL;
 int is_available = 0;
@@ -31,13 +30,9 @@ int is_available = 0;
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
-
 static metric mf_plugin_infiniband_hook();
 
-/*******************************************************************************
- * init_mf_plugin_infiniband
- ******************************************************************************/
-
+/* Initialize the infiniband plugin; register the plugin hook to the plugin manager */
 extern int
 init_mf_plugin_infiniband(PluginManager *pm)
 {
@@ -65,10 +60,7 @@ init_mf_plugin_infiniband(PluginManager *pm)
     return 1;
 }
 
-/*******************************************************************************
- * mf_plugin_infiniband_hook
- ******************************************************************************/
-
+/* Infiniband hook function, sample the metrics and convert to a json-formatted string */
 static metric
 mf_plugin_infiniband_hook()
 {
