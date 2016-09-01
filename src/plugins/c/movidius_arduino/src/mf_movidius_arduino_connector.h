@@ -29,6 +29,7 @@
 
 #define MOVI_MAX_PRESET_EVENTS 16 //4 MV0198 chips, each has 4 channels
 #define FORMAT_SCIENTIFIC "%2.12e"
+
 /** @brief data structure to store MOVI monitoring data
  *
  * The data structure holds the metric names including the correspond
@@ -95,14 +96,4 @@ char* mf_movi_to_json(MOVI_Plugin *data);
  */
 void mf_movi_shutdown();
 
-/** @brief Get system time **/
-double timer_get_time(void);
-/** @brief open arduino serial interface (over USB) **/
-int open_interfase(int* fd, const char* port_name);
-/** @brief set attributes for arduino serial interface (over USB) **/
-int set_interface_attribs (int fd, int speed, int parity);
-/** @brief set non-blocking transfer mode (over USB) **/
-void set_blocking (int fd, int should_block);
-void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch_coef1 );
-void read_arduino(int fd, char* arduino_output, size_t* length,  size_t max_length);
 #endif /* _MOVI_CONNECTOR_H */

@@ -31,13 +31,9 @@ int is_available = 0;
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
-
 static metric mf_plugin_movi_hook();
 
-/*******************************************************************************
- * init_mf_plugin_movidius_arduino
- ******************************************************************************/
-
+/* Initialize the movidius plugin; register the plugin hook to the plugin manager */
 extern int
 init_mf_plugin_movidius_arduino(PluginManager *pm)
 {
@@ -58,10 +54,7 @@ init_mf_plugin_movidius_arduino(PluginManager *pm)
     return is_available;
 }
 
-/*******************************************************************************
- * mf_plugin_movi_hook
- ******************************************************************************/
-
+/* Movidius hook function, sample the metrics and convert to a json-formatted string */
 static metric
 mf_plugin_movi_hook()
 {

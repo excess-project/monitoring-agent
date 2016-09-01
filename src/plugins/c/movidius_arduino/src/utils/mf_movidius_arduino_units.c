@@ -26,10 +26,7 @@
 /* monitoring-related includes */
 #include "mf_movidius_arduino_connector.h" /* mf_rapl_is_enabled */
 
-/*******************************************************************************
- * Main
- ******************************************************************************/
-
+/* A client to initialize movidius plugin units of metrics */
 int main(void)
 {
 	printf("[mf_movidius_arduino_units] starting...\n");

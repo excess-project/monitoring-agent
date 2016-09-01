@@ -35,7 +35,6 @@
 /*******************************************************************************
  * VARIABLE DECLARATIONS
  ******************************************************************************/
-
 static int is_initialized = 0;
 static int maximum_number_of_cores = 1;
 static long long *before_time, *after_time;
@@ -48,17 +47,20 @@ MOVI_Plugin *all_data;
 /*******************************************************************************
  * FORWARD DECLARATIONS
  ******************************************************************************/
-
 static int is_movi_initialized();
 static int create_eventset_for(MOVI_Plugin *data, char **movi_events, size_t num_events);
 static int create_eventset_for_all(MOVI_Plugin *all_data);
 void set_channel_coef();
 int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events);
 void filter(MOVI_Plugin *all_data, MOVI_Plugin *data);
+double timer_get_time(void);
+int open_interfase(int* fd, const char* port_name);
+int set_interface_attribs(int fd, int speed, int parity);
+void set_blocking(int fd, int should_block);
+void convert(MOVI_Plugin *data, char* arduino_output, size_t length, double* ch_coef1);
+void read_arduino(int fd, char* arduino_output, size_t* length, size_t max_length);
 
-/*******************************************************************************
- * mf_papi_init
- ******************************************************************************/
+/* Initializes the MOVI plug-in */
 int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events)
 {
     if (is_movi_initialized()) {
@@ -114,9 +116,7 @@ int mf_movi_init(MOVI_Plugin *data, char **movi_events, size_t num_events)
 }
 
 
-/*******************************************************************************
- * mf_movi_unit_init
- ******************************************************************************/
+/* Initializes the MOVI plug-in units of metrics */
 int
 mf_movi_unit_init(void)
 {
@@ -165,19 +165,14 @@ mf_movi_unit_init(void)
 }
 
 
-/*******************************************************************************
- * is_movi_initialized
- ******************************************************************************/
-
+/* Check if MOVI plugin is initialized */
 static int
 is_movi_initialized()
 {
     return is_initialized;
 }
 
-/*******************************************************************************
- * create_eventset_for
- ******************************************************************************/
+/* Prepare the metrics */
 static int
 create_eventset_for(MOVI_Plugin *data, char **movi_events, size_t num_events)
 {
@@ -189,7 +184,6 @@ create_eventset_for(MOVI_Plugin *data, char **movi_events, size_t num_events)
         for(ii=0; ii < num_events; ii++)
         {
             data[number_of_core].events[ii]=(char*)malloc(256*sizeof(char));
-            //sprintf(data[number_of_core].events[ii], movi_events[ii]);
             strcpy(data[number_of_core].events[ii], movi_events[ii]);
         }
         data[number_of_core].num_events = num_events;
@@ -197,6 +191,7 @@ create_eventset_for(MOVI_Plugin *data, char **movi_events, size_t num_events)
     return retval;
 }
 
+/* Prepare all the metrics */
 static int
 create_eventset_for_all(MOVI_Plugin *all_data)
 {
@@ -230,10 +225,7 @@ create_eventset_for_all(MOVI_Plugin *all_data)
     return retval;
 }
 
-
-/*******************************************************************************
- * set_channel_coef
- ******************************************************************************/
+/* Set the coefficients for various channels */
 void set_channel_coef()
 {
     channel_coef[0]=(1.0/20.0);
@@ -254,10 +246,7 @@ void set_channel_coef()
     channel_coef[15]=(1.0);
 }
 
-/*******************************************************************************
- * mf_papi_sample
- ******************************************************************************/
-
+/* Samples given MOVI events */
 int
 mf_movi_sample(MOVI_Plugin *data)
 {
@@ -290,10 +279,7 @@ mf_movi_sample(MOVI_Plugin *data)
     return SUCCESS;
 }
 
-/*******************************************************************************
- * mf_papi_to_json
- ******************************************************************************/
-
+/* String representation of sampled MOVI events */
 char*
 mf_movi_to_json(MOVI_Plugin *data)
 {
@@ -316,15 +302,13 @@ mf_movi_to_json(MOVI_Plugin *data)
     return json;
 }
 
-/*******************************************************************************
- * mf_papi_shutdown
- ******************************************************************************/
-
+/* Stops sampling MOVI events */ 
 void mf_movi_shutdown()
 {
     close(arduino_fd);
 }
 
+/* Get current timestamp */
 double timer_get_time(void)
 {
     struct timespec time_now;
@@ -335,6 +319,7 @@ double timer_get_time(void)
     return result_sec_now;
 }
 
+/* Open serial interface to arduino */
 int open_interfase(int* fd, const char* port_name)
 {
     int fd_local = open (port_name, O_RDWR | O_NOCTTY | O_SYNC);
@@ -348,7 +333,8 @@ int open_interfase(int* fd, const char* port_name)
     return SUCCESS;
 }
 
-int set_interface_attribs (int fd, int speed, int parity)
+/* Set speed and parity attributes of the interface */
+int set_interface_attribs(int fd, int speed, int parity)
 {
         struct termios tty;
         memset (&tty, 0, sizeof tty);
@@ -388,7 +374,8 @@ int set_interface_attribs (int fd, int speed, int parity)
         return 0;
 }
 
-void set_blocking (int fd, int should_block)
+/* Set blocking or non-blocking attribute */
+void set_blocking(int fd, int should_block)
 {
         struct termios tty;
         memset (&tty, 0, sizeof tty);
@@ -405,11 +392,13 @@ void set_blocking (int fd, int should_block)
                 log_info ("error %d setting term attributes", errno);
 }
 
+/* Read the counters */
 void read_arduino(int fd, char* arduino_output, size_t* length,  size_t max_length)
 {
     *length = read (fd, arduino_output, max_length);
 }
 
+/* Convert the counters with respect to different coefficients */
 void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch_coef1)
 {
     size_t current_pos;
@@ -463,7 +452,6 @@ void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch
                    break;
              }
          }
-      //   printf("STRING TO PARSE:%s\n",arduino_output[current_pos]);
          found=0;
          current_numpos=0;
          channel = 0;
@@ -479,7 +467,6 @@ void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch
                      current_numpos = 0;
                      found = 1;
                      tmp[num_length]=(char)0;
-                    // printf("FIND:\";\" current_pos:%d; num_length: %d; SUBSTRING:%s\n",current_pos, num_length, tmp);
                      break;
                  }
                  case '#':
@@ -490,7 +477,6 @@ void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch
                       current_numpos = 0;
                       found = 1;
                       tmp[num_length]=(char)0;
-                    //  printf("FIND:\"#\" current_pos:%d; num_length: %d; SUBSTRING:%s\n",current_pos, num_length, tmp);
                       break;
                  }
                  default:
@@ -498,7 +484,6 @@ void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch
                    tmp[current_numpos]=arduino_output[current_pos];
                    current_pos = current_pos + 1;
                    current_numpos = current_numpos +1;
-                 //   printf("FIND:\"[0-9]\" current_pos:%d; current_numpos: %d; NUMBER:%c\n",current_pos, current_numpos, tmp[current_numpos-1]);
                    break;
                  }
              }
@@ -517,20 +502,14 @@ void convert(MOVI_Plugin *data, char* arduino_output, size_t length,  double* ch
                  }
                  current_numpos = 0;
                  found=0;
-             //printf("CHANNEL:%d; STRING:%s; COVERT: %f; RESULT: %f; current_pos: %d; length: %d\n", channel, tmp, number, data[0].values[channel], (int)current_pos, (int)length);
                  channel++;
                  if (channel > MOVI_MAX_PRESET_EVENTS-1) found2=1;
              }
          }
      }
-/*     for(ii=0;ii<MOVI_MAX_PRESET_EVENTS;ii++)
-        printf("%2d CHANNEL:%s; RESULT: %f\n",ii+1,  data[0].events[ii], data[0].values[ii]);*/
-
 }
 
-/*******************************************************************************
- * filter
- ******************************************************************************/
+/* Filter the readed values with respected to the required metrics */
 void filter(MOVI_Plugin *all_data, MOVI_Plugin *data)
 {
     int ii, jj;
