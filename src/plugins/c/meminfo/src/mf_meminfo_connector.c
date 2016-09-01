@@ -31,7 +31,7 @@
  ******************************************************************************/
 static const char *PROC_MEMINFO = "/proc/meminfo";
 
-/* Checks if Checks if /proc/meminfo is readable; and initialize the units of meminfo metrics */
+/* Checks if /proc/meminfo is readable; and initialize the units of meminfo metrics */
 int
 mf_meminfo_is_enabled()
 {

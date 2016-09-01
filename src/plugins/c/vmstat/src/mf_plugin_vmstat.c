@@ -23,7 +23,6 @@
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
-
 mfp_data *conf_data;
 int is_available = 0;
 VMSTAT_Plugin *monitoring_data = NULL;
@@ -31,18 +30,14 @@ VMSTAT_Plugin *monitoring_data = NULL;
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
-
 static metric mf_plugin_vmstat_hook();
 
-/*******************************************************************************
- * init_mf_plugin_vmstat
- ******************************************************************************/
-
+/* Initialize the vmstat plugin; register the plugin hook to the plugin manager */
 extern int
 init_mf_plugin_vmstat(PluginManager *pm)
 {
     /*
-     * check if RAPL component is enabled
+     * check if vmstat component is enabled
      */
     is_available = mf_vmstat_is_enabled();
     if (is_available == 0) {
@@ -50,7 +45,7 @@ init_mf_plugin_vmstat(PluginManager *pm)
     }
 
     /*
-     * read configuration parameters related to /prov/vmstat (i.e., mf_config.ini)
+     * read configuration parameters related to /proc/vmstat (i.e., mf_config.ini)
      */
     PluginManager_register_hook(pm, "mf_plugin_vmstat", mf_plugin_vmstat_hook);
     conf_data =  malloc(sizeof(mfp_data));
@@ -66,10 +61,7 @@ init_mf_plugin_vmstat(PluginManager *pm)
 }
 
 
-/*******************************************************************************
- * mf_plugin_vmstat_hook
- ******************************************************************************/
-
+/* Vmstat hook function, sample the metrics and convert to a json-formatted string */
 static metric
 mf_plugin_vmstat_hook()
 {

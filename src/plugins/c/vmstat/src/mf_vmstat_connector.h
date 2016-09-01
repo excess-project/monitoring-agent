@@ -32,7 +32,7 @@
 
 //#include <stddef.h>
 
-/** @brief data structure to store RAPL monitoring data
+/** @brief data structure to store vmstat monitoring data
  */
 typedef struct VMSTAT_Plugin_t VMSTAT_Plugin;
 
@@ -49,9 +49,9 @@ struct VMSTAT_Plugin_t
     int num_events;
 };
 
-/** @brief Checks if /proc/vmstat is readable
+/** @brief Checks if vmstat is installed and usable
  *
- * This function checks if /proc/vmstat is installed and if values can be read.
+ * This function checks if vmstat is installed and if values can be read.
  *
  * @return 1 on success; 0 otherwise.
  */
@@ -90,11 +90,5 @@ int mf_vmstat_sample(VMSTAT_Plugin *data);
  * @return JSON-like representation of @p data
  */
 char* mf_vmstat_to_json(VMSTAT_Plugin *data);
-
-/** @brief Stops measuring /proc/vmstat events
- *
- * This method stops sampling /proc/vmstat.
- */
-void mf_vmstat_shutdown();
 
 #endif /* _MF_VMSTAT_CONNECTOR_H */

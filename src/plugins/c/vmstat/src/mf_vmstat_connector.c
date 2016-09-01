@@ -27,14 +27,10 @@
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
-
 static const char *VMSTAT_BINARY = "/usr/bin/vmstat";
 static const char *PROC_VMSTAT = "/proc/vmstat";
 
-/*******************************************************************************
- * mf_vmstat_is_enabled
- ******************************************************************************/
-
+/* Checks if vmstat utility is installed and usable */
 int
 mf_vmstat_is_enabled()
 {
@@ -50,10 +46,7 @@ mf_vmstat_is_enabled()
     }
 }
 
-/*******************************************************************************
- * mf_vmstat_init
- ******************************************************************************/
-
+/* Initialize vmstat plugin */
 int
 mf_vmstat_init(VMSTAT_Plugin *data, char **vmstat_events, size_t num_events)
 {
@@ -109,10 +102,7 @@ mf_vmstat_init(VMSTAT_Plugin *data, char **vmstat_events, size_t num_events)
     return retval;
 }
 
-/*******************************************************************************
- * mf_vmstat_sample
- ******************************************************************************/
-
+/* Samples the registered meminfo events */
 int
 mf_vmstat_sample(VMSTAT_Plugin *data)
 {
@@ -134,10 +124,7 @@ mf_vmstat_sample(VMSTAT_Plugin *data)
     return SUCCESS;
 }
 
-/*******************************************************************************
- * mf_vmstat_to_json
- ******************************************************************************/
-
+/* Conversion of samples data to a JSON document */
 char*
 mf_vmstat_to_json(VMSTAT_Plugin *data)
 {
@@ -154,16 +141,4 @@ mf_vmstat_to_json(VMSTAT_Plugin *data)
     free(metric);
 
     return json;
-}
-
-/*******************************************************************************
- * mf_vmstat_shutdown
- ******************************************************************************/
-
-void
-mf_vmstat_shutdown()
-{
-    /*
-     * nothing to do
-     */
 }

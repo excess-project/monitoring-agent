@@ -39,7 +39,7 @@ extern int
 init_mf_plugin_meminfo(PluginManager *pm)
 {
     /*
-     * check if RAPL component is enabled
+     * check if meminfo component is enabled
      */
     is_available = mf_meminfo_is_enabled();
     if (is_available == 0) {
@@ -47,7 +47,7 @@ init_mf_plugin_meminfo(PluginManager *pm)
     }
 
     /*
-     * read configuration parameters related to /prov/vmstat (i.e., mf_config.ini)
+     * read configuration parameters related to /proc/meminfo (i.e., mf_config.ini)
      */
     PluginManager_register_hook(pm, "mf_plugin_meminfo", mf_plugin_meminfo_hook);
     conf_data =  malloc(sizeof(mfp_data));
