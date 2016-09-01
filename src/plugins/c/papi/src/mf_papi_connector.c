@@ -26,7 +26,6 @@
 /*******************************************************************************
  * VARIABLE DECLARATIONS
  ******************************************************************************/
-
 static int DEFAULT_CPU_COMPONENT = 0;
 static int *event_sets = NULL;
 static int is_initialized = 0;
@@ -36,7 +35,6 @@ static long long *before_time, *after_time;
 /*******************************************************************************
  * FORWARD DECLARATIONS
  ******************************************************************************/
-
 static int is_papi_initialized();
 static int load_papi_library();
 static void set_maximum_number_of_cores_for_sampling(
@@ -55,16 +53,9 @@ static int set_domain_for();
 static int set_granularity_for();
 static int attach_to_cpu();
 
-/*******************************************************************************
- * mf_papi_init
- ******************************************************************************/
-
+/* Initializes the PAPI plug-in */
 int
-mf_papi_init(
-    PAPI_Plugin **data,
-    char **papi_events,
-    size_t num_events,
-    size_t num_cores)
+mf_papi_init(PAPI_Plugin **data, char **papi_events, size_t num_events, size_t num_cores)
 {
     if (is_papi_initialized()) {
         return SUCCESS;
@@ -114,20 +105,14 @@ mf_papi_init(
     return SUCCESS;
 }
 
-/*******************************************************************************
- * is_papi_initialized
- ******************************************************************************/
-
+/* Check if PAPI plugin in initialized */
 static int
 is_papi_initialized()
 {
     return is_initialized;
 }
 
-/*******************************************************************************
- * load_papi_library
- ******************************************************************************/
-
+/* Load the PAPI library */
 static int
 load_papi_library()
 {
@@ -145,10 +130,7 @@ load_papi_library()
     return SUCCESS;
 }
 
-/*******************************************************************************
- * set_maximum_number_of_cores_for_sampling
- ******************************************************************************/
-
+/* Set the requested number of cores no larger than max number of cores */
 static void
 set_maximum_number_of_cores_for_sampling(size_t *requested_number_of_cores)
 {
@@ -177,10 +159,7 @@ set_maximum_number_of_cores_for_sampling(size_t *requested_number_of_cores)
     log_info("PAPI >> Number of cores selected for measuring is %d", max_cores);
 }
 
-/*******************************************************************************
- * create_eventset_for
- ******************************************************************************/
-
+/* Prepare PAPI events for sampling */
 static int
 create_eventset_for(int num_cores)
 {
@@ -236,10 +215,7 @@ create_eventset_for(int num_cores)
     return retval;
 }
 
-/*******************************************************************************
- * create_new_eventset
- ******************************************************************************/
-
+/* Create new PAPI event set */
 static int
 create_new_eventset(int *EventSet)
 {
@@ -252,10 +228,7 @@ create_new_eventset(int *EventSet)
     return retval;
 }
 
-/*******************************************************************************
- * assign_to_component
- ******************************************************************************/
-
+/* Assign a component index to an existing but empty EventSet */
 static int
 assign_to_component(int EventSet, int cpu_component)
 {
@@ -268,10 +241,7 @@ assign_to_component(int EventSet, int cpu_component)
     return retval;
 }
 
-/*******************************************************************************
- * set_domain_for
- ******************************************************************************/
-
+/* Set domain for EventSet */
 static int
 set_domain_for(int EventSet, int domain, int cpu_component)
 {
@@ -289,10 +259,7 @@ set_domain_for(int EventSet, int domain, int cpu_component)
     return retval;
 }
 
-/*******************************************************************************
- * set_granularity_for
- ******************************************************************************/
-
+/* Set granularity for EventSet */
 static int
 set_granularity_for(int EventSet, int granularity)
 {
@@ -309,10 +276,7 @@ set_granularity_for(int EventSet, int granularity)
     return retval;
 }
 
-/*******************************************************************************
- * attach_to_cpu
- ******************************************************************************/
-
+/* Attach EventSet to cpu */
 static int
 attach_to_cpu(int EventSet, int number_of_core)
 {
@@ -329,16 +293,9 @@ attach_to_cpu(int EventSet, int number_of_core)
     return retval;
 }
 
-/*******************************************************************************
- * bind_events_to_cores
- ******************************************************************************/
-
+/* Add events for each core */
 static void
-bind_events_to_cores(
-    PAPI_Plugin **data,
-    char **papi_events,
-    size_t num_events,
-    size_t num_cores)
+bind_events_to_cores(PAPI_Plugin **data, char **papi_events, size_t num_events, size_t num_cores)
 {
     int retval;
     int core;
@@ -390,10 +347,7 @@ bind_events_to_cores(
     }
 }
 
-/*******************************************************************************
- * mf_papi_sample
- ******************************************************************************/
-
+/* Samples the registered PAPI events */
 int
 mf_papi_sample(PAPI_Plugin **data)
 {
@@ -436,10 +390,7 @@ mf_papi_sample(PAPI_Plugin **data)
     return retval;
 }
 
-/*******************************************************************************
- * mf_papi_to_json
- ******************************************************************************/
-
+/* Conversion of samples data to a JSON document */
 char*
 mf_papi_to_json(PAPI_Plugin **data)
 {
@@ -465,10 +416,7 @@ mf_papi_to_json(PAPI_Plugin **data)
     return json;
 }
 
-/*******************************************************************************
- * mf_papi_shutdown
- ******************************************************************************/
-
+/* Stop sampling PAPI events*/
 void
 mf_papi_shutdown()
 {

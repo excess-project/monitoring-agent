@@ -66,12 +66,7 @@ struct PAPI_Plugin_t
  *
  * @return 1 on success; 0 otherwise.
  */
-int mf_papi_init(
-    PAPI_Plugin **data,
-    char **papi_events,
-    size_t num_events,
-    size_t num_cores
-);
+int mf_papi_init(PAPI_Plugin **data, char **papi_events, size_t num_events, size_t num_cores);
 
 /** @brief Samples given PAPI events
  *

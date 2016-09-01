@@ -34,10 +34,7 @@ int is_available = 0;
 
 static metric mf_plugin_papi_hook();
 
-/*******************************************************************************
- * init_mf_plugin_papi
- ******************************************************************************/
-
+/* Initialize the PAPI plugin; register the plugin hook to the plugin manager */
 extern int
 init_mf_plugin_papi(PluginManager *pm)
 {
@@ -70,10 +67,7 @@ init_mf_plugin_papi(PluginManager *pm)
     return is_available;
 }
 
-/*******************************************************************************
- * mf_plugin_rapl_hook
- ******************************************************************************/
-
+/* PAPI hook function, sample the metrics and convert to a json-formatted string */
 static metric
 mf_plugin_papi_hook()
 {
