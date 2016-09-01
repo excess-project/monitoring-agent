@@ -30,10 +30,8 @@
 
 
 int mf_nvml_unit_init(int dev_count);
-/*******************************************************************************
- * Main
- ******************************************************************************/
 
+/* A client to initialize nvidia plugin units of metrics */
 int main(void)
 {
 	printf("[mf_nvidia_units] starting...\n");
@@ -59,6 +57,7 @@ int main(void)
 	return 1;
 }
 
+/* Initialize units of metrics */
 int mf_nvml_unit_init(int dev_count)
 {
   int i, conf_i, dev;

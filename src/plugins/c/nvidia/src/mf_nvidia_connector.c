@@ -32,6 +32,7 @@ static int mf_nvml_avail();
 static handle_t mf_nvml_init();
 
 static int mf_nvml_unit_init(int dev_count);
+
 /* Functions to get and append current device state information.
  * See http://docs.nvidia.com/deploy/nvml-api/group__nvmlDeviceQueries.html
  * for more information.
@@ -84,6 +85,7 @@ static char *mf_nvml_append_throttled_time(handle_t devices,
     }                                                               \
   }
 
+/* Check if nvml can be initialized */
 static int mf_nvml_avail()
 {
   nvmlReturn_t ret = nvmlInit();
@@ -91,16 +93,14 @@ static int mf_nvml_avail()
   case NVML_SUCCESS:
     break;
   default:
-    fprintf(stderr,
-            "mf_nvml_init(): Failed to initialize the nvml library with "
-            "return code %d.\n",
-            ret);
+    fprintf(stderr, "mf_nvml_init(): Failed to initialize the nvml library with return code %d.\n", ret);
     return 0;
     break;
   }
   return 1;
 }
 
+/* Count device number and initialize nvidia plugin units of metrics */
 static handle_t mf_nvml_init()
 {
   unsigned int device_count = 0;
@@ -109,10 +109,7 @@ static handle_t mf_nvml_init()
   case NVML_SUCCESS:
     break;
   default:
-    fprintf(stderr,
-            "mf_nvml_init(): nvmlDeviceGetCount() failed with "
-            "return code %d.\n",
-            ret);
+    fprintf(stderr, "mf_nvml_init(): nvmlDeviceGetCount() failed with return code %d.\n", ret);
     return NULL;
     break;
   }
@@ -125,10 +122,7 @@ static handle_t mf_nvml_init()
     case NVML_SUCCESS:
       break;
     default:
-      fprintf(stderr,
-              "mf_nvml_init(): nvmlDeviceGetHandleByIndex() failed with "
-              "return code %d.\n",
-              ret);
+      fprintf(stderr,"mf_nvml_init(): nvmlDeviceGetHandleByIndex() failed with return code %d.\n", ret);
       break;
     }
   }
@@ -136,13 +130,13 @@ static handle_t mf_nvml_init()
   return devices;
 }
 
-/*initialize unit of nvml all metrics*/
+/* Initialize units of metrics */
 static int mf_nvml_unit_init(int dev_count)
 {
   int i, conf_i, dev;
   int ret = unit_file_check("nvml");
     if(ret != 0) {
-        printf("unit file of nvml exists.\n");
+        fprintf(stderr, "unit file of nvml exists.\n");
         return 0;
     }
   metric_units *unit = malloc(sizeof(metric_units));
@@ -367,7 +361,6 @@ static int mf_nvml_unit_init(int dev_count)
   publish_unit(unit);
   return 1;
 }
-
 
 static char *mf_nvml_append_perf_state(handle_t devices, char *buf, char *end)
 {

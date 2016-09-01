@@ -31,6 +31,7 @@ static char *append(char *buf, char *end, const char *msg);
 static char *append_formatted(char *buf, char *end, const char *format, ...);
 static char *create_JSON_msg();
 static int is_enabled(const char *key);
+static metric mf_plugin_nvidia_hook();
 
 #include "mf_nvidia_connector.c"
 
@@ -39,22 +40,7 @@ static mfp_data *nvidia_conf_data;
 static handle_t nvidia_handle;
 static unsigned int max_msg_length = 128;
 
-static metric mf_plugin_nvidia_hook()
-{
-  if (running) {
-    metric resMetric = malloc(sizeof(metric_t));
-
-    clock_gettime(CLOCK_REALTIME, &resMetric->timestamp);
-
-    /* Fill in the JSON data. */
-    resMetric->msg = create_JSON_msg();
-
-    return resMetric;
-  } else {
-    return NULL ;
-  }
-}
-
+/* Initialize the nvidia plugin; register the plugin hook to the plugin manager */
 extern int init_mf_plugin_nvidia(PluginManager *pm)
 {
   if(mf_nvml_avail() == 0) {
@@ -71,6 +57,24 @@ extern int init_mf_plugin_nvidia(PluginManager *pm)
   return 1;
 }
 
+/* Nvidia hook function, sample the metrics and convert to a json-formatted string */
+static metric mf_plugin_nvidia_hook()
+{
+  if (running) {
+    metric resMetric = malloc(sizeof(metric_t));
+
+    clock_gettime(CLOCK_REALTIME, &resMetric->timestamp);
+
+    /* Fill in the JSON data. */
+    resMetric->msg = create_JSON_msg();
+
+    return resMetric;
+  } else {
+    return NULL ;
+  }
+}
+
+/* Append msg to buf */
 static char *append(char *buf, char *end, const char *msg)
 {
   if (buf + strlen(msg) + 1 < end) {
@@ -81,6 +85,7 @@ static char *append(char *buf, char *end, const char *msg)
   }
 }
 
+/* Append with given format */
 static char *append_formatted(char *buf, char *end, const char *format, ...)
 {
   va_list args;
@@ -96,6 +101,7 @@ static char *append_formatted(char *buf, char *end, const char *format, ...)
   }
 }
 
+/* Create the json-formatted string */
 static char *create_JSON_msg()
 {
   char *msg = malloc(max_msg_length * sizeof(char));
@@ -169,10 +175,10 @@ static char *create_JSON_msg()
   return msg;
 }
 
+/* Check if nvidia plugin is switched on in mf_config.ini */
 static int is_enabled(const char *key)
 {
   char value[20]={'\0'};
   mfp_get_value("mf_plugin_nvidia", key, value);
-  //char *value = mfp_get_value("mf_plugin_nvidia", key);
   return value != NULL && !strcmp(value, "on");
 }
