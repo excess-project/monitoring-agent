@@ -232,14 +232,30 @@ publish_unit(metric_units *units)
     mfp_get_value("generic", "server", server);
     
     for (i=0; i < units->num_metrics; i++) {
+        /* Remove white spaces in metric */
+        char metric[128] = "\0";
+        char *s;
+        s = strchr(units->metric_name[i], ' ');
+        if(s != NULL) {
+            int len1 = (int)s - (int)(units->metric_name[i]);
+            strncpy(metric, units->metric_name[i], len1);
+            strcat(metric, "%20");
+            s++;
+            strcat(metric, s);
+        }
+        else {
+            strcpy(metric, units->metric_name[i]);
+        }
+        
         char *URL = malloc(128 * sizeof(char));
-        sprintf(URL, "%s/v1/mf/units/%s", server, units->metric_name[i]);
+        sprintf(URL, "%s/v1/mf/units/%s", server, metric);
         char *msg = malloc(1000 * sizeof(char));
         sprintf(msg, "{\"name\":\"%s\",\"plugin\":\"%s\",\"unit\":\"%s\"}", 
             units->metric_name[i], units->plugin_name[i], units->unit[i]);
         if (!check_URL(URL) || !check_message(msg)) {
             return 0;
         }
+        
         CURL *curl = prepare_publish(URL, msg);
         if (curl == NULL) {
             return 0;
