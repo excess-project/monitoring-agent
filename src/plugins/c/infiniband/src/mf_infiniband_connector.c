@@ -239,8 +239,8 @@ mf_infiniband_sample(INFINIBAND_Plugin *data)
 char*
 mf_infiniband_to_json(INFINIBAND_Plugin *data)
 {
-    char *metric = malloc(512 * sizeof(char));
-    char *json = malloc(1024 * sizeof(char));
+    char *metric = malloc(METRIC_LENGTH_MAX * sizeof(char));
+    char *json = malloc(JSON_LENGTH_MAX * sizeof(char));
     strcpy(json, "\"type\":\"infiniband\"");
 
     int idx;

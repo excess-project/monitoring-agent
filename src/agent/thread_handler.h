@@ -25,6 +25,7 @@
 #define MIN_THREADS 2
 //minimum number of thread required for metrics sending and check config
 #define BULK_SIZE 8
+#define JSON_SIZE 4096
 #define SEND_SUCCESS 1
 #define SEND_FAILED  0
 

@@ -18,6 +18,7 @@
 
 /* monitoring-related includes */
 #include "mf_debug.h"
+#include "mf_types.h"
 #include "mf_papi_connector.h"
 
 #define SUCCESS 1
@@ -397,8 +398,8 @@ mf_papi_to_json(PAPI_Plugin **data)
     int core, event_idx;
     size_t num_events;
 
-    char *metric = malloc(512 * sizeof(char));
-    char *json = malloc(2048 * sizeof(char));
+    char *metric = malloc(METRIC_LENGTH_MAX * sizeof(char));
+    char *json = malloc(JSON_LENGTH_MAX * sizeof(char));
     strcpy(json, "\"type\":\"performance\"");
 
     for (core = 0; core != maximum_number_of_cores; ++core) {

@@ -146,7 +146,7 @@ cleanSending() {
 int
 prepSend(metric *data) {
 	int i;
-	char json[2048 * BULK_SIZE] = {'\0'};
+	char json[JSON_SIZE * BULK_SIZE] = {'\0'};
 	json[0] = '[';
 	if (!data) {
 		return 0;
@@ -158,7 +158,7 @@ prepSend(metric *data) {
 		double timestamp = data[i]->timestamp.tv_sec + (double)(data[i]->timestamp.tv_nsec / 1.0e9);
 		convert_time_to_char(timestamp, time_stamp);
 
-		char msg[2048] = {'\0'};
+		char msg[JSON_SIZE] = {'\0'};
 		sprintf(msg,
 			"{\"@timestamp\":\"%s\",\"host\":\"%s\",\"WorkflowID\":\"%s\",\"ExperimentID\":\"%s\",\"task\":\"%s\",%s},",
 			time_stamp,
@@ -285,7 +285,7 @@ checkConf() {
 void* prepare_json(metric *data)
 {
 	int i;
-	char json[1024 * BULK_SIZE] = {'\0'};
+	char json[JSON_SIZE * BULK_SIZE] = {'\0'};
 	json[0] = '[';
 	if (!data) {
 		return NULL;
@@ -297,7 +297,7 @@ void* prepare_json(metric *data)
 		double timestamp = data[i]->timestamp.tv_sec + (double)(data[i]->timestamp.tv_nsec / 1.0e9);
 		convert_time_to_char(timestamp, time_stamp);
 
-		char msg[1024] = {'\0'};
+		char msg[JSON_SIZE] = {'\0'};
 		sprintf(msg,
 			"{\"@timestamp\":\"%s\",\"host\":\"%s\",\"WorkflowID\":\"%s\",\"ExperimentID\":\"%s\",\"task\":\"%s\",%s},",
 			time_stamp,

@@ -51,7 +51,7 @@ int
 mf_meminfo_init(MEMINFO_Plugin *data, char **meminfo_events, size_t num_events)
 {
     int i;
-    char meminfo_metric[128];
+    char meminfo_metric[METRIC_LENGTH_MAX];
 
     /*
      * check if data is initialized
@@ -78,7 +78,7 @@ mf_meminfo_init(MEMINFO_Plugin *data, char **meminfo_events, size_t num_events)
             if (strcmp(meminfo_metric, meminfo_events[i]) == 0) {
                 log_info("MEMINFO >> Adding event %s", meminfo_metric);
 
-                data->events[data->num_events] = malloc(sizeof(char) * 256);
+                data->events[data->num_events] = malloc(sizeof(char) * METRIC_LENGTH_MAX);
 
                 strcpy(data->events[data->num_events], meminfo_metric);
                 data->num_events++;
@@ -115,7 +115,7 @@ int
 mf_meminfo_sample(MEMINFO_Plugin *data)
 {
     int i;
-    char meminfo_metric[128];
+    char meminfo_metric[METRIC_LENGTH_MAX];
     char dimension[32];
     long long value = 0;
 
@@ -144,8 +144,8 @@ mf_meminfo_sample(MEMINFO_Plugin *data)
 char*
 mf_meminfo_to_json(MEMINFO_Plugin *data)
 {
-    char *metric = malloc(512 * sizeof(char));
-    char *json = malloc(1024 * sizeof(char));
+    char *metric = malloc(METRIC_LENGTH_MAX * sizeof(char));
+    char *json = malloc(JSON_LENGTH_MAX * sizeof(char));
     strcpy(json, "\"type\":\"memory\"");
 
     int idx;

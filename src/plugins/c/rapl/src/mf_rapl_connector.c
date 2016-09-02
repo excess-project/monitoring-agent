@@ -260,8 +260,8 @@ mf_rapl_sample(RAPL_Plugin *data)
 char*
 mf_rapl_to_json(RAPL_Plugin *data)
 {
-    char *metric = malloc(512 * sizeof(char));
-    char *json = malloc(1024 * sizeof(char));
+    char *metric = malloc(METRIC_LENGTH_MAX * sizeof(char));
+    char *json = malloc(JSON_LENGTH_MAX * sizeof(char));
     strcpy(json, "\"type\":\"energy\"");
 
     int idx;

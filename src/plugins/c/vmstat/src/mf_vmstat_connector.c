@@ -18,6 +18,7 @@
 #include <unistd.h> /* access */
 
 /* monitoring-related includes */
+#include "mf_types.h"
 #include "mf_debug.h"
 #include "mf_vmstat_connector.h"
 
@@ -107,7 +108,7 @@ int
 mf_vmstat_sample(VMSTAT_Plugin *data)
 {
     int i;
-    char vmstat_metric[128];
+    char vmstat_metric[METRIC_LENGTH_MAX];
     long long value = 0;
 
     FILE *fp = fopen(PROC_VMSTAT, "r");
@@ -128,8 +129,8 @@ mf_vmstat_sample(VMSTAT_Plugin *data)
 char*
 mf_vmstat_to_json(VMSTAT_Plugin *data)
 {
-    char *metric = malloc(512 * sizeof(char));
-    char *json = malloc(1024 * sizeof(char));
+    char *metric = malloc(METRIC_LENGTH_MAX * sizeof(char));
+    char *json = malloc(JSON_LENGTH_MAX * sizeof(char));
     strcpy(json, "\"type\":\"io\"");
 
     int idx;

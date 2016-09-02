@@ -17,6 +17,8 @@
 #ifndef MF_TYPES_H_
 #define MF_TYPES_H_
 
+#define METRIC_LENGTH_MAX 128
+#define JSON_LENGTH_MAX 2048
 /**
  * @brief Pointer to the metric gathered by the plugins
  */

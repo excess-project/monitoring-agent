@@ -285,9 +285,8 @@ mf_movi_to_json(MOVI_Plugin *data)
 {
     int core, event_idx;
     size_t num_events;
-    //num_events = MOVI_MAX_PRESET_EVENTS; /* unused */
-    char *metric = malloc(512 * sizeof(char));
-    char *json = malloc(1024 * sizeof(char));
+    char *metric = malloc(METRIC_LENGTH_MAX * sizeof(char));
+    char *json = malloc(JSON_LENGTH_MAX * sizeof(char));
     strcpy(json, "\"type\":\"power\"");
 
     for (core = 0; core < maximum_number_of_cores; core++) {
