@@ -18,6 +18,7 @@
 #include <curl/multi.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <sys/types.h> 
@@ -237,7 +238,7 @@ publish_unit(metric_units *units)
         char *s;
         s = strchr(units->metric_name[i], ' ');
         if(s != NULL) {
-            int len1 = (int)s - (int)(units->metric_name[i]);
+            int len1 = (int)((intptr_t)s - (intptr_t)(units->metric_name[i]));
             strncpy(metric, units->metric_name[i], len1);
             strcat(metric, "%20");
             s++;

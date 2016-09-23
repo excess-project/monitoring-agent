@@ -30,7 +30,7 @@ INSTALL_PATH_BISON=`pwd`/${BINARY_FOLDER}/bison
 INSTALL_PATH_FLEX=`pwd`/${BINARY_FOLDER}/flex
 INSTALL_PATH_SENSORS=`pwd`/${BINARY_FOLDER}/sensors
 INSTALL_PATH_EXCESS_QUEUE=`pwd`/ext/queue
-
+INSTALL_PATH_LIBIIO=`pwd`/${BINARY_FOLDER}/libiio
 
 # ============================================================================ #
 # VERSIONS OF REQUIRED LIBRARIES                                               #
@@ -163,6 +163,22 @@ cd lm_sensors-3.4.0
 make PREFIX=${INSTALL_PATH_SENSORS} all
 make PREFIX=${INSTALL_PATH_SENSORS} install
 
+
+# ============================================================================ #
+# DOWNLOAD AND INSTALL LIBIIO                                                  #
+# https://wiki.analog.com/resources/tools-software/linux-software/libiio
+# ============================================================================ #
+#
+# DEPENDENCIES: libxml2 libxml2-dev bison flex libcdk5-dev libavahi-client-dev cmake
+#
+cd $ROOT
+git clone https://github.com/analogdevicesinc/libiio.git
+cd libiio
+mkdir -f ${INSTALL_PATH_LIBIIO}
+cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH_LIBIIO} ./
+make all
+make install
+
 # ============================================================================ #
 # DOWNLOAD AND INSTALL EXCESS QUEUE LIBS                                                                                        #
 # https://github.com/excess-project/data-structures-library.git
@@ -190,6 +206,7 @@ rm -rf bison-2.3
 rm -rf flex-2.5.33
 rm -rf lm_sensors-3.4.0
 rm -rf ${NVIDIA_GDK}
+rm -rf libiio
 
 # ============================================================================ #
 # DONE

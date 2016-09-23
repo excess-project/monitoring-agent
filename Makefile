@@ -170,6 +170,7 @@ copy_plugins_to_install:
 	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/nvidia/lib/*.so $(INSTALL_PLUGINS_DIR)/
 	cp -f $(PLUGIN_DIR)/sensors/lib/*.so $(INSTALL_PLUGINS_DIR)/
+	cp -f $(PLUGIN_DIR)/acme/lib/*.so $(INSTALL_PLUGINS_DIR)/
 
 copy_includes:
 	cp -f $(BASE)/api/src/mf_api.h $(INSTALL_INCLUDES_DIR)
@@ -199,6 +200,7 @@ plugins:
 	$(MAKE) -C $(PLUGIN_DIR)/infiniband DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/nvidia DEBUG=$(DEBUG)
 	$(MAKE) -C $(PLUGIN_DIR)/sensors DEBUG=$(DEBUG)
+	$(MAKE) -C $(PLUGIN_DIR)/acme DEBUG=$(DEBUG)
 
 copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/papi/lib/*.so $(PLUGIN_DEST)/
@@ -209,6 +211,7 @@ copy_plugins: plugins
 	cp -f $(PLUGIN_DIR)/infiniband/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/nvidia/lib/*.so $(PLUGIN_DEST)/
 	cp -f $(PLUGIN_DIR)/sensors/lib/*.so $(PLUGIN_DEST)/
+	cp -f $(PLUGIN_DIR)/acme/lib/*.so $(PLUGIN_DEST)/
 
 #
 # CLEAN-UP
@@ -226,6 +229,7 @@ clean:
 	$(MAKE) -C $(PLUGIN_DIR)/infiniband clean
 	$(MAKE) -C $(PLUGIN_DIR)/nvidia clean
 	$(MAKE) -C $(PLUGIN_DIR)/sensors clean
+	$(MAKE) -C $(PLUGIN_DIR)/acme clean
 	
 
 clean-all: clean clean-install
@@ -239,6 +243,7 @@ clean-all: clean clean-install
 	$(MAKE) -C $(PLUGIN_DIR)/infiniband clean
 	$(MAKE) -C $(PLUGIN_DIR)/nvidia clean
 	$(MAKE) -C $(PLUGIN_DIR)/sensors clean
+	$(MAKE) -C $(PLUGIN_DIR)/acme clean
 	rm -rf bin
 
 clean-install:
