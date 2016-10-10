@@ -45,13 +45,13 @@ HEADER = $(shell find src -name '*.h')
 all: clean prepare mf_acme_client mf_acme_units mf_plugin_acme.so
 
 mf_plugin_acme.so: mf_plugin_acme.o mf_acme_connector.o
-	$(CC) -o $(LIB)/mf_plugin_acme.so $^ -shared
+	$(CC) -o $(LIB)/mf_plugin_acme.so $^ -shared $(BINARIES)/libiio/lib/x86_64-linux-gnu/libiio.so
 
 mf_acme_connector.o: $(SRC)/mf_acme_connector.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I.
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIBIIO)
 
 mf_plugin_acme.o: $(SRC)/mf_plugin_acme.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I.
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIBIIO)
 
 mf_acme_client: $(UTILS)/mf_acme_client.c $(SRC)/mf_acme_connector.c
 	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)
