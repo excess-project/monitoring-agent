@@ -36,7 +36,7 @@ PARSER_INC = -I$(COMMON)/contrib/parser/src
 PUBLISHER = -L$(COMMON)/contrib/publisher/ -lpublisher
 PUBLISHER_INC = -I$(COMMON)/contrib/publisher/src
 
-LIBIIO = -L$(BINARIES)/libiio -liio
+LIBIIO = -L$(BINARIES)/libiio/lib/ -liio
 LIBIIO_INC = -I$(BINARIES)/libiio/include 
 
 FILES = $(shell find src -name '*.c')

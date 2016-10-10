@@ -80,7 +80,7 @@ mf_acme_is_enabled()
 	char temp[1024];
 	unsigned int buffer_size = SAMPLES_PER_READ;
 
-	ctx = iio_create_network_context("baylibre-acme.local");
+	ctx = iio_create_network_context("power-nvidia-0");
 	if (!ctx) {
 		fprintf(stderr, "Unable to create IIO context\n");
 		return FAILURE;
