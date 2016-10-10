@@ -119,6 +119,7 @@ prepare() {
 				server_name, api_version, workflow
 		);
 		strcpy(experiment_id, create_experiment_id(URL, msg));
+		fprintf(logFile, "> experiment ID: %s\n", experiment_id);
 		free(URL);
 
 		if (strstr(experiment_id, "error") != NULL || experiment_id[0] == '\0') {
