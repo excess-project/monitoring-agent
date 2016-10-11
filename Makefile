@@ -184,7 +184,7 @@ copy_libs:
 	cp -f $(BINARIES)/apr/lib/lib*so* $(INSTALL_DIR)/lib
 	cp -f $(BINARIES)/curl/lib/libcurl.so* $(INSTALL_DIR)/lib 
 	cp -f $(BINARIES)/sensors/lib/libsensors.so* $(INSTALL_DIR)/lib
-	cp -f $(BINARIES)/libiio/lib/*/libiio.so* $(INSTALL_DIR)/lib
+	cp -f $(BINARIES)/libiio/lib/libiio.so* $(INSTALL_DIR)/lib
 	cp -f lib/*.so $(INSTALL_DIR)/lib
 	cp -f lib/*.a $(INSTALL_DIR)/lib
 

@@ -178,6 +178,7 @@ mkdir -f ${INSTALL_PATH_LIBIIO}
 cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH_LIBIIO} ./
 make all
 make install
+find ./ -name "libiio.so*" -exec mv {} ${INSTALL_PATH_LIBIIO}/lib/ \;
 
 # ============================================================================ #
 # DOWNLOAD AND INSTALL EXCESS QUEUE LIBS                                                                                        #
