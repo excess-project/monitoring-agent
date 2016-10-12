@@ -49,7 +49,7 @@ monitoring agent for development, and executed the **autobuild** shell script
 located in the root folder, then the PAPI tool should be available at
 
 ```
-$ <MONITORING_AGENT>/binaries/papi/bin
+$ <MONITORING_AGENT>/bin/papi/bin
 ```
 
 
