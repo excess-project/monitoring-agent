@@ -181,6 +181,7 @@ Please [create](https://github.com/excess-project/monitoring-agent/website/issue
 
 | Date        | Version | Comment          |
 | ----------- | ------- | ---------------- |
+| 2016-10-12  | 16.8.1  | 5th release (stable and acme plugin) |
 | 2016-08-15  | 16.8    | 4th release (stable and libcurl multi-perform) |
 | 2016-06-13  | 16.6    | 3rd release (stable and new features) |
 | 2016-02-26  | 16.2    | 2nd release (removed backend interface) |

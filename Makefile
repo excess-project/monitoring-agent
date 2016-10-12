@@ -5,7 +5,7 @@ CC = gcc
 CXX = g++
 COPT_SO = $(CFLAGS) -fpic
 
-REVISION = 16.8
+REVISION = 16.8.1
 HOST=$(shell hostname)
 INSTALL_DIR = dist
 
