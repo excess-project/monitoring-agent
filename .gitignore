@@ -5,6 +5,12 @@ build
 dist
 man/www
 ext/queue/data-structures-library
+src/plugins/c/meminfo/mf_meminfo_units
+src/plugins/c/movidius_arduino/mf_movidius_arduino_units
+src/plugins/c/nvidia/mf_nvidia_units
+src/plugins/c/rapl/mf_rapl_units
+src/plugins/c/sensors/mf_sensors_units
+src/plugins/c/acme/mf_acme_units
 
 **.so
 **.o
