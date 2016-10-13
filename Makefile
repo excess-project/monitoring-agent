@@ -11,6 +11,7 @@ INSTALL_DIR = dist
 
 ifneq (,$(findstring excess,$(HOST)))
 	INSTALL_DIR = /opt/mf/${REVISION}
+	CXX = /opt/centos/devtoolset-1.1/root/usr/bin/g++
 endif
 
 ifneq (,$(findstring jenkins,$(HOST)))
@@ -179,8 +180,9 @@ copy_agent:
 copy_libs:
 	cp -f $(BINARIES)/papi/lib/libpapi.so* $(INSTALL_DIR)/lib
 	cp -f $(BINARIES)/papi/lib/libpfm.so* $(INSTALL_DIR)/lib
-	cp -f $(BINARIES)/apr/lib/libaprutil-1.so* $(INSTALL_DIR)/lib
-	cp -f $(BINARIES)/apr/lib/libapr-1.so* $(INSTALL_DIR)/lib
+	cp -f $(BINARIES)/apr/lib/lib*so* $(INSTALL_DIR)/lib
+	cp -f $(BINARIES)/curl/lib/libcurl.so* $(INSTALL_DIR)/lib 
+	cp -f $(BINARIES)/sensors/lib/libsensors.so* $(INSTALL_DIR)/lib
 	cp -f lib/*.so $(INSTALL_DIR)/lib
 	cp -f lib/*.a $(INSTALL_DIR)/lib
 

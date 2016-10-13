@@ -5,9 +5,9 @@ CC = /usr/bin/gcc
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb $(SENSORS_INC) $(PARSER_INC) $(PUBLISHER_INC) $(EXCESS_INC) $(CORE_INC) $(COMMON_INC)
+-Wcast-align -O0 -ggdb $(SENSORS_INC) $(PARSER_INC) $(PUBLISHER_INC) $(EXCESS_INC) $(CORE_INC) $(COMMON_INC) $(APR_INC)
 
-LFLAGS = $(SENSORS) $(PARSER) $(PUBLISHER) $(APR)
+LFLAGS = $(SENSORS) $(PARSER) $(PUBLISHER) $(APR) $(CURL) $(APR)
 
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
@@ -22,7 +22,12 @@ LIB = lib
 TESTS = tests
 UTILS = $(SRC)/utils
 BINARIES = $(COMMON)/../bin
+APR_CONFIG = $(BINARIES)/apr/bin/apr-1-config
+APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config
+APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
+APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
+CURL = -L$(BINARIES)/curl/lib -lcurl
 SENSORS = -L${BINARIES}/sensors/lib -lsensors
 SENSORS_INC = -I${BINARIES}/sensors/include/sensors
 
