@@ -6,9 +6,9 @@ CC = gcc
 COPT_SO = $(CFLAGS) -fpic
 
 CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb $(PARSER_INC) $(PUBLISHER_INC) $(EXCESS_INC) $(CORE_INC) $(COMMON_INC) $(LIBIIO_INC)
+-Wcast-align -O0 -ggdb $(PARSER_INC) $(PUBLISHER_INC) $(EXCESS_INC) $(CORE_INC) $(COMMON_INC) $(LIBIIO_INC) $(APR_INC)
 
-LFLAGS = $(PARSER) $(PUBLISHER) $(CURL) $(LIBIIO)
+LFLAGS = $(PARSER) $(PUBLISHER) $(CURL) $(LIBIIO) $(APR)
 
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
@@ -22,6 +22,10 @@ SRC = src
 LIB = lib
 UTILS = $(SRC)/utils
 BINARIES = $(COMMON)/../bin
+APR_CONFIG = $(BINARIES)/apr/bin/apr-1-config
+APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config
+APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
+APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
 CURL = -L$(BINARIES)/curl/lib -lcurl
 
