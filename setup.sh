@@ -138,17 +138,17 @@ chmod +x ${NVIDIA_GDK}
 # DEPENDENCIES: bison and flex
 #
 cd $ROOT
-wget http://ftp.gnu.org/gnu/bison/bison-2.3.tar.gz
-tar zxvf bison-2.3.tar.gz
-cd bison-2.3
+wget http://ftp.gnu.org/gnu/bison/bison-3.0.2.tar.gz
+tar zxvf bison-3.0.2.tar.gz
+cd bison-3.0.2
 ./configure --prefix=${INSTALL_PATH_BISON}
 make
 make install
 
 cd $ROOT
-wget http://prdownloads.sourceforge.net/flex/flex-2.5.33.tar.gz
-tar zxvf flex-2.5.33.tar.gz
-cd flex-2.5.33
+wget http://prdownloads.sourceforge.net/flex/flex-2.6.0.tar.gz
+tar zxvf flex-2.6.0.tar.gz
+cd flex-2.6.0
 ./configure --prefix=${INSTALL_PATH_FLEX}
 make
 make install
@@ -203,8 +203,8 @@ rm -rf ${APR}-${APR_VERSION}
 rm -rf ${APR_UTIL}-${APR_UTIL_VERSION}
 rm -rf ${CURL}-${CURL_VERSION}
 rm -rf nvidia_gdk_download
-rm -rf bison-2.3
-rm -rf flex-2.5.33
+rm -rf bison-3.0.2
+rm -rf flex-2.6.0
 rm -rf lm_sensors-3.4.0
 rm -rf ${NVIDIA_GDK}
 rm -rf libiio
