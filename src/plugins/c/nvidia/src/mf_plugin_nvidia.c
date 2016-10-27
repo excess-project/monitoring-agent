@@ -54,6 +54,8 @@ extern int init_mf_plugin_nvidia(PluginManager *pm)
 
   nvidia_handle = mf_nvml_init();
 
+  mfp_conf_free(nvidia_conf_data);
+
   return 1;
 }
 

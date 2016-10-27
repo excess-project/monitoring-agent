@@ -51,6 +51,8 @@ init_mf_plugin_acme(PluginManager *pm)
     monitoring_data = malloc(num_cores * sizeof(ACME_Plugin));
     is_available = mf_acme_init(monitoring_data, conf_data->keys, conf_data->size);
 
+    mfp_conf_free(conf_data);
+
     return is_available;
 }
 

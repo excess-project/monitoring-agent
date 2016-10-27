@@ -64,6 +64,8 @@ init_mf_plugin_papi(PluginManager *pm)
         num_cores
     );
 
+    mfp_conf_free(conf_data);
+
     return is_available;
 }
 

@@ -59,6 +59,8 @@ init_mf_plugin_meminfo(PluginManager *pm)
     monitoring_data = malloc(sizeof(MEMINFO_Plugin));
     mf_meminfo_init(monitoring_data, conf_data->keys, conf_data->size);
 
+    mfp_conf_free(conf_data);
+
     return 1;
 }
 
