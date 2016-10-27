@@ -323,14 +323,13 @@ int main(int argc, char* argv[]) {
 	
 	/* set workflow to "username" if not given as input arg */
 	if (w_flag == 0) {
-		/* get username */
-		char *username = getenv("USER");
-		if (username == NULL) {
-			username = malloc(sizeof(char) * 128);
-			strcpy(username, "unknown");
+		/* get workflow id by environment "USER" */
+		if (getenv("USER") == NULL) {
+			strcpy(workflow, "unknown");
 		}
-		strcpy(workflow, username);
-		free(username);
+		else {
+			strcpy(workflow, getenv("USER"));	
+		}
 	}
 	
 	/* set task to all if not provided by the user */
