@@ -22,8 +22,7 @@
 #include "mf_types.h"
 #include "util.h"
 
-#define MIN_THREADS 2
-//minimum number of thread required for metrics sending and check config
+#define MIN_THREADS 1
 #define BULK_SIZE 8
 #define JSON_SIZE 4096
 #define SEND_SUCCESS 1
