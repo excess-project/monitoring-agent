@@ -79,6 +79,7 @@ void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
 		return NULL ;
 	}
 
+	free(slashed_path);
 	return libhandle;
 }
 

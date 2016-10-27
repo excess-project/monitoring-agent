@@ -271,7 +271,13 @@ publish_unit(metric_units *units)
             log_error("publish(const char*, Message) %s", error_msg);
         }
         curl_easy_cleanup(curl);
+        free(URL);
+        free(msg);
+        free(units->metric_name[i]);
+        free(units->plugin_name[i]);
+        free(units->unit[i]);
     }
+    free(units);
     return result;
 }
 

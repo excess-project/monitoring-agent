@@ -71,4 +71,9 @@ void mfp_get_data(const char* section, mfp_data* data);
  */
 void mfp_get_data_filtered_by_value(const char* section, mfp_data* data, const char* filter_by_value);
 
+/**
+ * @brief Frees the allocated memory for the configuration data
+ *
+ */
+void mfp_conf_free(mfp_data* data);
 #endif

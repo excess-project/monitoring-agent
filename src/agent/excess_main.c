@@ -145,6 +145,7 @@ prepare() {
 	char* path = malloc(256 * sizeof(char));
 	sprintf(path, "/%s/mf/metrics/", api_version);
 	strcat(server_name, path);
+	free(path);
 
 	return 1;
 }
@@ -329,6 +330,7 @@ int main(int argc, char* argv[]) {
 			strcpy(username, "unknown");
 		}
 		strcpy(workflow, username);
+		free(username);
 	}
 	
 	/* set task to all if not provided by the user */

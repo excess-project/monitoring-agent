@@ -105,6 +105,7 @@ startThreads() {
 	shutdown_curl();
 	PluginManager_free(pm);
 	ECQ_free(data_queue);
+	free(pluginLocation);
 	return 1;
 }
 
@@ -225,7 +226,7 @@ init_timings()
 		}
 	}
 
-	free(mfp_timing_data);
+	mfp_conf_free(mfp_timing_data);
 }
 
 /* each plugin gathers its metrics at a specific rate and send the json-formatted metrics to mf_server */

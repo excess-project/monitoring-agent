@@ -155,3 +155,15 @@ mfp_get_data(const char* section, mfp_data* data)
 {
     mfp_get_data_filtered_by_value(section, data, NULL);
 }
+
+/* Frees the allocated memory for configuration data */
+void
+mfp_conf_free(mfp_data* data)
+{
+    int i;
+    for(i=0; i<data->size; i++) {
+        free(data->keys[i]);
+        free(data->values[i]);
+    }
+    free(data);
+}
