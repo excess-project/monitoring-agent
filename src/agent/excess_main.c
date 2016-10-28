@@ -58,19 +58,6 @@ extern int errno;
 
 static void set_pwd();
 
-/* extract path folder of executable from it's path */
-char*
-cutPwd(char *pwd) {
-	char *help = malloc(300 * sizeof(char));
-	memset(help, '\0', 300 * sizeof(char));
-	char *lastslash = strrchr(pwd, '/');
-	int ptr = lastslash - pwd;
-
-	memcpy(help, pwd, ptr);
-
-	return help;
-}
-
 static void
 toLower(char* word, int length)
 {
@@ -223,19 +210,17 @@ set_pwd()
 	if (pwd_is_set) {
 		return;
 	}
+	char buf_1[300] = {'\0'};
+	char buf_2[300] = {'\0'};
+	
+	readlink("/proc/self/exe", buf_1, 200);
+	memcpy(buf_2, buf_1, strlen(buf_1) * sizeof(char));
 
-	char *buf = malloc(300 * sizeof(char));
-	memset(buf, '\0', 300 * sizeof(char));
+	/* extract path folder of executable from it's path */
+	char *lastslash = strrchr(buf_2, '/');
+	int ptr = lastslash - buf_2;
 
-	readlink("/proc/self/exe", buf, 200);
-
-	pwd = malloc(300 * sizeof(char));
-	memset(pwd, '\0', 300 * sizeof(char));
-	memcpy(pwd, buf, strlen(buf) * sizeof(char));
-
-	pwd = cutPwd(pwd);
-
-	free(buf);
+	memcpy(pwd, buf_2, ptr);
 	pwd_is_set = 1;
 }
 
@@ -251,6 +236,7 @@ int main(int argc, char* argv[]) {
 	extern char *optarg;
 
 	/* assigns the current working directory to a variable */
+	pwd = (char *)calloc(300, sizeof(char));
 	set_pwd();
 
 	/* creates the log files used for this execution */
