@@ -148,7 +148,6 @@ mf_api_initialize(const char* URL, char* wf_id, char* exp_id, char* task_id)
     memset(profiles_url, '\0', 256*sizeof(char));
     sprintf(profiles_url, "%s/v1/mf/profiles/%s/%s/%s", URL, wf_id, task_id, exp_id);
 
-    createLogFile();
     api_is_initialized = 1;
 
 }

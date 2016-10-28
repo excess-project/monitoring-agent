@@ -307,8 +307,7 @@ unit_file_check(const char *plugin_name) {
     memcpy(pwd, buf_2, ptr);
     sprintf(Filefolder, "%s/plugins/", pwd);
     sprintf(Filename, "%s/plugins/%s_units_%s", pwd, plugin_name, host);
-    fprintf(stderr, "using logfile: %s\n", Filename);
-
+    
     struct stat folder = { 0 };
     struct stat file = { 0 };
     if (stat(Filefolder, &folder) == -1) {
