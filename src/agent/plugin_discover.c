@@ -101,7 +101,16 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 
 	struct dirent *direntry;
 	while ((direntry = readdir(dir))) {
-		char *name = get_plugin_name(direntry->d_name);
+		/*get the name of the plugin*/
+		char *last_slash = strrchr(direntry->d_name, '/');
+		char *name_start = last_slash ? last_slash + 1 : direntry->d_name;
+		char *last_dot = strrchr(direntry->d_name, '.');
+
+		if (!last_dot || strcmp(last_dot, ".so"))
+			continue;
+		char *name = calloc(last_dot - name_start + 1, sizeof(char));
+		strncpy(name, name_start, last_dot - name_start);
+
 		if (!name) {
 			continue;
 		}
@@ -110,6 +119,7 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 		char value[20] = {'\0'};
 		mfp_get_value("plugins", name, value);
 		if (strcmp(value, "off") == 0) {
+			free(name);
 			continue;
 		}
 
@@ -127,6 +137,7 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 			handle_node->next = plugins_state->handle_list;
 			plugins_state->handle_list = handle_node;
 		}
+		free(name);
 		free(fullpath);
 	}
 
@@ -138,20 +149,6 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 		return NULL ;
 	}
 	return 0;
-}
-
-/* Gets the plug-in name from the given filename */
-char* get_plugin_name(char filename[256]) {
-	char *retStr;
-
-	char *last_slash = strrchr(filename, '/');
-	char *name_start = last_slash ? last_slash + 1 : filename;
-	char *last_dot = strrchr(filename, '.');
-
-	if (!last_dot || strcmp(last_dot, ".so"))
-		return NULL ;
-	retStr = calloc(last_dot - name_start + 1, sizeof(char));
-	return strncpy(retStr, name_start, last_dot - name_start);
 }
 
 /* Clean-up plug-ins after execution */

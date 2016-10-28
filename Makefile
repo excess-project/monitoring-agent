@@ -117,8 +117,6 @@ prepare:
 
 excess_main: excess_concurrent_queue.o $(SRC)/excess_main.o $(SRC)/thread_handler.o $(SRC)/util.o $(SRC)/plugin_discover.o $(SRC)/plugin_manager.o
 	$(CXX) -o $(OUTPUT) $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
-	echo $(HOST)
-	echo $(INSTALL_DIR)
 
 mf_api.o:
 	$(CC) -c $(MF_API_SRC)/mf_api.c -o $@ $(COPT_SO) -I. $(MF_API_INC) $(CFLAGS) $(EXCESS_INC) $(MF) $(LFLAGS)

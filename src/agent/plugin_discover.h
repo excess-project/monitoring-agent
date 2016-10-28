@@ -35,11 +35,6 @@ extern char* plugins_name[256];
 void* discover_plugins(const char *dirname, PluginManager *pm);
 
 /**
- * @brief Gets the plug-in name from the given filename
- */
-char* get_plugin_name(char filename[256]);
-
-/**
  * @brief Clean-up plug-ins after execution
  */
 void cleanup_plugins(void*);
