@@ -39,7 +39,7 @@ int getFQDN(char *fqdn) {
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_CANONNAME;
 
-    if ((gai_result = getaddrinfo(hostname, "http", &hints, &info)) != 1) {
+    if ((gai_result = getaddrinfo(hostname, "http", &hints, &info)) != 0) {
         FILE *tmp = NULL;
         if ((tmp = popen("hostname", "r")) == NULL ) {
             perror("popen");
@@ -50,20 +50,13 @@ int getFQDN(char *fqdn) {
             sprintf(fqdn, "%s", line);
         }
         fclose(tmp);
-
-        return 1;
     }
-    for (p = info; p != NULL ; p = p->ai_next) {
-        sprintf(fqdn, "%s\n", p->ai_canonname);
-    }
-
-    if (info->ai_canonname) {
+    else {
+        for (p = info; p != NULL ; p = p->ai_next) {
+            sprintf(fqdn, "%s\n", p->ai_canonname);
+        }
         freeaddrinfo(info);
     }
-
-    free(info);
-    free(p);
-
     return 1;
 }
 
