@@ -43,7 +43,7 @@ typedef int (*PluginInitFunc)(PluginManager *pm);
 
 int pluginCount = 0;
 
-char* plugin_name[256];
+char* plugins_name[256];
 
 /* Load a plugin by calling the init function of a plugin */
 void* load_plugin(char *name, char *fullpath, PluginManager *pm) {
@@ -97,8 +97,7 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 	PluginDiscoveryState *plugins_state = malloc(sizeof(*plugins_state));
 	plugins_state->handle_list = NULL;
 
-	plugin_name[0] = malloc(sizeof(char) * 256);
-	plugin_name[1] = malloc(sizeof(char) * 256);
+	plugins_name[0] = malloc(sizeof(char) * 256);
 
 	struct dirent *direntry;
 	while ((direntry = readdir(dir))) {
@@ -110,7 +109,6 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 		/* do not consider plug-ins that are switched off */
 		char value[20] = {'\0'};
 		mfp_get_value("plugins", name, value);
-		//char* value = mfp_get_value("plugins", name);
 		if (strcmp(value, "off") == 0) {
 			continue;
 		}
@@ -120,8 +118,8 @@ void* discover_plugins(const char *dirname, PluginManager *pm) {
 		strcpy(fullpath, dirname);
 		strcat(fullpath, "/");
 		strcat(fullpath, direntry->d_name);
-		plugin_name[MIN_THREADS + pluginCount] = malloc(256);
-		strcpy(plugin_name[MIN_THREADS + pluginCount], name);
+		plugins_name[MIN_THREADS + pluginCount] = malloc(sizeof(char) * 256);
+		strcpy(plugins_name[MIN_THREADS + pluginCount], name);
 		void *handle = load_plugin(name, fullpath, pm);
 		if (handle) {
 			PluginHandleList *handle_node = malloc(sizeof(*handle_node));

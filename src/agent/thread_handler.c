@@ -82,7 +82,7 @@ startThreads() {
 		nums[t] = t;
 		iret[t] = pthread_create(&threads[t], NULL, entryThreads, &nums[t]);
 		if (iret[t]) {
-			fprintf(logFile, "ERROR; return code from pthread_create() is %d\n", iret[t]);
+			fprintf(stderr, "ERROR; return code from pthread_create() is %d\n", iret[t]);
 			exit(-1);
 		}
 	}
@@ -196,16 +196,12 @@ init_timings()
 	timings[0] = atoi(timing);
 
 	memset(timing, 0, sizeof(timing));
-	mfp_get_value("timings", "update_configuration", timing);
-	timings[1] = atoi(timing);
-
-	memset(timing, 0, sizeof(timing));
 	mfp_get_value("timings", "default", timing);
 	long default_timing = atoi(timing);
 	min_plugin_interval = default_timing;
 
 	for (int i = MIN_THREADS; i < MIN_THREADS + mfp_timing_data->size; ++i) {
-		char* current_plugin_name = plugin_name[i];
+		char* current_plugin_name = plugins_name[i];
 		if (current_plugin_name == NULL) {
 			continue;
 		}
@@ -215,10 +211,7 @@ init_timings()
 			timings[i] = default_timing;
 		} else {
 			timings[i] = atoi(value);
-			fprintf(stderr,
-					"\ntiming for plugin %s is %ld\n",
-					current_plugin_name, timings[i]
-			);
+			fprintf(stderr, "\ntiming for plugin %s is %ld\n", current_plugin_name, timings[i]);
 		}
 		//get the min_plugin_interval
 		if(timings[i] < min_plugin_interval) {
@@ -233,7 +226,7 @@ init_timings()
 int
 gatherMetric(int num) {
 	int i;
-	char* current_plugin_name = plugin_name[num];
+	char* current_plugin_name = plugins_name[num];
 
 	struct timespec tim = { 0, 0 };
 	struct timespec tim2;
@@ -246,7 +239,7 @@ gatherMetric(int num) {
 		tim.tv_nsec = timings[num];
 	}
 	PluginHook hook = PluginManager_get_hook(pm);
-	fprintf(logFile, "\ngather metric %s (#%d) with update interval of %ld ns\n", current_plugin_name, num, timings[num]);
+	fprintf(stderr, "\ngather metric %s (#%d) with update interval of %ld ns\n", current_plugin_name, num, timings[num]);
 
 	EXCESS_concurrent_queue_handle_t data_queue_handle;
 	data_queue_handle =ECQ_get_handle(data_queue);

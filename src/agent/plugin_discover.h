@@ -27,7 +27,7 @@ extern int pluginCount;
 /**
  * @brief Name of a given plug-in
  */
-extern char* plugin_name[256];
+extern char* plugins_name[256];
 
 /**
  * @brief Discovers available plug-ins, and registers them to the MFAgent
