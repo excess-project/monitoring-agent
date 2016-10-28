@@ -51,7 +51,7 @@ init_mf_plugin_movidius_arduino(PluginManager *pm)
     monitoring_data = malloc(num_cores * sizeof(MOVI_Plugin));
     is_available = mf_movi_init(monitoring_data, conf_data->keys, conf_data->size);
 
-    mfp_conf_free(conf_data);
+    mfp_data_free(conf_data);
     
     return is_available;
 }

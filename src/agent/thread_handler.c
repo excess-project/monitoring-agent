@@ -219,7 +219,7 @@ init_timings()
 		}
 	}
 
-	mfp_conf_free(mfp_timing_data);
+	mfp_data_free(mfp_timing_data);
 }
 
 /* each plugin gathers its metrics at a specific rate and send the json-formatted metrics to mf_server */
@@ -266,7 +266,6 @@ gatherMetric(int num) {
 int
 checkConf() {
 	while (running) {
-		mfp_parse(confFile);
 		char wait_some_seconds[20] = {'\0'};
 		mfp_get_value("timings", "update_configuration", wait_some_seconds);
 		sleep(atoi(wait_some_seconds));

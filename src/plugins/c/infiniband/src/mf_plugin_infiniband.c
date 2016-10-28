@@ -57,7 +57,7 @@ init_mf_plugin_infiniband(PluginManager *pm)
     monitoring_data = malloc(sizeof(INFINIBAND_Plugin));
     mf_infiniband_init(monitoring_data, conf_data->keys, conf_data->size);
 
-    mfp_conf_free(conf_data);
+    mfp_data_free(conf_data);
 
     return 1;
 }

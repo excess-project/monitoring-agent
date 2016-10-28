@@ -57,7 +57,7 @@ init_mf_plugin_sensors(PluginManager *pm)
     monitoring_data = malloc(sizeof(SENSORS_Plugin));
     mf_sensors_init(monitoring_data, conf_data->keys, conf_data->size);
 
-    mfp_conf_free(conf_data);
+    mfp_data_free(conf_data);
     return 1;
 }
 

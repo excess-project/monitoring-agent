@@ -75,5 +75,11 @@ void mfp_get_data_filtered_by_value(const char* section, mfp_data* data, const c
  * @brief Frees the allocated memory for the configuration data
  *
  */
-void mfp_conf_free(mfp_data* data);
+void mfp_data_free(mfp_data* data);
+
+/**
+ * @brief Clears the memory for apr pool and tears down the apr internal data structures
+ *
+ */
+void mfp_parse_clean();
 #endif

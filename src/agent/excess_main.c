@@ -377,6 +377,7 @@ int main(int argc, char* argv[]) {
 
 	free(pwd);
 	free(confFile);
+	mfp_parse_clean();
 	free(workflow);
 	free(task);
 	free(experiment_id);

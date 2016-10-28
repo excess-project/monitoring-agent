@@ -37,16 +37,22 @@ static apr_pool_t *mp;
 static apr_hash_t *ht_config;
 static int ht_initialized = 0;
 
-static void intialize_ht();
 static int handle_parser(void*, const char*, const char*, const char*);
-void mfp_set_value(const char* section, const char* key, const char* value);
 
 /* Parses a given file */
 int
 mfp_parse(const char* filename)
 {
-    intialize_ht();
+    /* Initialize a hash table */
+    if (ht_initialized) {
+        return 1;
+    }
+    apr_initialize();
+    apr_pool_create(&mp, NULL);
+    ht_config = apr_hash_make(mp);
+    ht_initialized = 1;
 
+    /* Parse a INI file and write the name: value into a harsh table created */
     int error = ini_parse(filename, handle_parser, ht_config);
     if (error < 0) {
         log_error("mfp_parse(const char*) Can't load %s", filename);
@@ -68,7 +74,9 @@ handle_parser(void* user, const char* section, const char* name, const char* val
 void
 mfp_set_value(const char* section, const char* key, const char* value)
 {
-    intialize_ht();
+    if (!ht_initialized) {
+        return;
+    }
 
     apr_hash_t *ht_values = apr_hash_get(ht_config, section, APR_HASH_KEY_STRING);
     if (ht_values == NULL) {
@@ -80,25 +88,14 @@ mfp_set_value(const char* section, const char* key, const char* value)
     apr_hash_set(ht_values, MAKE_DUP(key), APR_HASH_KEY_STRING, MAKE_DUP(value));
     apr_hash_set(ht_config, MAKE_DUP(section), APR_HASH_KEY_STRING, ht_values);
 }
-/* Initialize a hash table */
-static void
-intialize_ht()
-{
-    if (ht_initialized) {
-        return;
-    }
-
-    apr_initialize();
-    apr_pool_create(&mp, NULL);
-    ht_config = apr_hash_make(mp);
-    ht_initialized = 1;
-}
 
 /* Returns a stored value for the given section and key */
 void
 mfp_get_value(const char* section, const char* key, char *ret_val)
 {
-    intialize_ht();
+    if (!ht_initialized) {
+        return;
+    }
 
     apr_hash_t *ht_values = apr_hash_get(ht_config, section, APR_HASH_KEY_STRING);
     if (ht_values == NULL) {
@@ -117,7 +114,9 @@ mfp_get_value(const char* section, const char* key, char *ret_val)
 void
 mfp_get_data_filtered_by_value(const char* section, mfp_data* data, const char* filter_by_value)
 {
-    intialize_ht();
+    if (!ht_initialized) {
+        return;
+    }
 
     apr_hash_index_t *ht_index;
     apr_hash_t *ht_section;
@@ -158,7 +157,7 @@ mfp_get_data(const char* section, mfp_data* data)
 
 /* Frees the allocated memory for configuration data */
 void
-mfp_conf_free(mfp_data* data)
+mfp_data_free(mfp_data* data)
 {
     int i;
     for(i=0; i<data->size; i++) {
@@ -166,4 +165,15 @@ mfp_conf_free(mfp_data* data)
         free(data->values[i]);
     }
     free(data);
+}
+
+/* Clears the memory for apr pool and tears down the apr internal data structures */
+void
+mfp_parse_clean()
+{
+    if (!ht_initialized) {
+        return;
+    }
+    apr_pool_destroy(mp);
+    apr_terminate();
 }
