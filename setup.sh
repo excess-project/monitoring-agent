@@ -26,6 +26,7 @@ INSTALL_PATH_APR=`pwd`/${BINARY_FOLDER}/apr
 INSTALL_PATH_APU=${INSTALL_PATH_APR}
 INSTALL_PATH_CURL=`pwd`/${BINARY_FOLDER}/curl
 INSTALL_PATH_NVIDIA=`pwd`/${BINARY_FOLDER}/nvidia
+INSTALL_PATH_M4=`pwd`/${BINARY_FOLDER}/m4
 INSTALL_PATH_BISON=`pwd`/${BINARY_FOLDER}/bison
 INSTALL_PATH_FLEX=`pwd`/${BINARY_FOLDER}/flex
 INSTALL_PATH_SENSORS=`pwd`/${BINARY_FOLDER}/sensors
@@ -137,6 +138,17 @@ chmod +x ${NVIDIA_GDK}
 #
 # DEPENDENCIES: bison and flex
 #
+
+cd $ROOT
+wget https://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz
+tar zxvf m4-1.4.17.tar.gz
+cd m4-1.4.17
+./configure --prefix=${INSTALL_PATH_M4}
+make
+make install
+export PATH=${PATH}:${INSTALL_PATH_M4}/bin
+
+
 cd $ROOT
 wget http://ftp.gnu.org/gnu/bison/bison-3.0.2.tar.gz
 tar zxvf bison-3.0.2.tar.gz
