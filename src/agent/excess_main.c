@@ -17,7 +17,6 @@
 #include <errno.h>
 #include <netdb.h>
 #include <pthread.h>
-#include <publisher.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -28,10 +27,13 @@
 #include "excess_main.h"
 #include "thread_handler.h"
 #include "util.h"
+#include <publisher.h>
 
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
+char server_name[256];
+char name[300];
 
 char* confFile;
 char* experiment_id;
@@ -39,16 +41,12 @@ char* workflow;
 char* task;
 char* hostname;
 char* api_version;
+FILE *logFile;
 double publish_json_time;
 
-int hostChanged = 0;
 int pwd_is_set = 0;
-
 char *pwd;
 struct tm *time_info;
-FILE *logFile;
-char server_name[256];
-char name[300];
 
 extern int errno;
 
@@ -70,17 +68,18 @@ toLower(char* word, int length)
 /* Perform initialization prior starting monitoring */
 int
 prepare() {
+	char msg[1000] = { '\0' };
+	char URL[256] = { '\0' };
+	char path[256] = { '\0' };
+	char time_stamp[64] = {'\0'};
+
 	if (!pwd_is_set) {
 		set_pwd();
 	}
 	/* get server */
 	mfp_get_value("generic", "server", server_name);
 
-	/* prepare default message */
-	char msg[1000] = "";
-
 	/* get timestamp */
-	char time_stamp[64] = {'\0'};
 	struct timespec ts;
 	clock_gettime(CLOCK_REALTIME, &ts);
 	double timestamp = ts.tv_sec + (double)(ts.tv_nsec / 1.0e9);
@@ -100,14 +99,12 @@ prepare() {
 	clock_gettime(CLOCK_REALTIME, &ts_start);
 	if ((experiment_id != NULL) && (experiment_id[0] == '\0')) {
 		/*we don't have an experiment_id */
-		char* URL = malloc(256 * sizeof(char));
 		sprintf(URL,
 				"%s/%s/mf/users/%s/create",
 				server_name, api_version, workflow
 		);
 		strcpy(experiment_id, create_experiment_id(URL, msg));
 		fprintf(logFile, "> experiment ID: %s\n", experiment_id);
-		free(URL);
 
 		if (strstr(experiment_id, "error") != NULL || experiment_id[0] == '\0') {
     		fprintf(stderr,
@@ -118,22 +115,18 @@ prepare() {
 		}
 	} else { 
 		/* we have already an experiment_id, register it at the server if no such experiment exists */
-		char* URL = malloc(256 * sizeof(char));
 		sprintf(URL,
 				"%s/%s/mf/users/%s/%s/create",
 				server_name, api_version, workflow, experiment_id
 		);
 		publish_json(URL, msg);
-		free(URL);
 	}
 	clock_gettime(CLOCK_REALTIME, &ts_end);
 	publish_json_time = (ts_end.tv_sec - ts_start.tv_sec) + (double)((ts_end.tv_nsec - ts_start.tv_nsec) / 1.0e9);
+	
 	/* set the correct path for sending metric data */
-	char* path = malloc(256 * sizeof(char));
 	sprintf(path, "/%s/mf/metrics/", api_version);
 	strcat(server_name, path);
-	free(path);
-
 	return 1;
 }
 
@@ -165,7 +158,7 @@ createLogFile() {
 	logFile = fopen(logFileName, "w");
 	if (logFile == NULL) {
 		errnum = errno;
-		fprintf(stderr, "Could not create log file: %s\n", name);
+		fprintf(stderr, "Could not create log file: %s\n", logFileName);
 		fprintf(stderr, "Error creating log: %s\n", strerror(errnum));
 	} else {
 		fprintf(logFile, "Starting at ... %s\n", timeForFile);
@@ -226,6 +219,7 @@ set_pwd()
 
 /* everything starts here */
 int main(int argc, char* argv[]) {
+	extern char *optarg;
 	int c;
 	int h_flag = 0; //arg "hostname" exists flag
 	int w_flag = 0;	//arg "workflow" exists flag
@@ -233,19 +227,9 @@ int main(int argc, char* argv[]) {
 	int c_flag = 0;	//arg "config file" exists flag
 	int a_flag = 0;	//arg "api version" exists flag
 	int err = 0, help = 0;
-	extern char *optarg;
-
-	/* assigns the current working directory to a variable */
-	pwd = (char *)calloc(300, sizeof(char));
-	set_pwd();
-
-	/* creates the log files used for this execution */
-	createLogFile();
-
-	/* write PID to a file in `pwd`; used by PBS to kill the agent */
-	writeTmpPID();
-
+	
 	/* init arguments */
+	pwd = calloc(300, sizeof(char));
 	hostname = malloc(256 * sizeof(char));
 	workflow = malloc(256 * sizeof(char));
 	task = malloc(128 * sizeof(char));
@@ -259,6 +243,15 @@ int main(int argc, char* argv[]) {
 	experiment_id[0] = '\0';
 	confFile[0] = '\0';
 	api_version[0] = '\0';
+
+	/* assigns the current working directory to a variable */
+	set_pwd();
+
+	/* creates the log files used for this execution */
+	createLogFile();
+
+	/* write PID to a file in `pwd`; used by PBS to kill the agent */
+	writeTmpPID();
 
 	/* parse command-line arguments */
 	static char usage[] = "usage: %s [-o hostname] [-e id] [-w workflow] [-t task] [-c config] [-a version] [-h help]\n";
@@ -357,17 +350,18 @@ int main(int argc, char* argv[]) {
 
 	/* clean up tasks */
 	fprintf(logFile, "Stopping service ...\n");
-
 	fclose(logFile);
+
 	unlink(name);
 
 	free(pwd);
-	free(confFile);
-	mfp_parse_clean();
+	free(hostname);
 	free(workflow);
 	free(task);
 	free(experiment_id);
-	free(hostname);
+	free(confFile);
+	free(api_version);
 
+	mfp_parse_clean();
 	exit(EXIT_SUCCESS);
 }

@@ -55,11 +55,6 @@ extern double publish_json_time;
 extern char server_name[256];
 
 /*
- * IP address of the host which will receive the data
- */
-extern char addr[100];
-
-/*
  * location of the configuration file
  */
 extern char *confFile;
@@ -93,22 +88,5 @@ extern char* hostname;
  */
 extern char* api_version;
 
-/** @brief Initializing and creating the log file
- *
- * Per default, the log file is created in the folder 'log' within the
- * working directory of the monitoring agent; filenames have the pattern
- * log-<YYYY>-<MM>-<DD>-<HH:MM:SS>
- */
-void createLogFile();
-
-/** @brief Perform initialization prior starting monitoring
- *
- * This method performs the following actions: 1) parses the configuration file,
- * 2) sets the metrics sending path, and 3) generates an execution
- * ID if not passed via command line.
- *
- * @returns 1 on success; 0 otherwise
- */
-int prepare();
 
 #endif /* _EXCESS_MAIN_H */
