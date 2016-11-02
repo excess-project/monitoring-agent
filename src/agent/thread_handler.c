@@ -266,6 +266,7 @@ gatherMetric(int num) {
 int
 checkConf() {
 	while (running) {
+		mfp_parse(confFile);
 		char wait_some_seconds[20] = {'\0'};
 		mfp_get_value("timings", "update_configuration", wait_some_seconds);
 		sleep(atoi(wait_some_seconds));

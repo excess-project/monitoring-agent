@@ -215,6 +215,7 @@ rm -rf ${APR}-${APR_VERSION}
 rm -rf ${APR_UTIL}-${APR_UTIL_VERSION}
 rm -rf ${CURL}-${CURL_VERSION}
 rm -rf nvidia_gdk_download
+rm -rf m4-1.4.17
 rm -rf bison-3.0.2
 rm -rf flex-2.6.0
 rm -rf lm_sensors-3.4.0
