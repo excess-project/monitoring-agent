@@ -44,9 +44,6 @@ int
 mfp_parse(const char* filename)
 {
     /* Initialize a hash table */
-    if (ht_initialized) {
-        return 1;
-    }
     apr_initialize();
     apr_pool_create(&mp, NULL);
     ht_config = apr_hash_make(mp);
