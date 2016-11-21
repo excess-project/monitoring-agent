@@ -3,21 +3,11 @@
 
 CC = gcc
 CXX = g++
-COPT_SO = $(CFLAGS) -fpic
+COPT_SO = $(CFLAGS) -fPIC
 
 REVISION = 16.8.1
 HOST=$(shell hostname)
 INSTALL_DIR = dist
-
-ifneq (,$(findstring excess,$(HOST)))
-	INSTALL_DIR = /opt/mf/${REVISION}
-	CXX = /opt/centos/devtoolset-1.1/root/usr/bin/g++
-endif
-
-ifneq (,$(findstring jenkins,$(HOST)))
-	INSTALL_DIR = dist
-	CXX = /opt/centos/devtoolset-1.1/root/usr/bin/g++
-endif
 
 INSTALL_PLUGINS_DIR = $(INSTALL_DIR)/bin/plugins
 INSTALL_INCLUDES_DIR = $(INSTALL_DIR)/include
@@ -96,12 +86,12 @@ EXCESS_QUEUE_C = -I$(BASE)/../ext/queue
 #
 .PHONY: libmf.so plugins copy_plugins clean
 
-all: prepare excess_main copy_plugins lib
+all: $(SRC)/util.o prepare excess_main copy_plugins lib
 
 lib: libmf.so libmf.a
 
 $(SRC)/%.o: %.c $(HEADER)
-	$(CC) -c $< $(CFLAGS) -fpic
+	$(CC) -c $< $(COPT_SO)
 
 excess_concurrent_queue.o:
 	$(CXX) -c $(BASE)/../ext/queue/excess_concurrent_queue.cpp -o $@ -I. $(EXCESS_QUEUE) $(EXCESS_QUEUE_C) -fpic

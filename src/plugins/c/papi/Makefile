@@ -17,7 +17,7 @@ else
 	CFLAGS += -DNDEBUG
 endif
 
-COMMON = ../../..
+COMMON = ${CURDIR}/../../..
 SRC = src
 LIB = lib
 TESTS = tests
@@ -41,13 +41,13 @@ HEADER = $(shell find src -name '*.h')
 all: clean prepare mf_papi_client mf_plugin_papi.so
 
 mf_plugin_papi.so: mf_plugin_papi.o mf_papi_connector.o
-	$(CC) -o $(LIB)/mf_plugin_papi.so $^ -shared $(BINARIES)/papi/lib/libpapi.so
+	$(CC) -shared -o $(LIB)/mf_plugin_papi.so $^ -lrt -ldl -Wl,-rpath,$(BINARIES)/papi/lib $(PAPI)
 
 mf_papi_connector.o: $(SRC)/mf_papi_connector.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI)
 
 mf_plugin_papi.o: $(SRC)/mf_plugin_papi.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI)
 
 mf_papi_client: $(UTILS)/mf_papi_client.c $(SRC)/mf_papi_connector.c
 	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)

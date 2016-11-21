@@ -17,7 +17,7 @@ else
 	CFLAGS += -DNDEBUG
 endif
 
-COMMON = ../../..
+COMMON = ${CURDIR}/../../..
 SRC = src
 LIB = lib
 TESTS = tests
