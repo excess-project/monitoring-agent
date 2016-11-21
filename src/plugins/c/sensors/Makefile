@@ -16,7 +16,7 @@ else
     CFLAGS += -DNDEBUG
 endif
 
-COMMON = ../../..
+COMMON = ${CURDIR}/../../..
 SRC = src
 LIB = lib
 TESTS = tests
@@ -51,7 +51,7 @@ prepare:
 	@mkdir -p lib
 
 mf_plugin_sensors.so: mf_plugin_sensors.o mf_sensors_connector.o
-	$(CC) -o $(LIB)/mf_plugin_sensors.so $^ -shared ${BINARIES}/sensors/lib/libsensors.so
+	$(CC) -shared -o $(LIB)/mf_plugin_sensors.so $^ -lrt -ldl -Wl,-rpath,$(BINARIES)/sensors/lib $(SENSORS)
 
 mf_sensors_connector.o: $(SRC)/mf_sensors_connector.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I.

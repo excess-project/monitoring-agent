@@ -8,7 +8,7 @@ COPT_SO = $(CFLAGS) -fpic
 CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
 -Wcast-align -O0 -ggdb $(MOVIDIUS_ARDUINO_INC) $(EXCESS_INC) $(PARSER_INC) $(PUBLISHER_INC) $(CORE_INC) $(COMMON_INC) $(APR_INC)
 
-LFLAGS = $(MOVIDIUS_ARDUINO) $(PARSER) $(PUBLISHER) $(CURL) $(APR)
+LFLAGS = $(PARSER) $(PUBLISHER) $(CURL) $(APR)
 
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
@@ -17,7 +17,7 @@ else
 	CFLAGS += -DNDEBUG
 endif
 
-COMMON = ../../..
+COMMON = ${CURDIR}/../../..
 SRC = src
 LIB = lib
 TESTS = tests
@@ -29,8 +29,6 @@ APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
 APR_INC = $(shell $(APR_CONFIG) --includes) $(shell $(APR_CONFIG) --includes)
 
 CURL = -L$(BINARIES)/curl/lib -lcurl
-MOVIDIUS_ARDUINO = -L$(BINARIES)/movidius_arduino/lib
-MOVIDIUS_ARDUINO_INC = -I$(BINARIES)/movidius_arduino/include/
 
 COMMON_INC = -I$(COMMON)
 CORE_INC = -I$(COMMON)/core
@@ -52,10 +50,10 @@ mf_plugin_movidius_arduino.so: mf_plugin_movidius_arduino.o mf_movidius_arduino_
 	$(CC) -o $(LIB)/mf_plugin_movidius_arduino.so $^ -shared
 
 mf_movidius_arduino_connector.o: $(SRC)/mf_movidius_arduino_connector.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(MOVIDIUS_ARDUINO) -lmovidius_arduino
+	$(CC) -c $< -o $@ $(COPT_SO) -I. 
 
 mf_plugin_movidius_arduino.o: $(SRC)/mf_plugin_movidius_arduino.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(MOVIDIUS_ARDUINO) -lmovidius_arduino
+	$(CC) -c $< -o $@ $(COPT_SO) -I.
 
 mf_movidius_arduino_client: $(UTILS)/mf_movidius_arduino_client.c $(SRC)/mf_movidius_arduino_connector.c
 	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)

@@ -5,7 +5,7 @@ CC = gcc
 
 COPT_SO = $(CFLAGS) -fpic
 
-CFLAGS = -std=gnu99 -pedantic -Wall -fPIC -Wwrite-strings -Wpointer-arith \
+CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
 -Wcast-align -O0 -ggdb $(PARSER_INC) $(PUBLISHER_INC) $(EXCESS_INC) $(CORE_INC) $(COMMON_INC) $(LIBIIO_INC) $(APR_INC)
 
 LFLAGS = $(PARSER) $(PUBLISHER) $(CURL) $(LIBIIO) $(APR)
@@ -17,7 +17,7 @@ else
     CFLAGS += -DNDEBUG
 endif
 
-COMMON = ../../..
+COMMON = ${CURDIR}/../../..
 SRC = src
 LIB = lib
 UTILS = $(SRC)/utils
@@ -49,7 +49,7 @@ HEADER = $(shell find src -name '*.h')
 all: clean prepare mf_acme_client mf_acme_units mf_plugin_acme.so
 
 mf_plugin_acme.so: mf_plugin_acme.o mf_acme_connector.o
-	$(CC) -o $(LIB)/mf_plugin_acme.so $^ -shared $(BINARIES)/libiio/lib/libiio.so
+	$(CC) -shared -o $(LIB)/mf_plugin_acme.so $^ -lrt -ldl -Wl,-rpath,$(BINARIES)/libiio/lib $(LIBIIO)
 
 mf_acme_connector.o: $(SRC)/mf_acme_connector.c $(HEADER)
 	$(CC) -c $< -o $@ $(COPT_SO) -I. $(LIBIIO)

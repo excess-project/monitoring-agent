@@ -17,7 +17,7 @@ else
     CFLAGS += -DNDEBUG
 endif
 
-COMMON = ../../..
+COMMON = ${CURDIR}/../../..
 SRC = src
 LIB = lib
 UTILS = $(SRC)/utils
@@ -47,7 +47,7 @@ NVML = -L$(GDK_DIR)/usr/src/gdk/nvml/lib/ -lnvidia-ml
 all: clean prepare mf_plugin_nvidia.so mf_nvidia_units
 
 mf_plugin_nvidia.so: mf_plugin_nvidia.o
-	$(CC) -o $(LIB)/mf_plugin_nvidia.so $^ $(NVML) -shared
+	$(CC) -shared -o $(LIB)/mf_plugin_nvidia.so $^ -lrt -ldl -Wl,-rpath,$(GDK_DIR)/usr/src/gdk/nvml/lib $(NVML)
 
 mf_plugin_nvidia.o: $(SRC)/mf_plugin_nvidia.c
 	$(CC) -c $< -o $@ $(COPT_SO) -I.

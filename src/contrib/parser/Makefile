@@ -1,15 +1,15 @@
 CC = gcc
 
-COPT_SO = $(CFLAGS) -fpic
+COPT_SO = $(CFLAGS) -fPIC
 
 CFLAGS = -std=gnu99 -pedantic -Wall -Wwrite-strings -Wpointer-arith \
--Wcast-align -O0 -ggdb -fPIC $(APR_INC) $(CORE_INC)
+-Wcast-align -O0 -ggdb $(APR_INC) $(CORE_INC)
 
 LFLAGS =  -lm $(APR)
 
-COMMON = ../..
+COMMON = ${CURDIR}/../..
 CORE_INC = -I$(COMMON)/core
-BINARIES = ../../../bin
+BINARIES = ${CURDIR}/../../../bin
 APR_CONFIG = $(BINARIES)/apr/bin/apr-1-config
 APU_CONFIG = $(BINARIES)/apr/bin/apu-1-config
 APR = $(shell $(APR_CONFIG) --link-ld) $(shell $(APU_CONFIG) --link-ld)
@@ -25,13 +25,13 @@ endif
 all: clean-all libparser.so libparser.a
 
 mf_parser.o:
-	$(CC) -c src/mf_parser.c libs/ini/ini.c -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+	$(CC) -c src/mf_parser.c libs/ini/ini.c $(COPT_SO) $(LFLAGS)
 
 ini.o:
-	$(CC) -c libs/ini/ini.c -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+	$(CC) -c libs/ini/ini.c $(COPT_SO) $(LFLAGS)
 
 libparser.so: mf_parser.o ini.o
-	$(CC) -shared -o $@ $^ -lrt -ldl -Wl,--export-dynamic $(CFLAGS) $(LFLAGS)
+	$(CC) -shared -o $@ $^ -lrt -ldl -Wl,-rpath,$(BINARIES)/apr/lib $(CFLAGS) $(LFLAGS)
 
 libparser.a: mf_parser.o ini.o
 	ar rcs $@ $^
