@@ -17,7 +17,7 @@ else
     CFLAGS += -DNDEBUG
 endif
 
-COMMON = ../../..
+COMMON = ${CURDIR}/../../..
 SRC = src
 LIB = lib
 TESTS = tests
@@ -49,13 +49,13 @@ HEADER = $(shell find src -name '*.h')
 all: clean prepare mf_rapl_client mf_rapl_units mf_plugin_rapl.so
 
 mf_plugin_rapl.so: mf_plugin_rapl.o mf_rapl_connector.o
-	$(CC) -o $(LIB)/mf_plugin_rapl.so $^ -shared $(BINARIES)/papi/lib/libpapi.so
+	$(CC) -shared -o $(LIB)/mf_plugin_rapl.so $^ -lrt -ldl -Wl,-rpath,$(BINARIES)/papi/lib $(PAPI)
 
 mf_rapl_connector.o: $(SRC)/mf_rapl_connector.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI)
 
 mf_plugin_rapl.o: $(SRC)/mf_plugin_rapl.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI)
 
 mf_rapl_client: $(UTILS)/mf_rapl_client.c $(SRC)/mf_rapl_connector.c
 	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)

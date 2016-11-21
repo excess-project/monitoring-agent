@@ -16,7 +16,7 @@ else
 	CFLAGS += -DNDEBUG
 endif
 
-COMMON = ../../..
+COMMON = ${CURDIR}/../../..
 SRC = src
 LIB = lib
 TESTS = tests
@@ -48,13 +48,13 @@ HEADER = $(shell find src -name '*.h')
 all: clean prepare mf_infiniband_client mf_plugin_infiniband.so
 
 mf_plugin_infiniband.so: mf_plugin_infiniband.o mf_infiniband_connector.o
-	$(CC) -o $(LIB)/mf_plugin_infiniband.so $^ -shared $(BINARIES)/papi/lib/libpapi.so
+	$(CC) -shared -o $(LIB)/mf_plugin_infiniband.so $^ -lrt -ldl -Wl,-rpath,$(BINARIES)/papi/lib $(PAPI)
 
 mf_infiniband_connector.o: $(SRC)/mf_infiniband_connector.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI)
 
 mf_plugin_infiniband.o: $(SRC)/mf_plugin_infiniband.c $(HEADER)
-	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI) -lpapi
+	$(CC) -c $< -o $@ $(COPT_SO) -I. $(PAPI)
 
 mf_infiniband_client: $(UTILS)/mf_infiniband_client.c $(SRC)/mf_infiniband_connector.c
 	$(CC) $^ -o $@ -I. -Isrc $(CFLAGS) $(LFLAGS)
